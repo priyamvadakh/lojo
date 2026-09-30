@@ -61,7 +61,7 @@
   .nav-item .count--hot{background:var(--rose);color:#fff}
   .nav-item .step{margin-left:auto;font-size:.66rem;font-weight:700;letter-spacing:.06em;color:var(--muted);opacity:.7}
   .side__foot{margin-top:auto}
-  .side__foot .theme-toggle{margin:0 0 12px 8px}
+  .side__foot .theme-toggle{margin:0 0 12px 10px}
   body.is-collapsed .side__foot .theme-toggle{margin:0 auto 12px;display:flex}
   .product{display:flex;align-items:center;gap:12px;padding:4px}
   .product img{width:44px;height:44px;border-radius:22%;flex:none}
@@ -181,6 +181,9 @@
   :root[data-theme="dark"] .theme-toggle::before{transform:translateX(28px);background:#4A3A31}
   :root[data-theme="dark"] .theme-toggle .t-sun{color:var(--muted)}
   :root[data-theme="dark"] .theme-toggle .t-moon{color:#F2EBE5}
+
+  .side .theme-toggle{flex-direction:column;width:30px;height:58px;padding:7px 0}
+  :root[data-theme="dark"] .side .theme-toggle::before{transform:translateY(28px)}
 
   .meter{min-width:260px}
   .meter b{font-family:var(--display);font-size:1rem}

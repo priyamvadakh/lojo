@@ -18,6 +18,9 @@ SEG_CSS = r"""
   :root[data-theme="dark"] .theme-toggle::before{transform:translateX(28px);background:#4A3A31}
   :root[data-theme="dark"] .theme-toggle .t-sun{color:var(--muted)}
   :root[data-theme="dark"] .theme-toggle .t-moon{color:#F2EBE5}
+
+  .side .theme-toggle{flex-direction:column;width:30px;height:58px;padding:7px 0}
+  :root[data-theme="dark"] .side .theme-toggle::before{transform:translateY(28px)}
 """
 
 SEG_HTML = """<button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode" title="Dark mode"><svg class="t-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></svg><svg class="t-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg></button>"""

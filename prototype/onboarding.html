@@ -83,7 +83,7 @@
   .nav-item .lock{margin-left:auto;width:14px;height:14px}
   .side__note{margin:10px 12px 0;font-size:.74rem;color:var(--muted);line-height:1.45}
   .side__foot{margin-top:auto}
-  .side__foot .theme-toggle{margin:0 0 12px 8px}
+  .side__foot .theme-toggle{margin:0 0 12px 10px}
   body.is-collapsed .side__foot .theme-toggle{margin:0 auto 12px;display:flex}
   .ws{display:flex;align-items:center;gap:10px;padding:4px}
   .ws img{width:40px;height:40px;border-radius:22%}
@@ -505,6 +505,9 @@
   :root[data-theme="dark"] .theme-toggle::before{transform:translateX(28px);background:#4A3A31}
   :root[data-theme="dark"] .theme-toggle .t-sun{color:var(--muted)}
   :root[data-theme="dark"] .theme-toggle .t-moon{color:#F2EBE5}
+
+  .side .theme-toggle{flex-direction:column;width:30px;height:58px;padding:7px 0}
+  :root[data-theme="dark"] .side .theme-toggle::before{transform:translateY(28px)}
 
   :root[data-theme="dark"]{
     --ink:#F2EBE5; --bg:#15100D; --bg-soft:#231B16; --panel:#1C1612;

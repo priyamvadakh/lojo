@@ -42,7 +42,7 @@ CSS = r"""
   .nav-item .count--hot{background:var(--rose);color:#fff}
   .nav-item .step{margin-left:auto;font-size:.66rem;font-weight:700;letter-spacing:.06em;color:var(--muted);opacity:.7}
   .side__foot{margin-top:auto}
-  .side__foot .theme-toggle{margin:0 0 12px 8px}
+  .side__foot .theme-toggle{margin:0 0 12px 10px}
   body.is-collapsed .side__foot .theme-toggle{margin:0 auto 12px;display:flex}
   .product{display:flex;align-items:center;gap:12px;padding:4px}
   .product img{width:44px;height:44px;border-radius:22%;flex:none}
