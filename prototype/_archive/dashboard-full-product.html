@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard · lojo</title>
+<link rel="icon" type="image/png" href="assets/lojo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- ASSUMPTION: arriving from onboarding shows that workspace's real results; opening directly shows the mature Nimbus Pay demo. check with Eric -->
+<style>
+  :root{
+    --rose:#E85D75;
+    --peach:#FFB199;
+    --brand-gradient:linear-gradient(135deg,#E85D75,#FFB199);
+    --ink:#241A14;
+    --bg:#FFFFFF;
+    --bg-soft:#F5F3F0;
+    --panel:#FFFFFF;
+    --line:rgba(36,26,20,.08);
+    --line-2:rgba(36,26,20,.16);
+    --muted:#6E5A4E;
+    --cream:#F6EEE6;
+    --success:#3F8F5F;
+    --warning:#D99A2B;
+    --error:#C64545;
+    --info:#3E6FA6;
+    --display:"Outfit",system-ui,sans-serif;
+    --body:"Manrope",system-ui,sans-serif;
+    --side:256px;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--rose);font-weight:600;text-decoration:none}
+  button,input{font:inherit;color:inherit}
+  [hidden]{display:none!important}
+  svg.i{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+  /* ---------- sidebar (keep identical across app screens) ---------- */
+  .side{
+    position:fixed;inset:0 auto 0 0;width:var(--side);z-index:30;
+    background:var(--ink);color:var(--cream);
+    display:flex;flex-direction:column;padding:20px 14px;overflow-y:auto;
+  }
+  .side__logo{display:flex;align-items:center;gap:10px;padding:4px 10px 18px;color:var(--cream);text-decoration:none}
+  .side__logo img{width:32px;height:32px;border-radius:22%;display:block}
+  .side__logo span{font-family:var(--display);font-weight:700;font-size:1.4rem;letter-spacing:-.03em}
+  .side__nav{display:grid;gap:2px}
+  .side__group{margin-top:18px}
+  .side__label{display:flex;align-items:center;gap:8px;padding:0 12px 6px;font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(246,238,230,.45)}
+  .side__label b{font-family:var(--display);color:var(--peach);letter-spacing:.04em}
+  .nav-item{
+    display:flex;align-items:center;gap:11px;height:40px;padding:0 12px;border-radius:10px;
+    color:rgba(246,238,230,.78);font-weight:500;font-size:.92rem;text-decoration:none;
+    transition:background-color .15s ease,color .15s ease;
+  }
+  .nav-item:hover{background:rgba(246,238,230,.07);color:var(--cream)}
+  .nav-item.is-active{background:var(--brand-gradient);color:var(--ink);font-weight:700}
+  .nav-item .count{margin-left:auto;min-width:22px;height:20px;padding:0 7px;border-radius:999px;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:rgba(246,238,230,.12);color:var(--cream)}
+  .nav-item .count--hot{background:var(--rose);color:#fff}
+  .nav-item.is-active .count{background:rgba(36,26,20,.14);color:var(--ink)}
+  .side__foot{margin-top:auto;padding-top:18px}
+  .side__user{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:rgba(246,238,230,.06)}
+  .side__user .ava{width:32px;height:32px;font-size:.8rem;background:var(--brand-gradient);color:var(--ink)}
+  .side__user b{display:block;font-size:.88rem}
+  .side__user div span{display:block;font-size:.76rem;color:rgba(246,238,230,.55)}
+
+  /* ---------- top bar ---------- */
+  .main{margin-left:var(--side);min-height:100vh}
+  .top{
+    position:sticky;top:0;z-index:20;height:68px;display:flex;align-items:center;gap:14px;padding:0 32px;
+    background:rgba(255,255,255,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
+  }
+  .ws{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:999px;background:var(--bg-soft);font-weight:700;font-size:.9rem;white-space:nowrap}
+  .ws i{width:8px;height:8px;border-radius:50%;background:var(--success)}
+  .search{position:relative;flex:1;max-width:520px}
+  .search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+  .search input{width:100%;height:42px;border-radius:12px;border:1px solid var(--line-2);background:#fff;padding:0 60px 0 42px;font-size:.92rem;transition:border-color .15s ease,box-shadow .15s ease}
+  .search input:focus{outline:none;border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,93,117,.16)}
+  .search kbd{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-family:var(--body);font-size:.72rem;font-weight:700;color:var(--muted);border:1px solid var(--line-2);border-radius:6px;padding:2px 6px;background:var(--bg-soft)}
+  .pop{
+    position:absolute;top:calc(100% + 8px);background:#fff;border:1px solid var(--line);border-radius:14px;
+    box-shadow:0 24px 50px -24px rgba(36,26,20,.45);padding:8px;z-index:40;
+  }
+  .search .pop{left:0;right:0}
+  .pop__h{padding:8px 10px 4px;font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .pop__row{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border:0;background:none;border-radius:10px;text-align:left;cursor:pointer;font-size:.9rem}
+  .pop__row:hover,.pop__row.is-hover{background:var(--bg-soft)}
+  .pop__row small{margin-left:auto;color:var(--muted);font-size:.78rem;white-space:nowrap}
+  .pop__empty{padding:14px 10px;color:var(--muted);font-size:.88rem}
+  .top .spacer{flex:1}
+  .iconbtn{position:relative;width:42px;height:42px;border-radius:50%;border:1px solid var(--line-2);background:#fff;display:grid;place-items:center;cursor:pointer;color:var(--ink)}
+  .iconbtn:hover{background:var(--bg-soft)}
+  .iconbtn .dot{position:absolute;top:8px;right:9px;width:9px;height:9px;border-radius:50%;background:var(--rose);border:2px solid #fff}
+  .bell{position:relative}
+  .bell .pop{right:0;width:360px}
+  .note{display:grid;grid-template-columns:8px 1fr;gap:12px;padding:10px;border-radius:10px}
+  .note:hover{background:var(--bg-soft)}
+  .note i{width:8px;height:8px;border-radius:50%;margin-top:7px;background:var(--line-2)}
+  .note.is-new i{background:var(--rose)}
+  .note b{display:block;font-size:.88rem;font-weight:600}
+  .note span{color:var(--muted);font-size:.8rem}
+  .ava{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:var(--panel);font-family:var(--display);font-weight:700;font-size:.9rem;flex:none}
+  .me{position:relative}
+  .me button{border:0;background:none;padding:0;cursor:pointer;border-radius:50%}
+  .me .pop{right:0;width:220px}
+
+  /* ---------- content ---------- */
+  .wrap{max-width:1240px;margin:0 auto;padding:32px 32px 72px}
+  .label{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--rose);margin:0}
+  .hello{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:24px}
+  .hello h1{font-family:var(--display);font-weight:700;font-size:2rem;letter-spacing:-.02em;line-height:1.15;margin:6px 0 4px}
+  .hello p{margin:0;color:var(--muted)}
+  .hello .spacer{flex:1}
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 18px;border-radius:999px;
+    font-weight:600;font-size:.9rem;cursor:pointer;white-space:nowrap;text-decoration:none;border:1px solid transparent;
+    transition:box-shadow .15s ease,background-color .15s ease,border-color .15s ease,transform .15s ease;
+  }
+  .btn--primary{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+  .btn--primary:hover{box-shadow:0 10px 24px -14px rgba(36,26,20,.8)}
+  .btn--grad{background:var(--brand-gradient);color:var(--ink);font-weight:700}
+  .btn--grad:hover{box-shadow:0 12px 26px -12px rgba(232,93,117,.7);transform:translateY(-1px)}
+  .btn--secondary{background:#fff;color:var(--ink);border-color:var(--line-2)}
+  .btn--secondary:hover{border-color:rgba(36,26,20,.3);background:var(--bg-soft)}
+  .btn--ghost{background:none;color:var(--muted);padding:0 12px}
+  .btn--ghost:hover{background:var(--bg-soft);color:var(--ink)}
+  .btn--sm{height:34px;padding:0 14px;font-size:.84rem}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;box-shadow:none;transform:none}
+
+  .welcome{
+    display:grid;grid-template-columns:48px 1fr auto auto;gap:16px;align-items:center;
+    background:var(--ink);color:var(--cream);border-radius:16px;padding:18px 22px;margin-bottom:24px;
+  }
+  .welcome .ico{width:48px;height:48px;border-radius:22%;background:url(assets/lojo-icon.png) center/104% no-repeat}
+  .welcome b{font-family:var(--display);font-size:1.15rem}
+  .welcome p{margin:2px 0 0;color:rgba(246,238,230,.72);font-size:.9rem}
+  .welcome .x{border:0;background:none;color:rgba(246,238,230,.6);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:1.2rem}
+  .welcome .x:hover{background:rgba(246,238,230,.1);color:var(--cream)}
+
+  /* ---------- the loop ---------- */
+  .loop{background:var(--bg-soft);border-radius:20px;padding:22px;margin-bottom:24px}
+  .loop__head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+  .loop__head h2{font-family:var(--display);font-weight:700;font-size:1.25rem;margin:0}
+  .loop__head p{margin:0;color:var(--muted);font-size:.88rem}
+  .loop__grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;position:relative}
+  .stage{
+    position:relative;background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;
+    display:flex;flex-direction:column;gap:10px;min-height:212px;
+    transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease;
+  }
+  .stage:hover{border-color:var(--line-2);box-shadow:0 16px 36px -28px rgba(36,26,20,.5)}
+  .stage:not(:last-child)::after{
+    content:"";position:absolute;right:-12px;top:34px;width:10px;height:10px;z-index:1;
+    border-top:2px solid rgba(36,26,20,.22);border-right:2px solid rgba(36,26,20,.22);transform:rotate(45deg);
+  }
+  .stage.is-next{border-color:transparent;box-shadow:0 0 0 2px var(--rose),0 20px 40px -26px rgba(232,93,117,.6)}
+  .stage__top{display:flex;align-items:center;gap:10px}
+  .stage__n{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:.85rem;background:var(--bg-soft);color:var(--ink)}
+  .stage.is-next .stage__n{background:var(--brand-gradient)}
+  .stage__name{font-family:var(--display);font-weight:700;font-size:1.05rem}
+  .stage__tag{margin-left:auto}
+  .stage__num{font-family:var(--display);font-weight:800;font-size:2rem;letter-spacing:-.02em;line-height:1;color:var(--ink)}
+  .stage.is-next .stage__num{color:var(--rose)}
+  .stage__txt{color:var(--muted);font-size:.86rem;margin:0}
+  .stage .btn{margin-top:auto;width:100%}
+  .loop__foot{display:flex;align-items:center;gap:10px;margin-top:14px;color:var(--muted);font-size:.84rem}
+  .loop__foot svg{color:var(--rose)}
+
+  .badge{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:999px;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+  .badge--new{background:rgba(62,111,166,.1);color:var(--info)}
+  .badge--improved{background:rgba(63,143,95,.12);color:var(--success)}
+  .badge--fixed{background:rgba(217,154,43,.15);color:#94660F}
+  .badge--block{background:rgba(198,69,69,.1);color:var(--error)}
+  .badge--rose{background:rgba(232,93,117,.1);color:#B73C54}
+  .badge--muted{background:rgba(36,26,20,.06);color:var(--muted)}
+  .badge--next{background:var(--ink);color:#fff}
+
+  /* ---------- kpis ---------- */
+  .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:24px}
+  .kpi{border:1px solid var(--line);border-radius:14px;padding:18px 20px;background:#fff}
+  .kpi b{display:block;font-family:var(--display);font-weight:800;font-size:2rem;letter-spacing:-.02em;line-height:1.1}
+  .kpi.is-key b{color:var(--rose)}
+  .kpi span{color:var(--muted);font-size:.85rem}
+  .kpi small{display:block;margin-top:6px;font-size:.78rem;font-weight:600;color:var(--success)}
+
+  /* ---------- queue + activity ---------- */
+  .cols{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:20px;align-items:start}
+  .card{border:1px solid var(--line);border-radius:16px;background:#fff}
+  .card__head{display:flex;align-items:center;gap:12px;padding:18px 20px 0;flex-wrap:wrap}
+  .card__head h2{font-family:var(--display);font-weight:700;font-size:1.2rem;margin:0}
+  .card__head .spacer{flex:1}
+  .card__sub{color:var(--muted);font-size:.86rem;padding:4px 20px 0;margin:0}
+  .tabs{display:flex;gap:4px;padding:14px 20px 0;border-bottom:1px solid var(--line)}
+  .tab{border:0;background:none;padding:10px 12px;margin-bottom:-1px;border-bottom:2px solid transparent;font-weight:600;font-size:.9rem;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+  .tab:hover{color:var(--ink)}
+  .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--rose)}
+  .tab .n{min-width:22px;height:20px;padding:0 7px;border-radius:999px;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--bg-soft)}
+  .tab[aria-selected="true"] .n{background:var(--rose);color:#fff}
+  .rows{list-style:none;margin:0;padding:6px 8px 10px}
+  .row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;align-items:center;padding:14px 12px;border-radius:12px;transition:background-color .15s ease}
+  .row + .row{border-top:1px solid var(--line)}
+  .row:hover{background:var(--bg-soft)}
+  .row__title{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:600;font-size:.95rem}
+  .row__meta{grid-column:1;color:var(--muted);font-size:.82rem}
+  .row__meta b{color:var(--ink);font-weight:600}
+  .row .btn{grid-row:1/span 2;grid-column:2}
+  .row.is-leaving{opacity:0;transform:translateX(12px);transition:opacity .3s ease,transform .3s ease}
+  .empty{text-align:center;padding:40px 20px}
+  .empty .ico{width:48px;height:48px;border-radius:22%;margin:0 auto 12px;background:url(assets/lojo-icon.png) center/104% no-repeat}
+  .empty b{font-family:var(--display);font-size:1.1rem;display:block}
+  .empty p{color:var(--muted);margin:4px 0 0;font-size:.9rem}
+  .feed{list-style:none;margin:0;padding:10px 20px 18px;display:grid;gap:0}
+  .feed li{display:grid;grid-template-columns:28px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+  .feed li:first-child{border-top:0}
+  .feed .dot{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--bg-soft);color:var(--muted)}
+  .feed .dot svg{width:15px;height:15px}
+  .feed b{display:block;font-size:.88rem;font-weight:600}
+  .feed span{color:var(--muted);font-size:.8rem}
+  .side-cards{display:grid;gap:20px}
+  .fresh{padding:14px 20px 20px;display:grid;gap:10px}
+  .fresh__row{display:flex;align-items:center;gap:10px;font-size:.88rem}
+  .fresh__row b{font-family:var(--display);font-size:1.1rem;margin-left:auto}
+  .meter{height:6px;border-radius:6px;background:var(--bg-soft);overflow:hidden}
+  .meter i{display:block;height:100%;background:var(--brand-gradient)}
+
+  .toast{
+    position:fixed;left:calc(50% + var(--side) / 2);bottom:28px;transform:translate(-50%,20px);opacity:0;pointer-events:none;
+    background:var(--ink);color:var(--panel);padding:12px 18px;border-radius:12px;font-size:.9rem;font-weight:600;
+    transition:opacity .25s ease,transform .25s ease;box-shadow:0 16px 40px -20px rgba(36,26,20,.7);z-index:60;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  :focus-visible{outline:2px solid var(--rose);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+  @media (max-width:1180px){
+    .loop__grid,.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .stage:nth-child(2)::after{display:none}
+    .cols{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<aside class="side" aria-label="App navigation">
+  <a class="side__logo" href="dashboard.html"><img src="assets/lojo-icon.png" alt="" width="32" height="32"><span>lojo</span></a>
+  <nav class="side__nav">
+    <a class="nav-item is-active" href="dashboard.html" aria-current="page">
+      <svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>Dashboard</a>
+
+    <div class="side__group">
+      <p class="side__label"><b>01</b> Source</p>
+      <a class="nav-item" href="sources.html"><svg class="i" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>Sources</a>
+      <a class="nav-item" href="conversations.html"><svg class="i" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Conversations</a>
+    </div>
+    <div class="side__group">
+      <p class="side__label"><b>02</b> Insights</p>
+      <a class="nav-item" href="gaps.html"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v3M11 14h.01"/></svg>Knowledge Gaps<span class="count" id="navGaps">37</span></a>
+    </div>
+    <div class="side__group">
+      <p class="side__label"><b>03</b> Build</p>
+      <a class="nav-item" href="review.html"><svg class="i" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>Review<span class="count count--hot" id="navReview">9</span></a>
+    </div>
+    <div class="side__group">
+      <p class="side__label"><b>04</b> Distribute</p>
+      <a class="nav-item" href="publishing.html"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Publishing</a>
+      <a class="nav-item" href="library.html"><svg class="i" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zm0 0a2 2 0 0 0 2 2h13"/></svg>Knowledge library</a>
+      <a class="nav-item" href="channels.html"><svg class="i" viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.2 10.9 7.6-3.8M8.2 13.1l7.6 3.8"/></svg>Channels</a>
+    </div>
+    <div class="side__group">
+      <a class="nav-item" href="agents.html"><svg class="i" viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01"/></svg>Agents</a>
+      <a class="nav-item" href="analytics.html"><svg class="i" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Analytics</a>
+      <a class="nav-item" href="settings.html"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Settings</a>
+    </div>
+  </nav>
+  <div class="side__foot">
+    <div class="side__user"><span class="ava" id="sideAva">S</span><div><b id="sideName">Sara</b><span>Validator</span></div></div>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="top">
+    <span class="ws"><i></i><span id="wsName">Nimbus Pay</span></span>
+    <div class="search">
+      <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" placeholder="Search answers, gaps and sources" aria-label="Search" autocomplete="off">
+      <kbd>⌘K</kbd>
+      <div class="pop" id="qPop" hidden></div>
+    </div>
+    <span class="spacer"></span>
+    <div class="bell">
+      <button class="iconbtn" id="bellBtn" aria-label="Notifications" aria-expanded="false">
+        <svg class="i" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><span class="dot" id="bellDot"></span>
+      </button>
+      <div class="pop" id="bellPop" hidden>
+        <div class="pop__h" style="display:flex;justify-content:space-between;align-items:center">Notifications <button class="btn btn--ghost btn--sm" id="markRead" style="height:26px;text-transform:none;letter-spacing:0">Mark all read</button></div>
+        <div id="notes"></div>
+      </div>
+    </div>
+    <div class="me">
+      <button id="meBtn" aria-label="Account" aria-expanded="false"><span class="ava" id="topAva">S</span></button>
+      <div class="pop" id="mePop" hidden>
+        <div class="pop__h" id="meEmail">sara@nimbuspay.com</div>
+        <a class="pop__row" href="settings.html">Settings</a>
+        <a class="pop__row" href="login.html" id="signOut">Sign out</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="welcome" id="welcome" hidden>
+      <span class="ico" aria-hidden="true"></span>
+      <div><b id="welcomeTitle">Nimbus Pay is live.</b><p id="welcomeTxt"></p></div>
+      <a class="btn btn--secondary btn--sm" href="channels.html" style="background:transparent;color:var(--cream);border-color:rgba(246,238,230,.3)">Share the chat</a>
+      <button class="x" id="welcomeX" aria-label="Dismiss">×</button>
+    </div>
+
+    <div class="hello">
+      <div>
+        <p class="label" id="today">Dashboard</p>
+        <h1 id="greet">Good morning, Sara</h1>
+        <p id="greetSub"></p>
+      </div>
+      <span class="spacer"></span>
+      <button class="btn btn--grad" id="heroCta">Start review</button>
+    </div>
+
+    <section class="loop" aria-labelledby="loopH">
+      <div class="loop__head">
+        <h2 id="loopH">The loop</h2>
+        <p>Agents propose, you decide. Each stage feeds the next.</p>
+      </div>
+      <div class="loop__grid" id="loop"></div>
+      <p class="loop__foot">
+        <svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/></svg>
+        <span id="loopFoot">Published answers feed back into Source. The loop never stops.</span>
+      </p>
+    </section>
+
+    <section class="kpis" id="kpis" aria-label="Impact snapshot"></section>
+
+    <div class="cols">
+      <section class="card" aria-labelledby="queueH">
+        <div class="card__head">
+          <h2 id="queueH">My queue</h2>
+          <span class="badge badge--muted" id="eta"></span>
+          <span class="spacer"></span>
+          <!-- ASSUMPTION: bulk approve only covers items marked low-risk (single source, no conflict). check with Eric -->
+          <button class="btn btn--secondary btn--sm" id="bulk">Approve low-risk</button>
+        </div>
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" aria-selected="true" data-tab="approvals">Approvals due <span class="n" id="nApprovals">0</span></button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="gaps">Critical gaps <span class="n" id="nGaps">0</span></button>
+        </div>
+        <ul class="rows" id="rows"></ul>
+      </section>
+
+      <div class="side-cards">
+        <section class="card" id="freshCard" hidden aria-labelledby="freshH">
+          <div class="card__head"><h2 id="freshH">Freshness</h2></div>
+          <p class="card__sub" id="freshSub"></p>
+          <div class="fresh" id="fresh"></div>
+        </section>
+        <section class="card" aria-labelledby="actH">
+          <div class="card__head"><h2 id="actH">Activity</h2></div>
+          <ul class="feed" id="feed"></ul>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const BUILT = ['dashboard.html', 'login.html', 'onboarding.html'];
+const ICON = {
+  sync: '<svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/></svg>',
+  check: '<svg class="i" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg>',
+  alert: '<svg class="i" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>',
+  chat: '<svg class="i" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>',
+  up: '<svg class="i" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>',
+};
+
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* ---------------- data ---------------- */
+let user = { name: 'Sara', email: 'sara@nimbuspay.com' };
+let handoff = null;
+try {
+  const u = JSON.parse(sessionStorage.getItem('lojo-user')); if (u && u.name) user = u;
+  handoff = JSON.parse(sessionStorage.getItem('lojo-onboarding'));
+} catch (e) {}
+
+// mature Nimbus Pay workspace (demo data from the prototype brief)
+// ASSUMPTION: gap owners and due dates are illustrative. check with Eric
+const MATURE = {
+  workspace: 'Nimbus Pay',
+  approvals: [
+    { t: 'SSO on Growth plans', type: 'new', block: true, meta: 'New article · from <b>3 gaps</b> · awaiting sign-off', age: '2h' },
+    { t: 'Pricing contradiction fix', type: 'fixed', meta: 'Growth seat limit differs across <b>4 sources</b>', age: '3h' },
+    { t: 'Returns policy update', type: 'improved', low: true, meta: '30-day window, prorated after · <b>1 source</b>', age: '5h' },
+    { t: 'Battle card refresh — Vendor A', type: 'improved', meta: 'From <b>6 sales calls</b> in Aircall', age: '6h' },
+    { t: 'Can Starter customers pay by invoice?', type: 'new', low: true, meta: 'FAQ entry · <b>1 source</b> · Pricing & plans 2026', age: '8h' },
+    { t: 'Okta SAML setup steps', type: 'improved', low: true, meta: 'Help Center article · <b>1 source</b>', age: '1d' },
+    { t: 'Refund timelines by country', type: 'new', meta: 'From <b>14 support tickets</b> in Gmail', age: '1d' },
+    { t: 'API rate limits page', type: 'fixed', low: true, meta: 'Auto-updated from docs site · <b>1 source</b>', age: '1d' },
+    { t: 'Chargeback fees on Scale', type: 'new', meta: 'From <b>9 calls</b> · sources disagree', age: '2d' },
+  ],
+  gaps: [
+    { t: 'Is SSO included on the Growth plan?', block: true, meta: '<b>4 sources disagree</b> · Help Center says Enterprise-only (9 months stale)', owner: 'Marco · Product', due: 'Due Fri' },
+    { t: 'What is the chargeback fee on Scale?', meta: 'Asked <b>23 times</b> this week · no trusted source', owner: 'Lena · Finance', due: 'Due Oct 3' },
+    { t: 'Do we support Apple Pay in Germany?', meta: 'Asked <b>11 times</b> · docs and calls conflict', owner: 'Unassigned', due: 'No due date' },
+    { t: 'How long do we keep call recordings?', meta: 'Asked <b>6 times</b> · no source', owner: 'Priya · Legal', due: 'Due Oct 8' },
+  ],
+  kpis: [
+    { v: '2,846', l: 'insights surfaced', d: '+312 this week' },
+    { v: '91%', l: 'answer consistency', d: '+4 pts' },
+    { v: '84%', l: 'knowledge coverage', d: '+2 pts' },
+    { v: '98%', l: 'of articles verified fresh', key: true, d: 'Above the 95% target' },
+  ],
+  loop: {
+    source: { num: '312', txt: 'sources connected · last sync 4 minutes ago', cta: 'Manage sources', href: 'sources.html' },
+    insights: { num: '37', txt: 'knowledge gaps · 1 contradiction blocking', cta: 'Resolve gaps', href: 'gaps.html', tag: 'blocking' },
+    build: { num: '9', txt: 'items in validation · about 8 minutes', cta: 'Start review', href: 'review.html' },
+    distribute: { num: '98%', txt: 'fresh · 3 approved changes ready to publish', cta: 'Publish changes', href: 'publishing.html' },
+  },
+  feed: [
+    { i: 'sync', t: 'Aircall synced 42 new calls', s: '4 minutes ago' },
+    { i: 'alert', t: 'Contradiction found: SSO on Growth', s: 'Insights agent · 1 hour ago' },
+    { i: 'check', t: 'You approved “Refund window” and 3 more', s: 'Yesterday' },
+    { i: 'up', t: 'Help Center v48 published', s: 'Yesterday · rollback available' },
+    { i: 'chat', t: 'Companion answered 1,204 questions', s: 'This week · 96% from approved answers' },
+  ],
+  notes: [
+    { t: '“SSO on Growth plans” is blocking', s: 'Awaiting your sign-off · 2h', n: true },
+    { t: 'Help Center article is 9 months stale', s: '“Security & login” conflicts with pricing', n: true },
+    { t: '3 drafts ready for review', s: 'Build agent · 5h' },
+  ],
+};
+
+function freshFromOnboarding(h) {
+  const pending = h.queue.filter(q => q.status !== 'approved' && q.status !== 'final');
+  const human = h.queue.filter(q => q.status === 'final' || q.noSource);
+  const approvals = pending.filter(q => !q.noSource).map(q => ({
+    t: q.q, type: 'new', low: q.risk === 'low',
+    meta: q.from === 'you' ? 'You added this from the chat · draft ready' : 'Draft with <b>' + (q.srcCount || 1) + ' source' + ((q.srcCount || 1) === 1 ? '' : 's') + '</b>',
+    age: 'now', tag: q.from === 'you' ? 'From you' : '',
+  }));
+  const gaps = human.map(q => ({
+    t: q.q, meta: q.status === 'final' ? 'Rejected twice during setup · <b>needs a human answer</b>' : 'Not in your documents · <b>no source found</b>',
+    owner: h.user, due: 'No due date',
+  }));
+  const n = h.approved.length;
+  return {
+    workspace: h.workspace, fresh: true,
+    approvals, gaps,
+    kpis: [
+      { v: String(n), l: 'approved answers in the store', key: true, d: 'Chat is live' },
+      { v: String(h.found), l: 'questions found in your documents' },
+      { v: String(h.docs), l: 'documents indexed by meaning' },
+      { v: '100%', l: 'of answers verified fresh', d: 'All approved today' },
+    ],
+    loop: {
+      source: { num: '1', txt: h.source + ' · synced just now', cta: 'Connect another source', href: 'sources.html' },
+      insights: { num: String(gaps.length), txt: gaps.length ? 'question' + (gaps.length === 1 ? '' : 's') + ' without a trusted answer' : 'no gaps yet · the agent keeps looking', cta: gaps.length ? 'Answer gaps' : 'View knowledge gaps', href: 'gaps.html' },
+      build: { num: String(approvals.length), txt: approvals.length ? 'draft' + (approvals.length === 1 ? '' : 's') + ' waiting for your decision' : 'nothing waiting · the loop is running', cta: approvals.length ? 'Start review' : 'Open review', href: 'review.html' },
+      distribute: { num: String(n), txt: 'approved answers · the chat reads only from these', cta: 'Publish to Help Center', href: 'publishing.html' },
+    },
+    feed: [
+      { i: 'check', t: 'You approved ' + n + ' answer' + (n === 1 ? '' : 's'), s: 'Just now · setup' },
+      { i: 'sync', t: h.source + ' indexed', s: h.docs + ' documents · ' + h.passages + ' passages' },
+      { i: 'chat', t: 'Ask lojo is live for ' + h.workspace, s: 'Reads only from the approved store' },
+      { i: 'alert', t: 'Workspace created', s: 'Private · invite-only' },
+    ],
+    notes: [
+      { t: 'Welcome to ' + h.workspace, s: 'Setup complete', n: true },
+      { t: 'Invite your team', s: 'Members can ask; Validators can approve' },
+    ],
+  };
+}
+
+const D = handoff ? freshFromOnboarding(handoff) : MATURE;
+
+/* ---------------- header ---------------- */
+const first = user.name.trim().split(' ')[0];
+$('wsName').textContent = D.workspace;
+$('sideName').textContent = user.name;
+[$('sideAva'), $('topAva')].forEach(a => a.textContent = user.name.trim().charAt(0).toUpperCase());
+$('meEmail').textContent = user.email;
+const hr = new Date().getHours();
+$('greet').textContent = (hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening') + ', ' + first;
+$('today').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+
+if (D.fresh && !sessionStorage.getItem('lojo-welcome-dismissed')) {
+  $('welcome').hidden = false;
+  $('welcomeTitle').textContent = D.workspace + ' is live.';
+  $('welcomeTxt').textContent = handoff.approved.length + ' approved answers are in your store, and the chat reads only from them. Keep the loop going below.';
+}
+$('welcomeX').addEventListener('click', () => {
+  $('welcome').hidden = true;
+  try { sessionStorage.setItem('lojo-welcome-dismissed', '1'); } catch (e) {}
+});
+
+/* ---------------- loop ---------------- */
+const STAGES = [['source', '01', 'Source'], ['insights', '02', 'Insights'], ['build', '03', 'Build'], ['distribute', '04', 'Distribute']];
+function nextStage() {
+  if (D.approvals.length) return 'build';
+  if (D.gaps.length) return 'insights';
+  return D.fresh ? 'source' : 'distribute';
+}
+function renderLoop() {
+  D.loop.build.num = String(D.approvals.length);
+  if (!D.fresh) D.loop.build.txt = D.approvals.length ? 'items in validation · about ' + Math.max(1, Math.round(D.approvals.length * 0.9)) + ' minutes' : 'nothing waiting · the loop is running';
+  else D.loop.build.txt = D.approvals.length ? 'draft' + (D.approvals.length === 1 ? '' : 's') + ' waiting for your decision' : 'nothing waiting · the loop is running';
+  const next = nextStage();
+  $('loop').innerHTML = STAGES.map(([k, n, name]) => {
+    const s = D.loop[k], isNext = k === next;
+    return '<article class="stage' + (isNext ? ' is-next' : '') + '">' +
+      '<div class="stage__top"><span class="stage__n">' + n + '</span><span class="stage__name">' + name + '</span>' +
+      (isNext ? '<span class="stage__tag badge badge--next">Next step</span>' : s.tag ? '<span class="stage__tag badge badge--block">' + s.tag + '</span>' : '') + '</div>' +
+      '<span class="stage__num">' + esc(s.num) + '</span><p class="stage__txt">' + esc(s.txt) + '</p>' +
+      '<a class="btn ' + (isNext ? 'btn--primary' : 'btn--secondary') + ' btn--sm" href="' + s.href + '">' + esc(s.cta) + ' →</a></article>';
+  }).join('');
+  const n = D.loop[next];
+  $('heroCta').textContent = n.cta;
+  $('heroCta').onclick = () => go(n.href);
+  const mins = Math.max(1, Math.round(D.approvals.length * 0.9));
+  $('greetSub').textContent = D.approvals.length
+    ? D.approvals.length + ' item' + (D.approvals.length === 1 ? '' : 's') + ' need' + (D.approvals.length === 1 ? 's' : '') + ' you today · about ' + mins + ' minute' + (mins === 1 ? '' : 's')
+    : 'Your queue is clear. The loop is running.';
+  $('eta').textContent = D.approvals.length ? '~' + mins + ' min' : 'Clear';
+  $('navReview').textContent = D.approvals.length;
+  $('navReview').hidden = !D.approvals.length;
+  $('navGaps').textContent = D.fresh ? D.gaps.length : 37;
+  $('navGaps').hidden = D.fresh && !D.gaps.length;
+}
+
+/* ---------------- kpis ---------------- */
+$('kpis').innerHTML = D.kpis.map(k =>
+  '<div class="kpi' + (k.key ? ' is-key' : '') + '"><b>' + esc(k.v) + '</b><span>' + esc(k.l) + '</span>' + (k.d ? '<small>' + esc(k.d) + '</small>' : '') + '</div>').join('');
+
+/* ---------------- queue ---------------- */
+let tab = 'approvals';
+const TYPE = { new: ['NEW', 'badge--new'], improved: ['IMPROVED', 'badge--improved'], fixed: ['FIXED', 'badge--fixed'] };
+function renderQueue() {
+  $('nApprovals').textContent = D.approvals.length;
+  $('nGaps').textContent = D.gaps.length;
+  const low = D.approvals.filter(a => a.low).length;
+  $('bulk').textContent = 'Approve low-risk (' + low + ')';
+  $('bulk').disabled = !low;
+  $('bulk').hidden = tab !== 'approvals';
+  const list = tab === 'approvals' ? D.approvals : D.gaps;
+  if (!list.length) {
+    $('rows').innerHTML = '<li class="empty"><span class="ico" aria-hidden="true"></span><b>' +
+      (tab === 'approvals' ? 'Nothing to review. The loop is running.' : 'No critical gaps.') + '</b><p>' +
+      (tab === 'approvals' ? 'New drafts land here as your sources change.' : 'Questions without a trusted answer show up here.') + '</p></li>';
+    return;
+  }
+  $('rows').innerHTML = list.map((r, i) => {
+    let badges = '';
+    if (tab === 'approvals') {
+      const [lbl, cls] = TYPE[r.type];
+      badges = '<span class="badge ' + cls + '">' + lbl + '</span>' + (r.block ? '<span class="badge badge--block">Blocking</span>' : '') +
+        (r.tag ? '<span class="badge badge--rose">' + esc(r.tag) + '</span>' : '') + (r.low ? '<span class="badge badge--muted">Low risk</span>' : '');
+    } else {
+      badges = r.block ? '<span class="badge badge--block">Blocking</span>' : '';
+    }
+    const meta = tab === 'approvals' ? r.meta + ' · ' + esc(r.age)
+      : r.meta + ' · Owner <b>' + esc(r.owner) + '</b> · ' + esc(r.due);
+    const cta = tab === 'approvals' ? 'Review' : 'Resolve';
+    return '<li class="row" data-i="' + i + '"><span class="row__title">' + esc(r.t) + badges + '</span><span class="row__meta">' + meta + '</span>' +
+      '<a class="btn btn--secondary btn--sm" href="' + (tab === 'approvals' ? 'review.html' : 'gaps.html') + '">' + cta + '</a></li>';
+  }).join('');
+}
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  tab = t.dataset.tab;
+  document.querySelectorAll('.tab').forEach(x => x.setAttribute('aria-selected', x === t));
+  renderQueue();
+}));
+$('bulk').addEventListener('click', () => {
+  const rows = [...$('rows').children].filter(li => D.approvals[+li.dataset.i] && D.approvals[+li.dataset.i].low);
+  const n = rows.length;
+  rows.forEach(li => li.classList.add('is-leaving'));
+  setTimeout(() => {
+    D.approvals = D.approvals.filter(a => !a.low);
+    renderQueue();
+    renderLoop();
+    toast(n + ' low-risk item' + (n === 1 ? '' : 's') + ' approved');
+    D.feed.unshift({ i: 'check', t: 'You approved ' + n + ' low-risk item' + (n === 1 ? '' : 's'), s: 'Just now' });
+    renderFeed();
+  }, 300);
+});
+
+/* ---------------- side cards ---------------- */
+function renderFeed() {
+  $('feed').innerHTML = D.feed.slice(0, 6).map(f =>
+    '<li><span class="dot">' + ICON[f.i] + '</span><div><b>' + esc(f.t) + '</b><span>' + esc(f.s) + '</span></div></li>').join('');
+}
+if (!D.fresh) {
+  $('freshCard').hidden = false;
+  $('freshSub').textContent = 'Target: above 95% verified. Sara checks this daily.';
+  $('fresh').innerHTML = [['Help Center', 97], ['FAQ widget', 99], ['Companion', 98], ['Sales battle cards', 91]].map(([n, v]) =>
+    '<div><div class="fresh__row">' + n + '<b style="color:' + (v < 95 ? 'var(--warning)' : 'var(--ink)') + '">' + v + '%</b></div><div class="meter"><i style="width:' + v + '%"></i></div></div>').join('');
+}
+
+/* ---------------- notifications, account, search ---------------- */
+function renderNotes() {
+  $('notes').innerHTML = D.notes.map(n => '<div class="note' + (n.n ? ' is-new' : '') + '"><i></i><div><b>' + esc(n.t) + '</b><span>' + esc(n.s) + '</span></div></div>').join('');
+  $('bellDot').hidden = !D.notes.some(n => n.n);
+}
+function toggle(pop, btn, force) {
+  const open = force !== undefined ? force : pop.hidden;
+  pop.hidden = !open;
+  if (btn) btn.setAttribute('aria-expanded', open);
+}
+$('bellBtn').addEventListener('click', (e) => { e.stopPropagation(); toggle($('mePop'), $('meBtn'), false); toggle($('bellPop'), $('bellBtn')); });
+$('meBtn').addEventListener('click', (e) => { e.stopPropagation(); toggle($('bellPop'), $('bellBtn'), false); toggle($('mePop'), $('meBtn')); });
+$('markRead').addEventListener('click', (e) => { e.stopPropagation(); D.notes.forEach(n => n.n = false); renderNotes(); });
+$('signOut').addEventListener('click', () => { try { sessionStorage.clear(); } catch (e) {} });
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.bell')) toggle($('bellPop'), $('bellBtn'), false);
+  if (!e.target.closest('.me')) toggle($('mePop'), $('meBtn'), false);
+  if (!e.target.closest('.search')) $('qPop').hidden = true;
+});
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); $('q').focus(); }
+  if (e.key === 'Escape') { $('qPop').hidden = true; toggle($('bellPop'), $('bellBtn'), false); toggle($('mePop'), $('meBtn'), false); }
+});
+
+function searchIndex() {
+  const items = [];
+  (handoff ? handoff.approved : [
+    { q: 'How long do customers have to request a refund?' }, { q: 'What are the limits on the Starter plan?' },
+    { q: 'How do I set up SAML with Okta?' }, { q: 'Can a customer upgrade from Growth to Scale mid-cycle?' },
+  ]).forEach(a => items.push({ t: a.q, k: 'Approved answer', href: 'library.html' }));
+  D.approvals.forEach(a => items.push({ t: a.t, k: 'In review', href: 'review.html' }));
+  D.gaps.forEach(g => items.push({ t: g.t, k: 'Gap', href: 'gaps.html' }));
+  return items;
+}
+$('q').addEventListener('input', () => {
+  const v = $('q').value.trim().toLowerCase();
+  if (!v) { $('qPop').hidden = true; return; }
+  const words = v.split(/\s+/);
+  const hits = searchIndex().filter(it => words.every(w => it.t.toLowerCase().includes(w))).slice(0, 7);
+  $('qPop').innerHTML = hits.length
+    ? '<div class="pop__h">Results</div>' + hits.map(h => '<a class="pop__row" href="' + h.href + '">' + esc(h.t) + '<small>' + h.k + '</small></a>').join('')
+    : '<div class="pop__empty">No results for “' + esc($('q').value.trim()) + '”.</div>';
+  $('qPop').hidden = false;
+});
+
+/* ---------------- links to screens not built yet ---------------- */
+function go(href) {
+  if (BUILT.includes(href.split('#')[0])) location.href = href;
+  else toast(href.replace('.html', '').replace(/^\w/, c => c.toUpperCase()) + ' screen is not built yet in this prototype');
+}
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('a[href]');
+  if (!a || a.id === 'signOut') return;
+  const href = a.getAttribute('href');
+  if (/^(https?:|mailto:|#)/.test(href)) return;
+  if (!BUILT.includes(href.split('#')[0])) { e.preventDefault(); go(href); }
+});
+
+renderLoop();
+renderQueue();
+renderFeed();
+renderNotes();
+</script>
+</body>
+</html>

@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard · lojo</title>
+<link rel="icon" type="image/png" href="assets/lojo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Proof-of-concept screen, scoped to the four-week build. Generated from one template so the sidebar stays identical. -->
+<script>
+  (function () {
+    var pref = 'system';
+    try { pref = localStorage.getItem('lojo-theme') || 'system'; } catch (e) {}
+    var dark = pref === 'dark' || (pref === 'system' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme-pref', pref);
+  })();
+</script>
+<!-- ASSUMPTION: a light home for the four weeks, not the analytics dashboards the proposal leaves out. Weekly review target (~20 drafts, due Friday) comes from the plan. check with Eric -->
+<style>
+  :root{
+    --rose:#E85D75; --peach:#FFB199; --brand-gradient:linear-gradient(135deg,#E85D75,#FFB199);
+    --ink:#241A14; --bg:#FFFFFF; --bg-soft:#F7F4F1; --panel:#FFFFFF;
+    --line:rgba(36,26,20,.08); --line-2:rgba(36,26,20,.16); --muted:#6E5A4E; --cream:#F6EEE6;
+    --amber:#C9A24A; --amber-soft:#F4EAD3;
+    --success:#3F8F5F; --warning:#D99A2B; --error:#C64545; --info:#3E6FA6;
+    --display:"Outfit",system-ui,sans-serif; --body:"Manrope",system-ui,sans-serif; --side:252px;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html{font-size:15px}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:13.5px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:#B73C54;font-weight:600;text-decoration:none}
+  a:hover{text-decoration:underline}
+  button,input,select,textarea{font:inherit;color:inherit}
+  [hidden]{display:none!important}
+  svg.i{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+  /* ---------- canvas ---------- */
+  body{background-color:#FDFCFB;background-image:radial-gradient(rgba(36,26,20,.07) 1px,transparent 1.3px);background-size:22px 22px}
+
+  /* ---------- sidebar: floating light panel (identical on every POC screen) ---------- */
+  .side{position:fixed;top:12px;left:12px;bottom:12px;width:var(--side);z-index:30;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 40px -32px rgba(36,26,20,.35);display:flex;flex-direction:column;padding:16px 14px;overflow:visible;transition:width .3s cubic-bezier(.2,.8,.2,1)}
+  .side__collapse{width:34px;height:34px;border-radius:9px;border:0;background:none;color:var(--muted);display:grid;place-items:center;cursor:pointer;margin:0 0 14px 4px}
+  .side__collapse:hover{background:var(--bg-soft);color:var(--ink)}
+  .me{position:relative}
+  .side__user{display:flex;align-items:center;gap:12px;width:100%;padding:6px;border:0;background:none;border-radius:12px;cursor:pointer;text-align:left}
+  .side__user:hover{background:var(--bg-soft)}
+  .side__ava{width:44px;height:44px;border-radius:12px;flex:none;display:grid;place-items:center;background:var(--brand-gradient);color:#fff;font-family:var(--display);font-weight:800;font-size:.95rem;text-shadow:0 1px 2px rgba(142,47,69,.25)}
+  .side__who b{display:block;font-size:.92rem;line-height:1.25}
+  .side__who .badge{margin-top:4px}
+  .side__rule{height:1px;background:var(--line);margin:14px 4px}
+  .side nav{display:grid;gap:4px;overflow-y:auto}
+  .nav-item{display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border-radius:12px;color:var(--ink);font-weight:500;font-size:.92rem;text-decoration:none;white-space:nowrap;transition:background-color .15s ease,color .15s ease}
+  .nav-item svg{color:var(--muted)}
+  .nav-item:hover{background:var(--bg-soft);text-decoration:none}
+  .nav-item.is-active{background:rgba(232,93,117,.1);color:#B73C54;font-weight:700}
+  .nav-item.is-active svg{color:#B73C54}
+  .nav-item .count{margin-left:auto;min-width:24px;height:22px;padding:0 8px;border-radius:999px;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--bg-soft);color:var(--muted)}
+  .nav-item .count--hot{background:var(--rose);color:#fff}
+  .nav-item .step{margin-left:auto;font-size:.66rem;font-weight:700;letter-spacing:.06em;color:var(--muted);opacity:.7}
+  .side__foot{margin-top:auto}
+  .side__foot .theme-toggle{margin:0 0 12px 8px}
+  body.is-collapsed .side__foot .theme-toggle{margin:0 auto 12px;display:flex}
+  .product{display:flex;align-items:center;gap:12px;padding:4px}
+  .product img{width:44px;height:44px;border-radius:22%;flex:none}
+  .product b{display:block;font-family:var(--display);font-weight:700;font-size:1.05rem;line-height:1.2}
+  .product span{display:block;color:var(--muted);font-size:.74rem;letter-spacing:.02em}
+  .poc__weeks{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px}
+  .poc__weeks i{height:4px;border-radius:4px;background:var(--line-2)}
+  .poc__weeks i.is-done{background:var(--rose)}
+  .poc__weeks i.is-now{background:var(--amber)}
+  .pop{position:absolute;left:0;top:calc(100% + 6px);width:230px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 24px 50px -24px rgba(36,26,20,.45);padding:8px;z-index:40}
+  .pop__h{padding:8px 10px;font-size:.78rem;color:var(--muted)}
+  .pop__row{display:block;width:100%;padding:9px 10px;border:0;background:none;border-radius:9px;text-align:left;cursor:pointer;font-size:.88rem;font-weight:500;color:var(--ink)}
+  .pop__row:hover{background:var(--bg-soft);text-decoration:none}
+  /* collapsed */
+  body.is-collapsed{--side:76px}
+  body.is-collapsed .side__who,body.is-collapsed .nav-item .lbl,body.is-collapsed .nav-item .count,body.is-collapsed .nav-item .step,body.is-collapsed .product div{display:none}
+  body.is-collapsed .nav-item{justify-content:center;padding:0}
+  body.is-collapsed .side__user,body.is-collapsed .product{justify-content:center}
+  body.is-collapsed .side__collapse svg{transform:scaleX(-1)}
+  .main{margin-left:calc(var(--side) + 12px);min-height:100vh;transition:margin .3s cubic-bezier(.2,.8,.2,1)}
+
+  /* ---------- page ---------- */
+  .wrap{max-width:1240px;margin:0 auto;padding:28px 36px 72px}
+  .label{font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--rose);margin:0}
+  .head{position:sticky;top:0;z-index:25;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:-28px -36px 26px;padding:18px 36px 18px;background:rgba(251,250,249,.9);backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);border-bottom:1px solid var(--line);box-shadow:0 12px 14px -16px rgba(36,26,20,.25)}
+  .head h1{font-family:var(--display);font-weight:700;font-size:1.75rem;letter-spacing:-.02em;line-height:1.15;margin:6px 0 4px}
+  .head p{margin:0;color:var(--muted);max-width:64ch}
+  .head .spacer{flex:1}
+  .card{border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+  .sec{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:20px 22px 22px;margin-bottom:22px;box-shadow:0 16px 30px -28px rgba(36,26,20,.3)}
+  .sec__head{display:flex;align-items:baseline;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .sec__head h2{margin:0;font-size:.8rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8E2F45}
+  .sec__head span{color:var(--muted);font-size:.86rem}
+  .sec__head a{margin-left:auto;font-size:.82rem;color:var(--ink)}
+  .card__head{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .card__head h2{font-family:var(--display);font-weight:700;font-size:1.05rem;margin:0}
+  .card__head .spacer{flex:1}
+  .card__body{padding:18px 20px}
+  .sub{color:var(--muted);font-size:.84rem;margin:0}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 18px;border-radius:999px;font-weight:600;font-size:.86rem;cursor:pointer;white-space:nowrap;text-decoration:none;border:1px solid transparent;transition:box-shadow .15s ease,background-color .15s ease,border-color .15s ease}
+  .btn:hover{text-decoration:none}
+  .btn--primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .btn--primary:hover{box-shadow:0 10px 22px -14px rgba(36,26,20,.8)}
+  .btn--grad{background:var(--brand-gradient);color:var(--ink);font-weight:700}
+  .btn--grad:hover{box-shadow:0 12px 26px -12px rgba(232,93,117,.7)}
+  .btn--secondary{background:var(--panel);color:var(--ink);border-color:var(--line-2)}
+  .btn--secondary:hover{border-color:rgba(36,26,20,.3);background:var(--bg-soft)}
+  .btn--ghost{background:none;color:var(--muted);padding:0 12px}
+  .btn--ghost:hover{background:var(--bg-soft);color:var(--ink)}
+  .btn--danger{background:var(--panel);color:var(--error);border-color:rgba(198,69,69,.35)}
+  .btn--danger:hover{background:rgba(198,69,69,.06)}
+  .btn--sm{height:32px;padding:0 13px;font-size:.8rem}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;box-shadow:none}
+  .badge{display:inline-flex;align-items:center;gap:5px;height:21px;padding:0 8px;border-radius:999px;font-size:.64rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+  .badge--rose{background:rgba(232,93,117,.1);color:#B73C54}
+  .badge--amber{background:var(--amber-soft);color:#8A6212}
+  .badge--ok{background:rgba(63,143,95,.12);color:var(--success)}
+  .badge--err{background:rgba(198,69,69,.1);color:var(--error)}
+  .badge--info{background:rgba(62,111,166,.1);color:var(--info)}
+  .badge--muted{background:rgba(36,26,20,.06);color:var(--muted)}
+  .src{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-2);border-radius:8px;padding:3px 8px;font-size:.74rem;font-weight:600;background:var(--panel);white-space:nowrap}
+  .src em{font-style:normal;color:var(--muted);font-weight:500}
+  .src--warn{border-color:rgba(217,154,43,.5);background:rgba(217,154,43,.07)}
+  .text{width:100%;height:40px;padding:0 13px;border-radius:11px;border:1px solid var(--line-2);background:var(--panel);font-size:.9rem;transition:border-color .15s ease,box-shadow .15s ease}
+  textarea.text{height:auto;min-height:90px;padding:10px 13px;line-height:1.5;resize:vertical}
+  select.text{padding:0 10px}
+  .text:focus{outline:none;border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,93,117,.16)}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px}
+  .tab{border:0;background:none;padding:10px 12px;margin-bottom:-1px;border-bottom:2px solid transparent;font-weight:600;font-size:.88rem;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+  .tab:hover{color:var(--ink)}
+  .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--rose)}
+  .tab .n{min-width:22px;height:20px;padding:0 7px;border-radius:999px;display:grid;place-items:center;font-size:.7rem;font-weight:700;background:var(--bg-soft)}
+  .tab[aria-selected="true"] .n{background:var(--rose);color:#fff}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:1px solid var(--line-2);background:var(--panel);border-radius:999px;padding:5px 12px;font-size:.8rem;cursor:pointer}
+  .chip:hover{border-color:var(--rose);color:#B73C54}
+  .chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .empty{text-align:center;padding:36px 20px;color:var(--muted)}
+  .empty b{display:block;font-family:var(--display);font-size:1.05rem;color:var(--ink);margin-bottom:4px}
+  .spin{width:14px;height:14px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:spin .7s linear infinite;display:inline-block;flex:none}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .toast{position:fixed;left:calc(50% + var(--side) / 2 + 6px);bottom:28px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--ink);color:#fff;padding:11px 18px;border-radius:12px;font-size:.88rem;font-weight:600;transition:opacity .25s ease,transform .25s ease;box-shadow:0 16px 40px -20px rgba(36,26,20,.7);z-index:60}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  /* ---------- Ask lojo FAB ---------- */
+  .fab{position:fixed;right:24px;bottom:24px;z-index:50;width:58px;height:58px;border-radius:50%;border:0;padding:0;cursor:pointer;background:var(--brand-gradient);box-shadow:0 18px 36px -14px rgba(232,93,117,.8);display:grid;place-items:center;transition:transform .2s ease,box-shadow .2s ease}
+  .fab:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 22px 40px -14px rgba(232,93,117,.9)}
+  .fab img{width:40px;height:40px;border-radius:22%}
+  .fab::after{content:"Ask lojo";position:absolute;right:calc(100% + 12px);top:50%;transform:translate(6px,-50%);white-space:nowrap;padding:8px 12px;border-radius:10px;background:var(--ink);color:#fff;font-size:.82rem;font-weight:600;opacity:0;pointer-events:none;transition:opacity .15s ease,transform .15s ease}
+  .fab:hover::after,.fab:focus-visible::after{opacity:1;transform:translate(0,-50%)}
+  .fab.is-open::after{display:none}
+  .askp{position:fixed;right:24px;bottom:94px;z-index:50;width:min(380px,calc(100vw - 32px));height:min(520px,calc(100vh - 130px));display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 30px 70px -30px rgba(36,26,20,.55);overflow:hidden;transform-origin:bottom right;animation:askIn .22s cubic-bezier(.2,.8,.2,1)}
+  @keyframes askIn{from{opacity:0;transform:translateY(10px) scale(.97)}}
+  .askp__head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .askp__head img{width:30px;height:30px;border-radius:22%}
+  .askp__head b{display:block;font-size:.92rem}
+  .askp__head span{display:block;font-size:.74rem;color:var(--muted)}
+  .askp__head a{margin-left:auto;font-size:.76rem}
+  .askp__x{width:30px;height:30px;border-radius:50%;border:0;background:none;color:var(--muted);font-size:1.1rem;cursor:pointer}
+  .askp__x:hover{background:var(--bg-soft);color:var(--ink)}
+  .askp__log{flex:1;overflow:auto;padding:14px 16px;display:grid;gap:10px;align-content:start}
+  .am{max-width:86%;padding:10px 12px;border-radius:12px;font-size:.84rem}
+  .am--me{justify-self:end;background:var(--ink);color:#fff;border-bottom-right-radius:4px}
+  .am--bot{justify-self:start;background:var(--bg-soft);border-bottom-left-radius:4px}
+  .am--miss{background:rgba(217,154,43,.1);border:1px solid rgba(217,154,43,.3)}
+  .am .from{display:block;margin-top:6px;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+  .askp__foot{padding:10px 12px;border-top:1px solid var(--line);display:grid;gap:8px}
+  .askp__foot form{display:flex;gap:8px}
+  .askp__foot .chips .chip{font-size:.74rem;padding:4px 10px}
+  :focus-visible{outline:2px solid var(--rose);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+  .theme-toggle{position:relative;display:inline-flex;align-items:center;justify-content:space-between;width:58px;height:30px;padding:0 7px;border-radius:999px;border:1px solid var(--line-2);background:var(--bg-soft);color:var(--muted);cursor:pointer;flex:none}
+  .theme-toggle svg{position:relative;z-index:1;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:color .2s ease}
+  .theme-toggle::before{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--panel);box-shadow:0 1px 3px rgba(0,0,0,.18);transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+  .theme-toggle .t-sun{color:#C98A2E}
+  :root[data-theme="dark"] .theme-toggle::before{transform:translateX(28px);background:#4A3A31}
+  :root[data-theme="dark"] .theme-toggle .t-sun{color:var(--muted)}
+  :root[data-theme="dark"] .theme-toggle .t-moon{color:#F2EBE5}
+
+  .hello{display:flex;align-items:center;gap:14px}
+  .hello img{width:40px;height:40px;border-radius:22%}
+  .hello h1{font-family:var(--display);font-weight:700;font-size:1.55rem;letter-spacing:-.02em;margin:0;color:#8E2F45}
+  .hello p{margin:2px 0 0;font-size:.74rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  /* loop status (header): ring with stats */
+  .mini{display:flex;align-items:center;gap:14px;padding:8px 18px 8px 8px;border:1px solid var(--line-2);border-radius:14px;background:var(--panel);cursor:pointer;text-align:left;transition:border-color .15s ease,box-shadow .15s ease}
+  .mini:hover{border-color:rgba(36,26,20,.28);box-shadow:0 10px 24px -18px rgba(36,26,20,.5)}
+  .mini svg{width:52px;height:52px;flex:none}
+  .mini .m-track{fill:none;stroke:rgba(36,26,20,.08);stroke-width:5}
+  .mini .m-arc{fill:none;stroke:url(#miniGrad);stroke-width:5;stroke-linecap:round;transition:stroke-dasharray .4s ease}
+  .mini text{font:800 13px "Outfit",sans-serif;fill:var(--ink)}
+  .mini small{display:block;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .mini b{display:block;font-size:.92rem;font-weight:700;line-height:1.3}
+  .mini em{display:block;font-style:normal;font-size:.76rem;color:var(--muted)}
+  .mini .sep{width:1px;align-self:stretch;background:var(--line);margin:4px 2px}
+  .mini .k{text-align:center}
+  .mini .k b{font-family:var(--display);font-size:1.15rem;color:var(--rose)}
+  /* next step */
+  .next{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:0;padding:0;overflow:hidden}
+  .next__main{padding:24px 26px;background:linear-gradient(135deg,#FFF6F2,#FFFDFB 60%);border-right:1px solid var(--line)}
+  .next__main h2{font-family:var(--display);font-weight:700;font-size:1.5rem;letter-spacing:-.01em;margin:8px 0 4px}
+  .next__main p{margin:0;color:var(--muted)}
+  .target{margin:18px 0 20px}
+  .target__row{display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:6px}
+  .target__row b{font-weight:700}
+  .target__row span{color:var(--muted)}
+  .target__bar{height:8px;border-radius:8px;background:rgba(36,26,20,.07);overflow:hidden;position:relative}
+  .target__bar i{position:absolute;inset:0 auto 0 0;background:var(--brand-gradient);border-radius:8px}
+  .target__bar u{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.35}
+  .target small{display:block;margin-top:6px;font-size:.76rem;font-weight:600}
+  .next__side{padding:18px 20px;display:grid;gap:8px;align-content:start}
+  .next__side h3{margin:0 0 4px;font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .also{display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;padding:10px;border-radius:12px;text-decoration:none;color:inherit}
+  .also:hover{background:var(--bg-soft);text-decoration:none}
+  .also .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--bg-soft)}
+  .also b{display:block;font-size:.88rem;font-weight:600}
+  .also span{color:var(--muted);font-size:.78rem}
+  .also em{font-style:normal;color:var(--muted)}
+  /* worth knowing + feed */
+  .duo{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:22px;margin-bottom:22px}
+  .duo .sec{margin:0}
+  .finding{display:grid;gap:12px}
+  .finding h3{font-family:var(--display);font-weight:700;font-size:1.15rem;margin:0;line-height:1.3}
+  .finding p{margin:0;color:var(--muted);font-size:.86rem}
+  .vs{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch}
+  .vs blockquote{margin:0;padding:10px 12px;border-radius:10px;font-size:.82rem;background:var(--bg-soft)}
+  .vs blockquote.warn{background:#FBF1E4}
+  .vs blockquote em{display:block;font-style:normal;font-size:.7rem;font-weight:700;color:var(--muted);margin-bottom:3px}
+  .vs .x{align-self:center;font-size:.7rem;font-weight:800;color:var(--muted)}
+  .feed{list-style:none;margin:0;padding:0;display:grid}
+  .feed li{display:grid;grid-template-columns:30px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+  .feed li:first-child{border-top:0;padding-top:0}
+  .feed .dot{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--bg-soft);color:var(--muted)}
+  .feed .dot svg{width:15px;height:15px}
+  .feed b{display:block;font-size:.86rem;font-weight:600}
+  .feed span{color:var(--muted);font-size:.76rem}
+  /* tiles */
+  .tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+  .tile{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;min-height:188px;padding:22px 18px;border:1px solid var(--line-2);border-radius:14px;background:var(--panel);color:inherit;text-decoration:none;transition:box-shadow .2s ease,transform .2s ease}
+  a.tile:hover{box-shadow:0 16px 30px -24px rgba(36,26,20,.5);transform:translateY(-2px);text-decoration:none}
+  .tile__lbl{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+  .tip{position:relative;width:16px;height:16px;border-radius:50%;background:#8E2F45;color:#fff;font-style:normal;font-size:.62rem;font-weight:800;display:grid;place-items:center;letter-spacing:0;cursor:help}
+  .tip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translate(-50%,4px);width:220px;padding:9px 11px;border-radius:10px;background:var(--ink);color:#fff;font-size:.74rem;font-weight:500;line-height:1.4;letter-spacing:0;text-transform:none;text-align:left;opacity:0;pointer-events:none;transition:opacity .15s ease,transform .15s ease;z-index:5}
+  .tip:hover::after,.tip:focus::after{opacity:1;transform:translate(-50%,0)}
+  .tile__val{font-family:var(--display);font-weight:800;font-size:2.1rem;letter-spacing:-.02em;line-height:1.05}
+  .tile__sub{color:var(--muted);font-size:.84rem;line-height:1.45}
+  .tile__tag{position:absolute;top:12px;right:12px;height:22px;padding:0 9px;border-radius:999px;font-size:.68rem;font-weight:700;display:inline-flex;align-items:center;color:#fff}
+  .tile__go{position:absolute;right:14px;bottom:12px;color:var(--ink)}
+  .tile--soft{background:var(--bg-soft)}
+  .tile--ok{background:#F2F7EC;border-color:#DCE8CE}
+  .tile--ok .tile__tag{background:var(--success)}
+  .tile--ok .tile__val{color:#2F6B47}
+  .tile--warn{background:#FBF1E4;border-color:#F0DCC0}
+  .tile--warn .tile__tag{background:#C98A2E}
+  .tile--warn .tile__val{color:#8A5A12}
+  .gauge{position:relative;width:128px;height:72px}
+  .gauge svg{width:128px;height:72px;overflow:visible}
+  .gauge .g-bg{fill:none;stroke:rgba(36,26,20,.08);stroke-width:10;stroke-linecap:round}
+  .gauge .g-fg{fill:none;stroke-width:10;stroke-linecap:round}
+  .gauge b{position:absolute;left:0;right:0;bottom:2px;font-family:var(--display);font-weight:800;font-size:1.2rem}
+  .checks{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:.84rem}
+  .checks span{display:inline-flex;align-items:center;gap:6px}
+  .checks .ok{color:var(--success);font-weight:700}
+  .checks .muted{color:var(--muted)}
+  .checks a{margin-left:auto;color:var(--ink);font-size:.82rem}
+  /* strips */
+  .strip{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 18px;border-radius:14px;border:1px dashed var(--line-2);background:rgba(255,255,255,.7);margin-bottom:22px;font-size:.88rem}
+  .strip img{width:30px;height:30px;border-radius:22%;opacity:.55}
+  .strip b{font-weight:700}
+  .strip .spacer{flex:1}
+  .scope{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 18px;border-radius:14px;background:#F2F7EC;border:1px solid #DCE8CE;font-size:.86rem}
+  .scope .ok{width:24px;height:24px;border-radius:50%;background:var(--panel);color:var(--success);display:grid;place-items:center;font-weight:800;font-size:.75rem}
+  .scope .spacer{flex:1}
+  .scope-more{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;font-size:.84rem}
+  .scope-more div{padding:14px 16px;border-radius:12px;background:var(--panel);border:1px solid var(--line)}
+  .scope-more h4{margin:0 0 6px;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .scope-more ul{margin:0;padding-left:18px;display:grid;gap:4px;color:var(--muted)}
+  @media (max-width:1320px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.tile{min-height:160px}}
+  @media (max-width:1180px){.next,.duo{grid-template-columns:1fr}.next__main{border-right:0;border-bottom:1px solid var(--line)}.scope-more{grid-template-columns:1fr}}
+  .loopdlg{border:0;padding:0;border-radius:20px;width:min(760px,calc(100vw - 32px));box-shadow:0 40px 90px -30px rgba(36,26,20,.5);color:var(--ink)}
+  .loopdlg::backdrop{background:rgba(36,26,20,.35);backdrop-filter:blur(2px)}
+  .loopdlg[open]{animation:dlgIn .35s cubic-bezier(.2,.8,.2,1)}
+  @keyframes dlgIn{from{opacity:0;transform:translateY(12px) scale(.98)}}
+  .loopdlg__head{position:relative;text-align:center;padding:22px 24px 0}
+  .loopdlg[open]{padding-bottom:18px}
+  .loopdlg__head h2{font-family:var(--display);font-weight:700;font-size:1.25rem;margin:6px 0 0}
+  .loopdlg__x{position:absolute;right:20px;top:20px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line-2);background:var(--panel);font-size:1.2rem;cursor:pointer;color:var(--muted)}
+  .loopdlg__x:hover{background:var(--bg-soft);color:var(--ink)}
+  .loopdlg__foot{margin:0;padding:0 24px 22px;text-align:center;color:var(--muted);font-size:.8rem}
+  .lp{position:relative;width:560px;height:470px;margin:0 auto;max-width:100%}
+  .lp > svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  .lp__track{fill:none;stroke:rgba(232,93,117,.4);stroke-width:1.8;stroke-dasharray:4 7;stroke-linecap:round;animation:drift 2.2s linear infinite}
+  @keyframes drift{to{stroke-dashoffset:-22}}
+  .lp__prog{fill:none;stroke:url(#lpGrad);stroke-width:3;stroke-linecap:round}
+  .lp__tri{fill:var(--rose)}
+  .lp__nodes{list-style:none;margin:0;padding:0}
+  .lp__nodes li{position:absolute;width:0;height:0}
+  .lp__nodes a{position:absolute;left:0;top:0;transform:translate(-50%,-50%);display:block;text-decoration:none;color:inherit}
+  .lp__n{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;background:var(--panel);border:2px solid rgba(232,93,117,.25);color:var(--muted);transition:transform .2s ease,box-shadow .2s ease}
+  .lp__n svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .lp__nodes a:hover .lp__n{transform:scale(1.07)}
+  .lp__nodes li.gate .lp__n{width:42px;height:42px;border-color:var(--rose);color:var(--rose)}
+  .lp__nodes li.is-done .lp__n{background:var(--rose);border-color:var(--rose);color:#fff;box-shadow:0 12px 24px -14px rgba(232,93,117,.8)}
+  .lp__nodes li.is-now .lp__n{background:var(--amber);border-color:var(--amber);color:#fff;box-shadow:0 0 0 7px var(--amber-soft)}
+  .lp__t{position:absolute;width:170px}
+  .lp__t small{display:none;width:max-content;margin-bottom:4px;padding:2px 8px;border-radius:999px;font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:var(--amber-soft);color:#8A6212}
+  .lp__nodes li.is-now .lp__t small{display:block}
+  .lp__t b{display:block;font-family:var(--display);font-weight:700;font-size:.95rem;white-space:nowrap}
+  .lp__t span{display:block;color:var(--muted);font-size:.74rem;line-height:1.35;margin-top:2px}
+  .lp__nodes a:hover .lp__t b{color:#B73C54}
+  [data-side="top"] .lp__t{left:50%;bottom:calc(100% + 10px);transform:translateX(-50%);text-align:center}
+  [data-side="top"] .lp__t small{margin-inline:auto}
+  [data-side="bottom"] .lp__t{left:50%;top:calc(100% + 10px);transform:translateX(-50%);text-align:center}
+  [data-side="bottom"] .lp__t small{margin-inline:auto}
+  [data-side="right"] .lp__t{left:calc(100% + 14px);top:50%;transform:translateY(-50%)}
+  [data-side="left"] .lp__t{right:calc(100% + 14px);top:50%;transform:translateY(-50%);text-align:right}
+  [data-side="left"] .lp__t small{margin-left:auto}
+  .lp__center{position:absolute;left:280px;top:235px;transform:translate(-50%,-50%);width:200px;text-align:center;pointer-events:none}
+  .lp__center small{display:block;font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--rose)}
+  .lp__center b{display:block;font-family:var(--display);font-weight:700;font-size:1.15rem;margin:4px 0 6px}
+  .lp__center span{display:block;color:var(--muted);font-size:.74rem;line-height:1.4}
+
+  :root[data-theme="dark"]{
+    --ink:#F2EBE5; --bg:#15100D; --bg-soft:#231B16; --panel:#1C1612;
+    --line:rgba(255,236,222,.08); --line-2:rgba(255,236,222,.16); --muted:#B3A398; --cream:#F6EEE6;
+    --amber-soft:#3B2F1A; --success:#6BC08F; --error:#EC7B7B; --info:#86AEDD;
+    color-scheme:dark;
+  }
+  :root[data-theme="dark"] body{background-color:#120E0B;background-image:radial-gradient(rgba(255,236,222,.06) 1px,transparent 1.3px)}
+  :root[data-theme="dark"] a:where(:not(.nav-item):not(.btn):not(.also):not(.tile):not(.pop__row):not(.logo):not(.stat)){color:#F29BAA}
+  :root[data-theme="dark"] .btn--grad{color:#15100D}
+  :root[data-theme="dark"] .btn--primary kbd{background:rgba(21,16,13,.1);border-color:rgba(21,16,13,.3);color:#15100D}
+  :root[data-theme="dark"] .btn--primary,:root[data-theme="dark"] .chip[aria-pressed="true"],:root[data-theme="dark"] .toast{color:#15100D}
+  :root[data-theme="dark"] .btn--secondary:hover{background:var(--bg-soft)}
+  :root[data-theme="dark"] .btn--danger{background:transparent}
+  :root[data-theme="dark"] .text{background:var(--bg-soft);color:var(--ink)}
+  :root[data-theme="dark"] .text::placeholder{color:#7F7068}
+  :root[data-theme="dark"] .badge--rose{background:rgba(232,93,117,.18);color:#F29BAA}
+  :root[data-theme="dark"] .badge--amber{color:#E3C27A}
+  :root[data-theme="dark"] .badge--muted{background:rgba(255,236,222,.08)}
+
+  :root[data-theme="dark"] .side{box-shadow:0 20px 40px -24px rgba(0,0,0,.7)}
+  :root[data-theme="dark"] .nav-item.is-active{background:rgba(232,93,117,.16);color:#F29BAA}
+  :root[data-theme="dark"] .nav-item.is-active svg{color:#F29BAA}
+  :root[data-theme="dark"] .head{background:rgba(18,14,11,.88)}
+  :root[data-theme="dark"] .sec__head h2,:root[data-theme="dark"] .hello h1{color:#F29BAA}
+  :root[data-theme="dark"] .sec,:root[data-theme="dark"] .card{box-shadow:0 16px 30px -28px rgba(0,0,0,.7)}
+  :root[data-theme="dark"] .tile--soft{background:var(--bg-soft)}
+  :root[data-theme="dark"] .tile--ok{background:#15241A;border-color:#24402E}
+  :root[data-theme="dark"] .tile--ok .tile__val{color:#8FD3A8}
+  :root[data-theme="dark"] .tile--warn{background:#2A2012;border-color:#4A3A1E}
+  :root[data-theme="dark"] .tile--warn .tile__val{color:#E3C27A}
+  :root[data-theme="dark"] .tile--bad{background:#2B1618;border-color:#4C2429}
+  :root[data-theme="dark"] .tip{background:#F29BAA;color:#15100D}
+  :root[data-theme="dark"] .tip::after{background:#F2EBE5;color:#15100D}
+  :root[data-theme="dark"] .next__main{background:linear-gradient(135deg,#2A1B1C,var(--panel) 60%)}
+  :root[data-theme="dark"] .todo li.is-hot{background:#2A2012;border-color:#4A3A1E}
+  :root[data-theme="dark"] .vs blockquote{background:var(--bg-soft)}
+  :root[data-theme="dark"] .vs blockquote.warn{background:#2A2012}
+  :root[data-theme="dark"] .scope{background:#15241A;border-color:#24402E}
+  :root[data-theme="dark"] .strip{background:rgba(28,22,18,.7)}
+  :root[data-theme="dark"] .bulk.is-on{background:#2A1B1C}
+  :root[data-theme="dark"] .item.is-picked{background:rgba(232,93,117,.1)}
+  :root[data-theme="dark"] .quote.is-warn,:root[data-theme="dark"] .src--warn{background:#2A2012}
+  :root[data-theme="dark"] .done-note.ok{background:rgba(107,192,143,.1)}
+  :root[data-theme="dark"] .qrow:hover{background:var(--bg-soft)}
+  :root[data-theme="dark"] .msg--me,:root[data-theme="dark"] .am--me{color:#15100D}
+  :root[data-theme="dark"] .am--miss,:root[data-theme="dark"] .msg--bot.miss{background:#2A2012}
+  :root[data-theme="dark"] .fab{box-shadow:0 18px 36px -14px rgba(232,93,117,.5)}
+  :root[data-theme="dark"] .gauge .g-bg{stroke:rgba(255,236,222,.1)}
+  :root[data-theme="dark"] .mini .m-track{stroke:rgba(255,236,222,.1)}
+  :root[data-theme="dark"] .mini text{fill:var(--ink)}
+  :root[data-theme="dark"] .loopdlg{background:var(--panel)}
+  :root[data-theme="dark"] .lp__n{background:var(--panel)}
+  :root[data-theme="dark"] .lp svg circle[fill="#FBF1F2"]{fill:#2A1B1C}
+</style>
+</head>
+<body>
+
+<aside class="side" aria-label="Main navigation">
+  <button class="side__collapse" id="collapse" type="button" aria-label="Collapse sidebar" aria-expanded="true"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16M15 10l-2 2 2 2"/></svg></button>
+  <div class="me">
+    <button class="side__user" id="meBtn" type="button" aria-expanded="false"><span class="side__ava" id="topAva">SL</span><span class="side__who"><b id="meName">Sara Lindqvist</b><span class="badge badge--rose">Owner</span></span></button>
+    <div class="pop" id="mePop" hidden>
+      <div class="pop__h" id="meEmail">sara@nimbuspay.com</div>
+      <button class="pop__row" id="resetDemo" type="button">Reset demo data</button>
+      <a class="pop__row" href="login.html" id="signOut">Sign out</a>
+    </div>
+  </div>
+  <div class="side__rule"></div>
+  <nav>
+    <a class="nav-item is-active" href="dashboard.html" aria-current="page"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg><span class="lbl">Dashboard</span></a>
+    <a class="nav-item" href="documents.html" title="01 Source"><svg class="i" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span class="lbl">Documents</span></a>
+    <a class="nav-item" href="questions.html" title="02 Insights"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg><span class="lbl">Questions &amp; gaps</span><span class="count" id="navQuestions" hidden></span></a>
+    <a class="nav-item" href="review.html" title="03 Build · Validation"><svg class="i" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg><span class="lbl">Review</span><span class="count" id="navReview" hidden></span></a>
+    <a class="nav-item" href="approved.html" title="04 Distribute"><svg class="i" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg><span class="lbl">Approved answers</span><span class="count" id="navApproved" hidden></span></a>
+    <a class="nav-item" href="readout.html" title="Decide"><svg class="i" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="lbl">Readout</span></a>
+  </nav>
+  <div class="side__foot">
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode" title="Dark mode"><svg class="t-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></svg><svg class="t-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg></button>
+    <div class="side__rule"></div>
+    <div class="product"><img src="assets/lojo-icon.png" alt="" width="44" height="44"><div><b>lojo</b><span id="pocWeek">Nimbus Pay · week 3 of 4</span><div class="poc__weeks" id="pocWeeks"><i></i><i></i><i></i><i></i></div></div></div>
+  </div>
+</aside>
+
+<div class="main">
+  
+  <main class="wrap">
+
+    <div class="head">
+      <div class="hello">
+        <img src="assets/lojo-icon.png" alt="" width="40" height="40">
+        <div><h1 id="ovTitle">Good evening, Sara</h1><p id="ovDate"></p></div>
+      </div>
+      <span class="spacer"></span>
+      <button class="mini" id="loopBtn" type="button" aria-label="Open the loop">
+        <svg viewBox="0 0 52 52" aria-hidden="true"><defs><linearGradient id="miniGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E85D75"/><stop offset="1" stop-color="#FFB199"/></linearGradient></defs>
+          <circle class="m-track" cx="26" cy="26" r="21"/><circle class="m-arc" id="miniArc" cx="26" cy="26" r="21" transform="rotate(-90 26 26)"/><text id="miniFrac" x="26" y="30.5" text-anchor="middle">4/5</text></svg>
+        <span><small>Your loop</small><b id="miniNow">Validation</b><em id="miniWhy">10 drafts waiting</em></span>
+        <span class="sep"></span>
+        <span class="k"><small>Approved</small><b id="miniK">6</b></span>
+      </button>
+    </div>
+
+    <dialog class="loopdlg" id="loopDlg" aria-labelledby="loopDlgH">
+      <div class="loopdlg__head">
+        <div><p class="label">Your loop</p><h2 id="loopDlgH">Where you are in the loop</h2></div>
+        <button class="loopdlg__x" id="loopX" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="lp" id="lp">
+        <svg viewBox="0 0 560 470" aria-hidden="true">
+          <defs><linearGradient id="lpGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E85D75"/><stop offset="1" stop-color="#FFB199"/></linearGradient></defs>
+          <circle cx="280" cy="235" r="128" fill="#FBF1F2"/>
+          <circle class="lp__track" cx="280" cy="235" r="150"/>
+          <circle class="lp__prog" id="lpProg" cx="280" cy="235" r="150" transform="rotate(-90 280 235)"/>
+          <g id="lpTris"></g>
+        </svg>
+        <ol class="lp__nodes" id="lpNodes"></ol>
+        <div class="lp__center"><small id="lpWeek">Week 3 of 4</small><b id="lpNow">Validation</b><span>The loop keeps running: new drafts land in review as your documents change.</span></div>
+      </div>
+    </dialog>
+
+    <section class="sec next" aria-labelledby="nextH">
+      <div class="next__main">
+        <p class="label">Up next</p>
+        <h2 id="nextH">Review 10 drafts</h2>
+        <p id="nextSub"></p>
+        <div class="target">
+          <div class="target__row"><b id="tgtTxt"></b><span id="tgtDue"></span></div>
+          <div class="target__bar"><i id="tgtBar"></i><u id="tgtMark"></u></div>
+          <small id="tgtPace"></small>
+        </div>
+        <a class="btn btn--grad" href="review.html" id="nextCta">Start reviewing →</a>
+      </div>
+      <div class="next__side">
+        <h3>Also waiting on you</h3>
+        <div id="also"></div>
+      </div>
+    </section>
+
+    <div class="duo">
+      <section class="sec" aria-labelledby="fH">
+        <div class="sec__head"><h2 id="fH">Worth knowing</h2><span>· Found in your documents</span></div>
+        <div class="finding">
+          <h3>Your help page and your pricing disagree about SSO</h3>
+          <div class="vs">
+            <blockquote class="warn"><em>Help Center · 9 months old</em>“SSO is an Enterprise-only feature.”</blockquote>
+            <span class="x">VS</span>
+            <blockquote><em>Pricing &amp; plans 2026 · p. 4</em>“SAML single sign-on is available to Growth and Scale workspaces.”</blockquote>
+          </div>
+          <p>Sales calls back the 2026 pricing. Customers reading the help page are being told the wrong thing.</p>
+          <div><a class="btn btn--secondary btn--sm" href="review.html">See the draft answer →</a></div>
+        </div>
+      </section>
+      <section class="sec" aria-labelledby="feedH">
+        <div class="sec__head"><h2 id="feedH">Since you last looked</h2></div>
+        <ul class="feed" id="feed"></ul>
+      </section>
+    </div>
+
+    <section class="sec" aria-labelledby="s1">
+      <div class="sec__head"><h2 id="s1">Your knowledge today</h2><span>· What Nimbus Pay has in lojo right now</span></div>
+      <div class="tiles" id="today"></div>
+      <div class="checks" id="checks"></div>
+    </section>
+
+    <div class="strip">
+      <img src="assets/lojo-icon.png" alt="">
+      <span><b>Coming in week 4:</b> the chat opens for your team, and the readout lands.</span>
+      <span class="spacer"></span>
+      <a class="btn btn--secondary btn--sm" href="chat.html">Preview the chat →</a>
+    </div>
+
+    <!-- ASSUMPTION: server location wording is a placeholder until the week-1 sign-off is written up. check with Eric -->
+    <div class="scope">
+      <span class="ok">✓</span>
+      <span id="scopeBy"></span>
+      <span class="spacer"></span>
+      <button class="btn btn--ghost btn--sm" id="scopeToggle" aria-expanded="false">Details</button>
+    </div>
+    <div class="scope-more" id="scopeMore" hidden>
+      <div><h4>In scope</h4><ul><li>10 documents you sent us, on one lojo-run server</li><li>One fixed model, called through our proxy</li><li>Personal details are not removed automatically</li></ul></div>
+      <div><h4>Not in this phase</h4><ul><li>Roles and permissions</li><li>Publishing to a help centre or widget</li><li>Live sources such as mail and calls</li><li>Dashboards, billing and uptime guarantees</li></ul></div>
+    </div>
+
+  </main>
+</div>
+
+<button class="fab" id="fab" type="button" aria-label="Ask lojo" aria-expanded="false"><img src="assets/lojo-icon.png" alt=""></button>
+<section class="askp" id="askp" hidden aria-label="Ask lojo">
+  <div class="askp__head"><img src="assets/lojo-icon.png" alt=""><div><b>Ask lojo</b><span>Answers only from approved answers</span></div><a href="chat.html">Full chat</a><button class="askp__x" id="askX" type="button" aria-label="Close">×</button></div>
+  <div class="askp__log" id="askLog" aria-live="polite"></div>
+  <div class="askp__foot"><div class="chips" id="askSugg"></div><form id="askForm"><input class="text" id="askIn" placeholder="Ask a question…" aria-label="Ask lojo"><button class="btn btn--primary btn--sm" style="height:40px">Ask</button></form></div>
+</section>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+
+const POC_WEEK = 3;
+const DOCS = [
+  { id: 'd1', name: 'Pricing & plans 2026.pdf', pages: 14, size: '1.2 MB', added: '9 Sep' },
+  { id: 'd2', name: 'Help Center export.md', pages: 62, size: '840 KB', added: '9 Sep', faq: true },
+  { id: 'd3', name: 'SSO setup guide.pdf', pages: 6, size: '410 KB', added: '9 Sep' },
+  { id: 'd4', name: 'Returns & refunds policy.docx', pages: 4, size: '96 KB', added: '9 Sep' },
+  { id: 'd5', name: 'Sales call notes — Q3.docx', pages: 22, size: '300 KB', added: '9 Sep' },
+  { id: 'd6', name: 'Onboarding checklist.pdf', pages: 9, size: '220 KB', added: '9 Sep' },
+  { id: 'd7', name: 'Security overview.pdf', pages: 11, size: '640 KB', added: '10 Sep' },
+  { id: 'd8', name: 'API reference — limits.md', pages: 8, size: '120 KB', added: '10 Sep' },
+  { id: 'd9', name: 'Billing FAQ.docx', pages: 5, size: '88 KB', added: '10 Sep' },
+  { id: 'd10', name: 'Chargebacks process.docx', pages: 7, size: '140 KB', added: '10 Sep' },
+];
+const docById = (id) => DOCS.find(d => d.id === id);
+const docShort = (id) => docById(id).name.replace(/\.[a-z]+$/, '');
+
+// questions: found in documents, from the customer, or from their current FAQ
+const QUESTIONS = [
+  { id: 'q1', q: 'Is SSO included on the Growth plan?', origin: 'found', docs: ['d1', 'd5', 'd2'] },
+  { id: 'q2', q: 'How long do customers have to request a refund?', origin: 'found', docs: ['d4'] },
+  { id: 'q3', q: 'What are the limits on the Starter plan?', origin: 'found', docs: ['d1'] },
+  { id: 'q4', q: 'How do I set up SAML with Okta?', origin: 'faq', docs: ['d3'] },
+  { id: 'q5', q: 'Can a customer upgrade from Growth to Scale mid-cycle?', origin: 'found', docs: ['d1'] },
+  { id: 'q6', q: 'What onboarding do Scale customers get?', origin: 'found', docs: ['d6'] },
+  { id: 'q7', q: 'Which payment methods can customers use?', origin: 'faq', docs: ['d9'] },
+  { id: 'q8', q: 'Can Starter customers pay by invoice?', origin: 'found', docs: ['d9', 'd1'] },
+  { id: 'q9', q: 'What are the API rate limits?', origin: 'found', docs: ['d8'] },
+  { id: 'q10', q: 'What happens when a customer hits the rate limit?', origin: 'found', docs: ['d8'] },
+  { id: 'q11', q: 'How do we handle a chargeback dispute?', origin: 'found', docs: ['d10'] },
+  { id: 'q12', q: 'How long does a chargeback investigation take?', origin: 'found', docs: ['d10'] },
+  { id: 'q13', q: 'Is customer data encrypted at rest?', origin: 'found', docs: ['d7'] },
+  { id: 'q14', q: 'Where is customer data stored?', origin: 'found', docs: ['d7'] },
+  { id: 'q15', q: 'Can a customer export their data?', origin: 'faq', docs: ['d7', 'd2'] },
+  { id: 'q16', q: 'How do refunds work on annual plans?', origin: 'found', docs: ['d4', 'd9'] },
+  { id: 'q17', q: 'Do we offer discounts for nonprofits?', origin: 'found', docs: ['d5'] },
+  { id: 'q18', q: 'What uptime do we commit to?', origin: 'found', docs: ['d7'] },
+  { id: 'q19', q: 'How does a user reset two-factor authentication?', origin: 'faq', docs: ['d2'] },
+  { id: 'q20', q: 'Can a customer change their billing email?', origin: 'found', docs: ['d9'] },
+  { id: 'q21', q: 'Do we support Apple Pay in Germany?', origin: 'you', docs: [] },
+  { id: 'q22', q: 'What is the chargeback fee on Scale?', origin: 'you', docs: [], gap: 'g2' },
+  { id: 'q23', q: 'How long do we keep call recordings?', origin: 'you', docs: [], gap: 'g3' },
+];
+
+// things the documents refer to but never explain
+const GAPS = [
+  { id: 'g1', term: 'The Enterprise plan', where: [['d2', 'Security & login', 'SSO is an Enterprise-only feature.'], ['d5', '3 sales calls', 'We can talk about Enterprise terms.']], why: 'Mentioned, but no document says what Enterprise includes or costs.' },
+  { id: 'g2', term: 'Chargeback fee', where: [['d9', '§5', 'A chargeback fee applies to each dispute.'], ['d10', '§1', 'The fee is charged to the merchant.']], why: 'Both documents say a fee applies. Neither gives the amount.' },
+  { id: 'g3', term: 'Data retention period', where: [['d7', 'p. 6', 'Data is deleted in line with our retention policy.']], why: 'The retention policy is referred to but is not in the documents.' },
+  { id: 'g4', term: 'Onboarding manager response time', where: [['d6', 'p. 2', 'Your onboarding manager replies within the agreed SLA.']], why: 'The SLA is never stated.' },
+  { id: 'g5', term: 'API burst limit', where: [['d8', 'Rate limits', 'Short bursts above the limit are allowed up to the burst limit.']], why: 'The burst limit itself is never given.' },
+];
+
+// first review batch: drafts with their sources
+const DRAFTS = [
+  { id: 'r1', qid: 'q1', risk: 'high', conflict: 'd2',
+    src: [['d1', 'p. 4', 'SAML single sign-on is available to Growth and Scale workspaces.'], ['d5', 'Brightline call, 12 Aug', 'Told Brightline their Growth plan covers SSO.'], ['d2', 'Security & login · 9 months old', 'SSO is an Enterprise-only feature.']],
+    draft: 'Yes. SAML SSO is included on Growth and Scale. The Help Center still says Enterprise-only; that page is 9 months old and conflicts with the 2026 pricing.',
+    redraft: 'Yes. SAML single sign-on is included on the Growth and Scale plans. Starter workspaces sign in with email or Google.' },
+  { id: 'r2', qid: 'q2', src: [['d4', '§2', 'Customers can cancel within 30 days for a full refund. After 30 days, refunds are prorated to the unused months.']],
+    draft: '30 days for a full refund. After that, refunds are prorated to the unused months.',
+    redraft: 'Customers can cancel within 30 days of purchase for a full refund. After 30 days they get back the unused months only.' },
+  { id: 'r3', qid: 'q3', src: [['d1', 'p. 2', 'Starter includes 3 seats and up to 1,000 transactions a month.']],
+    draft: 'Starter includes 3 seats and up to 1,000 transactions a month.',
+    redraft: 'Starter includes 3 seats and up to 1,000 transactions a month. Growth raises that to 15 seats and 25,000 transactions.' },
+  { id: 'r4', qid: 'q4', src: [['d3', 'pp. 2–4', 'In Okta, create a SAML 2.0 app, paste the ACS URL from Settings → Security, then upload the metadata XML.']],
+    draft: 'Create a SAML 2.0 app in Okta and upload the metadata to lojo.',
+    redraft: '1. In Okta, create a SAML 2.0 app. 2. Copy the ACS URL from Settings → Security into Okta. 3. Upload Okta’s metadata XML. SSO needs a Growth or Scale plan.' },
+  { id: 'r5', qid: 'q5', src: [['d1', 'p. 6', 'Upgrades take effect immediately and are prorated from the day you switch. Downgrades apply at the next renewal.']],
+    draft: 'Yes. Upgrades take effect immediately and are prorated from the day you switch. Downgrades apply at the next renewal.',
+    redraft: 'Yes. The upgrade applies straight away and the customer pays the prorated difference from that day. Downgrades wait for the next renewal.' },
+  { id: 'r6', qid: 'q6', src: [['d6', 'p. 1', 'Scale customers get a 60-minute kickoff, a named onboarding manager and two admin training sessions.']],
+    draft: 'Scale customers get a 60-minute kickoff, a named onboarding manager and two admin training sessions.',
+    redraft: 'Every Scale customer gets a named onboarding manager, a 60-minute kickoff call and two admin training sessions.' },
+  { id: 'r7', qid: 'q7', src: [['d9', '§1', 'We accept Visa, Mastercard, American Express and SEPA Direct Debit.']],
+    draft: 'Visa, Mastercard, American Express and SEPA Direct Debit.',
+    redraft: 'Customers can pay by Visa, Mastercard or American Express, or by SEPA Direct Debit.' },
+  { id: 'r8', qid: 'q8', src: [['d9', '§4', 'Invoicing is available on Scale and on annual Growth plans.'], ['d1', 'p. 5', 'Starter is billed monthly by card.']],
+    draft: 'No. Starter is billed monthly by card. Invoicing is available on Scale and on annual Growth plans.',
+    redraft: 'Not on Starter, which is billed monthly by card. Customers who need invoices can move to an annual Growth plan or to Scale.' },
+  { id: 'r9', qid: 'q9', src: [['d8', 'Rate limits', 'The API allows 100 requests per second per workspace on Growth and 500 on Scale.']],
+    draft: '100 requests per second per workspace on Growth, and 500 on Scale.',
+    redraft: 'Growth workspaces can make 100 API requests per second; Scale workspaces can make 500.' },
+  { id: 'r10', qid: 'q10', src: [['d8', '429 responses', 'Requests over the limit get a 429 response with a Retry-After header.']],
+    draft: 'They get a 429 Too Many Requests response with a Retry-After header saying when to try again.',
+    redraft: 'The API answers with 429 Too Many Requests. The Retry-After header says how many seconds to wait.' },
+  { id: 'r11', qid: 'q11', src: [['d10', '§2', 'Upload the order record, delivery proof and customer messages within 7 days of the dispute notice.']],
+    draft: 'Upload the order record, proof of delivery and any customer messages within 7 days of the dispute notice.',
+    redraft: 'Within 7 days of the dispute notice, upload three things: the order record, proof of delivery, and the messages with the customer.' },
+  { id: 'r12', qid: 'q12', src: [['d10', '§4', 'Card networks usually decide within 30 to 75 days.']],
+    draft: 'Usually 30 to 75 days. The card network decides, not Nimbus Pay.',
+    redraft: 'The card network decides, usually within 30 to 75 days of the dispute being opened.' },
+  { id: 'r13', qid: 'q13', src: [['d7', 'p. 3', 'All customer data is encrypted at rest with AES-256.']],
+    draft: 'Yes. All customer data is encrypted at rest with AES-256.',
+    redraft: 'Yes, with AES-256, for all customer data at rest.' },
+  { id: 'r14', qid: 'q14', src: [['d7', 'p. 2', 'Customer data is stored in AWS eu-central-1 (Frankfurt).']],
+    draft: 'In AWS eu-central-1, in Frankfurt.',
+    redraft: 'All customer data is stored in the EU, in AWS eu-central-1 (Frankfurt).' },
+  { id: 'r15', qid: 'q15', src: [['d7', 'p. 8', 'Admins can export all workspace data as JSON from Settings → Data.'], ['d2', 'Exporting your data', 'Go to Settings → Data → Export.']],
+    draft: 'Yes. Admins can export all workspace data as JSON from Settings → Data → Export.',
+    redraft: 'Yes. An admin goes to Settings → Data → Export and gets all workspace data as a JSON file.' },
+  { id: 'r16', qid: 'q16', src: [['d4', '§3', 'Annual plans cancelled after 30 days are refunded for whole unused months.'], ['d9', '§2', 'Annual plans renew automatically unless cancelled 14 days before renewal.']],
+    draft: 'Within 30 days: a full refund. After that, the customer gets back whole unused months. Annual plans renew unless cancelled 14 days before renewal.',
+    redraft: 'Cancel within 30 days for a full refund. Later cancellations are refunded for whole unused months. Remember annual plans renew unless cancelled 14 days before.' },
+];
+const draftByQ = (qid) => DRAFTS.find(d => d.qid === qid);
+
+const CONCEPTS = {
+  sso: ['sso', 'single sign', 'sign-on', 'saml', 'okta', 'login', 'log in', 'identity'],
+  refund: ['refund', 'money back', 'cancel', 'return'],
+  plan: ['plan', 'pricing', 'price', 'tier', 'starter', 'growth', 'scale', 'cheapest', 'seat'],
+  upgrade: ['upgrade', 'downgrade', 'switch', 'move to', 'mid-cycle', 'mid-month', 'prorat'],
+  pay: ['pay', 'payment', 'card', 'invoice', 'sepa', 'visa', 'debit', 'billing'],
+  api: ['api', ' rate ', 'rate limit', 'requests', '429', 'throttl', 'how fast', 'per second'],
+  chargeback: ['chargeback', 'dispute'],
+  security: ['encrypt', 'secure', 'security', 'aes'],
+  storage: ['stored', 'kept', 'hosted', 'located', 'region', 'frankfurt', 'where is', 'where do'],
+  export: ['export', 'download', 'get our data', 'take our data'],
+  onboarding: ['onboarding', 'kickoff', 'training', 'onboard'],
+  annual: ['annual', 'yearly', 'renew'],
+};
+const conceptsOf = (s) => { const t = ' ' + s.toLowerCase() + ' '; return Object.keys(CONCEPTS).filter(k => CONCEPTS[k].some(w => t.includes(w))); };
+const words = (s) => s.toLowerCase().match(/[a-z0-9]{4,}/g) || [];
+function score(query, text) {
+  const qc = conceptsOf(query), tc = conceptsOf(text), qw = new Set(words(query));
+  const c = qc.filter(x => tc.includes(x)).length;
+  return { c, s: c * 2 + words(text).filter(w => qw.has(w)).length * 0.5 };
+}
+
+
+const SEED = () => ({
+  v: 1,
+  decisions: {
+    r2: { status: 'approved', at: 'Mon 28 Sep' }, r3: { status: 'approved', at: 'Mon 28 Sep' }, r5: { status: 'approved', at: 'Mon 28 Sep' },
+    r7: { status: 'approved', at: 'Tue 29 Sep', edited: true, answer: 'Customers can pay by Visa, Mastercard, American Express or SEPA Direct Debit.' },
+    r9: { status: 'approved', at: 'Tue 29 Sep' }, r13: { status: 'approved', at: 'Tue 29 Sep' },
+    r4: { status: 'pending', redrafted: true, reason: 'Missing detail: list the steps', prev: 'Create a SAML 2.0 app in Okta and upload the metadata to lojo.' },
+  },
+  matters: { q17: null, q18: false, q19: null, q20: null },
+  extra: [],
+  gaps: {},
+  scope: { signed: true, by: 'Sara Lindqvist', at: '9 Sep' },
+  decision: null,
+});
+const KEY = 'lojo-poc-v1';
+function load() {
+  try { const s = JSON.parse(sessionStorage.getItem(KEY)); if (s && s.v === 1) return s; } catch (e) {}
+  return SEED();
+}
+let ST = load();
+function save() { try { sessionStorage.setItem(KEY, JSON.stringify(ST)); } catch (e) {} refreshNav(); }
+
+function decision(r) { return ST.decisions[r.id] || { status: 'pending' }; }
+function answerOf(r) { const d = decision(r); return d.answer || (d.redrafted ? r.redraft : r.draft); }
+function allQuestions() { return QUESTIONS.concat(ST.extra); }
+function matters(q) { return q.id in ST.matters ? ST.matters[q.id] : true; }
+function counts() {
+  const qs = allQuestions();
+  const st = DRAFTS.map(r => decision(r).status);
+  return {
+    docs: DOCS.length, pages: DOCS.reduce((a, d) => a + d.pages, 0),
+    passages: DOCS.reduce((a, d) => a + Math.round(d.pages * 4.6), 0),
+    questions: qs.length, needCall: qs.filter(q => matters(q) === null).length,
+    gaps: GAPS.filter(g => !ST.gaps[g.id]).length,
+    drafts: DRAFTS.length, approved: st.filter(s => s === 'approved').length,
+    pending: st.filter(s => s === 'pending').length, final: st.filter(s => s === 'final').length,
+  };
+}
+
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2400);
+}
+function refreshNav() {
+  const c = counts();
+  const set = (id, n, hot) => { const el = $(id); if (!el) return; el.textContent = n; el.hidden = !n; el.classList.toggle('count--hot', !!hot); };
+  set('navReview', c.pending, true);
+  set('navQuestions', c.needCall + c.gaps);
+  set('navApproved', c.approved);
+}
+function srcChip(docId, loc, warn) {
+  return '<span class="src' + (warn ? ' src--warn' : '') + '">' + esc(docShort(docId)) + ' <em>' + esc(loc) + '</em>' + (warn ? ' <em>· conflicts</em>' : '') + '</span>';
+}
+(function shell() {
+  let user = { name: 'Sara', email: 'sara@nimbuspay.com' };
+  try { const u = JSON.parse(sessionStorage.getItem('lojo-user')); if (u && u.name) user = u; } catch (e) {}
+  const full = user.name === 'Sara' ? 'Sara Lindqvist' : user.name;
+  $('meName').textContent = full;
+  $('topAva').textContent = full.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  $('meEmail').textContent = user.email;
+  $('pocWeek').textContent = 'Nimbus Pay · week ' + POC_WEEK + ' of 4';
+  try { if (localStorage.getItem('lojo-side') === 'collapsed') document.body.classList.add('is-collapsed'); } catch (e) {}
+  const col = $('collapse');
+  const syncCol = () => { const c = document.body.classList.contains('is-collapsed'); col.setAttribute('aria-expanded', !c); col.setAttribute('aria-label', c ? 'Expand sidebar' : 'Collapse sidebar'); };
+  syncCol();
+  col.addEventListener('click', () => {
+    document.body.classList.toggle('is-collapsed'); syncCol();
+    try { localStorage.setItem('lojo-side', document.body.classList.contains('is-collapsed') ? 'collapsed' : 'open'); } catch (e) {}
+  });
+  [...$('pocWeeks').children].forEach((i, n) => i.className = n + 1 < POC_WEEK ? 'is-done' : n + 1 === POC_WEEK ? 'is-now' : '');
+  const pop = $('mePop'), btn = $('meBtn');
+  btn.addEventListener('click', (e) => { e.stopPropagation(); pop.hidden = !pop.hidden; btn.setAttribute('aria-expanded', !pop.hidden); });
+  document.addEventListener('click', (e) => { if (!e.target.closest('.me')) { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); } });
+  $('resetDemo').addEventListener('click', () => { try { sessionStorage.removeItem(KEY); } catch (e) {} location.reload(); });
+  refreshNav();
+})();
+
+(function askLojo() {
+  const fab = $('fab'); if (!fab) return;
+  const panel = $('askp'), log = $('askLog');
+  const store = () => DRAFTS.filter(r => decision(r).status === 'approved').map(r => ({ r, q: QUESTIONS.find(q => q.id === r.qid).q, a: answerOf(r) }));
+  const say = (cls, html) => { const d = document.createElement('div'); d.className = 'am am--' + cls; d.innerHTML = html; log.appendChild(d); log.scrollTop = log.scrollHeight; return d; };
+  function ask(q) {
+    say('me', esc(q));
+    const typing = say('bot', '<span class="spin"></span>');
+    setTimeout(() => {
+      typing.remove();
+      let best = null, bs = 0;
+      store().forEach(x => { const s = score(q, x.q + ' ' + x.a); if (s.c > 0 && s.s > bs) { best = x; bs = s.s; } });
+      if (best && bs >= 2) say('bot', esc(best.a) + '<span class="from">From: ' + esc(best.q) + '</span>');
+      else say('bot am--miss', 'I don’t know. Nothing approved covers this yet, so I won’t guess.');
+    }, 500);
+  }
+  function toggle(open) {
+    panel.hidden = !open; fab.classList.toggle('is-open', open); fab.setAttribute('aria-expanded', open);
+    if (open && !log.children.length) {
+      const n = store().length;
+      say('bot', n ? 'Ask me about Nimbus Pay. I only use the ' + n + ' approved answers.' : 'Nothing is approved yet, so I can’t answer anything.');
+      $('askSugg').innerHTML = ['How fast can we call the API?', 'Is our data encrypted?', 'Do you offer a free trial?'].map(t => '<button type="button" class="chip">' + t + '</button>').join('');
+    }
+    if (open) $('askIn').focus();
+  }
+  fab.addEventListener('click', () => toggle(panel.hidden));
+  $('askX').addEventListener('click', () => toggle(false));
+  $('askSugg').addEventListener('click', (e) => { const c = e.target.closest('.chip'); if (c) ask(c.textContent); });
+  $('askForm').addEventListener('submit', (e) => { e.preventDefault(); const v = $('askIn').value.trim(); if (!v) return; $('askIn').value = ''; ask(v); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !panel.hidden) toggle(false); });
+})();
+
+
+(function themeToggle() {
+  const root = document.documentElement;
+  const sync = () => {
+    const dark = root.getAttribute('data-theme') === 'dark';
+    document.querySelectorAll('[data-theme-toggle]').forEach(b => { b.setAttribute('aria-pressed', dark); b.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode'); b.title = dark ? 'Light mode' : 'Dark mode'; });
+  };
+  sync();
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('[data-theme-toggle]')) return;
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('lojo-theme', next); } catch (err) {}
+    sync();
+  });
+})();
+
+
+const LOOP_ICON = {
+  src: '<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>',
+  ins: '<svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>',
+  bld: '<svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>',
+  val: '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  dis: '<svg viewBox="0 0 24 24"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/></svg>',
+};
+function renderLoop() {
+  const c = counts(), CX = 280, CY = 235, R = 150, rad = (d) => d * Math.PI / 180;
+  const valNow = c.pending > 0;
+  const stages = [
+    { a: -90, side: 'top', ic: 'src', t: '01 Source', s: c.docs + ' documents · ' + c.passages + ' passages', href: 'documents.html', st: 'is-done' },
+    { a: 0, side: 'right', ic: 'ins', t: '02 Insights', s: c.questions + ' questions · ' + c.gaps + ' gaps', href: 'questions.html', st: 'is-done' },
+    { a: 90, side: 'bottom', ic: 'bld', t: '03 Build', s: c.drafts + ' drafts with sources', href: 'review.html', st: 'is-done' },
+    { a: 135, side: 'left', ic: 'val', t: 'Validation', s: valNow ? c.pending + ' drafts waiting on you' : 'First batch reviewed', href: 'review.html', st: valNow ? 'is-now' : 'is-done', gate: 1 },
+    { a: 180, side: 'left', ic: 'dis', t: '04 Distribute', s: c.approved + ' approved · chat to try', href: 'chat.html', st: valNow ? '' : 'is-now' },
+  ];
+  $('lpNodes').innerHTML = stages.map(s => '<li class="' + s.st + (s.gate ? ' gate' : '') + '" data-side="' + s.side + '" style="left:' + (CX + R * Math.cos(rad(s.a))).toFixed(1) + 'px;top:' + (CY + R * Math.sin(rad(s.a))).toFixed(1) + 'px">' +
+    '<a href="' + s.href + '"><span class="lp__n">' + LOOP_ICON[s.ic] + '</span><span class="lp__t"><small>You’re here</small><b>' + s.t + '</b><span>' + esc(s.s) + '</span></span></a></li>').join('');
+  $('lpTris').innerHTML = [-45, 45, 160, 225].map(a => '<path class="lp__tri" d="M-5 -5 L5 0 L-5 5 Z" transform="translate(' + (CX + R * Math.cos(rad(a))).toFixed(1) + ' ' + (CY + R * Math.sin(rad(a))).toFixed(1) + ') rotate(' + (a + 90) + ')"/>').join('');
+  const now = stages.find(s => s.st === 'is-now'), C = 2 * Math.PI * R, frac = (now.a + 90) / 360;
+  const prog = $('lpProg'); prog.setAttribute('stroke-dasharray', C.toFixed(1)); prog.setAttribute('stroke-dashoffset', (C * (1 - frac)).toFixed(1));
+  $('lpWeek').textContent = 'Week ' + POC_WEEK + ' of 4';
+  $('lpNow').textContent = now.t;
+}
+$('loopBtn').addEventListener('click', () => { renderLoop(); $('loopDlg').showModal(); });
+$('loopX').addEventListener('click', () => $('loopDlg').close());
+$('loopDlg').addEventListener('click', (e) => { if (e.target === $('loopDlg')) $('loopDlg').close(); });
+function gauge(pct, color) {
+  const L = Math.PI * 50, v = Math.max(0, Math.min(1, pct));
+  return '<div class="gauge"><svg viewBox="0 0 128 72" aria-hidden="true"><path class="g-bg" d="M14 66 A50 50 0 0 1 114 66"/>' +
+    '<path class="g-fg" d="M14 66 A50 50 0 0 1 114 66" stroke="' + color + '" stroke-dasharray="' + (L * v).toFixed(1) + ' ' + L.toFixed(1) + '"/></svg><b style="color:' + color + '">' + Math.round(v * 100) + '%</b></div>';
+}
+const tip = (t) => '<i class="tip" tabindex="0" data-tip="' + esc(t) + '">i</i>';
+const ICON = {
+  q: '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg>',
+  gap: '<svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+  hand: '<svg class="i" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>',
+  sync: '<svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/></svg>',
+  check: '<svg class="i" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg>',
+  doc: '<svg class="i" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>',
+};
+const TARGET = 20, DUE = 'Fri 2 Oct';
+function miniLoop(c) {
+  const valNow = c.pending > 0, idx = valNow ? 4 : 5, L = 2 * Math.PI * 21;
+  $('miniArc').setAttribute('stroke-dasharray', (L * idx / 5).toFixed(1) + ' ' + L.toFixed(1));
+  $('miniFrac').textContent = idx + '/5';
+  $('miniNow').textContent = valNow ? 'Validation' : '04 Distribute';
+  $('miniWhy').textContent = valNow ? c.pending + ' draft' + (c.pending === 1 ? '' : 's') + ' waiting' : 'Chat ready to try';
+  $('miniK').textContent = c.approved;
+}
+function render() {
+  const c = counts();
+  let first = 'Sara';
+  try { const u = JSON.parse(sessionStorage.getItem('lojo-user')); if (u && u.name) first = u.name.trim().split(' ')[0]; } catch (e) {}
+  const hr = new Date().getHours();
+  $('ovTitle').textContent = (hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening') + ', ' + first;
+  $('ovDate').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' }) + ' · week ' + POC_WEEK + ' of 4';
+  miniLoop(c);
+
+  // up next + weekly target
+  const decided = c.approved + c.final, mins = Math.max(1, Math.round(c.pending * 1.2));
+  if (c.pending) {
+    $('nextH').textContent = 'Review ' + c.pending + ' draft' + (c.pending > 1 ? 's' : '');
+    $('nextSub').textContent = 'About ' + mins + ' minutes. Approve, edit, or reject with a reason; a rejected draft is written again once.';
+    $('nextCta').textContent = 'Start reviewing →'; $('nextCta').href = 'review.html';
+  } else {
+    $('nextH').textContent = 'Try the chat';
+    $('nextSub').textContent = 'The first batch is reviewed. Ask it questions: it answers only from what you approved.';
+    $('nextCta').textContent = 'Open the chat →'; $('nextCta').href = 'chat.html';
+  }
+  // expected pace: Monday → Friday, today is Wednesday
+  const expected = Math.round(TARGET * 0.6);
+  $('tgtTxt').textContent = decided + ' of about ' + TARGET + ' drafts reviewed this week';
+  $('tgtDue').textContent = 'Due ' + DUE;
+  $('tgtBar').style.width = Math.min(100, decided / TARGET * 100) + '%';
+  $('tgtMark').style.left = (expected / TARGET * 100) + '%';
+  const ahead = decided >= expected;
+  $('tgtPace').textContent = ahead ? '✓ On pace for Friday' : '⚠ ' + (expected - decided) + ' behind the pace for Friday';
+  $('tgtPace').style.color = ahead ? 'var(--success)' : '#A5561A';
+
+  const also = [];
+  if (c.final) also.push({ ic: 'hand', t: c.final + ' draft' + (c.final > 1 ? 's need' : ' needs') + ' a human answer', s: 'Rejected twice', href: 'review.html' });
+  if (c.needCall) also.push({ ic: 'q', t: 'Say whether ' + c.needCall + ' question' + (c.needCall > 1 ? 's matter' : ' matters'), s: 'Only those get drafted', href: 'questions.html' });
+  if (c.gaps) also.push({ ic: 'gap', t: c.gaps + ' gaps need a source', s: 'Send a document or add them as questions', href: 'questions.html#gaps' });
+  $('also').innerHTML = also.length ? also.map(i => '<a class="also" href="' + i.href + '"><span class="ic">' + ICON[i.ic] + '</span><div><b>' + esc(i.t) + '</b><span>' + esc(i.s) + '</span></div><em>→</em></a>').join('') : '<p class="sub">Nothing else right now.</p>';
+
+  // since you last looked
+  const rewrites = DRAFTS.filter(r => decision(r).redrafted).length;
+  const feed = [
+    { ic: 'sync', t: rewrites + ' rejected draft' + (rewrites === 1 ? ' was' : 's were') + ' written again', s: 'Using your reasons · overnight' },
+    { ic: 'q', t: '4 new questions found', s: 'In Sales call notes, Billing FAQ and your help pages · yesterday' },
+    { ic: 'doc', t: 'Security overview indexed', s: '51 passages, searchable by meaning · yesterday' },
+    { ic: 'check', t: 'You approved ' + c.approved + ' answers', s: 'They’re in the store, ready for the chat · Tue 29 Sep' },
+  ];
+  $('feed').innerHTML = feed.map(f => '<li><span class="dot">' + ICON[f.ic] + '</span><div><b>' + esc(f.t) + '</b><span>' + esc(f.s) + '</span></div></li>').join('');
+
+  // merged tiles
+  const yours = allQuestions().filter(q => q.origin === 'you').length;
+  $('today').innerHTML = [
+    '<a class="tile tile--soft" href="review.html">' + gauge(decided / c.drafts, '#4F7A2F') + '<span class="tile__lbl">Review progress ' + tip('Drafts in the first batch that you have approved, edited or left for a human answer.') + '</span><span class="tile__sub">' + decided + ' of ' + c.drafts + ' decided · ' + c.approved + ' approved</span><span class="tile__go">→</span></a>',
+    '<a class="tile tile--ok" href="documents.html"><span class="tile__tag">Indexed</span><span class="tile__lbl">Documents ' + tip('Documents you sent us. Their text is pulled out, split into passages and indexed by meaning.') + '</span><span class="tile__val">' + c.docs + '</span><span class="tile__sub">' + c.pages + ' pages · ' + c.passages + ' passages</span></a>',
+    '<a class="tile' + (c.needCall ? ' tile--warn' : '') + '" href="questions.html">' + (c.needCall ? '<span class="tile__tag">' + c.needCall + ' need your call</span>' : '') + '<span class="tile__lbl">Questions ' + tip('Questions your documents answer, found by the agent, plus the ones you added.') + '</span><span class="tile__val">' + c.questions + '</span><span class="tile__sub">' + (c.questions - yours) + ' found · ' + yours + ' from you</span></a>',
+    '<a class="tile' + (c.gaps ? ' tile--warn' : ' tile--ok') + '" href="questions.html#gaps">' + (c.gaps ? '<span class="tile__tag">Needs input</span>' : '') + '<span class="tile__lbl">Gaps ' + tip('Things your documents refer to but never explain. Expected at this stage: send a document or answer them yourself.') + '</span><span class="tile__val">' + c.gaps + '</span><span class="tile__sub">Referred to, never explained</span></a>',
+  ].join('');
+
+  // outcome checks; approval rate stays neutral until there are enough decisions
+  const rate = decided ? Math.round(c.approved / decided * 100) : 0, early = decided < 10;
+  $('checks').innerHTML = '<span><span class="ok">✓</span>Every draft shows its sources</span>' +
+    '<span><span class="ok">✓</span>' + rewrites + ' rejected draft' + (rewrites === 1 ? '' : 's') + ' rewritten once</span>' +
+    '<span class="' + (early ? 'muted' : '') + '">Approval rate ' + rate + '% · ' + decided + ' decided' + (early ? ' (too early to judge)' : '') + '</span>' +
+    '<span class="muted">Processing $18.40 · $1.84 per document</span>' +
+    '<a href="readout.html">See readout →</a>';
+
+  $('scopeBy').innerHTML = '<b>Scope signed off</b> by ' + esc(ST.scope.by) + ' on ' + esc(ST.scope.at) + ' · personal details are not removed automatically';
+}
+$('scopeToggle').addEventListener('click', () => {
+  const m = $('scopeMore'); m.hidden = !m.hidden;
+  $('scopeToggle').setAttribute('aria-expanded', !m.hidden); $('scopeToggle').textContent = m.hidden ? 'Details' : 'Hide';
+});
+render();
+
+</script>
+</body>
+</html>

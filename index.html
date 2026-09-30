@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>lojo — The company brain that never stops learning</title>
+<meta name="description" content="lojo is an agentic AI platform that sources, understands, organizes, and distributes everything your company knows — automatically, and always up to date.">
+<link rel="icon" type="image/png" href="assets/lojo-icon-128.png">
+<link rel="apple-touch-icon" href="assets/lojo-icon-320.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  try{var th=localStorage.getItem("lojo-theme");if(th)document.documentElement.dataset.theme=th}catch(e){}
+</script>
+<style>
+  :root{
+    /* brand duotone */
+    --rose:#e85d75;
+    --peach:#ffb199;
+    --grad:linear-gradient(135deg,var(--rose),var(--peach));
+    --rose-ink:#bf3b55;
+
+    /* neutrals */
+    --ink:#241a14;
+    --bg:#ffffff;
+    --bg-2:#faf9f7;
+    --surface:#ffffff;
+    --card:#ffffff;
+    --bubble:#f5f3f0;
+    --card-hover:#ffffff;
+    --muted:#6b5f57;
+    --faint:#8c8079;
+    --line:rgba(36,26,20,.08);
+    --line-2:rgba(36,26,20,.14);
+    --nav-bg:rgba(255,250,247,.8);
+    --nav-border:rgba(36,26,20,.07);
+    --bar-bg:#faf9f7;
+    --hl:rgba(255,177,153,.75);
+    --on-grad:#241a14;
+    --footer-bg:#241a14;
+    --shadow:rgba(36,26,20,.3);
+    color-scheme:light;
+
+    /* functional */
+    --success:#3f8f5f;
+    --warning:#d99a2b;
+    --error:#c64545;
+    --info:#3e6fa6;
+
+    --display:"Outfit","Poppins",system-ui,sans-serif;
+    --body:"Manrope","Inter",system-ui,sans-serif;
+
+    --pad:clamp(20px,5vw,72px);
+    --max:1180px;
+    --r:20px;
+    --brain-mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D'http://www.w3.org/2000/svg'%20viewBox%3D'0%200%20100%20100'%3E%3Cpath%20d%3D'M50%2024c-5.5%200-8.7%202.6-10.4%205.3-3-1-7.3-.4-9.8%202.4-2.5%202.7-2.9%206-2%208.7-3.2%201.6-5.3%204.8-5.3%208.6%200%203.4%201.7%206.3%204.3%208.1-.7%202.7-.1%205.8%202.2%208.2%202.4%202.5%205.8%203.2%208.7%202.3%201.7%203%205%205.4%209.7%205.4%202.7%200%205-.8%206.8-2.1%201.8%201.3%204.1%202.1%206.8%202.1%204.7%200%208-2.4%209.7-5.4%202.9.9%206.3.2%208.7-2.3%202.3-2.4%202.9-5.5%202.2-8.2%202.6-1.8%204.3-4.7%204.3-8.1%200-3.8-2.1-7-5.3-8.6.9-2.7.5-6-2-8.7-2.5-2.8-6.8-3.4-9.8-2.4C66.2%2026.6%2063%2024%2057.5%2024c-2.9%200-5.4.9-7.5%202.4-2.1-1.5-4.6-2.4-7.5-2.4z'/%3E%3C/svg%3E");
+  }
+
+  :root[data-theme="dark"]{
+    --rose-ink:#ff8fa0;
+    --ink:#f6eee6;
+    --bg:#16100c;
+    --bg-2:#1e1510;
+    --surface:#241a14;
+    --card:#211812;
+    --card-hover:#2a1f18;
+    --muted:#bfb0a5;
+    --faint:#8e8077;
+    --line:rgba(255,236,222,.08);
+    --line-2:rgba(255,236,222,.15);
+    --nav-bg:rgba(30,22,17,.72);
+    --nav-border:rgba(255,236,222,.15);
+    --bar-bg:#1d1510;
+    --bubble:#2c2019;
+    --hl:rgba(232,93,117,.42);
+    --footer-bg:#0f0a07;
+    --shadow:rgba(0,0,0,.6);
+    color-scheme:dark;
+  }
+  :root[data-theme="dark"] .tcard{background:var(--card)}
+  :root[data-theme="dark"] #g-top stop:nth-child(1){stop-color:#3a2a22}
+  :root[data-theme="dark"] #g-top stop:nth-child(2){stop-color:#2c1f19}
+  :root[data-theme="dark"] #g-left stop:nth-child(1){stop-color:#2e211a}
+  :root[data-theme="dark"] #g-left stop:nth-child(2){stop-color:#1c140f}
+  :root[data-theme="dark"] #g-right stop:nth-child(1){stop-color:#241a14}
+  :root[data-theme="dark"] #g-right stop:nth-child(2){stop-color:#140e0a}
+  :root[data-theme="dark"] .tcard .art svg [stroke^="rgba(255,255,255"]{opacity:.25}
+  :root[data-theme="dark"] .tcard .art svg [fill^="rgba(255,255,255"]{opacity:.2}
+
+  *,*::before,*::after{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:96px}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    transition:background-color .35s ease,color .35s ease;
+  }
+  h1,h2,h3{font-family:var(--display);font-weight:800;letter-spacing:-.025em;line-height:1.05;margin:0;text-wrap:balance;color:var(--ink)}
+  h1{font-size:clamp(2.2rem,4.6vw,3.6rem)}
+  h2{font-size:clamp(1.9rem,3.8vw,2.6rem);font-weight:700}
+  h3{font-size:1.1rem;font-weight:700;letter-spacing:-.01em;line-height:1.3}
+  h1 em{
+    font-style:normal;
+    background:linear-gradient(100deg,var(--rose) 20%,#f28a7a 100%);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;color:var(--rose);
+  }
+  h2 em{font-style:normal;color:var(--rose-ink)}
+  p{margin:0}
+  a{color:inherit}
+
+  .wrap{max-width:var(--max);margin:0 auto;padding-inline:var(--pad)}
+  .eyebrow{
+    font-family:var(--body);font-size:.78rem;font-weight:700;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--rose-ink);
+    display:inline-flex;align-items:center;gap:12px;
+    position:relative;
+  }
+  .eyebrow:has(.sec-brain)::before{
+    content:"";position:absolute;left:14px;top:50%;
+    width:60px;height:60px;transform:translate(-50%,-50%);
+    background:none;
+    pointer-events:none;
+    animation:haloPulse 3.4s ease-in-out infinite;
+  }
+  .eyebrow .sec-brain{position:relative;z-index:1}
+  @keyframes haloPulse{
+    0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1)}
+    50%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}
+  }
+  .lede{color:var(--muted);font-size:clamp(1rem,1.4vw,1.1rem);max-width:60ch}
+  section{padding-block:clamp(72px,9vw,120px);position:relative}
+  .sec-head{text-align:center;display:grid;justify-items:center;gap:16px;margin-bottom:clamp(40px,5vw,64px)}
+  .sec-head .lede{margin-inline:auto}
+  .sec-brain{
+    width:28px;height:28px;display:inline-grid;place-items:center;flex:none;
+    border-radius:22%;background:url(assets/lojo-icon-128.png) center/104% no-repeat;
+    animation:brainGlow 2.8s ease-in-out infinite;
+  }
+  @keyframes brainGlow{
+    0%,100%{transform:scale(1)}
+    50%{transform:scale(1.05)}
+  }
+
+  /* ---------- mark: brain in a rose-to-peach tile ---------- */
+  /* source PNG has white corners and a soft halo; clip to the tile */
+  .mark{display:block;width:34px;height:34px;flex:none;border-radius:22%;object-fit:cover}
+  .wordmark{font-family:var(--display);font-weight:700;font-size:1.45rem;letter-spacing:-.03em;color:var(--ink)}
+
+  /* ---------- nav: floating pill at top, full-width bar once scrolled ---------- */
+  header{
+    position:sticky;top:0;z-index:50;
+    padding:20px var(--pad) 0;
+    pointer-events:none;
+    transition:padding .45s cubic-bezier(.2,.8,.2,1);
+  }
+  .nav{
+    pointer-events:auto;
+    display:flex;align-items:center;gap:8px;
+    height:68px;max-width:1140px;margin-inline:auto;
+    padding:0 10px 0 18px;
+    background:var(--nav-bg);
+    backdrop-filter:blur(18px) saturate(1.5);
+    -webkit-backdrop-filter:blur(18px) saturate(1.5);
+    border:1px solid var(--nav-border);
+    border-radius:999px;
+    box-shadow:0 1px 2px rgba(36,26,20,.04),0 12px 32px -18px rgba(36,26,20,.18);
+    transition:max-width .5s cubic-bezier(.2,.8,.2,1),height .4s ease,padding .45s ease,
+      background-color .35s ease,border-color .35s ease,border-radius .45s ease,box-shadow .4s ease;
+  }
+  header.is-scrolled{padding:0}
+  header.is-scrolled .nav{
+    max-width:100vw;height:76px;
+    padding:0 max(var(--pad),calc((100vw - var(--max)) / 2 + var(--pad)));
+    border-width:0 0 1px;border-radius:0;
+    box-shadow:0 10px 30px -24px var(--shadow);
+  }
+  .nav .brand{display:inline-flex;align-items:center;gap:11px;text-decoration:none;margin-right:24px}
+  .nav .mark{width:40px;height:40px}
+  .nav .wordmark{font-size:1.65rem}
+  .nav .spacer{flex:1}
+  .nav__links{display:flex;align-items:center;gap:4px}
+  .nav a,.nav .btn{white-space:nowrap}
+  .nav a.link{
+    position:relative;
+    font-size:.97rem;font-weight:500;letter-spacing:.005em;color:var(--muted);text-decoration:none;
+    padding:10px 13px;border-radius:999px;transition:color .2s ease,background-color .2s ease;
+  }
+  .nav a.link:hover{color:var(--ink);background:rgba(232,93,117,.06)}
+  :root[data-theme="dark"] .nav a.link:hover{background:var(--line)}
+  .nav a.link.is-active{color:var(--ink)}
+  .nav a.link.is-active::after{
+    content:"";position:absolute;left:50%;bottom:2px;width:5px;height:5px;margin-left:-2.5px;
+    border-radius:50%;background:var(--rose);
+  }
+  .theme-toggle{
+    display:grid;place-items:center;flex:none;
+    width:44px;height:44px;border-radius:50%;margin-inline:16px 10px;
+    background:transparent;border:1px solid var(--line-2);color:var(--ink);cursor:pointer;
+    transition:background-color .2s ease,border-color .2s ease,transform .3s ease;
+  }
+  .theme-toggle:hover{background:rgba(232,93,117,.06)}
+  :root[data-theme="dark"] .theme-toggle:hover{background:var(--line)}
+  .theme-toggle:active{transform:scale(.92)}
+  .theme-toggle svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .theme-toggle .i-sun{display:none}
+  :root[data-theme="dark"] .theme-toggle .i-sun{display:block}
+  :root[data-theme="dark"] .theme-toggle .i-moon{display:none}
+  .nav .btn--sm{padding:13px 24px;font-size:.95rem}
+  .nav .signin{font-size:.97rem;font-weight:600;color:var(--ink);text-decoration:none;padding:10px 16px;margin-right:4px;border-radius:999px;transition:background-color .2s ease}
+  .nav .signin:hover{background:rgba(232,93,117,.06)}
+  :root[data-theme="dark"] .nav .signin:hover{background:var(--line)}
+  @media (max-width:560px){.nav .signin{padding:10px 8px}.theme-toggle{margin-inline:4px}}
+  @media (max-width:1240px){.nav__links{gap:0}.nav a.link{padding:10px 9px;font-size:.92rem}.nav .brand{margin-right:12px}}
+  @media (max-width:1040px){.nav__links{display:none}}
+
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:var(--body);font-weight:600;font-size:.95rem;letter-spacing:.005em;
+    padding:13px 24px;border-radius:999px;text-decoration:none;
+    background:var(--ink);color:var(--bg);border:1px solid var(--ink);cursor:pointer;
+    transition:transform .18s ease, box-shadow .18s ease, background .18s;
+  }
+  .btn:hover{transform:translateY(-1px);box-shadow:0 12px 26px -14px var(--shadow)}
+  .btn--grad{background:var(--grad);border-color:transparent;color:var(--on-grad)}
+  .btn--grad:hover{box-shadow:0 12px 28px -12px rgba(232,93,117,.6)}
+  .btn--ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line-2)}
+  .btn--ghost:hover{background:#fff;box-shadow:0 10px 24px -16px rgba(36,26,20,.35)}
+  .btn--sm{padding:9px 18px;font-size:.86rem}
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative;overflow:hidden;text-align:center;
+    padding-block:clamp(34px,4vw,56px) clamp(56px,7vw,84px);
+    margin-top:-88px;padding-top:calc(clamp(34px,4vw,56px) + 112px);
+  }
+  .hero::before{
+    content:"";position:absolute;left:50%;top:-34vw;transform:translateX(-50%);
+    width:86vw;height:86vw;border-radius:50%;
+    background:none;
+    pointer-events:none;
+  }
+  .hero::after{
+    content:"";position:absolute;right:-18vw;top:6vw;
+    width:44vw;height:44vw;border-radius:50%;
+    background:none;
+    pointer-events:none;
+  }
+  .vlines{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .vlines i{
+    position:absolute;top:0;bottom:0;width:1px;
+    background:rgba(36,26,20,.05);
+  }
+  .vlines i::after{
+    content:"";position:absolute;left:0;width:1px;height:130px;top:-140px;
+    background:linear-gradient(180deg,transparent,rgba(255,177,153,.95),transparent);
+    animation:fall 4.6s linear infinite;
+  }
+  .vlines i:nth-child(1){left:8%}
+  .vlines i:nth-child(2){left:24%}
+  .vlines i:nth-child(3){left:41%}
+  .vlines i:nth-child(4){left:59%}
+  .vlines i:nth-child(5){left:76%}
+  .vlines i:nth-child(6){left:92%}
+  .vlines i:nth-child(2)::after,.vlines i:nth-child(5)::after{
+    background:linear-gradient(180deg,transparent,rgba(232,93,117,.7),transparent);
+  }
+  .vlines i:nth-child(1)::after{animation-delay:0s}
+  .vlines i:nth-child(2)::after{animation-delay:1.2s;animation-duration:5.4s}
+  .vlines i:nth-child(3)::after{animation-delay:2.6s}
+  .vlines i:nth-child(4)::after{animation-delay:.7s;animation-duration:5.8s}
+  .vlines i:nth-child(5)::after{animation-delay:3.4s}
+  .vlines i:nth-child(6)::after{animation-delay:1.9s;animation-duration:5s}
+  @keyframes fall{
+    0%{top:-140px;opacity:0}
+    8%{opacity:1}
+    92%{opacity:1}
+    100%{top:100%;opacity:0}
+  }
+  .hero .wrap{position:relative;z-index:1;display:grid;justify-items:center}
+  .badge{
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:var(--body);font-size:.72rem;font-weight:700;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line-2);border-radius:999px;
+    padding:8px 16px;margin-bottom:20px;
+    background:var(--surface);
+  }
+  .badge i{
+    width:7px;height:7px;border-radius:50%;flex:none;
+    background:var(--grad);
+  }
+  .hero h1{max-width:none;margin-inline:auto;font-size:clamp(2.2rem,5.2vw,4rem);line-height:1.04}
+  .hero h1 em{display:block}
+  .hero .lede{margin:18px auto 0;font-size:clamp(1rem,1.3vw,1.1rem);max-width:58ch}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px;justify-content:center}
+  .hero-note{
+    margin-top:16px;font-family:var(--body);font-size:.72rem;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--faint);
+  }
+
+  /* ---------- stream ---------- */
+  .stream{
+    position:relative;
+    margin-top:clamp(34px,4.2vw,52px);
+    display:grid;
+    grid-template-columns:1fr clamp(110px,14vw,220px) auto clamp(110px,14vw,220px) 1fr;
+    align-items:center;
+    text-align:left;
+    justify-self:stretch;
+    margin-inline:calc(-1 * clamp(0px,3vw,60px));
+  }
+  .pipes path{stroke:var(--line-2)}
+  .pipes{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+  @media (min-width:901px){.stream .rail{visibility:hidden}}
+  .col{display:flex;flex-direction:column;gap:10px}
+  .col--in{align-items:flex-end}
+  .col--out{align-items:flex-start}
+  .chip{
+    display:flex;align-items:center;gap:9px;
+    padding:9px 15px;border-radius:999px;
+    border:1px solid var(--line-2);
+    background:var(--surface);
+    font-size:.86rem;font-weight:500;color:var(--ink);white-space:nowrap;
+    box-shadow:0 6px 16px -12px rgba(36,26,20,.3);
+  }
+  .chip i{width:6px;height:6px;border-radius:50%;background:var(--peach);flex:none}
+  .col--out .chip i{background:var(--rose)}
+
+  .rail{position:relative;height:2px;background:
+    repeating-linear-gradient(90deg,rgba(36,26,20,.18) 0 4px,transparent 4px 10px);}
+  .rail span{
+    position:absolute;top:50%;left:0;width:6px;height:6px;
+    margin-top:-3px;margin-left:-3px;
+    border-radius:50%;background:var(--rose);
+    box-shadow:0 0 10px 2px rgba(232,93,117,.4);
+    animation:flowX 2.6s linear infinite;
+  }
+  .rail span:nth-child(2){animation-delay:.86s}
+  .rail span:nth-child(3){animation-delay:1.72s}
+  .rail--out span{background:var(--peach);box-shadow:0 0 10px 2px rgba(255,177,153,.6)}
+  @keyframes flowX{0%{left:0;opacity:0}12%{opacity:1}88%{opacity:1}100%{left:100%;opacity:0}}
+  @keyframes flowY{0%{top:0;opacity:0}12%{opacity:1}88%{opacity:1}100%{top:100%;opacity:0}}
+
+  .core{position:relative;display:flex;justify-content:center}
+  .core::before{
+    content:"";position:absolute;left:50%;top:50%;
+    width:260px;height:260px;margin:-130px 0 0 -130px;border-radius:50%;
+    background:none;
+    pointer-events:none;
+  }
+  .core__cap{
+    position:absolute;left:50%;transform:translateX(-50%);
+    width:max-content;max-width:170px;text-align:center;
+    font-family:var(--body);font-size:.7rem;font-weight:700;
+    letter-spacing:.14em;text-transform:uppercase;line-height:1.5;
+  }
+  .core__cap--top{bottom:calc(100% + 20px);color:var(--ink)}
+  .core__cap--bot{top:calc(100% + 20px);color:var(--faint)}
+
+  .brain{
+    position:relative;width:150px;height:150px;
+    border-radius:22%;overflow:hidden;
+    box-shadow:0 24px 50px -22px rgba(232,93,117,.55);
+  }
+  .brain img{display:block;width:104%;height:104%;margin:-2%;object-fit:cover}
+  @media (max-width:900px){
+    .stream{grid-template-columns:1fr;justify-items:center;gap:0}
+    .col{align-items:center!important;flex-direction:row;flex-wrap:wrap;justify-content:center}
+    .rail{width:2px;height:52px;margin-block:16px;background:
+      repeating-linear-gradient(180deg,rgba(36,26,20,.18) 0 4px,transparent 4px 10px);}
+    .rail span{left:50%;top:0;margin:-3px 0 0 -3px;animation-name:flowY}
+    .brain{width:116px;height:116px}
+    .core{flex-direction:column;align-items:center;gap:14px}
+    .core::before{width:190px;height:190px;margin:-95px 0 0 -95px}
+    .core__cap{position:static;transform:none;max-width:none}
+    .core__cap--top{order:-1}
+  }
+
+  /* ---------- value statement ---------- */
+  .value{padding-block:clamp(56px,7vw,96px);text-align:center;position:relative;overflow:hidden}
+  .value::before{
+    content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:min(430px,80vw);height:min(430px,80vw);
+    background:var(--grad);
+    -webkit-mask:var(--brain-mask) center/contain no-repeat;
+    mask:var(--brain-mask) center/contain no-repeat;
+    opacity:.12;pointer-events:none;
+  }
+  .value .wrap{position:relative}
+  .value p.big{
+    font-family:var(--display);font-weight:600;
+    font-size:clamp(1.6rem,3.4vw,2.5rem);line-height:1.25;letter-spacing:-.02em;
+    max-width:28ch;margin:0 auto;color:var(--ink);
+  }
+  .value .hl{
+    background:linear-gradient(transparent 62%,var(--hl) 62%);
+    padding-inline:.06em;
+  }
+  .value p.sub{margin-top:18px;color:var(--muted)}
+
+  /* ---------- pillars ---------- */
+  .grid{display:grid;gap:16px}
+  .grid--4{grid-template-columns:repeat(4,1fr)}
+  .grid--3{grid-template-columns:repeat(3,1fr)}
+  .grid--2{grid-template-columns:repeat(2,1fr)}
+  @media (max-width:960px){.grid--4,.grid--3{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:640px){.grid--4,.grid--3,.grid--2{grid-template-columns:1fr}}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:var(--r);padding:26px 24px;
+    text-align:left;
+    transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+  }
+  .card:hover{transform:translateY(-3px);background:var(--card-hover);border-color:rgba(232,93,117,.3);box-shadow:0 18px 40px -26px rgba(36,26,20,.35)}
+  .card p{color:var(--muted);font-size:.95rem;margin-top:8px}
+  .card .ico{
+    width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
+    background:var(--grad);margin:0 0 18px;
+  }
+  .card .ico svg{width:20px;height:20px;stroke:var(--surface);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+  /* ---------- moments marquee ---------- */
+  .moments{
+    border-block:1px solid var(--line);
+    padding-block:20px;overflow:hidden;
+    background:var(--bg-2);
+  }
+  .moments__track{display:flex;gap:56px;width:max-content;animation:marquee 42s linear infinite}
+  .moments:hover .moments__track{animation-play-state:paused}
+  .moments__track span{
+    font-family:var(--display);font-weight:500;font-size:1.02rem;
+    color:var(--muted);white-space:nowrap;
+    display:flex;align-items:center;gap:56px;
+  }
+  .moments__track span::after{
+    content:"";width:16px;height:16px;flex:none;
+    background:var(--grad);
+    -webkit-mask:var(--brain-mask) center/contain no-repeat;
+    mask:var(--brain-mask) center/contain no-repeat;
+  }
+  @keyframes marquee{to{transform:translateX(-50%)}}
+
+  /* ---------- ask demo ---------- */
+  .ask{
+    display:grid;grid-template-columns:1fr;justify-items:center;
+    text-align:center;gap:clamp(28px,4vw,44px);
+  }
+  .ask h2{margin-block:14px 16px}
+  .ask .lede{margin-inline:auto}
+  .chatcard{width:min(580px,100%);text-align:left}
+  .chatcard{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+    box-shadow:0 40px 80px -48px rgba(232,93,117,.45);
+    overflow:hidden;
+  }
+  .chatcard__bar{
+    display:flex;align-items:center;gap:9px;
+    padding:13px 18px;border-bottom:1px solid var(--line);
+    font-family:var(--body);font-size:.74rem;font-weight:700;
+    letter-spacing:.1em;color:var(--muted);
+    background:var(--bar-bg);
+  }
+  .chatcard__bar i{
+    width:24px;height:24px;flex:none;border-radius:22%;
+    background:url(assets/lojo-icon-128.png) center/104% no-repeat;
+  }
+  .chat{padding:20px 18px 24px;display:grid;gap:14px;min-height:308px;align-content:start}
+  .msg{display:flex;gap:11px;align-items:flex-start;opacity:0;transform:translateY(8px);
+    transition:opacity .45s ease,transform .45s cubic-bezier(.2,.7,.3,1)}
+  .msg.show{opacity:1;transform:none}
+  .msg__ava{
+    width:30px;height:30px;border-radius:9px;flex:none;
+    display:grid;place-items:center;
+    font-family:var(--display);font-weight:600;font-size:.72rem;color:var(--ink);
+    background:var(--bubble);border:1px solid var(--line);
+  }
+  .msg--lojo .msg__ava{background:url(assets/lojo-icon-128.png) center/104% no-repeat;border:none;border-radius:22%}
+  .msg--lojo .msg__ava svg{display:none}
+  .msg__body{min-width:0}
+  .msg__who{
+    font-family:var(--body);font-size:.66rem;font-weight:700;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--faint);
+    margin-bottom:5px;
+  }
+  .msg__txt{
+    background:var(--bubble);border-radius:4px 14px 14px 14px;
+    padding:11px 14px;font-size:.92rem;line-height:1.5;
+  }
+  .msg--lojo .msg__txt{
+    background:rgba(232,93,117,.06);
+    border:1px solid rgba(232,93,117,.2);
+  }
+  .msg__src{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+  .src{
+    font-family:var(--body);font-size:.68rem;font-weight:700;letter-spacing:.02em;
+    padding:4px 9px;border-radius:7px;
+    border:1px solid rgba(232,93,117,.3);color:var(--rose-ink);
+    background:rgba(255,177,153,.18);white-space:nowrap;
+  }
+  .typing{display:inline-flex;gap:4px;padding:4px 0}
+  .typing i{
+    width:6px;height:6px;border-radius:50%;background:var(--rose);
+    animation:blink 1s ease-in-out infinite;
+  }
+  .typing i:nth-child(2){animation-delay:.18s}
+  .typing i:nth-child(3){animation-delay:.36s}
+  @keyframes blink{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+  @media (max-width:900px){.ask{grid-template-columns:1fr}}
+
+  /* ---------- steps accordion ---------- */
+  .steps{max-width:820px;margin-inline:auto;display:grid;gap:12px}
+  .step{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    overflow:hidden;transition:border-color .25s ease,box-shadow .25s ease;
+  }
+  .step[open]{background:var(--card-hover);border-color:rgba(232,93,117,.3);box-shadow:0 18px 40px -28px rgba(36,26,20,.35)}
+  .step summary{
+    list-style:none;cursor:pointer;
+    display:flex;align-items:center;gap:18px;
+    padding:20px 24px;
+  }
+  .step summary::-webkit-details-marker{display:none}
+  .step__num{
+    font-family:var(--display);font-weight:700;font-size:.9rem;
+    color:var(--rose-ink);flex:none;
+  }
+  .step summary h3{font-size:clamp(1.1rem,2vw,1.35rem);font-weight:700;flex:1}
+  .step__chev{
+    flex:none;width:26px;height:26px;border-radius:50%;
+    border:1px solid var(--line-2);
+    display:grid;place-items:center;color:var(--muted);
+    transition:transform .3s ease,color .3s ease,border-color .3s ease;
+    font-size:.8rem;line-height:1;
+  }
+  .step[open] .step__chev{transform:rotate(45deg);color:var(--rose-ink);border-color:rgba(232,93,117,.4)}
+  .step__body{padding:0 24px 24px 62px;display:grid;gap:14px}
+  .step__body p{color:var(--muted);font-size:.97rem;max-width:56ch}
+  .step__tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{
+    font-size:.8rem;font-weight:500;padding:6px 12px;border-radius:999px;
+    border:1px solid var(--line-2);color:var(--ink);
+    background:var(--bg);
+  }
+  @media (max-width:640px){.step__body{padding-left:24px}}
+
+  /* ---------- langs ---------- */
+  .langs{
+    margin-top:22px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+    padding:22px 24px;border:1px solid var(--line);border-radius:16px;
+    background:var(--card);
+  }
+  .langs__txt{margin-right:auto;max-width:46ch}
+  .langs__txt strong{font-family:var(--display);font-weight:700;font-size:1.05rem}
+  .langs__txt span{display:block;color:var(--muted);font-size:.9rem;margin-top:4px}
+  .lang{
+    font-family:var(--body);font-size:.8rem;font-weight:700;letter-spacing:.06em;
+    padding:8px 13px;border-radius:9px;border:1px solid var(--line-2);background:var(--bg);
+  }
+  .lang--more{background:var(--grad);border-color:transparent;color:var(--on-grad)}
+
+  /* ---------- security ---------- */
+  .secure{background:var(--bg-2);border-block:1px solid var(--line)}
+
+  /* ---------- team carousel ---------- */
+  .teamsrow{
+    display:flex;gap:0;
+    overflow-x:auto;scroll-snap-type:x proximity;
+    justify-content:safe center;
+    margin-inline:calc(50% - 50vw);
+    padding:26px calc(50vw - 50% + var(--pad)) 30px;
+    scrollbar-width:none;
+  }
+  .teamsrow::-webkit-scrollbar{display:none}
+  .tcard+.tcard{margin-left:-26px}
+  .tcard{
+    scroll-snap-align:center;
+    flex:0 0 clamp(196px,17.5vw,224px);
+    aspect-ratio:3/4;
+    border-radius:24px;border:1px solid var(--line);
+    background:
+      var(--surface);
+    display:flex;flex-direction:column;
+    position:relative;overflow:hidden;
+    box-shadow:0 20px 40px -30px rgba(36,26,20,.4);
+  }
+  .tcard{
+    opacity:.6;
+    transition:transform .35s ease,border-color .35s ease,opacity .45s ease,box-shadow .45s ease;
+  }
+  .tcard:hover{opacity:1;border-color:rgba(232,93,117,.4)}
+  .tcard.d0{
+    transform:scale(1.07) translateY(-10px);z-index:5;opacity:1;
+    border-color:rgba(232,93,117,.35);
+    box-shadow:0 30px 60px -28px rgba(232,93,117,.5);
+  }
+  .tcard.d1{transform:scale(.97);z-index:4;opacity:.9}
+  .tcard.d2{transform:scale(.9);z-index:3;opacity:.6}
+  .tcard.d0 .cap h3{color:var(--ink)}
+  .tcard .art{flex:1;display:grid;place-items:center}
+  .tcard .art svg{
+    width:clamp(104px,10.5vw,134px);height:clamp(104px,10.5vw,134px);
+    filter:drop-shadow(0 16px 20px rgba(36,26,20,.14));
+    animation:floaty 6.5s ease-in-out infinite;
+  }
+  .tcard:nth-child(2) .art svg{animation-delay:-1.4s}
+  .tcard:nth-child(3) .art svg{animation-delay:-2.8s}
+  .tcard:nth-child(4) .art svg{animation-delay:-4.2s}
+  .tcard:nth-child(5) .art svg{animation-delay:-5.6s}
+  @keyframes floaty{
+    0%,100%{transform:translateY(0) rotate(-2deg)}
+    50%{transform:translateY(-10px) rotate(2deg)}
+  }
+  .tcard .cap{padding:0 20px 26px;text-align:center}
+  .tcard .cap h3{font-size:1.15rem;font-weight:700;transition:color .25s ease;color:var(--muted)}
+  .tcard:hover .cap h3{color:var(--ink)}
+  .tcard .cap p{color:var(--muted);font-size:.85rem;margin-top:7px;line-height:1.5}
+
+  /* ---------- faq ---------- */
+  .faq{max-width:760px;margin-inline:auto;display:grid;gap:12px}
+  .faq details{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+  }
+  .faq details[open]{border-color:rgba(232,93,117,.3);background:var(--card-hover)}
+  .faq summary{
+    list-style:none;cursor:pointer;padding:18px 22px;
+    font-family:var(--display);font-weight:600;font-size:1.05rem;
+    display:flex;align-items:center;gap:14px;
+  }
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{
+    content:"+";margin-left:auto;color:var(--rose-ink);
+    font-family:var(--display);font-size:1.2rem;transition:transform .3s ease;
+  }
+  .faq details[open] summary::after{transform:rotate(45deg)}
+  .faq .a{padding:0 22px 20px;color:var(--muted);font-size:.95rem;max-width:60ch}
+
+  /* ---------- cta ---------- */
+  .cta{position:relative;overflow:hidden}
+  .cta::before{
+    content:"";position:absolute;left:50%;bottom:-40vw;transform:translateX(-50%);
+    width:80vw;height:80vw;border-radius:50%;
+    background:none;
+    pointer-events:none;
+  }
+  .cta .wrap{position:relative;z-index:1}
+  .cta__grid{
+    display:grid;grid-template-columns:1fr;justify-items:center;
+    text-align:center;gap:clamp(28px,4vw,44px);
+  }
+  .cta h2{margin-block:18px 20px;max-width:16ch;margin-inline:auto}
+  .cta .lede{margin-inline:auto}
+  .form{width:min(600px,100%);text-align:left}
+  .form{
+    display:grid;gap:13px;
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:20px;padding:clamp(22px,3vw,30px);
+    box-shadow:0 30px 60px -40px rgba(36,26,20,.35);
+  }
+  .form__row{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  .field{display:grid;gap:7px}
+  .field label{
+    font-family:var(--body);font-size:.7rem;font-weight:700;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--muted);
+  }
+  .field input,.field textarea{
+    font-family:var(--body);font-size:.95rem;color:var(--ink);
+    background:var(--bg);border:1px solid var(--line-2);
+    border-radius:11px;padding:12px 14px;width:100%;
+    transition:border-color .18s ease,box-shadow .18s ease;
+  }
+  .field textarea{resize:vertical;min-height:86px;line-height:1.5}
+  .field input::placeholder,.field textarea::placeholder{color:var(--faint)}
+  .field input:focus,.field textarea:focus{
+    outline:none;border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,93,117,.18);background:var(--surface);
+  }
+  .form .btn{width:100%;justify-content:center;margin-top:5px}
+  .form__note{font-size:.8rem;color:var(--faint);text-align:center;margin-top:2px}
+  .form__hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+  .form__ok{
+    display:none;text-align:center;padding:12px 14px;border-radius:12px;
+    background:rgba(63,143,95,.1);border:1px solid rgba(63,143,95,.35);
+    font-size:.92rem;color:var(--success);font-weight:600;
+  }
+  .form.sent .form__ok{display:block}
+  @media (max-width:900px){
+    .cta__grid{grid-template-columns:1fr}
+    .form__row{grid-template-columns:1fr}
+  }
+
+  /* ---------- footer: ink panel ---------- */
+  footer{
+    margin:0 auto clamp(20px,3vw,32px);
+    width:calc(100% - 2 * var(--pad));max-width:var(--max);
+    padding:24px clamp(20px,3vw,34px);
+    display:flex;flex-wrap:wrap;align-items:center;gap:14px 24px;
+    background:var(--footer-bg);color:rgba(255,253,250,.7);border:1px solid var(--line);
+    border-radius:20px;font-size:.92rem;font-weight:500;
+  }
+  footer .wordmark{color:#fffdfa;font-size:1.3rem}
+  footer .mark{width:30px;height:30px;margin-right:-12px}
+  footer a{text-decoration:none}
+  footer a:hover{color:#fffdfa}
+  footer .spacer{flex:1}
+
+  /* ---------- reveal ---------- */
+  .reveal{opacity:0;transform:translateY(16px)}
+  .reveal.in{opacity:1;transform:none;transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.3,1)}
+
+  :focus-visible{outline:2px solid var(--rose);outline-offset:3px;border-radius:6px}
+
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation:none!important;transition:none!important}
+    .reveal{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body id="top">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="lojo-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e85d75"/>
+      <stop offset="1" stop-color="#ffb199"/>
+    </linearGradient>
+    <linearGradient id="g-top" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffe6da"/>
+      <stop offset="1" stop-color="#ffd2c0"/>
+    </linearGradient>
+    <linearGradient id="g-left" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaf6"/>
+      <stop offset="1" stop-color="#fde3d6"/>
+    </linearGradient>
+    <linearGradient id="g-right" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd9c9"/>
+      <stop offset="1" stop-color="#f9c3ae"/>
+    </linearGradient>
+    <radialGradient id="g-spot" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="rgba(232,93,117,.28)"/>
+      <stop offset="1" stop-color="rgba(232,93,117,0)"/>
+    </radialGradient>
+  </defs>
+</svg>
+
+<header id="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a class="brand" href="#top" aria-label="lojo home">
+      <img class="mark" src="assets/lojo-icon-128.png" alt="" width="34" height="34">
+      <span class="wordmark">lojo</span>
+    </a>
+    <span class="spacer"></span>
+    <div class="nav__links">
+      <a class="link" href="#why">Why lojo</a>
+      <a class="link" href="#ask">See it answer</a>
+      <a class="link" href="#how">How it works</a>
+      <a class="link" href="#formats">Formats</a>
+      <a class="link" href="#teams">Teams</a>
+      <a class="link" href="#faq">FAQ</a>
+    </div>
+    <span class="spacer"></span>
+    <button class="theme-toggle" type="button" aria-label="Switch to dark mode">
+      <svg class="i-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>
+      <svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></svg>
+    </button>
+    <a class="signin" href="prototype/login.html">Sign in</a>
+    <a class="btn btn--sm" href="#demo">Book a demo</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="vlines" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="wrap">
+    <h1>The company brain that <em>never stops learning.</em></h1>
+    <p class="lede">The agentic platform that sources, understands, organizes, and distributes everything your company knows — always up to date.</p>
+    <div class="hero-actions">
+      <a class="btn" href="#demo">Book a demo</a>
+      <a class="btn btn--ghost" href="#how">See how it works</a>
+    </div>
+    <p class="hero-note">No manual exports · No copy-paste · Always current</p>
+
+    <!-- signature: everything you know, flowing through one brain -->
+    <div class="stream" aria-hidden="true">
+      <div class="col col--in">
+        <span class="chip"><i></i>Docs &amp; wikis</span>
+        <span class="chip"><i></i>Calls &amp; WhatsApp</span>
+        <span class="chip"><i></i>Support tickets</span>
+        <span class="chip"><i></i>Release notes</span>
+        <span class="chip"><i></i>Internal databases</span>
+      </div>
+      <div class="rail"><span></span><span></span><span></span></div>
+      <div class="core">
+        <p class="core__cap core__cap--top">One source of truth</p>
+        <div class="brain"><img src="assets/lojo-icon-320.png" alt="" width="150" height="150"></div>
+        <p class="core__cap core__cap--bot">Always current</p>
+      </div>
+      <div class="rail rail--out"><span></span><span></span><span></span></div>
+      <div class="col col--out">
+        <span class="chip"><i></i>Support answers</span>
+        <span class="chip"><i></i>Sales decks</span>
+        <span class="chip"><i></i>Product signals</span>
+        <span class="chip"><i></i>Customer emails</span>
+        <span class="chip"><i></i>AI agents</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VALUE STATEMENT -->
+<section class="value" id="why">
+  <div class="wrap">
+    <p class="big reveal">Someone at your company already <span class="hl">knows the answer</span>. lojo makes sure <span class="hl">everyone</span> does.</p>
+    <p class="sub reveal">Knowledge shouldn't live and die in someone's inbox.</p>
+  </div>
+</section>
+
+<!-- PILLARS -->
+<section class="sec--tight" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow reveal"><span class="sec-brain" aria-hidden="true"></span>Why lojo</p>
+      <h2 class="reveal">Built for how knowledge <em>actually moves.</em></h2>
+    </div>
+    <div class="grid grid--4">
+      <div class="card reveal">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.2 2.2M16.2 16.2l2.2 2.2M18.4 5.6l-2.2 2.2M7.8 16.2l-2.2 2.2"/></svg></span>
+        <h3>Always current</h3>
+        <p>Connected to the source, so the answer is never last quarter's version.</p>
+      </div>
+      <div class="card reveal">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 16 0M4 12v5M20 12v5"/><circle cx="4" cy="19" r="2"/><circle cx="20" cy="19" r="2"/><circle cx="12" cy="4" r="2"/></svg></span>
+        <h3>Cross-channel</h3>
+        <p>Reads docs, calls, and tickets together — patterns no single tool can see.</p>
+      </div>
+      <div class="card reveal">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
+        <h3>Human-validated</h3>
+        <p>Stakeholders sign off before anything goes live. Trust is the feature.</p>
+      </div>
+      <div class="card reveal">
+        <span class="ico"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+        <h3>Private by design</h3>
+        <p>Your knowledge stays yours — encrypted, permissioned, exportable anytime.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MOMENTS -->
+<div class="moments" aria-hidden="true">
+  <div class="moments__track">
+    <span>"does anyone have the latest pricing deck?"</span>
+    <span>"the answer was in a WhatsApp thread from March"</span>
+    <span>"asked in three channels. still waiting."</span>
+    <span>"our docs say two different things"</span>
+    <span>"the one person who knew just went on leave"</span>
+    <span>"week six, still figuring out who to ask"</span>
+    <span>"does anyone have the latest pricing deck?"</span>
+    <span>"the answer was in a WhatsApp thread from March"</span>
+    <span>"asked in three channels. still waiting."</span>
+    <span>"our docs say two different things"</span>
+    <span>"the one person who knew just went on leave"</span>
+    <span>"week six, still figuring out who to ask"</span>
+  </div>
+</div>
+
+<!-- ASK DEMO -->
+<section id="ask">
+  <div class="wrap ask">
+    <div>
+      <p class="eyebrow reveal"><span class="sec-brain" aria-hidden="true"></span>See it answer</p>
+      <h2 class="reveal">Ask like a person. Get <em>the truth.</em></h2>
+      <p class="lede reveal">No query syntax, no digging. Anyone asks in plain language — lojo answers from the latest source of truth, with receipts.</p>
+    </div>
+    <div class="chatcard reveal" aria-label="Example of asking lojo a question">
+      <div class="chatcard__bar"><i></i>#ask-lojo</div>
+      <div class="chat" id="chat" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="secure">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow reveal"><span class="sec-brain" aria-hidden="true"></span>How it works</p>
+      <h2 class="reveal">Four steps, <em>always running.</em></h2>
+      <p class="lede reveal">One agentic system that never needs manual upkeep — open a step to see what happens inside.</p>
+    </div>
+    <div class="steps">
+      <details class="step reveal" open>
+        <summary>
+          <span class="step__num">01</span>
+          <h3>We Source</h3>
+          <span class="step__chev">+</span>
+        </summary>
+        <div class="step__body">
+          <p>lojo connects to every place knowledge already lives and pulls it into one continuously updated store — no manual exports, no copy-paste. Every channel gathered into a single place, classified automatically by source.</p>
+          <div class="step__tags">
+            <span class="tag">Drive &amp; Notion</span><span class="tag">Calls &amp; WhatsApp</span><span class="tag">CRM tickets</span><span class="tag">Release notes / GitHub</span>
+          </div>
+        </div>
+      </details>
+      <details class="step reveal">
+        <summary>
+          <span class="step__num">02</span>
+          <h3>We get Insights</h3>
+          <span class="step__chev">+</span>
+        </summary>
+        <div class="step__body">
+          <p>Once everything is in one place, lojo reads across channels to surface what's actually happening — not what any single team happens to notice. Cross-channel intelligence: patterns no one channel could reveal on its own.</p>
+          <div class="step__tags">
+            <span class="tag">Trend detection</span><span class="tag">Customer feedback</span><span class="tag">Root-cause signals</span>
+          </div>
+        </div>
+      </details>
+      <details class="step reveal">
+        <summary>
+          <span class="step__num">03</span>
+          <h3>We Build</h3>
+          <span class="step__chev">+</span>
+        </summary>
+        <div class="step__body">
+          <p>Raw knowledge becomes a structured, validated source of truth — then gets shaped into content built for how each audience actually consumes it. Humans sign off before anything goes live.</p>
+          <div class="step__tags">
+            <span class="tag">Organized knowledge base</span><span class="tag">Stakeholder validation</span><span class="tag">Channel-specific content</span>
+          </div>
+        </div>
+      </details>
+      <details class="step reveal">
+        <summary>
+          <span class="step__num">04</span>
+          <h3>We Distribute</h3>
+          <span class="step__chev">+</span>
+        </summary>
+        <div class="step__body">
+          <p>The right knowledge reaches the right person automatically — frontline teams, AI agents, and customers all draw from the same current truth. Personalized, trustworthy communication at scale.</p>
+          <div class="step__tags">
+            <span class="tag">Frontline teams</span><span class="tag">AI agents</span><span class="tag">Public communication</span>
+          </div>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- FORMATS -->
+<section id="formats">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow reveal"><span class="sec-brain" aria-hidden="true"></span>Content generation</p>
+      <h2 class="reveal">One brain, <em>endless</em> formats.</h2>
+      <p class="lede reveal">lojo doesn't just organize knowledge — it generates the right content, in the right format, for every customer, team, and channel. All shapes stay in sync with the same source of truth.</p>
+    </div>
+
+    <div class="grid grid--3">
+      <div class="card reveal">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M5 6V4h14v2M12 4v16M9 20h6"/></svg></span>
+        <h3>Text</h3>
+        <p>FAQ answers, chat replies, and support macros</p>
+      </div>
+      <div class="card reveal">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></span>
+        <h3>Documents</h3>
+        <p>Playbooks, guides, and internal wikis</p>
+      </div>
+      <div class="card reveal">
+        <span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="M15 10l6-3v10l-6-3"/></svg></span>
+        <h3>Video</h3>
+        <p>Short explainers and walkthroughs from source content</p>
+      </div>
+      <div class="card reveal">
+        <span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span>
+        <h3>Slide decks</h3>
+        <p>Sales decks and training material, kept current</p>
+      </div>
+      <div class="card reveal">
+        <span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>
+        <h3>Email</h3>
+        <p>Newsletters and customer-facing updates</p>
+      </div>
+      <div class="card reveal">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12Z"/></svg></span>
+        <h3>Chat &amp; DM</h3>
+        <p>WhatsApp, Instagram, and in-app messaging</p>
+      </div>
+    </div>
+
+    <div class="langs reveal">
+      <div class="langs__txt">
+        <strong>Localized automatically, in every language</strong>
+        <span>English, French, Spanish, Arabic, and more — matched to each customer's language.</span>
+      </div>
+      <span class="lang">EN</span>
+      <span class="lang">FR</span>
+      <span class="lang">ES</span>
+      <span class="lang">AR</span>
+      <span class="lang">DE</span>
+      <span class="lang lang--more">+20</span>
+    </div>
+  </div>
+</section>
+
+<!-- TEAMS -->
+<section id="teams" class="secure">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow reveal"><span class="sec-brain" aria-hidden="true"></span>Who it's for</p>
+      <h2 class="reveal">Every team that needs answers <em>fast.</em></h2>
+    </div>
+    <div class="teamsrow reveal">
+      <div class="tcard">
+        <div class="art"><svg viewBox="0 0 140 140">
+          <ellipse cx="70" cy="120" rx="42" ry="9" fill="url(#g-spot)"/>
+          <path d="M38 80 v-8 a32 32 0 0 1 64 0 v8" fill="none" stroke="url(#lojo-grad)" stroke-width="8" stroke-linecap="round"/>
+          <path d="M44 74 a26 26 0 0 1 52 0" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="1.6"/>
+          <rect x="28" y="76" width="21" height="34" rx="10" fill="url(#g-left)" stroke="url(#lojo-grad)" stroke-width="1.5"/>
+          <rect x="91" y="76" width="21" height="34" rx="10" fill="url(#g-left)" stroke="url(#lojo-grad)" stroke-width="1.5"/>
+          <ellipse cx="35" cy="86" rx="2.6" ry="6" fill="rgba(255,255,255,.8)"/>
+          <path d="M101 110 q-2 12 -20 12 h-4" fill="none" stroke="url(#lojo-grad)" stroke-width="4.5" stroke-linecap="round"/>
+          <circle cx="74" cy="122" r="4.5" fill="url(#lojo-grad)"/>
+        </svg></div>
+        <div class="cap">
+          <h3>Support</h3>
+          <p>Accurate answers backed by the latest knowledge — not team folklore.</p>
+        </div>
+      </div>
+      <div class="tcard">
+        <div class="art"><svg viewBox="0 0 140 140">
+          <ellipse cx="70" cy="120" rx="44" ry="9" fill="url(#g-spot)"/>
+          <path d="M55 46 v-7 a8 8 0 0 1 8-8 h14 a8 8 0 0 1 8 8 v7" fill="none" stroke="url(#lojo-grad)" stroke-width="5.5" stroke-linecap="round"/>
+          <rect x="27" y="46" width="86" height="62" rx="13" fill="url(#g-left)" stroke="url(#lojo-grad)" stroke-width="1.5"/>
+          <path d="M27 72 h86" stroke="rgba(232,93,117,.45)" stroke-width="1.3"/>
+          <rect x="61" y="65" width="18" height="14" rx="4" fill="url(#lojo-grad)"/>
+          <path d="M34 54 q12 -4 24 -4" stroke="rgba(255,255,255,.85)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        </svg></div>
+        <div class="cap">
+          <h3>Sales</h3>
+          <p>Talk tracks built from what's actually converting, updated as it changes.</p>
+        </div>
+      </div>
+      <div class="tcard">
+        <div class="art"><svg viewBox="0 0 140 140">
+          <ellipse cx="70" cy="120" rx="42" ry="9" fill="url(#g-spot)"/>
+          <path d="M70 26 108 46 70 66 32 46 Z" fill="url(#g-top)"/>
+          <path d="M32 46 70 66 70 110 32 90 Z" fill="url(#g-left)"/>
+          <path d="M108 46 70 66 70 110 108 90 Z" fill="url(#g-right)"/>
+          <path d="M70 26 108 46 70 66 32 46 Z" fill="none" stroke="url(#lojo-grad)" stroke-width="1.7" stroke-linejoin="round"/>
+          <path d="M32 46 v44 l38 20 M108 46 v44 l-38 20 M70 66 v44" fill="none" stroke="url(#lojo-grad)" stroke-width="1.7" stroke-linejoin="round"/>
+          <path d="M74 30 102 45" stroke="rgba(255,255,255,.9)" stroke-width="1.5"/>
+        </svg></div>
+        <div class="cap">
+          <h3>Product</h3>
+          <p>Recurring requests and root causes, straight from customers.</p>
+        </div>
+      </div>
+      <div class="tcard">
+        <div class="art"><svg viewBox="0 0 140 140">
+          <ellipse cx="70" cy="120" rx="44" ry="9" fill="url(#g-spot)"/>
+          <path d="M28 62 80 38 v56 L28 78 Z" fill="url(#g-left)" stroke="url(#lojo-grad)" stroke-width="1.5" stroke-linejoin="round"/>
+          <ellipse cx="81" cy="66" rx="10" ry="28" fill="url(#g-top)" stroke="url(#lojo-grad)" stroke-width="1.5"/>
+          <rect x="34" y="78" width="14" height="26" rx="6" fill="url(#g-right)" stroke="url(#lojo-grad)" stroke-width="1.4"/>
+          <path d="M100 52 q10 14 0 28 M109 44 q16 22 0 44" stroke="url(#lojo-grad)" stroke-width="3.6" fill="none" stroke-linecap="round"/>
+          <path d="M34 65 58 54" stroke="rgba(255,255,255,.85)" stroke-width="1.6"/>
+        </svg></div>
+        <div class="cap">
+          <h3>Marketing</h3>
+          <p>Messaging that matches product reality, in every channel.</p>
+        </div>
+      </div>
+      <div class="tcard">
+        <div class="art"><svg viewBox="0 0 140 140">
+          <ellipse cx="70" cy="120" rx="40" ry="9" fill="url(#g-spot)"/>
+          <path d="M70 16 v18" stroke="url(#lojo-grad)" stroke-width="3.6" stroke-linecap="round"/>
+          <rect x="59" y="28" width="22" height="9" rx="3.5" fill="url(#g-top)" stroke="url(#lojo-grad)" stroke-width="1.3"/>
+          <rect x="39" y="37" width="62" height="76" rx="13" fill="url(#g-left)" stroke="url(#lojo-grad)" stroke-width="1.5"/>
+          <circle cx="70" cy="63" r="12" fill="url(#lojo-grad)"/>
+          <path d="M52 88 h36 M57 99 h26" stroke="rgba(36,26,20,.18)" stroke-width="3.4" stroke-linecap="round"/>
+          <path d="M45 44 q9 -3 18 -3" stroke="rgba(255,255,255,.85)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        </svg></div>
+        <div class="cap">
+          <h3>New hires</h3>
+          <p>Ramp on a living source of truth, not a stale wiki.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow reveal"><span class="sec-brain" aria-hidden="true"></span>FAQ</p>
+      <h2 class="reveal">Curious about <em>lojo?</em></h2>
+    </div>
+    <div class="faq">
+      <details class="reveal">
+        <summary>What can lojo connect to?</summary>
+        <p class="a">Anywhere your knowledge already lives: Drive, Notion, Confluence, internal wikis, support ticketing, CRM, WhatsApp and Instagram conversations, call recordings, email, and release notes from GitHub. If a channel matters to you and isn't listed, ask us — connectors are the easy part.</p>
+      </details>
+      <details class="reveal">
+        <summary>How current is the knowledge base?</summary>
+        <p class="a">lojo watches its sources continuously. When pricing changes in a doc or a policy shifts in a ticket thread, the knowledge base updates without anyone exporting or copy-pasting a thing.</p>
+      </details>
+      <details class="reveal">
+        <summary>Does content go out without review?</summary>
+        <p class="a">No. Anything customer-facing goes through stakeholder validation first — humans sign off before content is published or distributed. You choose where the human checkpoints sit.</p>
+      </details>
+      <details class="reveal">
+        <summary>Who can see what?</summary>
+        <p class="a">Access follows your permissions. Teams see what they're meant to see, customers only ever see published, validated content, and your data is never used to train models for anyone else.</p>
+      </details>
+      <details class="reveal">
+        <summary>How long does setup take?</summary>
+        <p class="a">Connecting your first sources takes minutes. A useful, organized knowledge base typically takes shape within the first days — not a quarter-long migration project.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="demo">
+  <div class="wrap">
+    <div class="cta__grid">
+      <div>
+        <p class="eyebrow reveal"><span class="sec-brain" aria-hidden="true"></span>Get started</p>
+        <h2 class="reveal">Give your company a <em>brain.</em></h2>
+        <p class="lede reveal">Book a demo and see lojo turn your scattered knowledge into a living, self-updating source of truth.</p>
+      </div>
+
+      <!-- Replace action with your real endpoint (Formspree, HubSpot, your own API).
+           Until then the form falls back to opening a prefilled email to hello@lojo.ai. -->
+      <form class="form reveal" id="demo-form" method="POST" action="https://formspree.io/f/YOUR_FORM_ID">
+        <div class="form__ok" role="status">Thanks — we'll be in touch within one business day.</div>
+
+        <div class="form__row">
+          <div class="field">
+            <label for="f-name">Name</label>
+            <input id="f-name" name="name" type="text" autocomplete="name" placeholder="Jane Doe" required>
+          </div>
+          <div class="field">
+            <label for="f-company">Company</label>
+            <input id="f-company" name="company" type="text" autocomplete="organization" placeholder="Acme" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-email">Work email</label>
+          <input id="f-email" name="email" type="email" autocomplete="email" placeholder="jane@acme.com" required>
+        </div>
+
+        <div class="field">
+          <label for="f-msg">What should lojo connect first?</label>
+          <textarea id="f-msg" name="message" placeholder="Notion, Zendesk, WhatsApp, GitHub&hellip;"></textarea>
+        </div>
+
+        <div class="form__hp" aria-hidden="true">
+          <label for="f-hp">Leave this empty</label>
+          <input id="f-hp" name="_gotcha" type="text" tabindex="-1" autocomplete="off">
+        </div>
+
+        <button class="btn btn--grad" type="submit">Book a demo</button>
+        <p class="form__note">We reply within one business day. No spam, ever.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <img class="mark" src="assets/lojo-icon-128.png" alt="" width="34" height="34">
+  <span class="wordmark">lojo</span>
+  <span class="spacer"></span>
+  <a href="#how">Product</a>
+  <a href="#faq">FAQ</a>
+  <a href="mailto:hello@lojo.ai">hello@lojo.ai</a>
+  <span>© <span id="yr">2026</span> lojo</span>
+</footer>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  const root = document.documentElement;
+  const toggle = document.querySelector('.theme-toggle');
+  const syncToggle = () => {
+    const dark = root.dataset.theme === 'dark';
+    toggle.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    toggle.setAttribute('aria-pressed', dark);
+  };
+  syncToggle();
+  toggle.addEventListener('click', () => {
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem('lojo-theme', root.dataset.theme); } catch (e) {}
+    syncToggle();
+  });
+
+  const header = document.getElementById('site-header');
+  const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 24);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  const navLinks = [...document.querySelectorAll('.nav a.link')];
+  if ('IntersectionObserver' in window) {
+    const spy = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        navLinks.forEach(l => l.classList.toggle('is-active', l.getAttribute('href') === '#' + e.target.id));
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    navLinks.forEach(l => { const s = document.querySelector(l.getAttribute('href')); if (s) spy.observe(s); });
+  }
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const items = document.querySelectorAll('.reveal');
+  if (reduce || !('IntersectionObserver' in window)) {
+    items.forEach(el => el.classList.add('in'));
+  } else {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          e.target.style.transitionDelay = Math.min(i * 60, 240) + 'ms';
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    items.forEach(el => io.observe(el));
+  }
+
+  const stream = document.querySelector('.stream');
+  if (stream) {
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('class', 'pipes');
+    svg.setAttribute('aria-hidden', 'true');
+    stream.prepend(svg);
+
+    const buildPipes = () => {
+      svg.innerHTML = '';
+      if (window.innerWidth <= 900) return;
+      const sr = stream.getBoundingClientRect();
+      const br = document.querySelector('.brain').getBoundingClientRect();
+      let n = 0;
+      const pipe = (x1, y1, x2, y2, color, glow) => {
+        const bend = (x2 - x1) * 0.55;
+        const d = `M ${x1} ${y1} C ${x1 + bend} ${y1}, ${x2 - bend} ${y2}, ${x2} ${y2}`;
+        const path = document.createElementNS(NS, 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', 'rgba(36,26,20,.16)');
+        path.setAttribute('stroke-width', '1.5');
+        path.setAttribute('stroke-dasharray', '4 7');
+        path.setAttribute('id', 'pipe-' + n);
+        svg.appendChild(path);
+        if (!reduce) {
+          const dot = document.createElementNS(NS, 'circle');
+          dot.setAttribute('r', '3');
+          dot.setAttribute('fill', color);
+          dot.setAttribute('style', 'filter:drop-shadow(0 0 6px ' + glow + ')');
+          const mo = document.createElementNS(NS, 'animateMotion');
+          mo.setAttribute('dur', '2.6s');
+          mo.setAttribute('repeatCount', 'indefinite');
+          mo.setAttribute('begin', (-n * 0.83) + 's');
+          const mp = document.createElementNS(NS, 'mpath');
+          mp.setAttribute('href', '#pipe-' + n);
+          mo.appendChild(mp);
+          dot.appendChild(mo);
+          const fade = document.createElementNS(NS, 'animate');
+          fade.setAttribute('attributeName', 'opacity');
+          fade.setAttribute('values', '0;1;1;0');
+          fade.setAttribute('keyTimes', '0;.15;.85;1');
+          fade.setAttribute('dur', '2.6s');
+          fade.setAttribute('repeatCount', 'indefinite');
+          fade.setAttribute('begin', (-n * 0.83) + 's');
+          dot.appendChild(fade);
+          svg.appendChild(dot);
+        }
+        n++;
+      };
+      document.querySelectorAll('.col--in .chip').forEach(ch => {
+        const r = ch.getBoundingClientRect();
+        pipe(r.right - sr.left + 6, r.top + r.height / 2 - sr.top,
+             br.left - sr.left - 8, br.top + br.height / 2 - sr.top,
+             '#e85d75', 'rgba(232,93,117,.6)');
+      });
+      document.querySelectorAll('.col--out .chip').forEach(ch => {
+        const r = ch.getBoundingClientRect();
+        pipe(br.right - sr.left + 8, br.top + br.height / 2 - sr.top,
+             r.left - sr.left - 6, r.top + r.height / 2 - sr.top,
+             '#ffb199', 'rgba(255,177,153,.8)');
+      });
+    };
+    buildPipes();
+    window.addEventListener('load', buildPipes);
+    if (document.fonts) document.fonts.ready.then(buildPipes);
+    let rT;
+    window.addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(buildPipes, 150); });
+  }
+
+  const BRAIN = '<svg viewBox="0 0 100 100"><path d="M50 24c-5.5 0-8.7 2.6-10.4 5.3-3-1-7.3-.4-9.8 2.4-2.5 2.7-2.9 6-2 8.7-3.2 1.6-5.3 4.8-5.3 8.6 0 3.4 1.7 6.3 4.3 8.1-.7 2.7-.1 5.8 2.2 8.2 2.4 2.5 5.8 3.2 8.7 2.3 1.7 3 5 5.4 9.7 5.4 2.7 0 5-.8 6.8-2.1 1.8 1.3 4.1 2.1 6.8 2.1 4.7 0 8-2.4 9.7-5.4 2.9.9 6.3.2 8.7-2.3 2.3-2.4 2.9-5.5 2.2-8.2 2.6-1.8 4.3-4.7 4.3-8.1 0-3.8-2.1-7-5.3-8.6.9-2.7.5-6-2-8.7-2.5-2.8-6.8-3.4-9.8-2.4C66.2 26.6 63 24 57.5 24c-2.9 0-5.4.9-7.5 2.4-2.1-1.5-4.6-2.4-7.5-2.4z"/></svg>';
+  const CONVOS = [
+    {
+      who: 'Maya · Sales', ava: 'M',
+      q: 'do we support SSO on the starter plan?',
+      a: 'Not on Starter — SSO is included from the Growth plan up. Pricing changed in v12 last Tuesday, so older decks are out of date.',
+      src: ['Pricing doc · Notion', 'Release notes v12']
+    },
+    {
+      who: 'Sam · Support', ava: 'S',
+      q: "what's the refund window for annual plans?",
+      a: 'Thirty days, full refund. After that it’s prorated to the unused months — policy updated after ticket #4821.',
+      src: ['Billing policy', 'Ticket #4821']
+    },
+    {
+      who: 'Ana · Product', ava: 'A',
+      q: 'what are customers asking for most this month?',
+      a: 'Bulk export tops the list — 14 mentions across support and sales calls, up from 5 last month. Two churned accounts cited it.',
+      src: ['Call transcripts', 'Support trends']
+    }
+  ];
+  const chatEl = document.getElementById('chat');
+  if (chatEl) {
+    const msg = (cls, who, ava, html) => {
+      const d = document.createElement('div');
+      d.className = 'msg ' + cls;
+      d.innerHTML = '<span class="msg__ava">' + ava + '</span>' +
+        '<div class="msg__body"><p class="msg__who">' + who + '</p>' + html + '</div>';
+      chatEl.appendChild(d);
+      requestAnimationFrame(() => requestAnimationFrame(() => d.classList.add('show')));
+      return d;
+    };
+    if (reduce) {
+      const c = CONVOS[0];
+      msg('', c.who, c.ava, '<div class="msg__txt">' + c.q + '</div>');
+      msg('msg--lojo', 'lojo', BRAIN, '<div class="msg__txt">' + c.a + '</div>' +
+        '<div class="msg__src">' + c.src.map(s => '<span class="src">' + s + '</span>').join('') + '</div>');
+      [...chatEl.children].forEach(el => el.classList.add('show'));
+    } else {
+      let i = 0;
+      const play = () => {
+        const c = CONVOS[i % CONVOS.length]; i++;
+        chatEl.innerHTML = '';
+        msg('', c.who, c.ava, '<div class="msg__txt">' + c.q + '</div>');
+        setTimeout(() => {
+          msg('msg--lojo', 'lojo', BRAIN, '<div class="msg__txt"><span class="typing"><i></i><i></i><i></i></span></div>');
+          setTimeout(() => {
+            chatEl.lastChild.querySelector('.msg__body').innerHTML =
+              '<p class="msg__who">lojo</p><div class="msg__txt">' + c.a + '</div>' +
+              '<div class="msg__src">' + c.src.map(s => '<span class="src">' + s + '</span>').join('') + '</div>';
+            setTimeout(play, 4600);
+          }, 1300);
+        }, 900);
+      };
+      play();
+    }
+  }
+
+  const teamsRow = document.querySelector('.teamsrow');
+  if (teamsRow) {
+    const cards = [...teamsRow.querySelectorAll('.tcard')];
+    const setActive = () => {
+      const rc = teamsRow.getBoundingClientRect();
+      const mid = rc.left + rc.width / 2;
+      let best = null, bd = Infinity;
+      cards.forEach(c => {
+        const r = c.getBoundingClientRect();
+        const d = Math.abs(r.left + r.width / 2 - mid);
+        if (d < bd) { bd = d; best = c; }
+      });
+      const bi = cards.indexOf(best);
+      cards.forEach((c, i) => {
+        const d = Math.min(Math.abs(i - bi), 2);
+        c.classList.remove('d0', 'd1', 'd2');
+        c.classList.add('d' + d);
+      });
+    };
+    teamsRow.addEventListener('scroll', () => requestAnimationFrame(setActive), { passive: true });
+    window.addEventListener('resize', setActive);
+    setActive();
+  }
+
+  const form = document.getElementById('demo-form');
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      // No endpoint wired up yet -> fall back to a prefilled email so the form still works.
+      if (form.getAttribute('action').indexOf('YOUR_FORM_ID') !== -1) {
+        e.preventDefault();
+        const d = new FormData(form);
+        if (d.get('_gotcha')) return;
+        const subject = 'lojo demo request — ' + (d.get('company') || d.get('name') || '');
+        const body =
+          'Name: ' + (d.get('name') || '') + '\n' +
+          'Company: ' + (d.get('company') || '') + '\n' +
+          'Email: ' + (d.get('email') || '') + '\n\n' +
+          'Connect first: ' + (d.get('message') || '');
+        form.classList.add('sent');
+        window.location.href = 'mailto:hello@lojo.ai?subject=' +
+          encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+      }
+    });
+  }
+</script>
+</body>
+</html>

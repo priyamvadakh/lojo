@@ -1,0 +1,510 @@
+from theme import HEAD_JS, SEG_CSS, SEG_HTML, SEG_JS, DARK_BASE, DARK_APP
+
+CSS = r"""
+  :root{
+    --rose:#E85D75; --peach:#FFB199; --brand-gradient:linear-gradient(135deg,#E85D75,#FFB199);
+    --ink:#241A14; --bg:#FFFFFF; --bg-soft:#F7F4F1; --panel:#FFFFFF;
+    --line:rgba(36,26,20,.08); --line-2:rgba(36,26,20,.16); --muted:#6E5A4E; --cream:#F6EEE6;
+    --amber:#C9A24A; --amber-soft:#F4EAD3;
+    --success:#3F8F5F; --warning:#D99A2B; --error:#C64545; --info:#3E6FA6;
+    --display:"Outfit",system-ui,sans-serif; --body:"Manrope",system-ui,sans-serif; --side:252px;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html{font-size:15px}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:13.5px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:#B73C54;font-weight:600;text-decoration:none}
+  a:hover{text-decoration:underline}
+  button,input,select,textarea{font:inherit;color:inherit}
+  [hidden]{display:none!important}
+  svg.i{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+  /* ---------- canvas ---------- */
+  body{background-color:#FDFCFB;background-image:radial-gradient(rgba(36,26,20,.07) 1px,transparent 1.3px);background-size:22px 22px}
+
+  /* ---------- sidebar: floating light panel (identical on every POC screen) ---------- */
+  .side{position:fixed;top:12px;left:12px;bottom:12px;width:var(--side);z-index:30;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 40px -32px rgba(36,26,20,.35);display:flex;flex-direction:column;padding:16px 14px;overflow:visible;transition:width .3s cubic-bezier(.2,.8,.2,1)}
+  .side__collapse{width:34px;height:34px;border-radius:9px;border:0;background:none;color:var(--muted);display:grid;place-items:center;cursor:pointer;margin:0 0 14px 4px}
+  .side__collapse:hover{background:var(--bg-soft);color:var(--ink)}
+  .me{position:relative}
+  .side__user{display:flex;align-items:center;gap:12px;width:100%;padding:6px;border:0;background:none;border-radius:12px;cursor:pointer;text-align:left}
+  .side__user:hover{background:var(--bg-soft)}
+  .side__ava{width:44px;height:44px;border-radius:12px;flex:none;display:grid;place-items:center;background:var(--brand-gradient);color:#fff;font-family:var(--display);font-weight:800;font-size:.95rem;text-shadow:0 1px 2px rgba(142,47,69,.25)}
+  .side__who b{display:block;font-size:.92rem;line-height:1.25}
+  .side__who .badge{margin-top:4px}
+  .side__rule{height:1px;background:var(--line);margin:14px 4px}
+  .side nav{display:grid;gap:4px;overflow-y:auto}
+  .nav-item{display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border-radius:12px;color:var(--ink);font-weight:500;font-size:.92rem;text-decoration:none;white-space:nowrap;transition:background-color .15s ease,color .15s ease}
+  .nav-item svg{color:var(--muted)}
+  .nav-item:hover{background:var(--bg-soft);text-decoration:none}
+  .nav-item.is-active{background:rgba(232,93,117,.1);color:#B73C54;font-weight:700}
+  .nav-item.is-active svg{color:#B73C54}
+  .nav-item .count{margin-left:auto;min-width:24px;height:22px;padding:0 8px;border-radius:999px;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--bg-soft);color:var(--muted)}
+  .nav-item .count--hot{background:var(--rose);color:#fff}
+  .nav-item .step{margin-left:auto;font-size:.66rem;font-weight:700;letter-spacing:.06em;color:var(--muted);opacity:.7}
+  .side__foot{margin-top:auto}
+  .side__foot .theme-toggle{margin:0 0 12px 8px}
+  body.is-collapsed .side__foot .theme-toggle{margin:0 auto 12px;display:flex}
+  .product{display:flex;align-items:center;gap:12px;padding:4px}
+  .product img{width:44px;height:44px;border-radius:22%;flex:none}
+  .product b{display:block;font-family:var(--display);font-weight:700;font-size:1.05rem;line-height:1.2}
+  .product span{display:block;color:var(--muted);font-size:.74rem;letter-spacing:.02em}
+  .poc__weeks{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px}
+  .poc__weeks i{height:4px;border-radius:4px;background:var(--line-2)}
+  .poc__weeks i.is-done{background:var(--rose)}
+  .poc__weeks i.is-now{background:var(--amber)}
+  .pop{position:absolute;left:0;top:calc(100% + 6px);width:230px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 24px 50px -24px rgba(36,26,20,.45);padding:8px;z-index:40}
+  .pop__h{padding:8px 10px;font-size:.78rem;color:var(--muted)}
+  .pop__row{display:block;width:100%;padding:9px 10px;border:0;background:none;border-radius:9px;text-align:left;cursor:pointer;font-size:.88rem;font-weight:500;color:var(--ink)}
+  .pop__row:hover{background:var(--bg-soft);text-decoration:none}
+  /* collapsed */
+  body.is-collapsed{--side:76px}
+  body.is-collapsed .side__who,body.is-collapsed .nav-item .lbl,body.is-collapsed .nav-item .count,body.is-collapsed .nav-item .step,body.is-collapsed .product div{display:none}
+  body.is-collapsed .nav-item{justify-content:center;padding:0}
+  body.is-collapsed .side__user,body.is-collapsed .product{justify-content:center}
+  body.is-collapsed .side__collapse svg{transform:scaleX(-1)}
+  .main{margin-left:calc(var(--side) + 12px);min-height:100vh;transition:margin .3s cubic-bezier(.2,.8,.2,1)}
+
+  /* ---------- page ---------- */
+  .wrap{max-width:1240px;margin:0 auto;padding:28px 36px 72px}
+  .label{font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--rose);margin:0}
+  .head{position:sticky;top:0;z-index:25;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:-28px -36px 26px;padding:18px 36px 18px;background:rgba(251,250,249,.9);backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);border-bottom:1px solid var(--line);box-shadow:0 12px 14px -16px rgba(36,26,20,.25)}
+  .head h1{font-family:var(--display);font-weight:700;font-size:1.75rem;letter-spacing:-.02em;line-height:1.15;margin:6px 0 4px}
+  .head p{margin:0;color:var(--muted);max-width:64ch}
+  .head .spacer{flex:1}
+  .card{border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+  .sec{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:20px 22px 22px;margin-bottom:22px;box-shadow:0 16px 30px -28px rgba(36,26,20,.3)}
+  .sec__head{display:flex;align-items:baseline;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .sec__head h2{margin:0;font-size:.8rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8E2F45}
+  .sec__head span{color:var(--muted);font-size:.86rem}
+  .sec__head a{margin-left:auto;font-size:.82rem;color:var(--ink)}
+  .card__head{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .card__head h2{font-family:var(--display);font-weight:700;font-size:1.05rem;margin:0}
+  .card__head .spacer{flex:1}
+  .card__body{padding:18px 20px}
+  .sub{color:var(--muted);font-size:.84rem;margin:0}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 18px;border-radius:999px;font-weight:600;font-size:.86rem;cursor:pointer;white-space:nowrap;text-decoration:none;border:1px solid transparent;transition:box-shadow .15s ease,background-color .15s ease,border-color .15s ease}
+  .btn:hover{text-decoration:none}
+  .btn--primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .btn--primary:hover{box-shadow:0 10px 22px -14px rgba(36,26,20,.8)}
+  .btn--grad{background:var(--brand-gradient);color:var(--ink);font-weight:700}
+  .btn--grad:hover{box-shadow:0 12px 26px -12px rgba(232,93,117,.7)}
+  .btn--secondary{background:var(--panel);color:var(--ink);border-color:var(--line-2)}
+  .btn--secondary:hover{border-color:rgba(36,26,20,.3);background:var(--bg-soft)}
+  .btn--ghost{background:none;color:var(--muted);padding:0 12px}
+  .btn--ghost:hover{background:var(--bg-soft);color:var(--ink)}
+  .btn--danger{background:var(--panel);color:var(--error);border-color:rgba(198,69,69,.35)}
+  .btn--danger:hover{background:rgba(198,69,69,.06)}
+  .btn--sm{height:32px;padding:0 13px;font-size:.8rem}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;box-shadow:none}
+  .badge{display:inline-flex;align-items:center;gap:5px;height:21px;padding:0 8px;border-radius:999px;font-size:.64rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+  .badge--rose{background:rgba(232,93,117,.1);color:#B73C54}
+  .badge--amber{background:var(--amber-soft);color:#8A6212}
+  .badge--ok{background:rgba(63,143,95,.12);color:var(--success)}
+  .badge--err{background:rgba(198,69,69,.1);color:var(--error)}
+  .badge--info{background:rgba(62,111,166,.1);color:var(--info)}
+  .badge--muted{background:rgba(36,26,20,.06);color:var(--muted)}
+  .src{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-2);border-radius:8px;padding:3px 8px;font-size:.74rem;font-weight:600;background:var(--panel);white-space:nowrap}
+  .src em{font-style:normal;color:var(--muted);font-weight:500}
+  .src--warn{border-color:rgba(217,154,43,.5);background:rgba(217,154,43,.07)}
+  .text{width:100%;height:40px;padding:0 13px;border-radius:11px;border:1px solid var(--line-2);background:var(--panel);font-size:.9rem;transition:border-color .15s ease,box-shadow .15s ease}
+  textarea.text{height:auto;min-height:90px;padding:10px 13px;line-height:1.5;resize:vertical}
+  select.text{padding:0 10px}
+  .text:focus{outline:none;border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,93,117,.16)}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px}
+  .tab{border:0;background:none;padding:10px 12px;margin-bottom:-1px;border-bottom:2px solid transparent;font-weight:600;font-size:.88rem;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+  .tab:hover{color:var(--ink)}
+  .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--rose)}
+  .tab .n{min-width:22px;height:20px;padding:0 7px;border-radius:999px;display:grid;place-items:center;font-size:.7rem;font-weight:700;background:var(--bg-soft)}
+  .tab[aria-selected="true"] .n{background:var(--rose);color:#fff}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:1px solid var(--line-2);background:var(--panel);border-radius:999px;padding:5px 12px;font-size:.8rem;cursor:pointer}
+  .chip:hover{border-color:var(--rose);color:#B73C54}
+  .chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .empty{text-align:center;padding:36px 20px;color:var(--muted)}
+  .empty b{display:block;font-family:var(--display);font-size:1.05rem;color:var(--ink);margin-bottom:4px}
+  .spin{width:14px;height:14px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:spin .7s linear infinite;display:inline-block;flex:none}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .toast{position:fixed;left:calc(50% + var(--side) / 2 + 6px);bottom:28px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--ink);color:#fff;padding:11px 18px;border-radius:12px;font-size:.88rem;font-weight:600;transition:opacity .25s ease,transform .25s ease;box-shadow:0 16px 40px -20px rgba(36,26,20,.7);z-index:60}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  /* ---------- Ask lojo FAB ---------- */
+  .fab{position:fixed;right:24px;bottom:24px;z-index:50;width:58px;height:58px;border-radius:50%;border:0;padding:0;cursor:pointer;background:var(--brand-gradient);box-shadow:0 18px 36px -14px rgba(232,93,117,.8);display:grid;place-items:center;transition:transform .2s ease,box-shadow .2s ease}
+  .fab:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 22px 40px -14px rgba(232,93,117,.9)}
+  .fab img{width:40px;height:40px;border-radius:22%}
+  .fab::after{content:"Ask lojo";position:absolute;right:calc(100% + 12px);top:50%;transform:translate(6px,-50%);white-space:nowrap;padding:8px 12px;border-radius:10px;background:var(--ink);color:#fff;font-size:.82rem;font-weight:600;opacity:0;pointer-events:none;transition:opacity .15s ease,transform .15s ease}
+  .fab:hover::after,.fab:focus-visible::after{opacity:1;transform:translate(0,-50%)}
+  .fab.is-open::after{display:none}
+  .askp{position:fixed;right:24px;bottom:94px;z-index:50;width:min(380px,calc(100vw - 32px));height:min(520px,calc(100vh - 130px));display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 30px 70px -30px rgba(36,26,20,.55);overflow:hidden;transform-origin:bottom right;animation:askIn .22s cubic-bezier(.2,.8,.2,1)}
+  @keyframes askIn{from{opacity:0;transform:translateY(10px) scale(.97)}}
+  .askp__head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .askp__head img{width:30px;height:30px;border-radius:22%}
+  .askp__head b{display:block;font-size:.92rem}
+  .askp__head span{display:block;font-size:.74rem;color:var(--muted)}
+  .askp__head a{margin-left:auto;font-size:.76rem}
+  .askp__x{width:30px;height:30px;border-radius:50%;border:0;background:none;color:var(--muted);font-size:1.1rem;cursor:pointer}
+  .askp__x:hover{background:var(--bg-soft);color:var(--ink)}
+  .askp__log{flex:1;overflow:auto;padding:14px 16px;display:grid;gap:10px;align-content:start}
+  .am{max-width:86%;padding:10px 12px;border-radius:12px;font-size:.84rem}
+  .am--me{justify-self:end;background:var(--ink);color:#fff;border-bottom-right-radius:4px}
+  .am--bot{justify-self:start;background:var(--bg-soft);border-bottom-left-radius:4px}
+  .am--miss{background:rgba(217,154,43,.1);border:1px solid rgba(217,154,43,.3)}
+  .am .from{display:block;margin-top:6px;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+  .askp__foot{padding:10px 12px;border-top:1px solid var(--line);display:grid;gap:8px}
+  .askp__foot form{display:flex;gap:8px}
+  .askp__foot .chips .chip{font-size:.74rem;padding:4px 10px}
+  :focus-visible{outline:2px solid var(--rose);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+"""
+
+ICONS = {
+  'overview': '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>',
+  'documents': '<svg class="i" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>',
+  'questions': '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg>',
+  'review': '<svg class="i" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>',
+  'approved': '<svg class="i" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>',
+  'chat': '<svg class="i" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>',
+  'readout': '<svg class="i" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+}
+
+NAV = [
+  (None, [('overview', 'dashboard.html', 'Dashboard', None)]),
+  ('<b>01</b> Source', [('documents', 'documents.html', 'Documents', None)]),
+  ('<b>02</b> Insights', [('questions', 'questions.html', 'Questions &amp; gaps', 'navQuestions')]),
+  ('<b>03</b> Build', [('review', 'review.html', 'Review', 'navReview')]),
+  ('<b>04</b> Distribute', [('approved', 'approved.html', 'Approved answers', 'navApproved'), ('chat', 'chat.html', 'Chat', None)]),
+  ('Decide', [('readout', 'readout.html', 'Readout', None)]),
+]
+
+NAV_FLAT = [
+  ('overview', 'dashboard.html', 'Dashboard', None, ''),
+  ('documents', 'documents.html', 'Documents', None, '01'),
+  ('questions', 'questions.html', 'Questions &amp; gaps', 'navQuestions', ''),
+  ('review', 'review.html', 'Review', 'navReview', ''),
+  ('approved', 'approved.html', 'Approved answers', 'navApproved', ''),
+  ('readout', 'readout.html', 'Readout', None, ''),
+]
+LOOP_STAGE = {'documents': '01 Source', 'questions': '02 Insights', 'review': '03 Build · Validation', 'approved': '04 Distribute', 'chat': '04 Distribute', 'readout': 'Decide'}
+
+def sidebar(active):
+    out = ['<aside class="side" aria-label="Main navigation">',
+           '  <button class="side__collapse" id="collapse" type="button" aria-label="Collapse sidebar" aria-expanded="true"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16M15 10l-2 2 2 2"/></svg></button>',
+           '  <div class="me">',
+           '    <button class="side__user" id="meBtn" type="button" aria-expanded="false"><span class="side__ava" id="topAva">SL</span><span class="side__who"><b id="meName">Sara Lindqvist</b><span class="badge badge--rose">Owner</span></span></button>',
+           '    <div class="pop" id="mePop" hidden>',
+           '      <div class="pop__h" id="meEmail">sara@nimbuspay.com</div>',
+           '      <button class="pop__row" id="resetDemo" type="button">Reset demo data</button>',
+           '      <a class="pop__row" href="login.html" id="signOut">Sign out</a>',
+           '    </div>',
+           '  </div>',
+           '  <div class="side__rule"></div>',
+           '  <nav>']
+    for key, href, name, count, _ in NAV_FLAT:
+        cls = ' is-active' if key == active else ''
+        cur = ' aria-current="page"' if key == active else ''
+        tip = f' title="{LOOP_STAGE[key]}"' if key in LOOP_STAGE else ''
+        cnt = f'<span class="count" id="{count}" hidden></span>' if count else ''
+        out.append(f'    <a class="nav-item{cls}" href="{href}"{cur}{tip}>{ICONS[key]}<span class="lbl">{name}</span>{cnt}</a>')
+    out += ['  </nav>',
+            '  <div class="side__foot">',
+            '    ' + SEG_HTML,
+            '    <div class="side__rule"></div>',
+            '    <div class="product"><img src="assets/lojo-icon.png" alt="" width="44" height="44"><div><b>lojo</b><span id="pocWeek">Nimbus Pay · week 3 of 4</span><div class="poc__weeks" id="pocWeeks"><i></i><i></i><i></i><i></i></div></div></div>',
+            '  </div>',
+            '</aside>']
+    return '\n'.join(out)
+
+TOP = ''
+
+# shared data + state. Decisions persist in sessionStorage so screens stay in step.
+DATA_JS = r"""
+const POC_WEEK = 3;
+const DOCS = [
+  { id: 'd1', name: 'Pricing & plans 2026.pdf', pages: 14, size: '1.2 MB', added: '9 Sep' },
+  { id: 'd2', name: 'Help Center export.md', pages: 62, size: '840 KB', added: '9 Sep', faq: true },
+  { id: 'd3', name: 'SSO setup guide.pdf', pages: 6, size: '410 KB', added: '9 Sep' },
+  { id: 'd4', name: 'Returns & refunds policy.docx', pages: 4, size: '96 KB', added: '9 Sep' },
+  { id: 'd5', name: 'Sales call notes — Q3.docx', pages: 22, size: '300 KB', added: '9 Sep' },
+  { id: 'd6', name: 'Onboarding checklist.pdf', pages: 9, size: '220 KB', added: '9 Sep' },
+  { id: 'd7', name: 'Security overview.pdf', pages: 11, size: '640 KB', added: '10 Sep' },
+  { id: 'd8', name: 'API reference — limits.md', pages: 8, size: '120 KB', added: '10 Sep' },
+  { id: 'd9', name: 'Billing FAQ.docx', pages: 5, size: '88 KB', added: '10 Sep' },
+  { id: 'd10', name: 'Chargebacks process.docx', pages: 7, size: '140 KB', added: '10 Sep' },
+];
+const docById = (id) => DOCS.find(d => d.id === id);
+const docShort = (id) => docById(id).name.replace(/\.[a-z]+$/, '');
+
+// questions: found in documents, from the customer, or from their current FAQ
+const QUESTIONS = [
+  { id: 'q1', q: 'Is SSO included on the Growth plan?', origin: 'found', docs: ['d1', 'd5', 'd2'] },
+  { id: 'q2', q: 'How long do customers have to request a refund?', origin: 'found', docs: ['d4'] },
+  { id: 'q3', q: 'What are the limits on the Starter plan?', origin: 'found', docs: ['d1'] },
+  { id: 'q4', q: 'How do I set up SAML with Okta?', origin: 'faq', docs: ['d3'] },
+  { id: 'q5', q: 'Can a customer upgrade from Growth to Scale mid-cycle?', origin: 'found', docs: ['d1'] },
+  { id: 'q6', q: 'What onboarding do Scale customers get?', origin: 'found', docs: ['d6'] },
+  { id: 'q7', q: 'Which payment methods can customers use?', origin: 'faq', docs: ['d9'] },
+  { id: 'q8', q: 'Can Starter customers pay by invoice?', origin: 'found', docs: ['d9', 'd1'] },
+  { id: 'q9', q: 'What are the API rate limits?', origin: 'found', docs: ['d8'] },
+  { id: 'q10', q: 'What happens when a customer hits the rate limit?', origin: 'found', docs: ['d8'] },
+  { id: 'q11', q: 'How do we handle a chargeback dispute?', origin: 'found', docs: ['d10'] },
+  { id: 'q12', q: 'How long does a chargeback investigation take?', origin: 'found', docs: ['d10'] },
+  { id: 'q13', q: 'Is customer data encrypted at rest?', origin: 'found', docs: ['d7'] },
+  { id: 'q14', q: 'Where is customer data stored?', origin: 'found', docs: ['d7'] },
+  { id: 'q15', q: 'Can a customer export their data?', origin: 'faq', docs: ['d7', 'd2'] },
+  { id: 'q16', q: 'How do refunds work on annual plans?', origin: 'found', docs: ['d4', 'd9'] },
+  { id: 'q17', q: 'Do we offer discounts for nonprofits?', origin: 'found', docs: ['d5'] },
+  { id: 'q18', q: 'What uptime do we commit to?', origin: 'found', docs: ['d7'] },
+  { id: 'q19', q: 'How does a user reset two-factor authentication?', origin: 'faq', docs: ['d2'] },
+  { id: 'q20', q: 'Can a customer change their billing email?', origin: 'found', docs: ['d9'] },
+  { id: 'q21', q: 'Do we support Apple Pay in Germany?', origin: 'you', docs: [] },
+  { id: 'q22', q: 'What is the chargeback fee on Scale?', origin: 'you', docs: [], gap: 'g2' },
+  { id: 'q23', q: 'How long do we keep call recordings?', origin: 'you', docs: [], gap: 'g3' },
+];
+
+// things the documents refer to but never explain
+const GAPS = [
+  { id: 'g1', term: 'The Enterprise plan', where: [['d2', 'Security & login', 'SSO is an Enterprise-only feature.'], ['d5', '3 sales calls', 'We can talk about Enterprise terms.']], why: 'Mentioned, but no document says what Enterprise includes or costs.' },
+  { id: 'g2', term: 'Chargeback fee', where: [['d9', '§5', 'A chargeback fee applies to each dispute.'], ['d10', '§1', 'The fee is charged to the merchant.']], why: 'Both documents say a fee applies. Neither gives the amount.' },
+  { id: 'g3', term: 'Data retention period', where: [['d7', 'p. 6', 'Data is deleted in line with our retention policy.']], why: 'The retention policy is referred to but is not in the documents.' },
+  { id: 'g4', term: 'Onboarding manager response time', where: [['d6', 'p. 2', 'Your onboarding manager replies within the agreed SLA.']], why: 'The SLA is never stated.' },
+  { id: 'g5', term: 'API burst limit', where: [['d8', 'Rate limits', 'Short bursts above the limit are allowed up to the burst limit.']], why: 'The burst limit itself is never given.' },
+];
+
+// first review batch: drafts with their sources
+const DRAFTS = [
+  { id: 'r1', qid: 'q1', risk: 'high', conflict: 'd2',
+    src: [['d1', 'p. 4', 'SAML single sign-on is available to Growth and Scale workspaces.'], ['d5', 'Brightline call, 12 Aug', 'Told Brightline their Growth plan covers SSO.'], ['d2', 'Security & login · 9 months old', 'SSO is an Enterprise-only feature.']],
+    draft: 'Yes. SAML SSO is included on Growth and Scale. The Help Center still says Enterprise-only; that page is 9 months old and conflicts with the 2026 pricing.',
+    redraft: 'Yes. SAML single sign-on is included on the Growth and Scale plans. Starter workspaces sign in with email or Google.' },
+  { id: 'r2', qid: 'q2', src: [['d4', '§2', 'Customers can cancel within 30 days for a full refund. After 30 days, refunds are prorated to the unused months.']],
+    draft: '30 days for a full refund. After that, refunds are prorated to the unused months.',
+    redraft: 'Customers can cancel within 30 days of purchase for a full refund. After 30 days they get back the unused months only.' },
+  { id: 'r3', qid: 'q3', src: [['d1', 'p. 2', 'Starter includes 3 seats and up to 1,000 transactions a month.']],
+    draft: 'Starter includes 3 seats and up to 1,000 transactions a month.',
+    redraft: 'Starter includes 3 seats and up to 1,000 transactions a month. Growth raises that to 15 seats and 25,000 transactions.' },
+  { id: 'r4', qid: 'q4', src: [['d3', 'pp. 2–4', 'In Okta, create a SAML 2.0 app, paste the ACS URL from Settings → Security, then upload the metadata XML.']],
+    draft: 'Create a SAML 2.0 app in Okta and upload the metadata to lojo.',
+    redraft: '1. In Okta, create a SAML 2.0 app. 2. Copy the ACS URL from Settings → Security into Okta. 3. Upload Okta’s metadata XML. SSO needs a Growth or Scale plan.' },
+  { id: 'r5', qid: 'q5', src: [['d1', 'p. 6', 'Upgrades take effect immediately and are prorated from the day you switch. Downgrades apply at the next renewal.']],
+    draft: 'Yes. Upgrades take effect immediately and are prorated from the day you switch. Downgrades apply at the next renewal.',
+    redraft: 'Yes. The upgrade applies straight away and the customer pays the prorated difference from that day. Downgrades wait for the next renewal.' },
+  { id: 'r6', qid: 'q6', src: [['d6', 'p. 1', 'Scale customers get a 60-minute kickoff, a named onboarding manager and two admin training sessions.']],
+    draft: 'Scale customers get a 60-minute kickoff, a named onboarding manager and two admin training sessions.',
+    redraft: 'Every Scale customer gets a named onboarding manager, a 60-minute kickoff call and two admin training sessions.' },
+  { id: 'r7', qid: 'q7', src: [['d9', '§1', 'We accept Visa, Mastercard, American Express and SEPA Direct Debit.']],
+    draft: 'Visa, Mastercard, American Express and SEPA Direct Debit.',
+    redraft: 'Customers can pay by Visa, Mastercard or American Express, or by SEPA Direct Debit.' },
+  { id: 'r8', qid: 'q8', src: [['d9', '§4', 'Invoicing is available on Scale and on annual Growth plans.'], ['d1', 'p. 5', 'Starter is billed monthly by card.']],
+    draft: 'No. Starter is billed monthly by card. Invoicing is available on Scale and on annual Growth plans.',
+    redraft: 'Not on Starter, which is billed monthly by card. Customers who need invoices can move to an annual Growth plan or to Scale.' },
+  { id: 'r9', qid: 'q9', src: [['d8', 'Rate limits', 'The API allows 100 requests per second per workspace on Growth and 500 on Scale.']],
+    draft: '100 requests per second per workspace on Growth, and 500 on Scale.',
+    redraft: 'Growth workspaces can make 100 API requests per second; Scale workspaces can make 500.' },
+  { id: 'r10', qid: 'q10', src: [['d8', '429 responses', 'Requests over the limit get a 429 response with a Retry-After header.']],
+    draft: 'They get a 429 Too Many Requests response with a Retry-After header saying when to try again.',
+    redraft: 'The API answers with 429 Too Many Requests. The Retry-After header says how many seconds to wait.' },
+  { id: 'r11', qid: 'q11', src: [['d10', '§2', 'Upload the order record, delivery proof and customer messages within 7 days of the dispute notice.']],
+    draft: 'Upload the order record, proof of delivery and any customer messages within 7 days of the dispute notice.',
+    redraft: 'Within 7 days of the dispute notice, upload three things: the order record, proof of delivery, and the messages with the customer.' },
+  { id: 'r12', qid: 'q12', src: [['d10', '§4', 'Card networks usually decide within 30 to 75 days.']],
+    draft: 'Usually 30 to 75 days. The card network decides, not Nimbus Pay.',
+    redraft: 'The card network decides, usually within 30 to 75 days of the dispute being opened.' },
+  { id: 'r13', qid: 'q13', src: [['d7', 'p. 3', 'All customer data is encrypted at rest with AES-256.']],
+    draft: 'Yes. All customer data is encrypted at rest with AES-256.',
+    redraft: 'Yes, with AES-256, for all customer data at rest.' },
+  { id: 'r14', qid: 'q14', src: [['d7', 'p. 2', 'Customer data is stored in AWS eu-central-1 (Frankfurt).']],
+    draft: 'In AWS eu-central-1, in Frankfurt.',
+    redraft: 'All customer data is stored in the EU, in AWS eu-central-1 (Frankfurt).' },
+  { id: 'r15', qid: 'q15', src: [['d7', 'p. 8', 'Admins can export all workspace data as JSON from Settings → Data.'], ['d2', 'Exporting your data', 'Go to Settings → Data → Export.']],
+    draft: 'Yes. Admins can export all workspace data as JSON from Settings → Data → Export.',
+    redraft: 'Yes. An admin goes to Settings → Data → Export and gets all workspace data as a JSON file.' },
+  { id: 'r16', qid: 'q16', src: [['d4', '§3', 'Annual plans cancelled after 30 days are refunded for whole unused months.'], ['d9', '§2', 'Annual plans renew automatically unless cancelled 14 days before renewal.']],
+    draft: 'Within 30 days: a full refund. After that, the customer gets back whole unused months. Annual plans renew unless cancelled 14 days before renewal.',
+    redraft: 'Cancel within 30 days for a full refund. Later cancellations are refunded for whole unused months. Remember annual plans renew unless cancelled 14 days before.' },
+];
+const draftByQ = (qid) => DRAFTS.find(d => d.qid === qid);
+
+const CONCEPTS = {
+  sso: ['sso', 'single sign', 'sign-on', 'saml', 'okta', 'login', 'log in', 'identity'],
+  refund: ['refund', 'money back', 'cancel', 'return'],
+  plan: ['plan', 'pricing', 'price', 'tier', 'starter', 'growth', 'scale', 'cheapest', 'seat'],
+  upgrade: ['upgrade', 'downgrade', 'switch', 'move to', 'mid-cycle', 'mid-month', 'prorat'],
+  pay: ['pay', 'payment', 'card', 'invoice', 'sepa', 'visa', 'debit', 'billing'],
+  api: ['api', ' rate ', 'rate limit', 'requests', '429', 'throttl', 'how fast', 'per second'],
+  chargeback: ['chargeback', 'dispute'],
+  security: ['encrypt', 'secure', 'security', 'aes'],
+  storage: ['stored', 'kept', 'hosted', 'located', 'region', 'frankfurt', 'where is', 'where do'],
+  export: ['export', 'download', 'get our data', 'take our data'],
+  onboarding: ['onboarding', 'kickoff', 'training', 'onboard'],
+  annual: ['annual', 'yearly', 'renew'],
+};
+const conceptsOf = (s) => { const t = ' ' + s.toLowerCase() + ' '; return Object.keys(CONCEPTS).filter(k => CONCEPTS[k].some(w => t.includes(w))); };
+const words = (s) => s.toLowerCase().match(/[a-z0-9]{4,}/g) || [];
+function score(query, text) {
+  const qc = conceptsOf(query), tc = conceptsOf(text), qw = new Set(words(query));
+  const c = qc.filter(x => tc.includes(x)).length;
+  return { c, s: c * 2 + words(text).filter(w => qw.has(w)).length * 0.5 };
+}
+
+
+const SEED = () => ({
+  v: 1,
+  decisions: {
+    r2: { status: 'approved', at: 'Mon 28 Sep' }, r3: { status: 'approved', at: 'Mon 28 Sep' }, r5: { status: 'approved', at: 'Mon 28 Sep' },
+    r7: { status: 'approved', at: 'Tue 29 Sep', edited: true, answer: 'Customers can pay by Visa, Mastercard, American Express or SEPA Direct Debit.' },
+    r9: { status: 'approved', at: 'Tue 29 Sep' }, r13: { status: 'approved', at: 'Tue 29 Sep' },
+    r4: { status: 'pending', redrafted: true, reason: 'Missing detail: list the steps', prev: 'Create a SAML 2.0 app in Okta and upload the metadata to lojo.' },
+  },
+  matters: { q17: null, q18: false, q19: null, q20: null },
+  extra: [],
+  gaps: {},
+  scope: { signed: true, by: 'Sara Lindqvist', at: '9 Sep' },
+  decision: null,
+});
+const KEY = 'lojo-poc-v1';
+function load() {
+  try { const s = JSON.parse(sessionStorage.getItem(KEY)); if (s && s.v === 1) return s; } catch (e) {}
+  return SEED();
+}
+let ST = load();
+function save() { try { sessionStorage.setItem(KEY, JSON.stringify(ST)); } catch (e) {} refreshNav(); }
+
+function decision(r) { return ST.decisions[r.id] || { status: 'pending' }; }
+function answerOf(r) { const d = decision(r); return d.answer || (d.redrafted ? r.redraft : r.draft); }
+function allQuestions() { return QUESTIONS.concat(ST.extra); }
+function matters(q) { return q.id in ST.matters ? ST.matters[q.id] : true; }
+function counts() {
+  const qs = allQuestions();
+  const st = DRAFTS.map(r => decision(r).status);
+  return {
+    docs: DOCS.length, pages: DOCS.reduce((a, d) => a + d.pages, 0),
+    passages: DOCS.reduce((a, d) => a + Math.round(d.pages * 4.6), 0),
+    questions: qs.length, needCall: qs.filter(q => matters(q) === null).length,
+    gaps: GAPS.filter(g => !ST.gaps[g.id]).length,
+    drafts: DRAFTS.length, approved: st.filter(s => s === 'approved').length,
+    pending: st.filter(s => s === 'pending').length, final: st.filter(s => s === 'final').length,
+  };
+}
+"""
+
+HELPERS_JS = r"""
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2400);
+}
+function refreshNav() {
+  const c = counts();
+  const set = (id, n, hot) => { const el = $(id); if (!el) return; el.textContent = n; el.hidden = !n; el.classList.toggle('count--hot', !!hot); };
+  set('navReview', c.pending, true);
+  set('navQuestions', c.needCall + c.gaps);
+  set('navApproved', c.approved);
+}
+function srcChip(docId, loc, warn) {
+  return '<span class="src' + (warn ? ' src--warn' : '') + '">' + esc(docShort(docId)) + ' <em>' + esc(loc) + '</em>' + (warn ? ' <em>· conflicts</em>' : '') + '</span>';
+}
+(function shell() {
+  let user = { name: 'Sara', email: 'sara@nimbuspay.com' };
+  try { const u = JSON.parse(sessionStorage.getItem('lojo-user')); if (u && u.name) user = u; } catch (e) {}
+  const full = user.name === 'Sara' ? 'Sara Lindqvist' : user.name;
+  $('meName').textContent = full;
+  $('topAva').textContent = full.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  $('meEmail').textContent = user.email;
+  $('pocWeek').textContent = 'Nimbus Pay · week ' + POC_WEEK + ' of 4';
+  try { if (localStorage.getItem('lojo-side') === 'collapsed') document.body.classList.add('is-collapsed'); } catch (e) {}
+  const col = $('collapse');
+  const syncCol = () => { const c = document.body.classList.contains('is-collapsed'); col.setAttribute('aria-expanded', !c); col.setAttribute('aria-label', c ? 'Expand sidebar' : 'Collapse sidebar'); };
+  syncCol();
+  col.addEventListener('click', () => {
+    document.body.classList.toggle('is-collapsed'); syncCol();
+    try { localStorage.setItem('lojo-side', document.body.classList.contains('is-collapsed') ? 'collapsed' : 'open'); } catch (e) {}
+  });
+  [...$('pocWeeks').children].forEach((i, n) => i.className = n + 1 < POC_WEEK ? 'is-done' : n + 1 === POC_WEEK ? 'is-now' : '');
+  const pop = $('mePop'), btn = $('meBtn');
+  btn.addEventListener('click', (e) => { e.stopPropagation(); pop.hidden = !pop.hidden; btn.setAttribute('aria-expanded', !pop.hidden); });
+  document.addEventListener('click', (e) => { if (!e.target.closest('.me')) { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); } });
+  $('resetDemo').addEventListener('click', () => { try { sessionStorage.removeItem(KEY); } catch (e) {} location.reload(); });
+  refreshNav();
+})();
+
+(function askLojo() {
+  const fab = $('fab'); if (!fab) return;
+  const panel = $('askp'), log = $('askLog');
+  const store = () => DRAFTS.filter(r => decision(r).status === 'approved').map(r => ({ r, q: QUESTIONS.find(q => q.id === r.qid).q, a: answerOf(r) }));
+  const say = (cls, html) => { const d = document.createElement('div'); d.className = 'am am--' + cls; d.innerHTML = html; log.appendChild(d); log.scrollTop = log.scrollHeight; return d; };
+  function ask(q) {
+    say('me', esc(q));
+    const typing = say('bot', '<span class="spin"></span>');
+    setTimeout(() => {
+      typing.remove();
+      let best = null, bs = 0;
+      store().forEach(x => { const s = score(q, x.q + ' ' + x.a); if (s.c > 0 && s.s > bs) { best = x; bs = s.s; } });
+      if (best && bs >= 2) say('bot', esc(best.a) + '<span class="from">From: ' + esc(best.q) + '</span>');
+      else say('bot am--miss', 'I don’t know. Nothing approved covers this yet, so I won’t guess.');
+    }, 500);
+  }
+  function toggle(open) {
+    panel.hidden = !open; fab.classList.toggle('is-open', open); fab.setAttribute('aria-expanded', open);
+    if (open && !log.children.length) {
+      const n = store().length;
+      say('bot', n ? 'Ask me about Nimbus Pay. I only use the ' + n + ' approved answers.' : 'Nothing is approved yet, so I can’t answer anything.');
+      $('askSugg').innerHTML = ['How fast can we call the API?', 'Is our data encrypted?', 'Do you offer a free trial?'].map(t => '<button type="button" class="chip">' + t + '</button>').join('');
+    }
+    if (open) $('askIn').focus();
+  }
+  fab.addEventListener('click', () => toggle(panel.hidden));
+  $('askX').addEventListener('click', () => toggle(false));
+  $('askSugg').addEventListener('click', (e) => { const c = e.target.closest('.chip'); if (c) ask(c.textContent); });
+  $('askForm').addEventListener('submit', (e) => { e.preventDefault(); const v = $('askIn').value.trim(); if (!v) return; $('askIn').value = ''; ask(v); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !panel.hidden) toggle(false); });
+})();
+"""
+
+FAB_HTML = '''<button class="fab" id="fab" type="button" aria-label="Ask lojo" aria-expanded="false"><img src="assets/lojo-icon.png" alt=""></button>
+<section class="askp" id="askp" hidden aria-label="Ask lojo">
+  <div class="askp__head"><img src="assets/lojo-icon.png" alt=""><div><b>Ask lojo</b><span>Answers only from approved answers</span></div><a href="chat.html">Full chat</a><button class="askp__x" id="askX" type="button" aria-label="Close">×</button></div>
+  <div class="askp__log" id="askLog" aria-live="polite"></div>
+  <div class="askp__foot"><div class="chips" id="askSugg"></div><form id="askForm"><input class="text" id="askIn" placeholder="Ask a question…" aria-label="Ask lojo"><button class="btn btn--primary btn--sm" style="height:40px">Ask</button></form></div>
+</section>
+'''
+
+def page(active, title, css, body, js, desc=''):
+    FAB = FAB_HTML
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{title} · lojo</title>
+<link rel="icon" type="image/png" href="assets/lojo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Proof-of-concept screen, scoped to the four-week build. Generated from one template so the sidebar stays identical. -->
+{HEAD_JS}
+{desc}
+<style>{CSS}{SEG_CSS}{css}{DARK_BASE}{DARK_APP}</style>
+</head>
+<body>
+
+{sidebar(active)}
+
+<div class="main">
+  {TOP}
+  <main class="wrap">
+{body}
+  </main>
+</div>
+
+{"" if active == "chat" else FAB}<div class="toast" id="toast" role="status"></div>
+
+<script>
+{DATA_JS}
+{HELPERS_JS}
+{SEG_JS}
+{js}
+</script>
+</body>
+</html>
+"""

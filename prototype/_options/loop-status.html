@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loop status options · lojo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --rose:#E85D75; --peach:#FFB199; --grad:linear-gradient(135deg,#E85D75,#FFB199);
+    --ink:#241A14; --muted:#6E5A4E; --line:rgba(36,26,20,.08); --line-2:rgba(36,26,20,.16);
+    --soft:#F7F4F1; --amber:#C9A24A; --amber-soft:#F4EAD3; --success:#3F8F5F;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Manrope",system-ui,sans-serif;color:var(--ink);font-size:14px;background-color:#FBFAF9;background-image:radial-gradient(rgba(36,26,20,.12) 1px,transparent 1.3px);background-size:22px 22px}
+  .wrap{max-width:1180px;margin:0 auto;padding:40px 32px 64px}
+  h1{font-family:"Outfit";font-size:1.6rem;margin:0 0 4px}
+  .lead{color:var(--muted);margin:0 0 28px}
+  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+  .opt{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+  .opt__stage{display:flex;align-items:center;justify-content:flex-end;gap:16px;padding:22px 24px;border-bottom:1px solid var(--line);min-height:112px;background:linear-gradient(180deg,#fff,#FDFCFB)}
+  .opt__stage .greet{margin-right:auto;min-width:0}
+  .greet b,.greet span{white-space:nowrap}
+  .greet b{display:block;font-family:"Outfit";font-weight:700;font-size:1.15rem;color:#8E2F45}
+  .greet span{font-size:.64rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .opt__meta{padding:14px 20px 18px}
+  .opt__meta h3{margin:0 0 4px;font-size:.95rem}
+  .opt__meta h3 span{display:inline-block;width:22px;height:22px;border-radius:50%;background:var(--ink);color:#fff;font-size:.72rem;text-align:center;line-height:22px;margin-right:8px}
+  .opt__meta p{margin:0;color:var(--muted);font-size:.84rem;line-height:1.5}
+  button{font:inherit;color:inherit;cursor:pointer}
+  .lbl{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .chev{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;color:var(--muted)}
+
+  /* A · segmented stepper */
+  .a{display:flex;align-items:center;gap:14px;padding:10px 14px;border:1px solid var(--line-2);border-radius:12px;background:#fff}
+  .a__segs{display:flex;gap:4px}
+  .a__segs i{width:22px;height:6px;border-radius:6px;background:rgba(36,26,20,.1)}
+  .a__segs i.d{background:var(--rose)}
+  .a__segs i.n{background:var(--amber);box-shadow:0 0 0 3px var(--amber-soft)}
+  .a b{display:block;font-size:.88rem}
+
+  /* B · breadcrumb pills */
+  .b{display:flex;align-items:center;gap:2px;padding:4px;border:1px solid var(--line-2);border-radius:999px;background:#fff}
+  .b span{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 9px;border-radius:999px;font-size:.78rem;font-weight:600;color:var(--muted)}
+  .b span.d::before{content:"✓";color:var(--rose);font-weight:800}
+  .b span.n{background:var(--ink);color:#fff}
+  .b span.n::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--amber)}
+
+  /* C · ring + stats */
+  .c{display:flex;align-items:center;gap:14px;padding:8px 16px 8px 8px;border:1px solid var(--line-2);border-radius:14px;background:#fff}
+  .c svg{width:52px;height:52px}
+  .c .t{fill:none;stroke:rgba(36,26,20,.08);stroke-width:5}
+  .c .f{fill:none;stroke:url(#cg);stroke-width:5;stroke-linecap:round}
+  .c text{font:800 13px "Outfit";fill:var(--ink)}
+  .c b{display:block;font-size:.9rem}
+  .c em{font-style:normal;display:block;font-size:.76rem;color:var(--muted)}
+  .c .sep{width:1px;align-self:stretch;background:var(--line);margin:4px 2px}
+  .c .k b{font-family:"Outfit";font-size:1.1rem;color:var(--rose)}
+
+  /* D · minimal text link */
+  .d{display:flex;align-items:center;gap:10px;padding:8px 4px;border:0;background:none}
+  .d .dot{width:10px;height:10px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px var(--amber-soft);animation:p 1.8s ease-in-out infinite}
+  @keyframes p{50%{box-shadow:0 0 0 7px rgba(201,162,74,.12)}}
+  .d b{font-size:.9rem}
+  .d span{color:var(--muted);font-size:.86rem}
+  .d u{text-decoration:none;color:#B73C54;font-weight:700;font-size:.84rem;margin-left:6px}
+
+  /* E · orbit badge (icon-only) */
+  .e{position:relative;width:56px;height:56px;border-radius:50%;border:1px solid var(--line-2);background:#fff;display:grid;place-items:center}
+  .e svg{position:absolute;inset:3px;width:48px;height:48px}
+  .e .t{fill:none;stroke:rgba(232,93,117,.3);stroke-width:1.5;stroke-dasharray:2 3}
+  .e .s{fill:var(--rose)}
+  .e .s.n{fill:var(--amber)}
+  .e .s.u{fill:#fff;stroke:rgba(36,26,20,.25)}
+  .e img{width:26px;height:26px;border-radius:22%}
+  .e::after{content:"Validation · stage 4 of 5";position:absolute;right:calc(100% + 10px);top:50%;transform:translateY(-50%);white-space:nowrap;padding:7px 10px;border-radius:9px;background:var(--ink);color:#fff;font-size:.76rem;font-weight:600}
+
+  /* F · dark chip */
+  .f{display:flex;align-items:center;gap:12px;height:48px;padding:0 16px 0 6px;border:0;border-radius:12px;background:var(--ink);color:#fff}
+  .f__ic{width:36px;height:36px;border-radius:9px;background:var(--grad);display:grid;place-items:center;color:var(--ink)}
+  .f__ic svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .f .lbl{color:rgba(255,255,255,.6)}
+  .f b{display:block;font-size:.88rem}
+  .f .bar{display:flex;gap:3px;margin-left:6px}
+  .f .bar i{width:14px;height:4px;border-radius:4px;background:rgba(255,255,255,.18)}
+  .f .bar i.d{background:var(--peach)}
+  .f .bar i.n{background:var(--amber)}
+  @media (max-width:980px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E85D75"/><stop offset="1" stop-color="#FFB199"/></linearGradient></defs></svg>
+<div class="wrap">
+  <h1>Loop status · header options</h1>
+  <p class="lead">Each sits on the right of the dashboard header and opens the full loop on click. Current state: Validation, stage 4 of 5.</p>
+  <div class="grid">
+
+    <section class="opt">
+      <div class="opt__stage"><div class="greet"><b>Good evening, Sara</b><span>Wednesday 30 September</span></div>
+        <button class="a" type="button"><div class="a__segs"><i class="d"></i><i class="d"></i><i class="d"></i><i class="n"></i><i></i></div><div><span class="lbl">Stage 4 of 5</span><b>Validation</b></div><svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+      <div class="opt__meta"><h3><span>A</span>Segmented progress</h3><p>Five short bars read as a linear progress. Very scannable and calm; loses the "loop" shape but keeps the order.</p></div>
+    </section>
+
+    <section class="opt">
+      <div class="opt__stage"><div class="greet"><b>Good evening, Sara</b><span>Wednesday 30 September</span></div>
+        <button class="b" type="button"><span class="d">Source</span><span class="d">Insights</span><span class="d">Build</span><span class="n">Validation</span><span>Distribute</span></button>
+      </div>
+      <div class="opt__meta"><h3><span>B</span>Stage breadcrumb</h3><p>Names every stage in a segmented pill with the current one in ink. Most explicit; widest, so it replaces the greeting subtitle on small laptops.</p></div>
+    </section>
+
+    <section class="opt">
+      <div class="opt__stage"><div class="greet"><b>Good evening, Sara</b><span>Wednesday 30 September</span></div>
+        <button class="c" type="button">
+          <svg viewBox="0 0 52 52"><circle class="t" cx="26" cy="26" r="21"/><circle class="f" cx="26" cy="26" r="21" transform="rotate(-90 26 26)" stroke-dasharray="105.6 132"/><text x="26" y="30.5" text-anchor="middle">4/5</text></svg>
+          <div><span class="lbl">Your loop</span><b>Validation</b><em>10 drafts waiting</em></div>
+          <span class="sep"></span>
+          <div class="k"><span class="lbl">Approved</span><b>6</b></div>
+        </button>
+      </div>
+      <div class="opt__meta"><h3><span>C</span>Ring with stats</h3><p>A gradient progress ring with "4/5", the stage, what's blocking it, and one headline number. The most informative; doubles as a mini KPI.</p></div>
+    </section>
+
+    <section class="opt">
+      <div class="opt__stage"><div class="greet"><b>Good evening, Sara</b><span>Wednesday 30 September</span></div>
+        <button class="d" type="button"><span class="dot"></span><b>Validation</b><span>· stage 4 of 5</span><u>View loop →</u></button>
+      </div>
+      <div class="opt__meta"><h3><span>D</span>Quiet status line</h3><p>Just a live dot and a line of text, no box. The most restrained; lets the Up next card carry the weight.</p></div>
+    </section>
+
+    <section class="opt">
+      <div class="opt__stage"><div class="greet"><b>Good evening, Sara</b><span>Wednesday 30 September</span></div>
+        <button class="e" type="button" aria-label="Validation, stage 4 of 5">
+          <svg viewBox="0 0 48 48"><circle class="t" cx="24" cy="24" r="21"/><circle class="s" cx="24" cy="3" r="3"/><circle class="s" cx="45" cy="24" r="3"/><circle class="s" cx="24" cy="45" r="3"/><circle class="s n" cx="9.2" cy="38.8" r="3.6"/><circle class="s u" cx="3" cy="24" r="2.6"/></svg>
+          <img src="../assets/lojo-icon.png" alt="">
+        </button>
+      </div>
+      <div class="opt__meta"><h3><span>E</span>Orbit badge</h3><p>Icon-only: the lojo mark with the five stages orbiting it; the label shows on hover (shown open here). Most brand-forward and compact.</p></div>
+    </section>
+
+    <section class="opt">
+      <div class="opt__stage"><div class="greet"><b>Good evening, Sara</b><span>Wednesday 30 September</span></div>
+        <button class="f" type="button"><span class="f__ic"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><div><span class="lbl">Loop · 4 of 5</span><b>Validation</b></div><div class="bar"><i class="d"></i><i class="d"></i><i class="d"></i><i class="n"></i><i></i></div></button>
+      </div>
+      <div class="opt__meta"><h3><span>F</span>Ink chip</h3><p>A dark chip with a gradient stage icon and mini segments. Highest contrast against the light canvas; echoes the ink primary buttons.</p></div>
+    </section>
+
+  </div>
+</div>
+</body>
+</html>
