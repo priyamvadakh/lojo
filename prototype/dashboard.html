@@ -171,6 +171,55 @@
   .askp__foot{padding:10px 12px;border-top:1px solid var(--line);display:grid;gap:8px}
   .askp__foot form{display:flex;gap:8px}
   .askp__foot .chips .chip{font-size:.74rem;padding:4px 10px}
+
+  /* ---------- phone: sidebar becomes a drawer ---------- */
+  .mnav{display:none;position:fixed;top:14px;left:12px;z-index:35;width:40px;height:40px;border-radius:12px;border:1px solid var(--line-2);background:var(--panel);color:var(--ink);place-items:center;cursor:pointer;box-shadow:0 8px 20px -14px rgba(36,26,20,.5)}
+  .mnav svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+  .mscrim{display:none}
+  @media (max-width:760px){
+    body,body.is-collapsed{--side:0px}
+    .mnav{display:grid}
+    .side,body.is-collapsed .side{width:272px;transform:translateX(-120%);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+    body.is-collapsed .side__who,body.is-collapsed .nav-item .lbl,body.is-collapsed .nav-item .count,body.is-collapsed .product div{display:revert}
+    body.is-collapsed .nav-item{justify-content:flex-start;padding:0 12px}
+    body.nav-open .side{transform:none}
+    body.nav-open .mnav{left:296px;transition:left .3s cubic-bezier(.2,.8,.2,1)}
+    body.nav-open .mscrim{display:block;position:fixed;inset:0;z-index:29;background:rgba(20,14,10,.35)}
+    .side__collapse{display:none}
+    .main{margin-left:0}
+    .wrap{padding:16px 14px 80px}
+    .head{margin:-16px -14px 18px;padding:12px 14px 14px 64px;min-height:68px}
+    .head h1,.hello h1{font-size:1.3rem}
+    .hello img{display:none}
+    .head p{font-size:.84rem}
+    .mini{width:100%;justify-content:flex-start}
+    .sec{padding:16px 14px;border-radius:16px}
+    .tiles,.stats,.kpis,.adds{grid-template-columns:1fr 1fr!important}
+    .tile{min-height:140px;padding:16px 12px}
+    .tile__val{font-size:1.7rem}
+    .vs{grid-template-columns:1fr}
+    .vs .x{justify-self:center}
+    .next__main{padding:18px 16px}
+    .next__main h2{font-size:1.25rem}
+    .checks a{margin-left:0}
+    .card > table{display:block;overflow-x:auto;white-space:nowrap}
+    .doc > *,.cols > *,.card,.sec,.tiles > *{min-width:0}
+    .doc table td:last-child{white-space:nowrap}
+    .draft{flex-wrap:wrap}
+    .meter{min-width:0;width:100%}
+    .rv{grid-template-columns:1fr}
+    .list{position:static;max-height:none}
+    .detail{padding:18px 16px}
+    .acts .spacer,.acts .sub{display:none}
+    .chat{height:calc(100vh - 210px)}
+    .msg{max-width:92%}
+    .bar .text,.add{max-width:none}
+    .card__head,.card__body{padding-inline:14px}
+    .fab{right:14px;bottom:14px}
+    .askp{right:12px;left:12px;width:auto;bottom:84px}
+    .toast{left:50%}
+  }
+  @media (max-width:440px){.tiles,.stats,.kpis,.adds{grid-template-columns:1fr!important}}
   :focus-visible{outline:2px solid var(--rose);outline-offset:2px}
   @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 
@@ -410,6 +459,8 @@
   </div>
 </aside>
 
+<button class="mnav" id="mnav" type="button" aria-label="Open menu" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+<div class="mscrim" id="mscrim"></div>
 <div class="main">
   
   <main class="wrap">
@@ -730,6 +781,11 @@ function srcChip(docId, loc, warn) {
   btn.addEventListener('click', (e) => { e.stopPropagation(); pop.hidden = !pop.hidden; btn.setAttribute('aria-expanded', !pop.hidden); });
   document.addEventListener('click', (e) => { if (!e.target.closest('.me')) { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); } });
   $('resetDemo').addEventListener('click', () => { try { sessionStorage.removeItem(KEY); } catch (e) {} location.reload(); });
+  const mnav = $('mnav');
+  const setNav = (open) => { document.body.classList.toggle('nav-open', open); mnav.setAttribute('aria-expanded', open); mnav.setAttribute('aria-label', open ? 'Close menu' : 'Open menu'); };
+  mnav.addEventListener('click', () => setNav(!document.body.classList.contains('nav-open')));
+  $('mscrim').addEventListener('click', () => setNav(false));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setNav(false); });
   refreshNav();
 })();
 
