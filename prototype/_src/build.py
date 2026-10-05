@@ -409,6 +409,32 @@ DOCUMENTS = dict(
   .hit__top .sc{margin-left:auto;font-family:var(--display);font-weight:700;color:var(--rose)}
   .hit p{margin:0;font-size:.84rem}
   .folder{display:flex;gap:8px;margin-top:12px}
+  .up-hint{display:block;font-size:.74rem;color:var(--muted);text-align:right;margin-top:6px}
+  .uperr{margin:0 0 16px;padding:14px 16px;border-radius:14px;border:1px solid rgba(198,69,69,.3);background:rgba(198,69,69,.05)}
+  .uperr__h{display:flex;align-items:center;gap:10px;font-weight:700;font-size:.9rem;color:var(--error)}
+  .uperr__h button{margin-left:auto}
+  .uperr ul{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+  .uperr li{display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:.84rem;align-items:baseline}
+  .uperr li b{font-weight:600}
+  .uperr li span{color:var(--muted)}
+  .stage.is-fail{color:var(--error)}
+  .stage.is-wait{color:var(--muted)}
+  .stage.is-wait::before{content:"";width:8px;height:8px;border-radius:50%;border:2px solid currentColor}
+  .stage.is-ret{color:var(--muted)}
+  tr.is-retired td{color:var(--muted)}
+  tr.is-retired .dname{opacity:.6;text-decoration:line-through;text-decoration-color:rgba(36,26,20,.3)}
+  tr.is-failed td{background:rgba(198,69,69,.03)}
+  .why{display:block;font-size:.76rem;color:var(--error);font-weight:500;margin-top:4px;white-space:normal;max-width:420px}
+  .why.mute{color:var(--muted)}
+  .acts{white-space:nowrap;text-align:right}
+  .acts .btn{height:28px;padding:0 10px;font-size:.74rem}
+  tr.row .acts .btn--ghost{opacity:0}
+  tr.row:hover .acts .btn--ghost,tr.row .acts .btn--ghost:focus-visible{opacity:1}
+  .scope.is-pending{grid-template-columns:36px 1fr;background:rgba(217,154,43,.07);border-color:rgba(217,154,43,.35)}
+  .scope.is-pending .ok{background:rgba(217,154,43,.16);color:#94660F}
+  .scope .confirm{grid-column:2;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:4px}
+  .scope .confirm label{display:flex;gap:8px;align-items:center;font-size:.86rem;font-weight:600;cursor:pointer}
+  .scope .confirm input{width:17px;height:17px;accent-color:var(--rose)}
 """,
   body=r"""
     <div class="head">
@@ -419,8 +445,10 @@ DOCUMENTS = dict(
       </div>
       <span class="spacer"></span>
       <button class="btn btn--secondary" id="folderBtn">Send a folder</button>
-      <label class="btn btn--primary" style="cursor:pointer">Upload documents<input type="file" id="fileInput" multiple accept=".pdf,.docx,.doc,.md,.txt" hidden></label>
+      <div><label class="btn btn--primary" id="upBtn" style="cursor:pointer">Upload documents<input type="file" id="fileInput" multiple hidden></label><span class="up-hint">PDF, DOCX, MD or TXT · up to 25 MB each</span></div>
     </div>
+
+    <section class="uperr" id="upErr" hidden role="alert"></section>
 
     <section class="scope" id="scope">
       <span class="ok">✓</span>
@@ -442,7 +470,7 @@ DOCUMENTS = dict(
           <button class="btn btn--primary btn--sm" id="folderSend" style="height:40px">Send</button>
         </div>
         <table>
-          <thead><tr><th>Document</th><th class="num">Pages</th><th class="num">Passages</th><th class="num">Questions</th><th>Status</th></tr></thead>
+          <thead><tr><th>Document</th><th class="num">Pages</th><th class="num">Passages</th><th class="num">Questions</th><th>Status</th><th class="acts"><span class="sr-only" style="position:absolute;left:-9999px">Actions</span></th></tr></thead>
           <tbody id="docRows"></tbody>
         </table>
       </section>
@@ -458,30 +486,113 @@ function passagesFor(id) {
   return out;
 }
 const qsFor = (id) => allQuestions().filter(q => (q.docs || []).includes(id));
+const MAX_MB = 25, OK_EXT = ['pdf', 'docx', 'doc', 'md', 'txt'];
+const forceScope = new URLSearchParams(location.search).get('scope') === 'unconfirmed';
+ST.retired = ST.retired || {};
+function renderScope() {
+  const pending = forceScope ? !ST.__scopeOk : !ST.scope.signed;
+  const el = $('scope');
+  el.classList.toggle('is-pending', pending);
+  if (pending) {
+    // G17: before scope is confirmed, documents wait and the checkbox sits on this page
+    el.innerHTML = '<span class="ok">!</span><div><b>Confirm what’s in scope</b><span class="sub">We hold your documents until you confirm them. Personal details are not removed automatically in this phase, so only include what we agreed on.</span></div>' +
+      '<div class="confirm"><label><input type="checkbox" id="scopeChk"> These documents are in scope</label><button class="btn btn--primary btn--sm" id="scopeGo" disabled>Confirm and start processing</button></div>';
+    $('scopeChk').onchange = () => { $('scopeGo').disabled = !$('scopeChk').checked; };
+    $('scopeGo').onclick = () => { ST.scope.signed = true; ST.__scopeOk = true; save(); renderScope(); render(); toast('Scope confirmed. Processing starts now.'); };
+  }
+}
 function render() {
   const c = counts();
+  if (!$('scopeSub')) return renderRows();
   $('scopeSub').textContent = 'By ' + ST.scope.by + ' on ' + ST.scope.at + ' · personal details are not removed automatically';
-  $('docMeta').textContent = (c.docs + extra.length) + ' documents · ' + c.pages + ' pages · ' + c.passages + ' passages';
+  renderRows();
+}
+function renderRows() {
+  const c = counts();
+  const docx = ST.docx || [];
+  $('docMeta').textContent = (c.docs + extra.length + docx.length) + ' documents · ' + c.pages + ' pages · ' + c.passages + ' passages';
+  const pending = forceScope ? !ST.__scopeOk : !ST.scope.signed;
   const rows = DOCS.map(d => {
+    if (ST.retired[d.id]) return retiredRow({ id: d.id, name: d.name, ext: d.name.split('.').pop(), pages: d.pages, retiredNote: 'Retired just now by Sara Lindqvist' }, true);
     const ext = d.name.split('.').pop(), n = Math.round(d.pages * 4.6), qs = qsFor(d.id);
     let html = '<tr class="row' + (open === d.id ? ' is-open' : '') + '" data-id="' + d.id + '"><td><span class="dname"><span class="ext">' + ext + '</span>' + esc(d.name) +
       (d.faq ? ' <span class="badge badge--info">Your help pages</span>' : '') + '</span></td><td class="num">' + d.pages + '</td><td class="num">' + n + '</td><td class="num">' + qs.length + '</td>' +
-      '<td><span class="stage">✓ Indexed</span></td></tr>';
+      '<td><span class="stage">✓ Indexed</span></td><td class="acts"><button class="btn btn--ghost" data-retire="' + d.id + '">Retire</button></td></tr>';
     if (open === d.id) {
       const ps = passagesFor(d.id).slice(0, 3);
       html += '<tr class="detail"><td colspan="5"><p class="sub" style="margin:10px 0 4px">Sample passages</p>' +
         (ps.length ? ps.map(p => '<div class="passage"><em>' + esc(p.loc) + '</em>' + esc(p.text) + '</div>').join('') : '<p class="sub">No passages sampled yet.</p>') +
-        (qs.length ? '<p class="sub" style="margin:10px 0 6px">Questions found here</p><div class="chips">' + qs.map(q => '<a class="chip" href="questions.html">' + esc(q.q) + '</a>').join('') + '</div>' : '') + '</td></tr>';
+        (qs.length ? '<p class="sub" style="margin:10px 0 6px">Questions found here</p><div class="chips">' + qs.map(q => '<a class="chip" href="questions.html">' + esc(q.q) + '</a>').join('') + '</div>' : '') + '</td><td></td></tr>';
     }
     return html;
   });
-  extra.forEach(f => rows.push('<tr><td><span class="dname"><span class="ext">' + esc(f.ext) + '</span>' + esc(f.name) + '</span></td><td class="num">' + (f.pages || '–') + '</td><td class="num">' + (f.passages || '–') + '</td><td class="num">–</td><td><span class="stage ' + (f.done ? '' : 'is-run') + '">' + (f.done ? '✓ Indexed' : '<span class="spin" style="width:11px;height:11px"></span> ' + esc(f.stage)) + '</span></td></tr>'));
+  extra.forEach(f => rows.push('<tr><td><span class="dname"><span class="ext">' + esc(f.ext) + '</span>' + esc(f.name) + '</span></td><td class="num">' + (f.pages || '–') + '</td><td class="num">' + (f.passages || '–') + '</td><td class="num">–</td><td><span class="stage ' + (f.done ? '' : 'is-run') + '">' + (f.done ? '✓ Indexed' : '<span class="spin" style="width:11px;height:11px"></span> ' + esc(f.stage)) + '</span></td><td></td></tr>'));
+  docx.forEach(d => {
+    if (d.status === 'retired') { rows.push(retiredRow(d)); return; }
+    const head = '<tr class="' + (d.status === 'failed' ? 'is-failed' : '') + '"><td><span class="dname"><span class="ext">' + esc(d.ext) + '</span><span>' + esc(d.name) +
+      (d.status === 'failed' ? '<span class="why">' + esc(d.reason) + '</span>' : d.status === 'waiting' ? '<span class="why mute">' + (pending ? 'Waiting for you to confirm scope.' : 'In the queue. Processing starts in about 2 minutes.') + '</span>' : '') + '</span></span></td>' +
+      '<td class="num">–</td><td class="num">–</td><td class="num">–</td>';
+    if (d.status === 'failed') rows.push(head + '<td><span class="stage is-fail">✕ Couldn’t process</span></td><td class="acts"><button class="btn btn--secondary" data-retry="' + d.id + '">Try again</button> <button class="btn btn--ghost" style="opacity:1" data-remove="' + d.id + '">Remove</button></td></tr>');
+    else if (d.status === 'waiting') rows.push(head + '<td><span class="stage is-wait">Waiting</span></td><td class="acts"><button class="btn btn--ghost" style="opacity:1" data-remove="' + d.id + '">Cancel</button></td></tr>');
+    else if (d.status === 'running') rows.push(head + '<td><span class="stage is-run"><span class="spin" style="width:11px;height:11px"></span> ' + esc(d.stage || 'Extracting text') + '</span></td><td></td></tr>');
+    else rows.push(head.replace('<td class="num">–</td><td class="num">–</td>', '<td class="num">' + (d.pages || 4) + '</td><td class="num">' + Math.round((d.pages || 4) * 4.6) + '</td>') + '<td><span class="stage">✓ Indexed</span></td><td></td></tr>');
+  });
   $('docRows').innerHTML = rows.join('');
+}
+// G4: retired documents stay listed, greyed, and can be restored
+function retiredRow(d, base) {
+  return '<tr class="is-retired"><td><span class="dname"><span class="ext">' + esc(d.ext) + '</span><span>' + esc(d.name) + '<span class="why mute">' + esc(d.retiredNote) + '</span></span></span></td>' +
+    '<td class="num">' + (d.pages || '–') + '</td><td class="num">–</td><td class="num">–</td><td><span class="stage is-ret">Retired</span></td>' +
+    '<td class="acts"><button class="btn btn--secondary" data-restore="' + d.id + '"' + (base ? ' data-base="1"' : '') + '>Restore</button></td></tr>';
+}
+$('docRows').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  e.stopPropagation();
+  const docx = ST.docx || [];
+  if (b.dataset.retry) {
+    const d = docx.find(x => x.id === b.dataset.retry); d.status = 'running'; d.stage = 'Extracting text'; renderRows();
+    setTimeout(() => { d.status = 'failed'; d.reason = 'Still password-protected. Remove the password in your PDF app, then upload the file again.'; save(); renderRows(); toastError('Holiday policy 2025.pdf still couldn’t be processed.'); }, 1600);
+  }
+  if (b.dataset.remove) { ST.docx = docx.filter(x => x.id !== b.dataset.remove); save(); renderRows(); toast('Removed'); }
+  if (b.dataset.restore) {
+    if (b.dataset.base) delete ST.retired[b.dataset.restore]; else { const d = docx.find(x => x.id === b.dataset.restore); d.status = 'indexed'; }
+    save(); renderRows(); toast('Restored. Its passages are used for drafts again.');
+  }
+  if (b.dataset.retire) confirmRetire(b.dataset.retire);
+});
+function confirmRetire(id) {
+  const d = docById(id), qs = qsFor(id).length;
+  let dlg = $('retDlg');
+  if (!dlg) { dlg = document.createElement('dialog'); dlg.id = 'retDlg'; dlg.className = 'dlg'; document.body.appendChild(dlg); }
+  dlg.innerHTML = '<form method="dialog"><div class="dlg__b"><h3>Retire ' + esc(d.name) + '?</h3>' +
+    '<p>Retire a document when it’s out of date. Its passages stop being used for new drafts and the chat. It stays listed here, and you can restore it.</p>' +
+    (qs ? '<div class="warn" style="background:rgba(217,154,43,.1);color:#7A5710">' + qs + ' question' + (qs === 1 ? '' : 's') + ' cite this document. Approved answers that rely on it are sent back to Review.</div>' : '') +
+    '</div><div class="dlg__f"><button class="btn btn--secondary" value="cancel">Cancel</button><button class="btn btn--danger" type="button" id="retGo">Retire document</button></div></form>';
+  dlg.showModal();
+  $('retGo').onclick = () => { ST.retired[id] = true; save(); dlg.close(); open = null; renderRows(); toast(d.name + ' retired'); };
 }
 $('docRows').addEventListener('click', (e) => { const tr = e.target.closest('tr.row'); if (!tr || e.target.closest('a')) return; open = open === tr.dataset.id ? null : tr.dataset.id; render(); });
 $('scopeToggle').addEventListener('click', () => { const d = $('scopeDetail'); d.hidden = !d.hidden; $('scopeToggle').setAttribute('aria-expanded', !d.hidden); $('scopeToggle').textContent = d.hidden ? 'What’s in scope' : 'Hide'; });
+// G3: reject wrong type, too large and duplicates up front; upload the rest
+function showUploadErrors(errs) {
+  const el = $('upErr');
+  if (!errs.length) { el.hidden = true; return; }
+  el.innerHTML = '<div class="uperr__h">' + errs.length + ' file' + (errs.length === 1 ? '' : 's') + ' couldn’t be uploaded <button class="btn btn--ghost btn--sm" id="upErrX" type="button">Dismiss</button></div><ul>' +
+    errs.map(([n, why]) => '<li><b>' + esc(n) + '</b><span>' + esc(why) + '</span></li>').join('') + '</ul>';
+  el.hidden = false; $('upErrX').onclick = () => { el.hidden = true; };
+}
+window.demoUploadErrors = () => showUploadErrors([['Q3 board deck.pptx', 'This file type isn’t supported. Use PDF, DOCX, MD or TXT.'], ['Call recordings.zip', 'Too large: 212 MB. Each file can be up to 25 MB.'], ['Billing FAQ.docx', 'Already uploaded on 10 Sep. Retire the old one first if this is a newer version.']]);
 $('fileInput').addEventListener('change', (e) => {
-  [...e.target.files].forEach(f => {
+  const errs = [], names = DOCS.map(d => d.name.toLowerCase()).concat((ST.docx || []).map(d => d.name.toLowerCase()), extra.map(x => x.name.toLowerCase()));
+  const files = [...e.target.files].filter(f => {
+    const ext = (f.name.split('.').pop() || '').toLowerCase();
+    if (!OK_EXT.includes(ext)) { errs.push([f.name, 'This file type isn’t supported. Use PDF, DOCX, MD or TXT.']); return false; }
+    if (f.size > MAX_MB * 1048576) { errs.push([f.name, 'Too large: ' + Math.round(f.size / 1048576) + ' MB. Each file can be up to 25 MB.']); return false; }
+    if (names.includes(f.name.toLowerCase())) { errs.push([f.name, 'Already uploaded. Retire the old one first if this is a newer version.']); return false; }
+    return true;
+  });
+  showUploadErrors(errs);
+  files.forEach(f => {
     const item = { name: f.name, ext: (f.name.split('.').pop() || '').slice(0, 4), stage: 'Extracting text', done: false, pages: Math.max(1, Math.round(f.size / 40000)) };
     extra.push(item);
     setTimeout(() => { item.stage = 'Splitting into passages'; render(); }, 900);
@@ -499,7 +610,9 @@ $('folderSend').addEventListener('click', () => {
   toast('We’ll pull the documents once ingest@lojo.ai has view access');
 });
 
+renderScope();
 render();
+if (new URLSearchParams(location.search).get('demo') === 'upload') demoUploadErrors();
 """)
 
 # ============================================================ QUESTIONS & GAPS
@@ -524,6 +637,18 @@ QUESTIONS_PAGE = dict(
   .seg button[aria-pressed="true"].yes{background:rgba(63,143,95,.12);color:var(--success)}
   .seg button[aria-pressed="true"].no{background:rgba(36,26,20,.07);color:var(--ink)}
   .qrow.is-call{box-shadow:inset 3px 0 0 var(--amber)}
+  .qrow.is-flash{animation:flash 1.6s ease}
+  @keyframes flash{0%,40%{background:rgba(232,93,117,.12)}100%{background:transparent}}
+  .qrow .note{display:block;margin-top:6px;font-size:.78rem;color:var(--muted)}
+  .qrow .note::before{content:"Left out · ";font-weight:700}
+  .qrow .failnote{display:block;margin-top:6px;font-size:.78rem;color:var(--error)}
+  .stcell{display:grid;justify-items:end;gap:6px}
+  .stcell .btn{height:26px;padding:0 10px;font-size:.72rem}
+  .leave{grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 12px;border-radius:12px;background:var(--bg-soft)}
+  .leave input{flex:1;min-width:220px;height:36px}
+  .addmsg{flex-basis:100%;display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:10px;background:rgba(62,111,166,.08);color:var(--info);font-size:.84rem}
+  .addmsg b{color:var(--ink);font-weight:600}
+  .addmsg .btn{height:28px;font-size:.76rem;margin-left:auto}
   .gaps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
   .gap{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;gap:10px}
   .gap h3{font-family:var(--display);font-weight:700;font-size:1.02rem;margin:0}
@@ -553,11 +678,12 @@ QUESTIONS_PAGE = dict(
           <button class="chip" data-f="all" aria-pressed="true">All</button>
           <button class="chip" data-f="call" aria-pressed="false">Needs your call</button>
           <button class="chip" data-f="yes" aria-pressed="false">Matters</button>
-          <button class="chip" data-f="no" aria-pressed="false">Not relevant</button>
+          <button class="chip" data-f="no" aria-pressed="false">Left out</button>
           <button class="chip" data-f="you" aria-pressed="false">From you</button>
         </div>
         <span class="spacer"></span>
         <form class="add" id="addForm"><input class="text" id="addQ" placeholder="Add a question we missed" aria-label="Add a question"><button class="btn btn--primary">Add</button></form>
+        <div class="addmsg" id="addMsg" hidden role="status"></div>
       </div>
       <section class="card"><ul class="qlist" id="qlist"></ul></section>
     </section>
@@ -569,9 +695,13 @@ QUESTIONS_PAGE = dict(
   js=r"""
 let filter = 'all';
 const ORIGIN = { found: ['Found in documents', 'badge--muted'], faq: ['From your help pages', 'badge--info'], you: ['From you', 'badge--rose'], gap: ['From a gap', 'badge--amber'] };
+ST.asks = ST.asks || {}; ST.notes = ST.notes || {}; ST.draftFailed = ST.draftFailed || {};
+let leaving = null, flashId = null;
 function statusOf(q) {
   const r = draftByQ(q.id);
-  if (matters(q) === false) return ['Not drafted', 'st-mute'];
+  if (matters(q) === false) return ['Left out', 'st-mute'];
+  if (ST.draftFailed[q.id] === 'retrying') return ['Drafting…', 'st-q'];
+  if (ST.draftFailed[q.id]) return ['Draft failed', 'st-no'];
   if (r) {
     const s = decision(r).status;
     if (s === 'approved') return ['Approved', 'st-ok'];
@@ -586,26 +716,52 @@ function renderQ() {
   const qs = allQuestions().filter(q => filter === 'all' || (filter === 'call' && matters(q) === null) || (filter === 'yes' && matters(q) === true) || (filter === 'no' && matters(q) === false) || (filter === 'you' && q.origin === 'you'));
   $('qlist').innerHTML = qs.length ? qs.map(q => {
     const m = matters(q), [st, cls] = statusOf(q), [ol, oc] = ORIGIN[q.origin];
-    return '<li class="qrow' + (m === false ? ' is-out' : '') + (m === null ? ' is-call' : '') + '"><div><b>' + esc(q.q) + '</b><div class="qmeta"><span class="badge ' + oc + '">' + ol + '</span>' +
-      (q.docs || []).map(d => '<span class="src">' + esc(docShort(d)) + '</span>').join('') + '</div></div>' +
-      '<span class="status ' + cls + '">' + st + '</span>' +
-      '<span class="seg" role="group" aria-label="Does this matter?"><button class="yes" data-q="' + q.id + '" data-v="1" aria-pressed="' + (m === true) + '">Matters</button><button class="no" data-q="' + q.id + '" data-v="0" aria-pressed="' + (m === false) + '">Not relevant</button></span></li>';
+    const asks = ST.asks[q.id] || 0, failed = ST.draftFailed[q.id];
+    return '<li class="qrow' + (m === false ? ' is-out' : '') + (m === null ? ' is-call' : '') + (flashId === q.id ? ' is-flash' : '') + '" id="row-' + q.id + '"><div><b>' + esc(q.q) + '</b><div class="qmeta"><span class="badge ' + oc + '">' + ol + '</span>' +
+      (asks >= 2 ? '<span class="badge badge--amber" title="Asked in the chat or added by your team">Asked ' + asks + ' times</span>' : '') +
+      (q.docs || []).map(d => '<span class="src">' + esc(docShort(d)) + '</span>').join('') + '</div>' +
+      (m === false && ST.notes[q.id] ? '<span class="note">' + esc(ST.notes[q.id]) + '</span>' : '') +
+      (failed && failed !== 'retrying' && m !== false ? '<span class="failnote">' + esc(failed) + '</span>' : '') + '</div>' +
+      '<span class="stcell"><span class="status ' + cls + '">' + (failed === 'retrying' ? '<span class="spin" style="width:10px;height:10px"></span> ' : '') + st + '</span>' +
+      (failed && failed !== 'retrying' && m !== false ? '<button class="btn btn--secondary" data-retry="' + q.id + '">Try again</button>' : '') + '</span>' +
+      '<span class="seg" role="group" aria-label="Does this matter?"><button class="yes" data-q="' + q.id + '" data-v="1" aria-pressed="' + (m === true) + '">Matters</button><button class="no" data-q="' + q.id + '" data-v="0" aria-pressed="' + (m === false) + '">' + (m === false ? 'Left out' : 'Leave out') + '</button></span>' +
+      (leaving === q.id ? '<div class="leave"><input class="text" id="leaveNote" placeholder="Why leave it out? (optional) e.g. we don’t offer this" aria-label="Note"><button class="btn btn--primary btn--sm" data-leave-go="' + q.id + '">Leave out</button><button class="btn btn--ghost btn--sm" data-leave-x="1">Cancel</button></div>' : '') + '</li>';
   }).join('') : '<li class="empty"><b>Nothing here</b>Try another filter.</li>';
   const c = counts();
   $('nQ').textContent = c.questions; $('nG').textContent = c.gaps;
 }
 $('qlist').addEventListener('click', (e) => {
+  const r = e.target.closest('[data-retry]');
+  if (r) { const id = r.dataset.retry; ST.draftFailed[id] = 'retrying'; renderQ();
+    setTimeout(() => { delete ST.draftFailed[id]; save(); renderQ(); toast('Drafted. It’s waiting in Review.'); }, 1500); return; }
+  if (e.target.closest('[data-leave-x]')) { leaving = null; renderQ(); return; }
+  const g = e.target.closest('[data-leave-go]');
+  if (g) { const id = g.dataset.leaveGo, n = $('leaveNote').value.trim(); ST.matters[id] = false; if (n) ST.notes[id] = n; else delete ST.notes[id]; leaving = null; save(); renderQ(); toast('Left out. It won’t be drafted.'); return; }
   const b = e.target.closest('[data-q]'); if (!b) return;
-  ST.matters[b.dataset.q] = b.dataset.v === '1'; save(); renderQ();
+  if (b.dataset.v === '0' && matters(allQuestions().find(q => q.id === b.dataset.q)) !== false) { leaving = b.dataset.q; renderQ(); $('leaveNote').focus(); return; }
+  ST.matters[b.dataset.q] = b.dataset.v === '1'; if (b.dataset.v === '1') delete ST.notes[b.dataset.q]; save(); renderQ();
 });
+$('qlist').addEventListener('keydown', (e) => { if (e.target.id === 'leaveNote' && e.key === 'Enter') { e.preventDefault(); document.querySelector('[data-leave-go]').click(); } });
 $('filters').addEventListener('click', (e) => {
   const b = e.target.closest('[data-f]'); if (!b) return;
   filter = b.dataset.f; document.querySelectorAll('#filters .chip').forEach(x => x.setAttribute('aria-pressed', x === b)); renderQ();
 });
+$('addQ').addEventListener('input', () => { $('addMsg').hidden = true; });
 $('addForm').addEventListener('submit', (e) => {
   e.preventDefault();
   let v = $('addQ').value.trim(); if (!v) return;
   if (!v.endsWith('?')) v += '?';
+  // G6: already in the list — count the ask instead of adding a copy
+  const norm = (s) => s.toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim();
+  const dup = allQuestions().find(q => norm(q.q) === norm(v));
+  if (dup) {
+    ST.asks[dup.id] = Math.max(2, (ST.asks[dup.id] || 1) + 1); save();
+    $('addMsg').innerHTML = '<span>Already in the list: <b>' + esc(dup.q) + '</b> · now asked ' + ST.asks[dup.id] + ' times.</span><button class="btn btn--secondary" type="button" id="showDup">Show it</button>';
+    $('addMsg').hidden = false;
+    $('showDup').onclick = () => { filter = 'all'; document.querySelectorAll('#filters .chip').forEach(x => x.setAttribute('aria-pressed', x.dataset.f === 'all')); flashId = dup.id; renderQ(); $('row-' + dup.id).scrollIntoView({ block: 'center', behavior: 'smooth' }); $('addMsg').hidden = true; };
+    renderQ(); return;
+  }
+  $('addMsg').hidden = true;
   ST.extra.push({ id: 'x' + Date.now(), q: v, origin: 'you', docs: [] });
   save(); $('addQ').value = ''; renderQ(); toast('Added. It joins the same drafting queue.');
 });
@@ -639,6 +795,10 @@ function show(tab) {
 }
 document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => { show(t.dataset.tab); history.replaceState(null, '', t.dataset.tab === 'g' ? '#gaps' : '#'); }));
 renderQ(); renderG(); show(location.hash === '#gaps' ? 'g' : 'q');
+const QD = new URLSearchParams(location.search).get('demo');
+if (QD === 'dup') { $('addQ').value = 'What are the API rate limits'; $('addForm').requestSubmit(); }
+if (QD === 'leave') { leaving = 'q16'; renderQ(); $('row-q16').scrollIntoView({ block: 'center' }); $('leaveNote').focus(); }
+if (QD === 'failed') $('row-q17').scrollIntoView({ block: 'center' });
 """)
 
 # ============================================================ REVIEW
@@ -681,6 +841,18 @@ REVIEW = dict(
   .quote .qtop b{font-size:.8rem}
   .quote .qtop em{font-style:normal;color:var(--muted);font-size:.74rem}
   .quote p{margin:0;font-size:.86rem}
+  .quote .more{border:0;background:none;padding:0;margin-top:8px;font-size:.76rem;font-weight:700;color:#B73C54;cursor:pointer}
+  .quote .full{margin-top:10px;padding:12px 14px;border-radius:10px;background:var(--bg-soft);font-size:.84rem;line-height:1.65;color:var(--muted)}
+  .quote .full mark{background:rgba(255,177,153,.55);color:var(--ink);padding:1px 2px;border-radius:3px}
+  :root[data-theme="dark"] .quote .full mark{background:rgba(232,93,117,.35)}
+  .other{display:grid;grid-template-columns:36px 1fr;gap:12px;align-items:start;padding:14px 16px;border-radius:12px;background:rgba(62,111,166,.08);border:1px solid rgba(62,111,166,.25);margin-bottom:18px;font-size:.88rem}
+  .other .av{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#7A8BA6,#B3C2D6);color:#fff;font-weight:800;font-size:.76rem;display:grid;place-items:center}
+  .other b{display:block}
+  .other .btns{display:flex;gap:8px;margin-top:10px}
+  .hist{margin:0 0 22px;border:1px solid var(--line);border-radius:12px;padding:0 14px}
+  .hist summary{cursor:pointer;padding:12px 0;font-size:.84rem;font-weight:700;color:var(--muted)}
+  .hist ol{margin:0 0 12px;padding-left:20px;display:grid;gap:10px;font-size:.84rem}
+  .hist li span{display:block;color:var(--error);font-size:.76rem;font-weight:600;margin-top:2px}
   .prev{margin:0 0 22px;padding:12px 14px;border-left:3px solid var(--line-2);color:var(--muted);font-size:.84rem}
   .prev b{color:var(--ink)}
   .acts{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-top:18px;border-top:1px solid var(--line)}
@@ -730,13 +902,39 @@ REVIEW = dict(
 let tab = 'pending', sel = null, mode = 'view';
 const picked = new Set();
 const REASONS = ['Wrong answer', 'Outdated source', 'Missing detail', 'Not a question we answer'];
+const openFull = new Set();
+const CONTEXT = {
+  'd1|p. 4': ['Plans and features. Every plan includes the help centre, the chat and email support. ', ' Starter workspaces sign in with email or with Google. An Owner turns single sign-on on under Settings → Security.'],
+  'd5|Brightline call, 12 Aug': ['Brightline asked about access for their 40-person support team. ', ' They want to roll it out before their October audit. Follow-up: send the SSO setup guide.'],
+  'd2|Security & login · 9 months old': ['Security & login. Every account is protected by two-step verification. ', ' Contact sales to enable it. Last updated 14 January.'],
+  'd4|§2': ['§2 Cancelling a subscription. A workspace Owner can cancel at any time from Billing. ', ' Refunds go back to the original payment method within 10 working days.'],
+  'd1|p. 2': ['Starter is for small teams getting started. ', ' Teams that need more move to Growth, which includes 15 seats and 25,000 transactions a month.'],
+  'd3|pp. 2–4': ['Before you start, make sure you are a workspace Owner and are on Growth or Scale. ', ' Test the connection by signing in from a private window before you turn it on for everyone.'],
+  'd1|p. 6': ['Changing plans. You can change plan at any time from Billing. ', ' Your invoice shows the change on its own line.'],
+  'd6|p. 1': ['Welcome to Nimbus Pay. Here is what happens in your first month. ', ' Growth customers get a 30-minute kickoff and our onboarding guides.'],
+  'd9|§1': ['§1 Paying for Nimbus Pay. ', ' Prices are shown in euros and charged in your local currency.'],
+  'd9|§4': ['§4 Invoices. ', ' Invoices are sent on the first working day of the month and are due within 30 days.'],
+  'd1|p. 5': ['Billing. ', ' Card payments are taken on the same day each month.'],
+  'd8|Rate limits': ['Rate limits keep the API fast for everyone. ', ' Limits apply per workspace, not per API key.'],
+  'd8|429 responses': ['When you go over the limit. ', ' Retry after the number of seconds given, and back off further if it happens again.'],
+  'd10|§2': ['§2 Responding to a dispute. ', ' Late evidence can’t be added once the card network has started its review.'],
+  'd10|§4': ['§4 After you respond. ', ' We email the outcome to the workspace Owner as soon as we hear back.'],
+  'd7|p. 3': ['Encryption. Data in transit is encrypted with TLS 1.2 or higher. ', ' Encryption keys are rotated every 90 days.'],
+  'd7|p. 2': ['Where your data lives. ', ' Backups stay in the same region and are kept for 35 days.'],
+  'd7|p. 8': ['Your data, your choice. ', ' Exports include documents, questions and approved answers.'],
+  'd2|Exporting your data': ['Exporting your data. Only Owners and Admins can export. ', ' Large exports are emailed to you as a download link.'],
+  'd4|§3': ['§3 Annual plans. ', ' Monthly plans are not refunded after the first 30 days.'],
+  'd9|§2': ['§2 Renewals. ', ' We email a reminder 30 days before each renewal.'],
+};
 const Q = (r) => QUESTIONS.find(q => q.id === r.qid).q;
 const inTab = (r) => { const s = decision(r).status; return tab === 'pending' ? (s === 'pending' || s === 'redrafting') : s === tab; };
 function badges(r) {
   const d = decision(r); let b = '';
   if (r.conflict) b += '<span class="badge badge--amber">Sources disagree</span>';
   if (r.src.length > 1 && !r.conflict) b += '<span class="badge badge--muted">' + r.src.length + ' sources</span>';
-  if (d.redrafted) b += '<span class="badge badge--info">Redrafted</span>';
+  if (d.redrafted) b += '<span class="badge badge--info">' + (d.redrafted === 2 ? 'Rewritten twice' : 'Redrafted') + '</span>';
+  if (ST.others && ST.others[r.id] && d.status === 'pending') b += '<span class="badge badge--rose">Decided by ' + esc(ST.others[r.id].by.split(' ')[0]) + '</span>';
+  if (d.by) b += '<span class="badge badge--muted">By ' + esc(d.by.split(' ')[0]) + '</span>';
   if (d.edited) b += '<span class="badge badge--muted">Edited</span>';
   return b;
 }
@@ -750,7 +948,7 @@ function renderList() {
   const pickable = tab === 'pending';
   [...picked].forEach(id => { if (!list.some(r => r.id === id && decision(r).status === 'pending')) picked.delete(id); });
   $('items').innerHTML = list.length ? list.map(r => '<li class="item' + (r.id === sel ? ' is-sel' : '') + (picked.has(r.id) ? ' is-picked' : '') + '" data-id="' + r.id + '">' +
-    (pickable ? '<input type="checkbox" class="pick" data-pick="' + r.id + '" aria-label="Select: ' + esc(Q(r)) + '"' + (picked.has(r.id) ? ' checked' : '') + (decision(r).status !== 'pending' ? ' disabled' : '') + '>' : '<span></span>') +
+    (pickable ? '<input type="checkbox" class="pick" data-pick="' + r.id + '" aria-label="Select: ' + esc(Q(r)) + '"' + (picked.has(r.id) ? ' checked' : '') + (decision(r).status !== 'pending' || (ST.others && ST.others[r.id]) ? ' disabled' : '') + '>' : '<span></span>') +
     '<b>' + esc(Q(r)) + '</b><span class="meta">' + (badges(r) || '<span class="badge badge--muted">1 source</span>') + '</span></li>').join('')
     : '<li class="empty"><b>' + (tab === 'pending' ? 'Nothing to review.' : 'Nothing here yet.') + '</b>' + (tab === 'pending' ? 'The first batch is done.' : '') + '</li>';
   renderBulk(list.filter(r => decision(r).status === 'pending'));
@@ -773,29 +971,40 @@ function renderDetail() {
   if (!r) { $('detail').innerHTML = '<div class="empty"><b>Nothing to review. The loop is running.</b>Approved answers are in the store; try them in the chat.</div>'; return; }
   const d = decision(r), ans = answerOf(r);
   let h = '<div class="meta" style="display:flex;gap:6px;flex-wrap:wrap">' + badges(r) + '</div><h2>' + esc(Q(r)) + '</h2>';
-  if (d.status === 'approved') h += '<div class="done-note ok">✓ Approved' + (d.at ? ' · ' + esc(d.at) : '') + '. It’s in the store and the chat can use it.</div>';
+  const other = ST.others && ST.others[r.id];
+  // G10: someone else decided this draft while it was open here
+  if (other && d.status === 'pending') h += '<div class="other"><span class="av">' + esc(other.by.split(' ').map(x => x[0]).join('')) + '</span><div><b>' + esc(other.by) + ' ' + esc(other.action) + ' this ' + esc(other.when) + '.</b>' +
+    'Your screen was out of date, so nothing you do here will change it. Their decision stands.<div class="btns"><button class="btn btn--primary btn--sm" data-a="ackOther">Got it, next draft</button><button class="btn btn--ghost btn--sm" data-a="seeOther">See their version</button></div></div></div>';
+  if (d.status === 'approved') h += '<div class="done-note ok">✓ Approved' + (d.by ? ' by ' + esc(d.by) : '') + (d.at ? ' · ' + esc(d.at) : '') + '. It’s in the store and the chat can use it.</div>';
   if (d.status === 'final') h += '<div class="done-note no">Rejected twice (' + esc(d.reason) + '). Write the answer yourself with Edit, or leave it out.</div>';
   if (d.status === 'redrafting') {
     h += '<div class="answer" style="display:flex;gap:10px;align-items:center;color:var(--muted)"><span class="spin"></span>Writing it again with your reason: “' + esc(d.reason) + '”</div>';
   } else if (mode === 'edit') {
     h += '<p class="seclbl">Your answer</p><textarea class="text" id="editBox" style="min-height:120px;margin-bottom:22px">' + esc(ans) + '</textarea>';
   } else {
-    h += '<p class="seclbl">' + (d.redrafted ? 'Rewritten draft' : 'Draft answer') + '</p><p class="answer">' + esc(ans) + '</p>';
+    h += '<p class="seclbl">' + (d.redrafted === 2 ? 'Third draft' : d.redrafted ? 'Rewritten draft' : 'Draft answer') + '</p><div class="answer">' + md(ans) + '</div>';
   }
-  if (d.redrafted && d.prev) h += '<p class="prev"><b>First draft, rejected</b> (' + esc(d.reason) + '): ' + esc(d.prev) + '</p>';
+  // G14: a draft rewritten more than once keeps its history
+  if (d.history && d.history.length) h += '<details class="hist"><summary>Earlier drafts (' + d.history.length + ')</summary><ol>' + d.history.map(x => '<li>' + esc(x.text) + '<span>Rejected · ' + esc(x.reason) + '</span></li>').join('') + '</ol></details>';
+  else if (d.redrafted && d.prev) h += '<p class="prev"><b>First draft, rejected</b> (' + esc(d.reason) + '): ' + esc(d.prev) + '</p>';
   h += '<p class="seclbl">Where it came from</p><div class="quotes">' + r.src.map(([doc, loc, text]) => {
     const warn = r.conflict === doc;
-    return '<div class="quote' + (warn ? ' is-warn' : '') + '"><div class="qtop"><b>' + esc(docShort(doc)) + '</b><em>' + esc(loc) + '</em>' + (warn ? '<span class="badge badge--amber">Conflicts</span>' : '') + '</div><p>“' + esc(text) + '”</p></div>';
+    const key = doc + '|' + loc, ctx = CONTEXT[key] || ['', ''], openQ = openFull.has(key);
+    // G9: the whole passage, with the quoted words highlighted
+    return '<div class="quote' + (warn ? ' is-warn' : '') + '"><div class="qtop"><b>' + esc(docShort(doc)) + '</b><em>' + esc(loc) + '</em>' + (warn ? '<span class="badge badge--amber">Conflicts</span>' : '') + '</div><p>“' + esc(text) + '”</p>' +
+      (openQ ? '<div class="full">' + esc(ctx[0]) + '<mark>' + esc(text) + '</mark>' + esc(ctx[1]) + '</div>' : '') +
+      '<button class="more" type="button" data-full="' + esc(key) + '" aria-expanded="' + openQ + '">' + (openQ ? 'Hide full passage' : 'Show full passage') + '</button></div>';
   }).join('') + '</div>';
   if (mode === 'reject') {
     h += '<div class="reject"><label class="seclbl" for="why" style="margin:0">Reason</label><select class="text" id="why">' + REASONS.map(x => '<option>' + x + '</option>').join('') + '</select>' +
       '<textarea class="text" id="note" placeholder="What should change? (optional)" style="min-height:70px"></textarea>' +
-      '<p class="sub">' + (d.redrafted ? 'This draft was already rewritten once. Rejecting it again leaves it for a human answer.' : 'The agent writes it again once, using your reason.') + '</p></div>';
+      '<p class="sub">' + (d.redrafted === 2 ? 'This draft has been rewritten twice. Rejecting it again leaves it for a human answer.' : d.redrafted ? 'This draft was already rewritten once. Rejecting it again leaves it for a human answer.' : 'The agent writes it again once, using your reason.') + '</p></div>';
   }
   let acts = '';
   if (d.status === 'redrafting') acts = '';
   else if (mode === 'edit') acts = '<button class="btn btn--primary" data-a="save">Save &amp; approve</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
   else if (mode === 'reject') acts = '<button class="btn btn--danger" data-a="confirm">' + (d.redrafted ? 'Reject' : 'Reject &amp; rewrite') + '</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
+  else if (d.status === 'pending' && ST.others && ST.others[r.id]) acts = '';
   else if (d.status === 'pending') acts = '<button class="btn btn--primary" data-a="approve">Approve <kbd>A</kbd></button><button class="btn btn--secondary" data-a="edit">Edit &amp; approve <kbd>E</kbd></button><button class="btn btn--danger" data-a="reject">Reject <kbd>R</kbd></button><span class="spacer"></span><span class="sub"><kbd>J</kbd> <kbd>K</kbd> to move</span>';
   else if (d.status === 'final') acts = '<button class="btn btn--primary" data-a="edit">Write the answer</button><button class="btn btn--ghost" data-a="undo">Back to review</button>';
   else acts = '<button class="btn btn--ghost" data-a="undo">Undo approval</button>';
@@ -816,6 +1025,10 @@ function act(a) {
   const d = ST.decisions[r.id] = ST.decisions[r.id] || { status: 'pending' };
   const today = new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }).replace(',', '');
   if (a === 'approve') { d.status = 'approved'; d.at = today; toast('Approved'); mode = 'view'; save(); next(); }
+  if (a === 'ackOther' || a === 'seeOther') {
+    const o = ST.others[r.id]; d.status = 'approved'; d.by = o.by; d.at = o.when; delete ST.others[r.id]; save();
+    if (a === 'ackOther') { next(); } else { tab = 'approved'; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === 'approved')); sel = r.id; }
+  }
   if (a === 'edit') mode = 'edit';
   if (a === 'reject') mode = 'reject';
   if (a === 'cancel') mode = 'view';
@@ -830,21 +1043,24 @@ function act(a) {
     mode = 'view';
     if (d.redrafted) { d.status = 'final'; d.reason = reason; toast('Left for a human answer'); save(); next(); }
     else {
-      d.status = 'redrafting'; d.reason = reason; d.prev = answerOf(r); save();
+      d.status = 'redrafting'; d.reason = reason; d.prev = answerOf(r); d.history = (d.history || []).concat([{ text: answerOf(r), reason }]); save();
       const id = r.id;
       setTimeout(() => { const x = ST.decisions[id]; x.status = 'pending'; x.redrafted = true; save(); if (sel === id || tab === 'pending') render(); toast('Rewritten once. Have another look.'); }, 1500);
     }
   }
   render();
 }
-$('detail').addEventListener('click', (e) => { const b = e.target.closest('[data-a]'); if (b) act(b.dataset.a); });
+$('detail').addEventListener('click', (e) => {
+  const f = e.target.closest('[data-full]'); if (f) { const k = f.dataset.full; openFull.has(k) ? openFull.delete(k) : openFull.add(k); renderDetail(); return; }
+  const b = e.target.closest('[data-a]'); if (b) act(b.dataset.a);
+});
 $('items').addEventListener('click', (e) => {
   const cb = e.target.closest('[data-pick]');
   if (cb) { cb.checked ? picked.add(cb.dataset.pick) : picked.delete(cb.dataset.pick); renderList(); return; }
   const li = e.target.closest('[data-id]'); if (li) { sel = li.dataset.id; mode = 'view'; render(); }
 });
 $('pickAll').addEventListener('change', () => {
-  const open = DRAFTS.filter(r => inTab(r) && decision(r).status === 'pending');
+  const open = DRAFTS.filter(r => inTab(r) && decision(r).status === 'pending' && !(ST.others && ST.others[r.id]));
   if ($('pickAll').checked) open.forEach(r => picked.add(r.id)); else picked.clear();
   renderList();
 });
@@ -892,6 +1108,8 @@ document.addEventListener('keydown', (e) => {
   }
   if (k === 'escape' && mode !== 'view') act('cancel');
 });
+const RP = new URLSearchParams(location.search);
+if (RP.get('sel')) { sel = RP.get('sel'); if (RP.get('full')) { const r = DRAFTS.find(x => x.id === sel); if (r) openFull.add(r.src[0][0] + '|' + r.src[0][1]); } }
 render();
 """)
 
@@ -905,6 +1123,7 @@ APPROVED = dict(
   .ans{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 20px}
   .ans h3{font-family:var(--display);font-weight:700;font-size:1rem;margin:0 0 6px}
   .ans p{margin:0 0 10px;font-size:.9rem}
+  .ansbody{margin:0 0 10px;font-size:.9rem}
   .ans .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
   .ans .by{margin-left:auto;color:var(--muted);font-size:.76rem}
 """,
@@ -928,7 +1147,7 @@ function render() {
   const f = $('filter').value.trim().toLowerCase(), all = approved();
   const list = all.filter(x => !f || (x.q + ' ' + x.a).toLowerCase().includes(f));
   $('meta').textContent = all.length + ' approved of ' + DRAFTS.length + ' drafts';
-  $('alist').innerHTML = list.length ? list.map(x => '<article class="ans"><h3>' + esc(x.q) + '</h3><p>' + esc(x.a) + '</p><div class="meta">' +
+  $('alist').innerHTML = list.length ? list.map(x => '<article class="ans"><h3>' + esc(x.q) + '</h3><div class="ansbody">' + md(x.a) + '</div><div class="meta">' +
     x.r.src.map(([d, loc]) => srcChip(d, loc)).join('') + (x.d.edited ? '<span class="badge badge--muted">Edited</span>' : '') + (x.d.redrafted ? '<span class="badge badge--info">Redrafted</span>' : '') +
     '<span class="by">Approved' + (x.d.at ? ' · ' + esc(x.d.at) : '') + '</span></div></article>').join('')
     : '<div class="card empty"><b>' + (all.length ? 'No matches' : 'Nothing approved yet') + '</b>' + (all.length ? 'Try another word.' : '<a href="review.html">Review the first batch</a> to fill the store.') + '</div>';
@@ -939,8 +1158,9 @@ function download(name, text, type) {
   a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 const rows = () => approved().map(x => ({ question: x.q, answer: x.a, sources: x.r.src.map(([d, loc]) => docById(d).name + ' (' + loc + ')'), edited: !!x.d.edited, approved: x.d.at || '' }));
-$('json').addEventListener('click', () => { download('nimbus-pay-approved-answers.json', JSON.stringify(rows(), null, 2), 'application/json'); toast('Exported ' + rows().length + ' answers'); });
-$('csv').addEventListener('click', () => {
+function exportGuard(run) { if (!navigator.onLine || new URLSearchParams(location.search).get('fail') === 'export') { toastError('Export failed. Your answers are safe; check your connection.', run); return false; } return true; }
+$('json').addEventListener('click', () => { if (!exportGuard(() => $('json').click())) return; download('nimbus-pay-approved-answers.json', JSON.stringify(rows(), null, 2), 'application/json'); toast('Exported ' + rows().length + ' answers'); });
+$('csv').addEventListener('click', () => { if (!exportGuard(() => $('csv').click())) return;
   const q = (s) => '"' + String(s).replace(/"/g, '""') + '"';
   const csv = ['question,answer,sources,edited,approved'].concat(rows().map(r => [r.question, r.answer, r.sources.join('; '), r.edited, r.approved].map(q).join(','))).join('\n');
   download('nimbus-pay-approved-answers.csv', csv, 'text/csv'); toast('Exported ' + rows().length + ' answers');
@@ -993,11 +1213,14 @@ function ask(q) {
   const typing = bubble('bot', '<span class="spin"></span>');
   setTimeout(() => {
     typing.remove();
+    if (SMALLTALK.test(q)) { bubble('bot', esc(smalltalkReply(q))); countChat('smalltalk'); return; }
     let best = null, bs = 0;
     store().forEach(x => { const s = score(q, x.q + ' ' + x.a); if (s.c > 0 && s.s > bs) { best = x; bs = s.s; } });
     if (best && bs >= 2) {
-      bubble('bot', esc(best.a) + '<span class="from">From the approved answer: ' + esc(best.q) + '</span><div class="srcs">' + best.r.src.map(([d, loc]) => srcChip(d, loc)).join('') + '</div>');
+      countChat('answered');
+      bubble('bot', md(best.a) + '<span class="from">From the approved answer: ' + esc(best.q) + '</span><div class="srcs">' + best.r.src.map(([d, loc]) => srcChip(d, loc)).join('') + '</div>');
     } else {
+      countChat('declined');
       const b = bubble('bot miss', 'I don’t know. Nothing approved covers this yet, so I won’t guess.<br><button class="btn btn--secondary btn--sm" type="button">Add it to your questions</button>');
       b.querySelector('button').addEventListener('click', (e) => {
         const v = q.endsWith('?') ? q : q + '?';
@@ -1010,10 +1233,11 @@ function ask(q) {
 const n = store().length;
 $('chatSub').textContent = 'It answers only from the ' + n + ' approved answer' + (n === 1 ? '' : 's') + ', shows where each answer came from, and says so when it doesn’t know.';
 bubble('bot', n ? 'Ask me about Nimbus Pay. I only use the ' + n + ' approved answers.' : 'Nothing is approved yet, so I can’t answer anything. <a href="review.html">Review the first batch</a> to fill the store.');
-const SUGG = ['Can Starter teams get more seats?', 'How fast can we call the API?', 'Is our data encrypted?', 'Do you offer a free trial?'];
+const SUGG = ['Hi', 'How fast can we call the API?', 'Is our data encrypted?', 'Do you offer a free trial?', 'Thanks'];
 $('sugg').innerHTML = SUGG.map(s => '<button type="button" class="chip">' + esc(s) + '</button>').join('');
 $('sugg').addEventListener('click', (e) => { const c = e.target.closest('.chip'); if (c) ask(c.textContent); });
 $('form').addEventListener('submit', (e) => { e.preventDefault(); const v = $('ask').value.trim(); if (!v) return; $('ask').value = ''; ask(v); });
+const SAY = new URLSearchParams(location.search).get('say'); if (SAY) SAY.split('|').forEach((q, i) => setTimeout(() => ask(q), i * 900));
 """)
 
 # ============================================================ READOUT
@@ -1075,6 +1299,16 @@ READOUT = dict(
         </ul>
       </div></section>
 
+      <section class="card"><div class="card__head"><h2>How the chat did</h2><span class="sub">Questions people asked in the chat this phase</span></div><div class="card__body">
+        <div class="tiles">
+          <div class="tile"><b id="chA">0</b><span>questions asked</span></div>
+          <div class="tile is-key"><b id="chOk">0</b><span>answered from approved answers</span></div>
+          <div class="tile"><b id="chNo">0</b><span>declined: “I don’t know”</span></div>
+          <div class="tile"><b id="chRate">0%</b><span>answer rate</span></div>
+        </div>
+        <p class="sub" style="margin-top:12px" id="chNote"></p>
+      </div></section>
+
       <section class="card"><div class="card__head"><h2>What it cost to process</h2><span class="sub">One fixed model, called through our proxy</span></div><div class="card__body">
         <table>
           <tr><td>Documents processed</td><td id="cDocs"></td></tr>
@@ -1111,6 +1345,10 @@ function render() {
   const rewritten = DRAFTS.filter(r => decision(r).redrafted).length;
   $('tQ').textContent = c.questions; $('tG').textContent = c.gaps; $('tA').textContent = c.approved + ' / ' + c.drafts;
   $('fEdit').textContent = 'Your reviewer approved ' + c.approved + ' drafts, edited ' + edited + ' before approving, and sent ' + rewritten + ' back to be written again.';
+  const ch = ST.chat || { asked: 0, answered: 0, declined: 0, smalltalk: 0 };
+  $('chA').textContent = ch.asked; $('chOk').textContent = ch.answered; $('chNo').textContent = ch.declined;
+  $('chRate').textContent = (ch.asked ? Math.round(ch.answered / ch.asked * 100) : 0) + '%';
+  $('chNote').textContent = 'Greetings and thanks (' + (ch.smalltalk || 0) + ') aren’t counted. Declined questions are added to Questions & gaps so they can be answered next.';
   $('cDocs').textContent = c.docs; $('cPages').textContent = c.pages; $('cPass').textContent = c.passages;
   const d = ST.decision;
   $('decision').innerHTML = d ? '<div class="decided ' + (d === 'go' ? 'go' : 'stop') + '">' + (d === 'go' ? '✓ You chose to go on to the full build. We’ll send a plan for the twelve weeks.' : 'You chose not to go on for now. You keep the approved answers as an export.') +
@@ -1122,7 +1360,88 @@ function render() {
 render();
 """)
 
-PAGES = {'dashboard': OVERVIEW, 'documents': DOCUMENTS, 'questions': QUESTIONS_PAGE, 'review': REVIEW, 'approved': APPROVED, 'chat': CHAT, 'readout': READOUT}
+
+STATES = dict(
+  active='states', title='Design states',
+  css=r"""
+  .grp{margin-bottom:26px}
+  .grp h2{font-size:.8rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8E2F45;margin:0 0 12px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+  .st{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+  .st__top{display:flex;align-items:center;gap:8px}
+  .st__g{font-family:ui-monospace,Menlo,monospace;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:6px;background:var(--bg-soft);color:var(--muted)}
+  .st b{font-size:.92rem}
+  .st p{margin:0;color:var(--muted);font-size:.82rem}
+  .st .links{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:4px}
+  .st .links .btn{height:28px;padding:0 11px;font-size:.74rem}
+""",
+  body=r"""
+    <div class="head">
+      <div>
+        <p class="label">For review</p>
+        <h1>Design states</h1>
+        <p>Every screen and state from DESIGN_GAPS.md, designed into the prototype. Open one to see it in place. G numbers match the file.</p>
+      </div>
+    </div>
+    <div id="groups"></div>
+""",
+  js=r"""
+const L = (href, label) => ({ href, label });
+const B = (fn, label) => ({ fn, label });
+const GROUPS = [
+  ['Signing in', [
+    ['G25', 'Email, then password', 'Two steps. The email shows as a chip with “Change” on the password step.', [L('login.html', 'Open sign in')]],
+    ['G26', 'Forgot your password?', 'Ask for a reset link, then a “Check your email” page with a resend timer.', [L('auth.html?s=forgot', 'Forgot'), L('auth.html?s=sent&email=sara@nimbuspay.com', 'Check your email')]],
+    ['G27', 'Set your password', 'From an invite or a reset email. Live rules: length, a number, both match.', [L('auth.html?s=set&from=invite', 'From invite'), L('auth.html?s=set&from=reset', 'From reset')]],
+    ['G24', 'Your details', 'First sign-in with a missing last name (e.g. Microsoft didn’t share it).', [L('auth.html?s=details', 'Open')]],
+    ['G28', 'Error, notice, expired', 'Sign-in error with a reference, signed-out notice, expired link.', [L('auth.html?s=error', 'Error'), L('auth.html?s=notice', 'Notice'), L('auth.html?s=expired', 'Expired')]],
+    ['G15', 'Choose a region', 'For people in more than one region, plus “can’t reach it” and “no access”.', [L('auth.html?s=region', 'Choose'), L('auth.html?s=unreachable', 'Can’t reach'), L('auth.html?s=noaccess', 'No access')]],
+    ['G16', 'Loading and failed start', 'Signing-in progress, and “lojo couldn’t start”.', [L('auth.html?s=loading&next=states.html', 'Loading'), L('auth.html?s=failed', 'Couldn’t start')]],
+  ]],
+  ['Account menu', [
+    ['G21', 'Workspaces and +', 'The account menu lists workspaces; + creates a new one.', [B(() => { $('meBtn').click(); }, 'Open the menu'), B(() => { $('meBtn').click(); $('wsAdd').click(); }, 'New workspace')]],
+    ['G23', 'Delete a workspace', 'Bin icon on each workspace; type the web-address name to confirm.', [B(() => { $('meBtn').click(); document.querySelector('[data-del="w2"]').click(); }, 'Open the confirmation')]],
+  ]],
+  ['Documents', [
+    ['G2', 'Failed to process', 'Red row with the reason, “Try again” and “Remove”.', [L('documents.html', 'Open documents')]],
+    ['G3', 'Upload errors', 'Wrong type, too large, already uploaded — listed above the table.', [L('documents.html?demo=upload', 'Show errors')]],
+    ['G4', 'Retire a document', 'Confirmation, then a greyed, struck-through row with “Restore”. Hover a row for “Retire”.', [L('documents.html', 'Open documents')]],
+    ['G19', '“Waiting” status', 'Queued before processing starts.', [L('documents.html', 'Open documents')]],
+    ['G17', 'Scope checkbox', 'Amber banner with the checkbox before scope is confirmed.', [L('documents.html?scope=unconfirmed', 'Show unconfirmed')]],
+  ]],
+  ['Questions', [
+    ['G5', 'Draft failed', '“Draft failed” with the reason and “Try again”.', [L('questions.html?demo=failed', 'Open')]],
+    ['G6', 'Already in the list', 'Adding a duplicate counts the ask and offers “Show it”.', [L('questions.html?demo=dup', 'Show message')]],
+    ['G7', '“Asked 3 times” badge', 'On questions asked more than once.', [L('questions.html', 'Open questions')]],
+    ['G8', 'Leave out, with a note', 'Optional note; “Left out” filter and the note on the row.', [L('questions.html?demo=leave', 'Leave one out')]],
+  ]],
+  ['Review', [
+    ['G9', 'Full source passage', '“Show full passage” with the quoted words highlighted.', [L('review.html?sel=r1&full=1', 'Open')]],
+    ['G10', 'Someone else decided it', 'Banner with who and when; your actions are hidden.', [L('review.html?sel=r12', 'Open')]],
+    ['G14', 'Rewritten twice', '“Rewritten twice” badge and the earlier drafts with their reasons.', [L('review.html?sel=r8', 'Open')]],
+  ]],
+  ['Chat', [
+    ['G29', 'Small talk', '“Hi” and “Thanks” get a short reply with no sources.', [L('chat.html?say=Hi|Thanks', 'Open')]],
+    ['G30', 'Formatted answers', 'Headings, lists and bold, sized to the bubble.', [L('chat.html?say=How fast can we call the API?', 'Open')]],
+  ]],
+  ['Readout', [
+    ['G11', 'Chat numbers', 'Asked, answered, declined and the answer rate.', [L('readout.html', 'Open readout')]],
+  ]],
+  ['Everywhere', [
+    ['G12', 'Error pages', 'Page not found, no access, something went wrong.', [L('auth.html?s=404', '404'), L('auth.html?s=403', '403'), L('auth.html?s=500', '500')]],
+    ['G13', 'When an action fails', 'Error toast that says what failed and offers “Try again”.', [B(() => toastError('Couldn’t approve. Your edit is kept.', () => toast('Approved')), 'Show it'), L('approved.html?fail=export', 'Failed export')]],
+    ['G18', 'Connection badge', '“Reconnecting…” while offline, “Catching up…” when back.', [B(() => lojoConn('reconnecting'), 'Reconnecting'), B(() => { lojoConn('catching'); setTimeout(() => lojoConn('online'), 1500); }, 'Catching up')]],
+  ]],
+];
+const acts = [];
+$('groups').innerHTML = GROUPS.map(([g, items]) => '<section class="grp"><h2>' + esc(g) + '</h2><div class="cards">' + items.map(([code, title, desc, links]) =>
+  '<article class="st"><div class="st__top"><span class="st__g">' + code + '</span><b>' + esc(title) + '</b></div><p>' + esc(desc) + '</p><div class="links">' +
+  links.map(l => l.href ? '<a class="btn btn--secondary" href="' + l.href + '">' + esc(l.label) + '</a>' : '<button class="btn btn--secondary" type="button" data-act="' + (acts.push(l.fn) - 1) + '">' + esc(l.label) + '</button>').join('') +
+  '</div></article>').join('') + '</div></section>').join('');
+$('groups').addEventListener('click', (e) => { const b = e.target.closest('[data-act]'); if (b) { e.stopPropagation(); acts[+b.dataset.act](); } });
+""")
+
+PAGES = {'states': STATES, 'dashboard': OVERVIEW, 'documents': DOCUMENTS, 'questions': QUESTIONS_PAGE, 'review': REVIEW, 'approved': APPROVED, 'chat': CHAT, 'readout': READOUT}
 for name, p in PAGES.items():
     html = page(p['active'], p['title'], p['css'], p['body'], p['js'], p.get('desc', ''))
     with open(os.path.join(OUT, name + '.html'), 'w') as f:

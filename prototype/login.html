@@ -89,6 +89,11 @@
     padding:40px 40px 34px;box-shadow:0 30px 60px -44px rgba(36,26,20,.4);
   }
   .card h2{font-family:var(--display);font-weight:700;font-size:1.6rem;letter-spacing:-.02em;margin:0 0 2px;text-align:center}
+  form[data-step="1"] #f-pw,form[data-step="1"] #submit,form[data-step="2"] #f-email,form[data-step="2"] #f-name,form[data-step="2"] #next{display:none!important}
+  .who{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line-2);border-radius:12px;font-size:.88rem}
+  .who .av{width:30px;height:30px;border-radius:9px;background:var(--brand-gradient);color:#fff;font-weight:800;font-size:.72rem;display:grid;place-items:center;flex:none}
+  .who b{flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .who button{border:0;background:none;color:#B73C54;font-weight:600;cursor:pointer;font-size:.84rem}
   .card .lead{color:var(--muted);margin:4px 0 28px;text-align:center}
 
   .sso{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -241,7 +246,7 @@
         <span class="txt" id="emailBtnTxt">Continue with email</span>
       </button>
 
-      <form id="form" novalidate hidden>
+      <form id="form" novalidate hidden data-step="1">
         <div class="alert alert--error" id="formErr" role="alert"></div>
         <div class="alert alert--ok" id="formOk" role="status"></div>
 
@@ -257,6 +262,7 @@
           <span class="err">Enter a valid email, like sara@nimbuspay.com.</span>
         </div>
 
+        <div class="who" id="who" hidden><span class="av" id="whoAv">S</span><b id="whoEm"></b><button type="button" id="changeEm">Change</button></div>
         <div class="field" id="f-pw">
           <div class="field__row">
             <label for="pw">Password</label>
@@ -270,6 +276,7 @@
           <span class="hint" id="pwHint" hidden>At least 8 characters.</span>
         </div>
 
+        <button class="btn btn--primary" type="button" id="next"><span class="txt">Continue</span></button>
         <button class="btn btn--primary" type="submit" id="submit">
           <span class="spin" aria-hidden="true"></span><span class="txt">Sign in</span>
         </button>
@@ -306,8 +313,26 @@
   function showEmail() {
     $('emailBtn').hidden = true;
     form.hidden = false;
-    (signup ? $('name') : $('email')).focus();
+    setStep(1);
   }
+  // G25: email first, password on its own step
+  function setStep(n) {
+    form.dataset.step = n;
+    $('who').hidden = n !== 2;
+    clearErrors();
+    if (n === 1) (signup && !$('name').value ? $('name') : $('email')).focus();
+    else { $('whoEm').textContent = $('email').value.trim(); $('whoAv').textContent = ($('email').value.trim()[0] || 'S').toUpperCase(); $('pw').focus(); }
+  }
+  $('next').addEventListener('click', () => {
+    clearErrors();
+    let ok = true;
+    if (signup && !$('name').value.trim()) { $('f-name').classList.add('has-error'); ok = false; }
+    if (!validEmail($('email').value.trim())) { $('f-email').classList.add('has-error'); ok = false; }
+    if (!ok) { form.querySelector('.has-error input').focus(); return; }
+    setStep(2);
+  });
+  $('changeEm').addEventListener('click', () => setStep(1));
+  form.addEventListener('keydown', (e) => { if (e.key === 'Enter' && form.dataset.step === '1') { e.preventDefault(); $('next').click(); } });
   $('emailBtn').addEventListener('click', showEmail);
 
   $('reveal').addEventListener('click', () => {
@@ -331,9 +356,10 @@
     return local.charAt(0).toUpperCase() + local.slice(1);
   }
 
-  function enter(user) {
+  // signing in goes through the loading screen (G16); email users pick a region (G15); Microsoft users may need a last name (G24)
+  function enter(user, route) {
     try { sessionStorage.setItem('lojo-user', JSON.stringify(user)); } catch (e) {}
-    location.href = 'onboarding.html';
+    location.href = 'auth.html?s=' + (route || 'loading');
   }
 
   function busy(btn, label) {
@@ -352,7 +378,7 @@
     if (pw.length < 8) { $('f-pw').classList.add('has-error'); ok = false; }
     if (!ok) { form.querySelector('.has-error input').focus(); return; }
     busy($('submit'), signup ? 'Creating workspace…' : 'Signing in…');
-    setTimeout(() => enter({ name: signup ? name : nameFromEmail(email), email, via: 'password' }), 900);
+    setTimeout(() => enter({ name: signup ? name : nameFromEmail(email), email, via: 'password' }, signup ? 'loading' : 'region'), 900);
   });
 
   document.querySelectorAll('[data-sso]').forEach(btn => {
@@ -360,22 +386,11 @@
       const provider = btn.dataset.sso;
       busy(btn, provider + '…');
       // ASSUMPTION: SSO returns Sara's Nimbus Pay identity for the demo. check with Eric
-      setTimeout(() => enter({ name: 'Sara', email: 'sara@nimbuspay.com', via: provider }), 1100);
+      setTimeout(() => enter({ name: 'Sara', email: 'sara@nimbuspay.com', via: provider }, provider === 'Microsoft' ? 'details' : 'loading'), 1100);
     });
   });
 
-  $('forgot').addEventListener('click', (e) => {
-    e.preventDefault();
-    clearErrors();
-    const email = $('email').value.trim();
-    if (!validEmail(email)) {
-      $('f-email').classList.add('has-error');
-      $('email').focus();
-      return;
-    }
-    $('formOk').textContent = 'If ' + email + ' has a lojo account, a reset link is on its way.';
-    $('formOk').classList.add('show');
-  });
+  $('forgot').addEventListener('click', (e) => { e.preventDefault(); location.href = 'auth.html?s=forgot&email=' + encodeURIComponent($('email').value.trim()); });
 </script>
 <script>
 (function themeToggle() {

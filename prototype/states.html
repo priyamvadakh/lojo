@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Review · lojo</title>
+<title>Design states · lojo</title>
 <link rel="icon" type="image/png" href="assets/lojo-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -287,65 +287,16 @@
   .side .theme-toggle{flex-direction:column;width:30px;height:58px;padding:7px 0}
   :root[data-theme="dark"] .side .theme-toggle::before{transform:translateY(28px)}
 
-  .meter{min-width:260px}
-  .meter b{font-family:var(--display);font-size:1rem}
-  .meter span{color:var(--muted);font-size:.8rem;margin-left:6px}
-  .meter .bar{height:6px;border-radius:6px;background:var(--bg-soft);margin-top:8px;overflow:hidden}
-  .meter .bar i{display:block;height:100%;background:var(--brand-gradient);transition:width .4s ease}
-  .rv{display:grid;grid-template-columns:340px minmax(0,1fr);gap:20px;align-items:start}
-  .list{position:sticky;top:84px;max-height:calc(100vh - 110px);display:flex;flex-direction:column;overflow:hidden}
-  .list .tabs{padding:0 10px;margin:0}
-  .list .tab{padding:12px 8px;font-size:.8rem;white-space:nowrap}
-  .items{list-style:none;margin:0;padding:6px;overflow:auto}
-  .item{padding:11px 12px;border-radius:10px;cursor:pointer;display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:5px;align-items:start}
-  .item > b,.item > .meta{grid-column:2}
-  .item .pick{grid-row:1/span 2;margin-top:2px}
-  .pick{width:17px;height:17px;margin:0;accent-color:var(--rose);cursor:pointer}
-  .item.is-picked{background:rgba(232,93,117,.06)}
-  .bulk{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
-  .bulk label{display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:600;cursor:pointer;margin-right:auto}
-  .bulk.is-on{background:#FFF6F3}
-  .bulk .btn{height:30px;padding:0 12px;font-size:.76rem}
-  .bulkrej{display:grid;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--bg-soft)}
-  .bulkrej .row{display:flex;gap:8px}
-  .item:hover{background:var(--bg-soft)}
-  .item.is-sel{background:var(--bg-soft);box-shadow:inset 3px 0 0 var(--rose)}
-  .item b{font-size:.84rem;font-weight:600;line-height:1.35}
-  .item .meta{display:flex;gap:6px;flex-wrap:wrap}
-  .detail{padding:24px 26px}
-  .detail h2{font-family:var(--display);font-weight:700;font-size:1.3rem;letter-spacing:-.01em;margin:10px 0 16px;line-height:1.25}
-  .seclbl{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
-  .answer{font-size:.98rem;line-height:1.6;margin:0 0 22px;padding:16px 18px;border-radius:12px;background:var(--bg-soft)}
-  .quotes{display:grid;gap:10px;margin-bottom:22px}
-  .quote{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
-  .quote.is-warn{border-color:rgba(217,154,43,.5);background:rgba(217,154,43,.05)}
-  .quote .qtop{display:flex;gap:8px;align-items:center;margin-bottom:4px}
-  .quote .qtop b{font-size:.8rem}
-  .quote .qtop em{font-style:normal;color:var(--muted);font-size:.74rem}
-  .quote p{margin:0;font-size:.86rem}
-  .quote .more{border:0;background:none;padding:0;margin-top:8px;font-size:.76rem;font-weight:700;color:#B73C54;cursor:pointer}
-  .quote .full{margin-top:10px;padding:12px 14px;border-radius:10px;background:var(--bg-soft);font-size:.84rem;line-height:1.65;color:var(--muted)}
-  .quote .full mark{background:rgba(255,177,153,.55);color:var(--ink);padding:1px 2px;border-radius:3px}
-  :root[data-theme="dark"] .quote .full mark{background:rgba(232,93,117,.35)}
-  .other{display:grid;grid-template-columns:36px 1fr;gap:12px;align-items:start;padding:14px 16px;border-radius:12px;background:rgba(62,111,166,.08);border:1px solid rgba(62,111,166,.25);margin-bottom:18px;font-size:.88rem}
-  .other .av{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#7A8BA6,#B3C2D6);color:#fff;font-weight:800;font-size:.76rem;display:grid;place-items:center}
-  .other b{display:block}
-  .other .btns{display:flex;gap:8px;margin-top:10px}
-  .hist{margin:0 0 22px;border:1px solid var(--line);border-radius:12px;padding:0 14px}
-  .hist summary{cursor:pointer;padding:12px 0;font-size:.84rem;font-weight:700;color:var(--muted)}
-  .hist ol{margin:0 0 12px;padding-left:20px;display:grid;gap:10px;font-size:.84rem}
-  .hist li span{display:block;color:var(--error);font-size:.76rem;font-weight:600;margin-top:2px}
-  .prev{margin:0 0 22px;padding:12px 14px;border-left:3px solid var(--line-2);color:var(--muted);font-size:.84rem}
-  .prev b{color:var(--ink)}
-  .acts{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-top:18px;border-top:1px solid var(--line)}
-  .acts .spacer{flex:1}
-  kbd{font-family:var(--body);font-size:.66rem;font-weight:700;border:1px solid var(--line-2);border-radius:5px;padding:1px 5px;color:var(--muted);background:var(--panel)}
-  .btn--primary kbd{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);color:#fff}
-  .reject{display:grid;gap:10px;margin-bottom:18px;padding:16px;border-radius:12px;background:var(--bg-soft)}
-  .done-note{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:12px;margin-bottom:18px;font-size:.86rem}
-  .done-note.ok{background:rgba(63,143,95,.08);color:var(--success)}
-  .done-note.no{background:rgba(198,69,69,.07);color:var(--error)}
-  @media (max-width:1000px){.rv{grid-template-columns:1fr}.list{position:static;max-height:none}}
+  .grp{margin-bottom:26px}
+  .grp h2{font-size:.8rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8E2F45;margin:0 0 12px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+  .st{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+  .st__top{display:flex;align-items:center;gap:8px}
+  .st__g{font-family:ui-monospace,Menlo,monospace;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:6px;background:var(--bg-soft);color:var(--muted)}
+  .st b{font-size:.92rem}
+  .st p{margin:0;color:var(--muted);font-size:.82rem}
+  .st .links{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:4px}
+  .st .links .btn{height:28px;padding:0 11px;font-size:.74rem}
 
   :root[data-theme="dark"]{
     --ink:#F2EBE5; --bg:#15100D; --bg-soft:#231B16; --panel:#1C1612;
@@ -425,7 +376,7 @@
     <a class="nav-item" href="dashboard.html"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg><span class="lbl">Dashboard</span></a>
     <a class="nav-item" href="documents.html" title="01 Source"><svg class="i" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span class="lbl">Documents</span></a>
     <a class="nav-item" href="questions.html" title="02 Insights"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg><span class="lbl">Questions &amp; gaps</span><span class="count" id="navQuestions" hidden></span></a>
-    <a class="nav-item is-active" href="review.html" aria-current="page" title="03 Build · Validation"><svg class="i" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg><span class="lbl">Review</span><span class="count" id="navReview" hidden></span></a>
+    <a class="nav-item" href="review.html" title="03 Build · Validation"><svg class="i" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg><span class="lbl">Review</span><span class="count" id="navReview" hidden></span></a>
     <a class="nav-item" href="approved.html" title="04 Distribute"><svg class="i" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg><span class="lbl">Approved answers</span><span class="count" id="navApproved" hidden></span></a>
     <a class="nav-item" href="readout.html" title="Decide"><svg class="i" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="lbl">Readout</span></a>
   </nav>
@@ -444,35 +395,12 @@
 
     <div class="head">
       <div>
-        <p class="label">03 Build · Validation</p>
-        <h1>Review</h1>
-        <p>First batch of drafts. Approve, edit, or reject with a reason. A rejected draft is written again once; if it’s still wrong, it waits for a human answer.</p>
+        <p class="label">For review</p>
+        <h1>Design states</h1>
+        <p>Every screen and state from DESIGN_GAPS.md, designed into the prototype. Open one to see it in place. G numbers match the file.</p>
       </div>
-      <span class="spacer"></span>
-      <div class="meter"><b id="mCount">0 of 0</b><span>reviewed</span><div class="bar"><i id="mBar"></i></div></div>
     </div>
-    <div class="rv">
-      <section class="card list" aria-label="Drafts">
-        <div class="tabs" role="tablist" id="rtabs">
-          <button class="tab" data-f="pending" aria-selected="true">To review <span class="n" id="nP">0</span></button>
-          <button class="tab" data-f="approved" aria-selected="false">Approved <span class="n" id="nA">0</span></button>
-          <button class="tab" data-f="final" aria-selected="false">Human <span class="n" id="nF">0</span></button>
-        </div>
-        <div class="bulk" id="bulk" hidden>
-          <label><input type="checkbox" class="pick" id="pickAll"> <span id="pickTxt">Select all</span></label>
-          <button class="btn btn--primary" id="bulkApprove" type="button" disabled>Approve</button>
-          <button class="btn btn--danger" id="bulkReject" type="button" disabled>Reject</button>
-        </div>
-        <div class="bulkrej" id="bulkRej" hidden>
-          <span class="sub" id="bulkRejTxt"></span>
-          <select class="text" id="bulkWhy"></select>
-          <input class="text" id="bulkNote" placeholder="What should change? (optional)">
-          <div class="row"><button class="btn btn--danger btn--sm" id="bulkRejGo" type="button">Reject selected</button><button class="btn btn--ghost btn--sm" id="bulkRejCancel" type="button">Cancel</button></div>
-        </div>
-        <ul class="items" id="items"></ul>
-      </section>
-      <section class="card detail" id="detail" aria-live="polite"></section>
-    </div>
+    <div id="groups"></div>
 
   </main>
 </div>
@@ -850,218 +778,59 @@ function srcChip(docId, loc, warn) {
 })();
 
 
-let tab = 'pending', sel = null, mode = 'view';
-const picked = new Set();
-const REASONS = ['Wrong answer', 'Outdated source', 'Missing detail', 'Not a question we answer'];
-const openFull = new Set();
-const CONTEXT = {
-  'd1|p. 4': ['Plans and features. Every plan includes the help centre, the chat and email support. ', ' Starter workspaces sign in with email or with Google. An Owner turns single sign-on on under Settings → Security.'],
-  'd5|Brightline call, 12 Aug': ['Brightline asked about access for their 40-person support team. ', ' They want to roll it out before their October audit. Follow-up: send the SSO setup guide.'],
-  'd2|Security & login · 9 months old': ['Security & login. Every account is protected by two-step verification. ', ' Contact sales to enable it. Last updated 14 January.'],
-  'd4|§2': ['§2 Cancelling a subscription. A workspace Owner can cancel at any time from Billing. ', ' Refunds go back to the original payment method within 10 working days.'],
-  'd1|p. 2': ['Starter is for small teams getting started. ', ' Teams that need more move to Growth, which includes 15 seats and 25,000 transactions a month.'],
-  'd3|pp. 2–4': ['Before you start, make sure you are a workspace Owner and are on Growth or Scale. ', ' Test the connection by signing in from a private window before you turn it on for everyone.'],
-  'd1|p. 6': ['Changing plans. You can change plan at any time from Billing. ', ' Your invoice shows the change on its own line.'],
-  'd6|p. 1': ['Welcome to Nimbus Pay. Here is what happens in your first month. ', ' Growth customers get a 30-minute kickoff and our onboarding guides.'],
-  'd9|§1': ['§1 Paying for Nimbus Pay. ', ' Prices are shown in euros and charged in your local currency.'],
-  'd9|§4': ['§4 Invoices. ', ' Invoices are sent on the first working day of the month and are due within 30 days.'],
-  'd1|p. 5': ['Billing. ', ' Card payments are taken on the same day each month.'],
-  'd8|Rate limits': ['Rate limits keep the API fast for everyone. ', ' Limits apply per workspace, not per API key.'],
-  'd8|429 responses': ['When you go over the limit. ', ' Retry after the number of seconds given, and back off further if it happens again.'],
-  'd10|§2': ['§2 Responding to a dispute. ', ' Late evidence can’t be added once the card network has started its review.'],
-  'd10|§4': ['§4 After you respond. ', ' We email the outcome to the workspace Owner as soon as we hear back.'],
-  'd7|p. 3': ['Encryption. Data in transit is encrypted with TLS 1.2 or higher. ', ' Encryption keys are rotated every 90 days.'],
-  'd7|p. 2': ['Where your data lives. ', ' Backups stay in the same region and are kept for 35 days.'],
-  'd7|p. 8': ['Your data, your choice. ', ' Exports include documents, questions and approved answers.'],
-  'd2|Exporting your data': ['Exporting your data. Only Owners and Admins can export. ', ' Large exports are emailed to you as a download link.'],
-  'd4|§3': ['§3 Annual plans. ', ' Monthly plans are not refunded after the first 30 days.'],
-  'd9|§2': ['§2 Renewals. ', ' We email a reminder 30 days before each renewal.'],
-};
-const Q = (r) => QUESTIONS.find(q => q.id === r.qid).q;
-const inTab = (r) => { const s = decision(r).status; return tab === 'pending' ? (s === 'pending' || s === 'redrafting') : s === tab; };
-function badges(r) {
-  const d = decision(r); let b = '';
-  if (r.conflict) b += '<span class="badge badge--amber">Sources disagree</span>';
-  if (r.src.length > 1 && !r.conflict) b += '<span class="badge badge--muted">' + r.src.length + ' sources</span>';
-  if (d.redrafted) b += '<span class="badge badge--info">' + (d.redrafted === 2 ? 'Rewritten twice' : 'Redrafted') + '</span>';
-  if (ST.others && ST.others[r.id] && d.status === 'pending') b += '<span class="badge badge--rose">Decided by ' + esc(ST.others[r.id].by.split(' ')[0]) + '</span>';
-  if (d.by) b += '<span class="badge badge--muted">By ' + esc(d.by.split(' ')[0]) + '</span>';
-  if (d.edited) b += '<span class="badge badge--muted">Edited</span>';
-  return b;
-}
-function renderList() {
-  const c = counts();
-  $('nP').textContent = c.pending; $('nA').textContent = c.approved; $('nF').textContent = c.final;
-  const done = c.approved + c.final;
-  $('mCount').textContent = done + ' of ' + c.drafts; $('mBar').style.width = (done / c.drafts * 100) + '%';
-  const list = DRAFTS.filter(inTab);
-  if (!list.some(r => r.id === sel)) { sel = list.length ? list[0].id : null; mode = 'view'; }
-  const pickable = tab === 'pending';
-  [...picked].forEach(id => { if (!list.some(r => r.id === id && decision(r).status === 'pending')) picked.delete(id); });
-  $('items').innerHTML = list.length ? list.map(r => '<li class="item' + (r.id === sel ? ' is-sel' : '') + (picked.has(r.id) ? ' is-picked' : '') + '" data-id="' + r.id + '">' +
-    (pickable ? '<input type="checkbox" class="pick" data-pick="' + r.id + '" aria-label="Select: ' + esc(Q(r)) + '"' + (picked.has(r.id) ? ' checked' : '') + (decision(r).status !== 'pending' || (ST.others && ST.others[r.id]) ? ' disabled' : '') + '>' : '<span></span>') +
-    '<b>' + esc(Q(r)) + '</b><span class="meta">' + (badges(r) || '<span class="badge badge--muted">1 source</span>') + '</span></li>').join('')
-    : '<li class="empty"><b>' + (tab === 'pending' ? 'Nothing to review.' : 'Nothing here yet.') + '</b>' + (tab === 'pending' ? 'The first batch is done.' : '') + '</li>';
-  renderBulk(list.filter(r => decision(r).status === 'pending'));
-}
-function renderBulk(open) {
-  const on = tab === 'pending' && open.length > 0, n = picked.size;
-  $('bulk').hidden = !on;
-  if (!on) { $('bulkRej').hidden = true; return; }
-  $('bulk').classList.toggle('is-on', n > 0);
-  $('pickAll').checked = n > 0 && n === open.length;
-  $('pickAll').indeterminate = n > 0 && n < open.length;
-  $('pickTxt').textContent = n ? n + ' selected' : 'Select all (' + open.length + ')';
-  $('bulkApprove').disabled = $('bulkReject').disabled = !n;
-  $('bulkApprove').textContent = n ? 'Approve ' + n : 'Approve';
-  $('bulkReject').textContent = n ? 'Reject ' + n : 'Reject';
-  if (!n) $('bulkRej').hidden = true;
-}
-function renderDetail() {
-  const r = DRAFTS.find(x => x.id === sel);
-  if (!r) { $('detail').innerHTML = '<div class="empty"><b>Nothing to review. The loop is running.</b>Approved answers are in the store; try them in the chat.</div>'; return; }
-  const d = decision(r), ans = answerOf(r);
-  let h = '<div class="meta" style="display:flex;gap:6px;flex-wrap:wrap">' + badges(r) + '</div><h2>' + esc(Q(r)) + '</h2>';
-  const other = ST.others && ST.others[r.id];
-  // G10: someone else decided this draft while it was open here
-  if (other && d.status === 'pending') h += '<div class="other"><span class="av">' + esc(other.by.split(' ').map(x => x[0]).join('')) + '</span><div><b>' + esc(other.by) + ' ' + esc(other.action) + ' this ' + esc(other.when) + '.</b>' +
-    'Your screen was out of date, so nothing you do here will change it. Their decision stands.<div class="btns"><button class="btn btn--primary btn--sm" data-a="ackOther">Got it, next draft</button><button class="btn btn--ghost btn--sm" data-a="seeOther">See their version</button></div></div></div>';
-  if (d.status === 'approved') h += '<div class="done-note ok">✓ Approved' + (d.by ? ' by ' + esc(d.by) : '') + (d.at ? ' · ' + esc(d.at) : '') + '. It’s in the store and the chat can use it.</div>';
-  if (d.status === 'final') h += '<div class="done-note no">Rejected twice (' + esc(d.reason) + '). Write the answer yourself with Edit, or leave it out.</div>';
-  if (d.status === 'redrafting') {
-    h += '<div class="answer" style="display:flex;gap:10px;align-items:center;color:var(--muted)"><span class="spin"></span>Writing it again with your reason: “' + esc(d.reason) + '”</div>';
-  } else if (mode === 'edit') {
-    h += '<p class="seclbl">Your answer</p><textarea class="text" id="editBox" style="min-height:120px;margin-bottom:22px">' + esc(ans) + '</textarea>';
-  } else {
-    h += '<p class="seclbl">' + (d.redrafted === 2 ? 'Third draft' : d.redrafted ? 'Rewritten draft' : 'Draft answer') + '</p><div class="answer">' + md(ans) + '</div>';
-  }
-  // G14: a draft rewritten more than once keeps its history
-  if (d.history && d.history.length) h += '<details class="hist"><summary>Earlier drafts (' + d.history.length + ')</summary><ol>' + d.history.map(x => '<li>' + esc(x.text) + '<span>Rejected · ' + esc(x.reason) + '</span></li>').join('') + '</ol></details>';
-  else if (d.redrafted && d.prev) h += '<p class="prev"><b>First draft, rejected</b> (' + esc(d.reason) + '): ' + esc(d.prev) + '</p>';
-  h += '<p class="seclbl">Where it came from</p><div class="quotes">' + r.src.map(([doc, loc, text]) => {
-    const warn = r.conflict === doc;
-    const key = doc + '|' + loc, ctx = CONTEXT[key] || ['', ''], openQ = openFull.has(key);
-    // G9: the whole passage, with the quoted words highlighted
-    return '<div class="quote' + (warn ? ' is-warn' : '') + '"><div class="qtop"><b>' + esc(docShort(doc)) + '</b><em>' + esc(loc) + '</em>' + (warn ? '<span class="badge badge--amber">Conflicts</span>' : '') + '</div><p>“' + esc(text) + '”</p>' +
-      (openQ ? '<div class="full">' + esc(ctx[0]) + '<mark>' + esc(text) + '</mark>' + esc(ctx[1]) + '</div>' : '') +
-      '<button class="more" type="button" data-full="' + esc(key) + '" aria-expanded="' + openQ + '">' + (openQ ? 'Hide full passage' : 'Show full passage') + '</button></div>';
-  }).join('') + '</div>';
-  if (mode === 'reject') {
-    h += '<div class="reject"><label class="seclbl" for="why" style="margin:0">Reason</label><select class="text" id="why">' + REASONS.map(x => '<option>' + x + '</option>').join('') + '</select>' +
-      '<textarea class="text" id="note" placeholder="What should change? (optional)" style="min-height:70px"></textarea>' +
-      '<p class="sub">' + (d.redrafted === 2 ? 'This draft has been rewritten twice. Rejecting it again leaves it for a human answer.' : d.redrafted ? 'This draft was already rewritten once. Rejecting it again leaves it for a human answer.' : 'The agent writes it again once, using your reason.') + '</p></div>';
-  }
-  let acts = '';
-  if (d.status === 'redrafting') acts = '';
-  else if (mode === 'edit') acts = '<button class="btn btn--primary" data-a="save">Save &amp; approve</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
-  else if (mode === 'reject') acts = '<button class="btn btn--danger" data-a="confirm">' + (d.redrafted ? 'Reject' : 'Reject &amp; rewrite') + '</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
-  else if (d.status === 'pending' && ST.others && ST.others[r.id]) acts = '';
-  else if (d.status === 'pending') acts = '<button class="btn btn--primary" data-a="approve">Approve <kbd>A</kbd></button><button class="btn btn--secondary" data-a="edit">Edit &amp; approve <kbd>E</kbd></button><button class="btn btn--danger" data-a="reject">Reject <kbd>R</kbd></button><span class="spacer"></span><span class="sub"><kbd>J</kbd> <kbd>K</kbd> to move</span>';
-  else if (d.status === 'final') acts = '<button class="btn btn--primary" data-a="edit">Write the answer</button><button class="btn btn--ghost" data-a="undo">Back to review</button>';
-  else acts = '<button class="btn btn--ghost" data-a="undo">Undo approval</button>';
-  if (acts) h += '<div class="acts">' + acts + '</div>';
-  $('detail').innerHTML = h;
-  if (mode === 'edit') { const t = $('editBox'); t.focus(); t.setSelectionRange(t.value.length, t.value.length); }
-}
-function render() { renderList(); renderDetail(); }
-function next() {
-  const list = DRAFTS.filter(inTab);
-  if (!list.length) { sel = null; return; }
-  const i = DRAFTS.findIndex(x => x.id === sel);
-  const after = DRAFTS.slice(i + 1).find(inTab) || list[0];
-  sel = after.id;
-}
-function act(a) {
-  const r = DRAFTS.find(x => x.id === sel); if (!r) return;
-  const d = ST.decisions[r.id] = ST.decisions[r.id] || { status: 'pending' };
-  const today = new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }).replace(',', '');
-  if (a === 'approve') { d.status = 'approved'; d.at = today; toast('Approved'); mode = 'view'; save(); next(); }
-  if (a === 'ackOther' || a === 'seeOther') {
-    const o = ST.others[r.id]; d.status = 'approved'; d.by = o.by; d.at = o.when; delete ST.others[r.id]; save();
-    if (a === 'ackOther') { next(); } else { tab = 'approved'; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === 'approved')); sel = r.id; }
-  }
-  if (a === 'edit') mode = 'edit';
-  if (a === 'reject') mode = 'reject';
-  if (a === 'cancel') mode = 'view';
-  if (a === 'undo') { d.status = 'pending'; mode = 'view'; save(); }
-  if (a === 'save') {
-    const v = $('editBox').value.trim(); if (!v) return;
-    d.edited = v !== answerOf(r) || d.edited; d.answer = v; d.status = 'approved'; d.at = today; mode = 'view';
-    toast('Edited and approved'); save(); next();
-  }
-  if (a === 'confirm') {
-    const reason = $('why').value + ($('note').value.trim() ? ': ' + $('note').value.trim() : '');
-    mode = 'view';
-    if (d.redrafted) { d.status = 'final'; d.reason = reason; toast('Left for a human answer'); save(); next(); }
-    else {
-      d.status = 'redrafting'; d.reason = reason; d.prev = answerOf(r); d.history = (d.history || []).concat([{ text: answerOf(r), reason }]); save();
-      const id = r.id;
-      setTimeout(() => { const x = ST.decisions[id]; x.status = 'pending'; x.redrafted = true; save(); if (sel === id || tab === 'pending') render(); toast('Rewritten once. Have another look.'); }, 1500);
-    }
-  }
-  render();
-}
-$('detail').addEventListener('click', (e) => {
-  const f = e.target.closest('[data-full]'); if (f) { const k = f.dataset.full; openFull.has(k) ? openFull.delete(k) : openFull.add(k); renderDetail(); return; }
-  const b = e.target.closest('[data-a]'); if (b) act(b.dataset.a);
-});
-$('items').addEventListener('click', (e) => {
-  const cb = e.target.closest('[data-pick]');
-  if (cb) { cb.checked ? picked.add(cb.dataset.pick) : picked.delete(cb.dataset.pick); renderList(); return; }
-  const li = e.target.closest('[data-id]'); if (li) { sel = li.dataset.id; mode = 'view'; render(); }
-});
-$('pickAll').addEventListener('change', () => {
-  const open = DRAFTS.filter(r => inTab(r) && decision(r).status === 'pending' && !(ST.others && ST.others[r.id]));
-  if ($('pickAll').checked) open.forEach(r => picked.add(r.id)); else picked.clear();
-  renderList();
-});
-const todayStr = () => new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }).replace(',', '');
-$('bulkApprove').addEventListener('click', () => {
-  const n = picked.size, at = todayStr();
-  picked.forEach(id => { const d = ST.decisions[id] = ST.decisions[id] || { status: 'pending' }; d.status = 'approved'; d.at = at; });
-  picked.clear(); $('bulkRej').hidden = true; save(); sel = null; render();
-  toast(n + ' draft' + (n === 1 ? '' : 's') + ' approved');
-});
-$('bulkReject').addEventListener('click', () => {
-  const ids = [...picked], again = ids.filter(id => (ST.decisions[id] || {}).redrafted).length;
-  $('bulkWhy').innerHTML = REASONS.map(x => '<option>' + x + '</option>').join('');
-  $('bulkRejTxt').textContent = 'One reason for all ' + ids.length + '. Each is written again once' + (again ? '; ' + again + ' already rewritten will be left for a human answer.' : '.');
-  $('bulkRej').hidden = false; $('bulkWhy').focus();
-});
-$('bulkRejCancel').addEventListener('click', () => { $('bulkRej').hidden = true; });
-$('bulkRejGo').addEventListener('click', () => {
-  const reason = $('bulkWhy').value + ($('bulkNote').value.trim() ? ': ' + $('bulkNote').value.trim() : '');
-  const ids = [...picked]; let rewrite = 0, human = 0;
-  ids.forEach(id => {
-    const r = DRAFTS.find(x => x.id === id), d = ST.decisions[id] = ST.decisions[id] || { status: 'pending' };
-    if (d.redrafted) { d.status = 'final'; d.reason = reason; human++; return; }
-    d.status = 'redrafting'; d.reason = reason; d.prev = answerOf(r); rewrite++;
-  });
-  picked.clear(); $('bulkRej').hidden = true; $('bulkNote').value = ''; save(); render();
-  toast(rewrite + ' sent back to be rewritten' + (human ? ' · ' + human + ' left for a human' : ''));
-  if (rewrite) setTimeout(() => {
-    ids.forEach(id => { const x = ST.decisions[id]; if (x && x.status === 'redrafting') { x.status = 'pending'; x.redrafted = true; } });
-    save(); render(); toast('Rewritten once. Have another look.');
-  }, 1600);
-});
-document.querySelectorAll('#rtabs .tab').forEach(t => t.addEventListener('click', () => {
-  tab = t.dataset.f; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x === t)); sel = null; mode = 'view'; picked.clear(); render();
-}));
-document.addEventListener('keydown', (e) => {
-  if (e.target.closest('input,textarea,select') || e.metaKey || e.ctrlKey) return;
-  const k = e.key.toLowerCase(), r = DRAFTS.find(x => x.id === sel);
-  if (k === 'j' || k === 'k') {
-    const list = DRAFTS.filter(inTab), i = list.findIndex(x => x.id === sel);
-    const n = list[Math.max(0, Math.min(list.length - 1, i + (k === 'j' ? 1 : -1)))]; if (n) { sel = n.id; mode = 'view'; render(); }
-  }
-  if (r && decision(r).status === 'pending' && mode === 'view') {
-    if (k === 'a') act('approve'); if (k === 'e') act('edit'); if (k === 'r') act('reject');
-  }
-  if (k === 'escape' && mode !== 'view') act('cancel');
-});
-const RP = new URLSearchParams(location.search);
-if (RP.get('sel')) { sel = RP.get('sel'); if (RP.get('full')) { const r = DRAFTS.find(x => x.id === sel); if (r) openFull.add(r.src[0][0] + '|' + r.src[0][1]); } }
-render();
+const L = (href, label) => ({ href, label });
+const B = (fn, label) => ({ fn, label });
+const GROUPS = [
+  ['Signing in', [
+    ['G25', 'Email, then password', 'Two steps. The email shows as a chip with “Change” on the password step.', [L('login.html', 'Open sign in')]],
+    ['G26', 'Forgot your password?', 'Ask for a reset link, then a “Check your email” page with a resend timer.', [L('auth.html?s=forgot', 'Forgot'), L('auth.html?s=sent&email=sara@nimbuspay.com', 'Check your email')]],
+    ['G27', 'Set your password', 'From an invite or a reset email. Live rules: length, a number, both match.', [L('auth.html?s=set&from=invite', 'From invite'), L('auth.html?s=set&from=reset', 'From reset')]],
+    ['G24', 'Your details', 'First sign-in with a missing last name (e.g. Microsoft didn’t share it).', [L('auth.html?s=details', 'Open')]],
+    ['G28', 'Error, notice, expired', 'Sign-in error with a reference, signed-out notice, expired link.', [L('auth.html?s=error', 'Error'), L('auth.html?s=notice', 'Notice'), L('auth.html?s=expired', 'Expired')]],
+    ['G15', 'Choose a region', 'For people in more than one region, plus “can’t reach it” and “no access”.', [L('auth.html?s=region', 'Choose'), L('auth.html?s=unreachable', 'Can’t reach'), L('auth.html?s=noaccess', 'No access')]],
+    ['G16', 'Loading and failed start', 'Signing-in progress, and “lojo couldn’t start”.', [L('auth.html?s=loading&next=states.html', 'Loading'), L('auth.html?s=failed', 'Couldn’t start')]],
+  ]],
+  ['Account menu', [
+    ['G21', 'Workspaces and +', 'The account menu lists workspaces; + creates a new one.', [B(() => { $('meBtn').click(); }, 'Open the menu'), B(() => { $('meBtn').click(); $('wsAdd').click(); }, 'New workspace')]],
+    ['G23', 'Delete a workspace', 'Bin icon on each workspace; type the web-address name to confirm.', [B(() => { $('meBtn').click(); document.querySelector('[data-del="w2"]').click(); }, 'Open the confirmation')]],
+  ]],
+  ['Documents', [
+    ['G2', 'Failed to process', 'Red row with the reason, “Try again” and “Remove”.', [L('documents.html', 'Open documents')]],
+    ['G3', 'Upload errors', 'Wrong type, too large, already uploaded — listed above the table.', [L('documents.html?demo=upload', 'Show errors')]],
+    ['G4', 'Retire a document', 'Confirmation, then a greyed, struck-through row with “Restore”. Hover a row for “Retire”.', [L('documents.html', 'Open documents')]],
+    ['G19', '“Waiting” status', 'Queued before processing starts.', [L('documents.html', 'Open documents')]],
+    ['G17', 'Scope checkbox', 'Amber banner with the checkbox before scope is confirmed.', [L('documents.html?scope=unconfirmed', 'Show unconfirmed')]],
+  ]],
+  ['Questions', [
+    ['G5', 'Draft failed', '“Draft failed” with the reason and “Try again”.', [L('questions.html?demo=failed', 'Open')]],
+    ['G6', 'Already in the list', 'Adding a duplicate counts the ask and offers “Show it”.', [L('questions.html?demo=dup', 'Show message')]],
+    ['G7', '“Asked 3 times” badge', 'On questions asked more than once.', [L('questions.html', 'Open questions')]],
+    ['G8', 'Leave out, with a note', 'Optional note; “Left out” filter and the note on the row.', [L('questions.html?demo=leave', 'Leave one out')]],
+  ]],
+  ['Review', [
+    ['G9', 'Full source passage', '“Show full passage” with the quoted words highlighted.', [L('review.html?sel=r1&full=1', 'Open')]],
+    ['G10', 'Someone else decided it', 'Banner with who and when; your actions are hidden.', [L('review.html?sel=r12', 'Open')]],
+    ['G14', 'Rewritten twice', '“Rewritten twice” badge and the earlier drafts with their reasons.', [L('review.html?sel=r8', 'Open')]],
+  ]],
+  ['Chat', [
+    ['G29', 'Small talk', '“Hi” and “Thanks” get a short reply with no sources.', [L('chat.html?say=Hi|Thanks', 'Open')]],
+    ['G30', 'Formatted answers', 'Headings, lists and bold, sized to the bubble.', [L('chat.html?say=How fast can we call the API?', 'Open')]],
+  ]],
+  ['Readout', [
+    ['G11', 'Chat numbers', 'Asked, answered, declined and the answer rate.', [L('readout.html', 'Open readout')]],
+  ]],
+  ['Everywhere', [
+    ['G12', 'Error pages', 'Page not found, no access, something went wrong.', [L('auth.html?s=404', '404'), L('auth.html?s=403', '403'), L('auth.html?s=500', '500')]],
+    ['G13', 'When an action fails', 'Error toast that says what failed and offers “Try again”.', [B(() => toastError('Couldn’t approve. Your edit is kept.', () => toast('Approved')), 'Show it'), L('approved.html?fail=export', 'Failed export')]],
+    ['G18', 'Connection badge', '“Reconnecting…” while offline, “Catching up…” when back.', [B(() => lojoConn('reconnecting'), 'Reconnecting'), B(() => { lojoConn('catching'); setTimeout(() => lojoConn('online'), 1500); }, 'Catching up')]],
+  ]],
+];
+const acts = [];
+$('groups').innerHTML = GROUPS.map(([g, items]) => '<section class="grp"><h2>' + esc(g) + '</h2><div class="cards">' + items.map(([code, title, desc, links]) =>
+  '<article class="st"><div class="st__top"><span class="st__g">' + code + '</span><b>' + esc(title) + '</b></div><p>' + esc(desc) + '</p><div class="links">' +
+  links.map(l => l.href ? '<a class="btn btn--secondary" href="' + l.href + '">' + esc(l.label) + '</a>' : '<button class="btn btn--secondary" type="button" data-act="' + (acts.push(l.fn) - 1) + '">' + esc(l.label) + '</button>').join('') +
+  '</div></article>').join('') + '</div></section>').join('');
+$('groups').addEventListener('click', (e) => { const b = e.target.closest('[data-act]'); if (b) { e.stopPropagation(); acts[+b.dataset.act](); } });
 
 </script>
 </body>

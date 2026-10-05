@@ -201,6 +201,59 @@ CSS = r"""
     .toast{left:50%}
   }
   @media (max-width:440px){.tiles,.stats,.kpis,.adds{grid-template-columns:1fr!important}}
+
+  /* ---------- account menu: workspaces (G21, G23) ---------- */
+  .pop{width:270px}
+  .ws-h{display:flex;align-items:center;justify-content:space-between;padding:8px 10px 4px;font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .ws-add{width:24px;height:24px;border-radius:7px;border:1px solid var(--line-2);background:var(--panel);color:var(--ink);font-size:1rem;line-height:1;cursor:pointer;display:grid;place-items:center}
+  .ws-add:hover{border-color:var(--rose);color:#B73C54}
+  .ws-list{list-style:none;margin:0;padding:0}
+  .ws-item{display:flex;align-items:center;gap:10px;padding:7px 8px 7px 10px;border-radius:9px;font-size:.86rem}
+  .ws-item:hover{background:var(--bg-soft)}
+  .ws-item .ws-dot{width:26px;height:26px;border-radius:8px;flex:none;display:grid;place-items:center;font-size:.66rem;font-weight:800;color:#fff;background:var(--brand-gradient)}
+  .ws-item .ws-dot.alt{background:linear-gradient(135deg,#7A8BA6,#B3C2D6)}
+  .ws-item .ws-n{flex:1;min-width:0}
+  .ws-item .ws-n b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ws-item .ws-n span{display:block;font-size:.72rem;color:var(--muted)}
+  .ws-item .ws-cur{font-size:.72rem;color:var(--success);font-weight:700}
+  .ws-del{width:28px;height:28px;border:0;border-radius:8px;background:none;color:var(--muted);cursor:pointer;display:grid;place-items:center;opacity:0;transition:opacity .15s ease}
+  .ws-item:hover .ws-del,.ws-del:focus-visible{opacity:1}
+  .ws-del:hover{background:rgba(198,69,69,.1);color:var(--error)}
+  .ws-del svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .ws-new{display:flex;gap:6px;padding:4px 8px 8px}
+  .ws-new input{flex:1;min-width:0;height:32px;border-radius:9px;border:1px solid var(--line-2);background:var(--panel);padding:0 10px;font-size:.84rem;color:var(--ink)}
+  .ws-new input:focus{outline:none;border-color:var(--rose)}
+  .ws-new .btn{height:32px;padding:0 12px;font-size:.78rem}
+  .pop__sep{height:1px;background:var(--line);margin:6px 4px}
+  .dlg{border:0;padding:0;border-radius:18px;width:min(460px,calc(100vw - 32px));box-shadow:0 40px 90px -30px rgba(36,26,20,.5);background:var(--panel);color:var(--ink)}
+  .dlg::backdrop{background:rgba(36,26,20,.35)}
+  .dlg__b{padding:24px}
+  .dlg h3{font-family:var(--display);font-weight:700;font-size:1.2rem;margin:0 0 8px}
+  .dlg p{margin:0 0 14px;color:var(--muted);font-size:.88rem}
+  .dlg label{display:block;font-size:.82rem;font-weight:600;margin-bottom:6px}
+  .dlg label code{font-family:ui-monospace,Menlo,monospace;background:var(--bg-soft);padding:1px 6px;border-radius:6px;font-size:.8rem}
+  .dlg__f{display:flex;gap:10px;justify-content:flex-end;padding:14px 24px;border-top:1px solid var(--line);background:var(--bg-soft);border-radius:0 0 18px 18px}
+  .dlg .warn{display:flex;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(198,69,69,.07);color:var(--error);font-size:.82rem;margin-bottom:14px}
+  /* ---------- error toast (G13) ---------- */
+  .toast{display:flex;align-items:center;gap:12px}
+  .toast.is-err{background:#FFF1F1;color:#8E1F1F;border:1px solid rgba(198,69,69,.35);pointer-events:auto}
+  .toast.is-err::before{content:"!";width:20px;height:20px;border-radius:50%;background:var(--error);color:#fff;font-size:.72rem;font-weight:800;display:grid;place-items:center;flex:none}
+  .toast button{border:0;background:none;color:inherit;font-weight:700;text-decoration:underline;cursor:pointer;padding:0;font-size:.86rem}
+  :root[data-theme="dark"] .toast.is-err{background:#3A1A1A;color:#FFB4B4}
+  /* ---------- connection badge (G18) ---------- */
+  .conn{position:fixed;top:12px;left:50%;transform:translate(-50%,-140%);z-index:70;display:flex;align-items:center;gap:8px;height:30px;padding:0 14px;border-radius:999px;font-size:.78rem;font-weight:600;background:var(--panel);border:1px solid var(--line-2);box-shadow:0 10px 24px -14px rgba(36,26,20,.5);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+  .conn.show{transform:translate(-50%,0)}
+  .conn i{width:8px;height:8px;border-radius:50%;background:var(--amber);animation:pulse 1s ease-in-out infinite}
+  .conn.is-catch i{background:var(--info)}
+  .conn.is-ok i{background:var(--success);animation:none}
+  @keyframes pulse{50%{opacity:.35}}
+  /* ---------- formatted answers (G30) ---------- */
+  .md h3,.md h4{font-family:var(--display);font-weight:700;font-size:1rem;line-height:1.3;margin:0 0 6px}
+  .md h4{font-size:.92rem}
+  .md p{margin:0 0 8px}
+  .md p:last-child,.md ul:last-child,.md ol:last-child{margin-bottom:0}
+  .md ul,.md ol{margin:0 0 8px;padding-left:20px;display:grid;gap:3px}
+  .md strong{font-weight:700}
   :focus-visible{outline:2px solid var(--rose);outline-offset:2px}
   @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 """
@@ -241,6 +294,12 @@ def sidebar(active):
            '    <button class="side__user" id="meBtn" type="button" aria-expanded="false"><span class="side__ava" id="topAva">SL</span><span class="side__who"><b id="meName">Sara Lindqvist</b><span class="badge badge--rose">Owner</span></span></button>',
            '    <div class="pop" id="mePop" hidden>',
            '      <div class="pop__h" id="meEmail">sara@nimbuspay.com</div>',
+           '      <div class="pop__sep"></div>',
+           '      <div class="ws-h">Workspaces <button class="ws-add" id="wsAdd" type="button" aria-label="New workspace" title="New workspace">+</button></div>',
+           '      <form class="ws-new" id="wsNew" hidden><input id="wsNewName" placeholder="Workspace name" aria-label="New workspace name"><button class="btn btn--primary" type="submit">Create</button></form>',
+           '      <ul class="ws-list" id="wsList"></ul>',
+           '      <div class="pop__sep"></div>',
+           '      <a class="pop__row" href="states.html">Design states</a>',
            '      <button class="pop__row" id="resetDemo" type="button">Reset demo data</button>',
            '      <a class="pop__row" href="login.html" id="signOut">Sign out</a>',
            '    </div>',
@@ -396,22 +455,38 @@ function score(query, text) {
 
 
 const SEED = () => ({
-  v: 1,
+  v: 2,
+  workspaces: [{ id: 'w1', name: 'Nimbus Pay', slug: 'nimbus-pay', region: 'Europe · Frankfurt', current: true }, { id: 'w2', name: 'Nimbus Pay — Sandbox', slug: 'nimbus-pay-sandbox', region: 'Europe · Frankfurt' }],
+  chat: { asked: 48, answered: 37, declined: 8, smalltalk: 3 },
   decisions: {
     r2: { status: 'approved', at: 'Mon 28 Sep' }, r3: { status: 'approved', at: 'Mon 28 Sep' }, r5: { status: 'approved', at: 'Mon 28 Sep' },
     r7: { status: 'approved', at: 'Tue 29 Sep', edited: true, answer: 'Customers can pay by Visa, Mastercard, American Express or SEPA Direct Debit.' },
-    r9: { status: 'approved', at: 'Tue 29 Sep' }, r13: { status: 'approved', at: 'Tue 29 Sep' },
+    r9: { status: 'approved', at: 'Tue 29 Sep', edited: true, answer: '### API rate limits\n- **Growth:** 100 requests per second per workspace\n- **Scale:** 500 requests per second per workspace\n\nOver the limit, the API answers **429 Too Many Requests**.' },
+    r13: { status: 'approved', at: 'Tue 29 Sep' },
+    r8: { status: 'pending', redrafted: 2, reason: 'Missing detail: say which plans can pay by invoice',
+      history: [
+        { text: 'No. Starter is billed monthly by card. Invoicing is available on Scale and on annual Growth plans.', reason: 'Wrong answer: it reads as a flat no' },
+        { text: 'Starter customers pay by card each month. Invoices are only for bigger plans.', reason: 'Missing detail: say which plans can pay by invoice' } ] },
     r4: { status: 'pending', redrafted: true, reason: 'Missing detail: list the steps', prev: 'Create a SAML 2.0 app in Okta and upload the metadata to lojo.' },
   },
-  matters: { q17: null, q18: false, q19: null, q20: null },
+  matters: { q17: true, q18: false, q19: null, q20: null },
+  notes: { q18: 'We don’t publish an uptime figure in this phase.' },
+  asks: { q21: 3, q22: 5, q9: 3 },
+  draftFailed: { q17: 'The model timed out while drafting. Nothing was lost.' },
+  others: { r12: { by: 'Lena Okafor', action: 'approved', when: '2 minutes ago' } },
+  docx: [
+    { id: 'x1', name: 'Holiday policy 2025.pdf', ext: 'pdf', status: 'failed', reason: 'This PDF is password-protected. Remove the password and upload it again.', added: '30 Sep' },
+    { id: 'x2', name: 'Partner terms.docx', ext: 'docx', status: 'waiting', added: 'Just now' },
+    { id: 'x3', name: 'Pricing & plans 2025.pdf', ext: 'pdf', status: 'retired', pages: 12, added: '9 Sep', retiredNote: 'Replaced by Pricing & plans 2026 · retired 12 Sep by Sara Lindqvist' },
+  ],
   extra: [],
   gaps: {},
   scope: { signed: true, by: 'Sara Lindqvist', at: '9 Sep' },
   decision: null,
 });
-const KEY = 'lojo-poc-v1';
+const KEY = 'lojo-poc-v2';
 function load() {
-  try { const s = JSON.parse(sessionStorage.getItem(KEY)); if (s && s.v === 1) return s; } catch (e) {}
+  try { const s = JSON.parse(sessionStorage.getItem(KEY)); if (s && s.v === 2) return s; } catch (e) {}
   return SEED();
 }
 let ST = load();
@@ -440,9 +515,43 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 function toast(msg) {
   const t = $('toast');
+  t.classList.remove('is-err');
   t.textContent = msg; t.classList.add('show');
   clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2400);
 }
+// G13: an action failed. Says what failed, keeps the user's work, offers a retry.
+function toastError(msg, retry) {
+  const t = $('toast');
+  t.innerHTML = '<span>' + esc(msg) + '</span>' + (retry ? '<button type="button">Try again</button>' : '');
+  t.classList.add('show', 'is-err');
+  if (retry) t.querySelector('button').onclick = () => { t.classList.remove('show'); retry(); };
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 6000);
+}
+// G30: small markdown for answers — headings, lists, bold, paragraphs
+function md(src) {
+  const lines = esc(src).split(/\n/), out = []; let list = null;
+  const inline = (s) => s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  const close = () => { if (list) { out.push('</' + list + '>'); list = null; } };
+  lines.forEach(l => {
+    let m;
+    if ((m = l.match(/^#{1,3}\s+(.*)/))) { close(); out.push('<h3>' + inline(m[1]) + '</h3>'); }
+    else if ((m = l.match(/^\s*[-*]\s+(.*)/))) { if (list !== 'ul') { close(); out.push('<ul>'); list = 'ul'; } out.push('<li>' + inline(m[1]) + '</li>'); }
+    else if ((m = l.match(/^\s*\d+[.)]\s+(.*)/))) { if (list !== 'ol') { close(); out.push('<ol>'); list = 'ol'; } out.push('<li>' + inline(m[1]) + '</li>'); }
+    else if (l.trim()) { close(); out.push('<p>' + inline(l) + '</p>'); }
+    else close();
+  });
+  close();
+  return '<div class="md">' + out.join('') + '</div>';
+}
+// G29: greetings and thanks get a short reply with no sources
+const SMALLTALK = /^\s*(hi|hello|hey|hiya|good (morning|afternoon|evening)|thanks|thank you|thx|cheers|ok|okay|great|cool|bye|goodbye)\b[\s!.?]*$/i;
+function smalltalkReply(q) {
+  return /thank|thx|cheers/i.test(q) ? 'You’re welcome. Ask me anything else about Nimbus Pay.'
+    : /bye/i.test(q) ? 'Bye for now.'
+    : /^(ok|okay|great|cool)/i.test(q) ? 'Anything else you’d like to know?'
+    : 'Hi! Ask me a question about Nimbus Pay and I’ll answer from the approved answers.';
+}
+function countChat(kind) { ST.chat = ST.chat || { asked: 0, answered: 0, declined: 0, smalltalk: 0 }; if (kind !== 'smalltalk') ST.chat.asked++; ST.chat[kind]++; save(); }
 function refreshNav() {
   const c = counts();
   const set = (id, n, hot) => { const el = $(id); if (!el) return; el.textContent = n; el.hidden = !n; el.classList.toggle('count--hot', !!hot); };
@@ -474,6 +583,53 @@ function srcChip(docId, loc, warn) {
   btn.addEventListener('click', (e) => { e.stopPropagation(); pop.hidden = !pop.hidden; btn.setAttribute('aria-expanded', !pop.hidden); });
   document.addEventListener('click', (e) => { if (!e.target.closest('.me')) { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); } });
   $('resetDemo').addEventListener('click', () => { try { sessionStorage.removeItem(KEY); } catch (e) {} location.reload(); });
+  // G21 / G23: workspaces in the account menu
+  const TRASH = '<svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>';
+  function renderWs() {
+    const wss = ST.workspaces || [];
+    $('wsList').innerHTML = wss.map((w, i) => '<li class="ws-item"><span class="ws-dot' + (i % 2 ? ' alt' : '') + '">' + esc(w.name.split(/\s+/).map(x => x[0]).join('').slice(0, 2).toUpperCase()) + '</span>' +
+      '<span class="ws-n"><b>' + esc(w.name) + '</b><span>' + esc(w.region) + '</span></span>' + (w.current ? '<span class="ws-cur">Current</span>' : '') +
+      '<button class="ws-del" type="button" data-del="' + w.id + '" aria-label="Delete ' + esc(w.name) + '" title="Delete workspace">' + TRASH + '</button></li>').join('');
+  }
+  renderWs();
+  $('wsAdd').addEventListener('click', (e) => { e.stopPropagation(); $('wsNew').hidden = !$('wsNew').hidden; if (!$('wsNew').hidden) $('wsNewName').focus(); });
+  $('wsNew').addEventListener('submit', (e) => {
+    e.preventDefault(); const v = $('wsNewName').value.trim(); if (!v) { $('wsNewName').focus(); return; }
+    toast('Creating ' + v + '…'); setTimeout(() => location.href = 'onboarding.html', 700);
+  });
+  $('mePop').addEventListener('click', (e) => e.stopPropagation());
+  $('wsList').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-del]'); if (!b) return;
+    const w = ST.workspaces.find(x => x.id === b.dataset.del);
+    let dlg = $('wsDlg');
+    if (!dlg) { dlg = document.createElement('dialog'); dlg.id = 'wsDlg'; dlg.className = 'dlg'; document.body.appendChild(dlg); }
+    dlg.innerHTML = '<form method="dialog" id="wsDelF"><div class="dlg__b"><h3>Delete ' + esc(w.name) + '?</h3>' +
+      '<p>This deletes its documents, questions, drafts and approved answers for everyone in it. You can’t undo this.</p>' +
+      (w.current ? '<div class="warn">You’re in this workspace now. After deleting it you’ll set up a new one.</div>' : '') +
+      '<label for="wsConfirm">Type <code>' + esc(w.slug) + '</code> to confirm. It’s the name in the web address.</label>' +
+      '<input class="text" id="wsConfirm" autocomplete="off" spellcheck="false" placeholder="' + esc(w.slug) + '"></div>' +
+      '<div class="dlg__f"><button class="btn btn--secondary" value="cancel" type="submit">Cancel</button><button class="btn btn--danger" id="wsDelGo" type="button" disabled>Delete workspace</button></div></form>';
+    dlg.showModal(); $('wsConfirm').focus();
+    $('wsConfirm').addEventListener('input', () => { $('wsDelGo').disabled = $('wsConfirm').value.trim() !== w.slug; });
+    $('wsDelGo').addEventListener('click', () => {
+      ST.workspaces = ST.workspaces.filter(x => x.id !== w.id); save(); dlg.close(); renderWs();
+      toast(w.name + ' deleted');
+      if (w.current) setTimeout(() => location.href = 'onboarding.html', 800);
+    });
+  });
+  // G18: connection badge
+  let conn = document.createElement('div'); conn.className = 'conn'; conn.setAttribute('role', 'status'); document.body.appendChild(conn);
+  window.lojoConn = (state) => {
+    clearTimeout(conn.t);
+    const M = { reconnecting: ['Reconnecting…', ''], catching: ['Catching up…', 'is-catch'], online: ['Back online', 'is-ok'] };
+    if (!M[state]) { conn.classList.remove('show'); return; }
+    conn.className = 'conn show ' + M[state][1]; conn.innerHTML = '<i></i>' + M[state][0];
+    if (state === 'online') conn.t = setTimeout(() => conn.classList.remove('show'), 1800);
+  };
+  window.addEventListener('offline', () => lojoConn('reconnecting'));
+  window.addEventListener('online', () => { lojoConn('catching'); setTimeout(() => lojoConn('online'), 1500); });
+  const cp = new URLSearchParams(location.search).get('conn');
+  if (cp) { lojoConn(cp); if (cp === 'catching') setTimeout(() => lojoConn('online'), 2500); }
   const mnav = $('mnav');
   const setNav = (open) => { document.body.classList.toggle('nav-open', open); mnav.setAttribute('aria-expanded', open); mnav.setAttribute('aria-label', open ? 'Close menu' : 'Open menu'); };
   mnav.addEventListener('click', () => setNav(!document.body.classList.contains('nav-open')));
@@ -492,10 +648,11 @@ function srcChip(docId, loc, warn) {
     const typing = say('bot', '<span class="spin"></span>');
     setTimeout(() => {
       typing.remove();
+      if (SMALLTALK.test(q)) { say('bot', esc(smalltalkReply(q))); countChat('smalltalk'); return; }
       let best = null, bs = 0;
       store().forEach(x => { const s = score(q, x.q + ' ' + x.a); if (s.c > 0 && s.s > bs) { best = x; bs = s.s; } });
-      if (best && bs >= 2) say('bot', esc(best.a) + '<span class="from">From: ' + esc(best.q) + '</span>');
-      else say('bot am--miss', 'I don’t know. Nothing approved covers this yet, so I won’t guess.');
+      if (best && bs >= 2) { say('bot', md(best.a) + '<span class="from">From: ' + esc(best.q) + '</span>'); countChat('answered'); }
+      else { say('bot am--miss', 'I don’t know. Nothing approved covers this yet, so I won’t guess.'); countChat('declined'); }
     }, 500);
   }
   function toggle(open) {
