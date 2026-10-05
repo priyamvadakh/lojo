@@ -199,7 +199,7 @@ OVERVIEW = dict(
         <p class="label">Up next</p>
         <h2 id="nextH">Review 10 drafts</h2>
         <p id="nextSub"></p>
-        <a class="btn btn--grad" href="build.html" id="nextCta">Start reviewing →</a>
+        <a class="btn btn--primary" href="build.html" id="nextCta">Start reviewing →</a>
       </div>
       <div class="next__side">
         <h3>Also waiting on you</h3>
