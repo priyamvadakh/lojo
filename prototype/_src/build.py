@@ -34,6 +34,11 @@ OVERVIEW = dict(
   .next__main h2{font-family:var(--display);font-weight:700;font-size:1.5rem;letter-spacing:-.01em;margin:8px 0 4px}
   .next__main p{margin:0;color:var(--muted)}
   .next__main .btn{margin-top:26px}
+  /* also waiting: two rows visible, the rest scroll */
+  #also{max-height:122px;overflow-y:auto;overscroll-behavior:contain;scroll-snap-type:y mandatory;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent;margin-right:-6px;padding-right:6px}
+  #also .also{scroll-snap-align:start}
+  .also-more{font-size:.74rem;font-weight:600;color:var(--muted);margin-top:6px}
+  .also-more[hidden]{display:none}
   .next__main{display:flex;flex-direction:column;align-items:flex-start;justify-content:center}
   .target{margin:18px 0 20px}
   .target__row{display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:6px}
@@ -199,6 +204,7 @@ OVERVIEW = dict(
       <div class="next__side">
         <h3>Also waiting on you</h3>
         <div id="also"></div>
+        <p class="also-more" id="alsoMore" hidden></p>
       </div>
     </section>
 
@@ -257,8 +263,8 @@ function renderLoop() {
   const c = counts(), CX = 280, CY = 235, R = 150, rad = (d) => d * Math.PI / 180;
   const valNow = c.pending > 0;
   const stages = [
-    { a: -90, side: 'top', ic: 'src', t: '01 Source', s: c.docs + ' documents · ' + c.passages + ' passages', href: 'documents.html', st: 'is-done' },
-    { a: 0, side: 'right', ic: 'ins', t: '02 Insights', s: c.questions + ' questions · ' + c.gaps + ' gaps', href: 'questions.html', st: 'is-done' },
+    { a: -90, side: 'top', ic: 'src', t: '01 Source', s: c.docs + ' documents · ' + c.passages + ' passages', href: 'sources.html', st: 'is-done' },
+    { a: 0, side: 'right', ic: 'ins', t: '02 Insights', s: c.questions + ' questions · ' + c.gaps + ' gaps', href: 'insights.html', st: 'is-done' },
     { a: 90, side: 'bottom', ic: 'bld', t: '03 Build', s: c.drafts + ' drafts with sources', href: 'review.html', st: 'is-done' },
     { a: 135, side: 'left', ic: 'val', t: 'Validation', s: valNow ? c.pending + ' drafts waiting on you' : 'First batch reviewed', href: 'review.html', st: valNow ? 'is-now' : 'is-done', gate: 1 },
     { a: 180, side: 'left', ic: 'dis', t: '04 Distribute', s: c.approved + ' approved · chat to try', href: 'chat.html', st: valNow ? '' : 'is-now' },
@@ -321,10 +327,11 @@ function render() {
   const also = [];
   const noSource = allQuestions().filter(q => (!q.docs || !q.docs.length) && matters(q) !== false).length;
   const human = c.final + noSource, failedDrafts = Object.keys(ST.draftFailed || {}).filter(k => ST.draftFailed[k] && ST.draftFailed[k] !== 'retrying').length;
-  if (human) also.push({ ic: 'hand', t: human + ' question' + (human === 1 ? ' needs' : 's need') + ' a human answer', s: 'No source, or rejected three times', href: 'questions.html' });
-  if (failedDrafts) also.push({ ic: 'q', t: failedDrafts + ' draft' + (failedDrafts === 1 ? '' : 's') + ' could not be written', s: 'Try ' + (failedDrafts === 1 ? 'it' : 'them') + ' again from Questions', href: 'questions.html?demo=failed' });
-  if (c.needCall) also.push({ ic: 'q', t: 'Say whether ' + c.needCall + ' question' + (c.needCall > 1 ? 's matter' : ' matters'), s: 'Only those get drafted', href: 'questions.html' });
-  if (c.gaps) also.push({ ic: 'gap', t: c.gaps + ' gaps need a source', s: 'Send a document or add them as questions', href: 'questions.html#gaps' });
+  if (human) also.push({ ic: 'hand', t: human + ' question' + (human === 1 ? ' needs' : 's need') + ' a human answer', s: 'No source, or rejected three times', href: 'insights.html' });
+  if (failedDrafts) also.push({ ic: 'q', t: failedDrafts + ' draft' + (failedDrafts === 1 ? '' : 's') + ' could not be written', s: 'Try ' + (failedDrafts === 1 ? 'it' : 'them') + ' again from Insights', href: 'insights.html?demo=failed' });
+  if (c.needCall) also.push({ ic: 'q', t: 'Say whether ' + c.needCall + ' question' + (c.needCall > 1 ? 's matter' : ' matters'), s: 'Only those get drafted', href: 'insights.html' });
+  if (c.gaps) also.push({ ic: 'gap', t: c.gaps + ' gaps need a source', s: 'Send a document or add them as questions', href: 'insights.html#gaps' });
+  $('alsoMore').hidden = also.length <= 2; $('alsoMore').textContent = '+' + (also.length - 2) + ' more · scroll';
   $('also').innerHTML = also.length ? also.map(i => '<a class="also" href="' + i.href + '"><span class="ic">' + ICON[i.ic] + '</span><div><b>' + esc(i.t) + '</b><span>' + esc(i.s) + '</span></div><em>→</em></a>').join('') : '<p class="sub">Nothing else right now.</p>';
 
   // since you last looked
@@ -341,9 +348,9 @@ function render() {
   const yours = allQuestions().filter(q => q.origin === 'you').length;
   $('today').innerHTML = [
     '<a class="tile tile--soft" href="review.html">' + gauge(decided / c.drafts, '#4F7A2F') + '<span class="tile__lbl">Review progress ' + tip('Drafts in the first batch that you have approved, edited or left for a human answer.') + '</span><span class="tile__sub">' + decided + ' of ' + c.drafts + ' decided · ' + c.approved + ' approved</span><span class="tile__go">→</span></a>',
-    '<a class="tile tile--ok" href="documents.html"><span class="tile__tag">Indexed</span><span class="tile__lbl">Documents ' + tip('Documents you sent us. Their text is pulled out, split into passages and indexed by meaning.') + '</span><span class="tile__val">' + c.docs + '</span><span class="tile__sub">' + c.pages + ' pages · ' + c.passages + ' passages</span></a>',
-    '<a class="tile' + (c.needCall ? ' tile--warn' : '') + '" href="questions.html">' + (c.needCall ? '<span class="tile__tag">' + c.needCall + ' need your call</span>' : '') + '<span class="tile__lbl">Questions ' + tip('Questions your documents answer, found by the agent, plus the ones you added.') + '</span><span class="tile__val">' + c.questions + '</span><span class="tile__sub">' + (c.questions - yours) + ' found · ' + yours + ' from you</span></a>',
-    '<a class="tile' + (c.gaps ? ' tile--warn' : ' tile--ok') + '" href="questions.html#gaps">' + (c.gaps ? '<span class="tile__tag">Needs input</span>' : '') + '<span class="tile__lbl">Gaps ' + tip('Things your documents refer to but never explain. Expected at this stage: send a document or answer them yourself.') + '</span><span class="tile__val">' + c.gaps + '</span><span class="tile__sub">Referred to, never explained</span></a>',
+    '<a class="tile tile--ok" href="sources.html"><span class="tile__tag">Indexed</span><span class="tile__lbl">Sources ' + tip('Documents you sent us. Their text is pulled out, split into passages and indexed by meaning.') + '</span><span class="tile__val">' + c.docs + '</span><span class="tile__sub">' + c.pages + ' pages · ' + c.passages + ' passages</span></a>',
+    '<a class="tile' + (c.needCall ? ' tile--warn' : '') + '" href="insights.html">' + (c.needCall ? '<span class="tile__tag">' + c.needCall + ' need your call</span>' : '') + '<span class="tile__lbl">Questions ' + tip('Questions your documents answer, found by the agent, plus the ones you added.') + '</span><span class="tile__val">' + c.questions + '</span><span class="tile__sub">' + (c.questions - yours) + ' found · ' + yours + ' from you</span></a>',
+    '<a class="tile' + (c.gaps ? ' tile--warn' : ' tile--ok') + '" href="insights.html#gaps">' + (c.gaps ? '<span class="tile__tag">Needs input</span>' : '') + '<span class="tile__lbl">Gaps ' + tip('Things your documents refer to but never explain. Expected at this stage: send a document or answer them yourself.') + '</span><span class="tile__val">' + c.gaps + '</span><span class="tile__sub">Referred to, never explained</span></a>',
   ].join('');
 
   // outcome checks; approval rate stays neutral until there are enough decisions
@@ -365,7 +372,7 @@ render();
 
 # ============================================================ DOCUMENTS
 DOCUMENTS = dict(
-  active='documents', title='Documents',
+  active='documents', title='Sources',
   css=r"""
   .scope{display:grid;grid-template-columns:36px 1fr auto;gap:14px;align-items:center;padding:14px 18px;border-radius:14px;background:rgba(63,143,95,.06);border:1px solid rgba(63,143,95,.22);margin-bottom:20px}
   .scope .ok{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:rgba(63,143,95,.14);color:var(--success);font-weight:700}
@@ -429,7 +436,7 @@ DOCUMENTS = dict(
     <div class="head">
       <div>
         <p class="label">01 Source</p>
-        <h1>Documents</h1>
+        <h1>Sources</h1>
         <p>One source: documents you upload, or a folder you send us. We pull the text out, split it into passages and index it by meaning, so answers are found even when the wording differs. Ten documents is enough to start.</p>
       </div>
       <span class="spacer"></span>
@@ -453,13 +460,13 @@ DOCUMENTS = dict(
 
     <div class="cols">
       <section class="card" aria-labelledby="docH">
-        <div class="card__head"><h2 id="docH">Your documents</h2><span class="sub" id="docMeta"></span></div>
+        <div class="card__head"><h2 id="docH">Your sources</h2><span class="sub" id="docMeta"></span></div>
         <div class="folder" id="folderRow" hidden style="padding:14px 20px 0">
           <input class="text" id="folderLink" placeholder="Paste a Google Drive, SharePoint or Dropbox folder link">
           <button class="btn btn--primary btn--sm" id="folderSend" style="height:40px">Send</button>
         </div>
         <table>
-          <thead><tr><th>Document</th><th class="num">Pages</th><th class="num">Passages</th><th class="num">Questions</th><th>Status</th><th class="acts"><span class="sr-only" style="position:absolute;left:-9999px">Actions</span></th></tr></thead>
+          <thead><tr><th>Source</th><th class="num">Pages</th><th class="num">Passages</th><th class="num">Questions</th><th>Status</th><th class="acts"><span class="sr-only" style="position:absolute;left:-9999px">Actions</span></th></tr></thead>
           <tbody id="docRows"></tbody>
         </table>
       </section>
@@ -511,7 +518,7 @@ function renderRows() {
       const ps = passagesFor(d.id).slice(0, 3);
       html += '<tr class="detail"><td colspan="5"><p class="sub" style="margin:10px 0 4px">Sample passages</p>' +
         (ps.length ? ps.map(p => '<div class="passage"><em>' + esc(p.loc) + '</em>' + esc(p.text) + '</div>').join('') : '<p class="sub">No passages sampled yet.</p>') +
-        (qs.length ? '<p class="sub" style="margin:10px 0 6px">Questions found here</p><div class="chips">' + qs.map(q => '<a class="chip" href="questions.html">' + esc(q.q) + '</a>').join('') + '</div>' : '') + '</td><td></td></tr>';
+        (qs.length ? '<p class="sub" style="margin:10px 0 6px">Questions found here</p><div class="chips">' + qs.map(q => '<a class="chip" href="insights.html">' + esc(q.q) + '</a>').join('') + '</div>' : '') + '</td><td></td></tr>';
     }
     return html;
   });
@@ -606,7 +613,7 @@ if (new URLSearchParams(location.search).get('demo') === 'upload') demoUploadErr
 
 # ============================================================ QUESTIONS & GAPS
 QUESTIONS_PAGE = dict(
-  active='questions', title='Questions & gaps',
+  active='questions', title='Insights',
   css=r"""
   .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
   .bar .spacer{flex:1}
@@ -652,7 +659,7 @@ QUESTIONS_PAGE = dict(
     <div class="head">
       <div>
         <p class="label">02 Insights</p>
-        <h1>Questions &amp; gaps</h1>
+        <h1>Insights</h1>
         <p>Questions your documents answer, drawn from the documents themselves, plus the ones you give us. Tell us which matter; only those get drafted. Gaps are things your documents refer to but never explain.</p>
       </div>
     </div>
@@ -763,7 +770,7 @@ function renderG() {
       '<p class="why">' + esc(g.why) + '</p>' +
       g.where.map(([d, loc, text]) => '<blockquote><em>' + esc(docShort(d)) + ' · ' + esc(loc) + '</em>“' + esc(text) + '”</blockquote>').join('') +
       '<div class="acts">' + (done ? '<button class="btn btn--ghost btn--sm" data-undo="' + g.id + '">Undo</button>' :
-        '<a class="btn btn--secondary btn--sm" href="documents.html">Send a document that explains it</a><button class="btn btn--secondary btn--sm" data-ask="' + g.id + '">Add as a question</button><button class="btn btn--ghost btn--sm" data-skip="' + g.id + '">Not needed</button>') + '</div></article>';
+        '<a class="btn btn--secondary btn--sm" href="sources.html">Send a document that explains it</a><button class="btn btn--secondary btn--sm" data-ask="' + g.id + '">Add as a question</button><button class="btn btn--ghost btn--sm" data-skip="' + g.id + '">Not needed</button>') + '</div></article>';
   }).join('');
 }
 $('gapList').addEventListener('click', (e) => {
@@ -1214,7 +1221,7 @@ function ask(q) {
       b.querySelector('button').addEventListener('click', (e) => {
         const v = q.endsWith('?') ? q : q + '?';
         if (!allQuestions().some(x => x.q.toLowerCase() === v.toLowerCase())) { const id = 'x' + Date.now(); ST.extra.push({ id, q: v, origin: 'you', docs: [] }); ST.matters[id] = true; save(); }
-        e.target.disabled = true; e.target.textContent = 'Added to your questions'; toast('Added to Questions & gaps');
+        e.target.disabled = true; e.target.textContent = 'Added to your questions'; toast('Added to Insights');
       });
     }
   }, 600);
@@ -1337,7 +1344,7 @@ function render() {
   const ch = ST.chat || { asked: 0, answered: 0, declined: 0, smalltalk: 0 };
   $('chA').textContent = ch.asked; $('chOk').textContent = ch.answered; $('chNo').textContent = ch.declined;
   $('chRate').textContent = (ch.asked ? Math.round(ch.answered / ch.asked * 100) : 0) + '%';
-  $('chNote').textContent = 'Greetings and thanks (' + (ch.smalltalk || 0) + ') aren’t counted. Declined questions are added to Questions & gaps so they can be answered next.';
+  $('chNote').textContent = 'Greetings and thanks (' + (ch.smalltalk || 0) + ') aren’t counted. Declined questions are added to Insights so they can be answered next.';
   $('cDocs').textContent = c.docs; $('cPages').textContent = c.pages; $('cPass').textContent = c.passages;
   const d = ST.decision;
   $('decision').innerHTML = d ? '<div class="decided ' + (d === 'go' ? 'go' : 'stop') + '">' + (d === 'go' ? '✓ You chose to go on to the full build. We’ll send a plan for the twelve weeks.' : 'You chose not to go on for now. You keep the approved answers as an export.') +
@@ -1391,18 +1398,18 @@ const GROUPS = [
     ['G21', 'Workspaces and +', 'The account menu lists workspaces; + creates a new one.', [B(() => { $('meBtn').click(); }, 'Open the menu'), B(() => { $('meBtn').click(); $('wsAdd').click(); }, 'New workspace')]],
     ['G23', 'Delete a workspace', 'Bin icon on each workspace; type the web-address name to confirm.', [B(() => { $('meBtn').click(); document.querySelector('[data-del="w2"]').click(); }, 'Open the confirmation')]],
   ]],
-  ['Documents', [
-    ['G2', 'Failed to process', 'Red row with the reason, “Try again” and “Remove”.', [L('documents.html', 'Open documents')]],
-    ['G3', 'Upload errors', 'Wrong type, too large, already uploaded — listed above the table.', [L('documents.html?demo=upload', 'Show errors')]],
-    ['G4', 'Retire a document', 'Confirmation, then a greyed, struck-through row with “Restore”. Hover a row for “Retire”.', [L('documents.html', 'Open documents')]],
-    ['G19', '“Waiting” status', 'Queued before processing starts.', [L('documents.html', 'Open documents')]],
-    ['G17', 'Scope checkbox', 'Amber banner with the checkbox before scope is confirmed.', [L('documents.html?scope=unconfirmed', 'Show unconfirmed')]],
+  ['Sources', [
+    ['G2', 'Failed to process', 'Red row with the reason, “Try again” and “Remove”.', [L('sources.html', 'Open sources')]],
+    ['G3', 'Upload errors', 'Wrong type, too large, already uploaded — listed above the table.', [L('sources.html?demo=upload', 'Show errors')]],
+    ['G4', 'Retire a document', 'Confirmation, then a greyed, struck-through row with “Restore”. Hover a row for “Retire”.', [L('sources.html', 'Open sources')]],
+    ['G19', '“Waiting” status', 'Queued before processing starts.', [L('sources.html', 'Open sources')]],
+    ['G17', 'Scope checkbox', 'Amber banner with the checkbox before scope is confirmed.', [L('sources.html?scope=unconfirmed', 'Show unconfirmed')]],
   ]],
-  ['Questions', [
-    ['G5', 'Draft failed', '“Draft failed” with the reason and “Try again”.', [L('questions.html?demo=failed', 'Open')]],
-    ['G6', 'Already in the list', 'Adding a duplicate counts the ask and offers “Show it”.', [L('questions.html?demo=dup', 'Show message')]],
-    ['G7', '“Asked 3 times” badge', 'On questions asked more than once.', [L('questions.html', 'Open questions')]],
-    ['G8', 'Leave out, with a note', 'Optional note; “Left out” filter and the note on the row.', [L('questions.html?demo=leave', 'Leave one out')]],
+  ['Insights', [
+    ['G5', 'Draft failed', '“Draft failed” with the reason and “Try again”.', [L('insights.html?demo=failed', 'Open')]],
+    ['G6', 'Already in the list', 'Adding a duplicate counts the ask and offers “Show it”.', [L('insights.html?demo=dup', 'Show message')]],
+    ['G7', '“Asked 3 times” badge', 'On questions asked more than once.', [L('insights.html', 'Open insights')]],
+    ['G8', 'Leave out, with a note', 'Optional note; “Left out” filter and the note on the row.', [L('insights.html?demo=leave', 'Leave one out')]],
   ]],
   ['Review', [
     ['G9', 'Full source passage', '“Show full passage” with the quoted words highlighted.', [L('review.html?sel=r1&full=1', 'Open')]],
@@ -1430,7 +1437,7 @@ $('groups').innerHTML = GROUPS.map(([g, items]) => '<section class="grp"><h2>' +
 $('groups').addEventListener('click', (e) => { const b = e.target.closest('[data-act]'); if (b) { e.stopPropagation(); acts[+b.dataset.act](); } });
 """)
 
-PAGES = {'states': STATES, 'dashboard': OVERVIEW, 'documents': DOCUMENTS, 'questions': QUESTIONS_PAGE, 'review': REVIEW, 'approved': APPROVED, 'chat': CHAT, 'readout': READOUT}
+PAGES = {'states': STATES, 'dashboard': OVERVIEW, 'sources': DOCUMENTS, 'insights': QUESTIONS_PAGE, 'review': REVIEW, 'approved': APPROVED, 'chat': CHAT, 'readout': READOUT}
 for name, p in PAGES.items():
     html = page(p['active'], p['title'], p['css'], p['body'], p['js'], p.get('desc', ''))
     with open(os.path.join(OUT, name + '.html'), 'w') as f:

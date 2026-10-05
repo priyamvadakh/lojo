@@ -374,8 +374,8 @@
   <div class="side__rule"></div>
   <nav>
     <a class="nav-item" href="dashboard.html"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg><span class="lbl">Dashboard</span></a>
-    <a class="nav-item" href="documents.html" title="01 Source"><svg class="i" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span class="lbl">Documents</span></a>
-    <a class="nav-item" href="questions.html" title="02 Insights"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg><span class="lbl">Questions &amp; gaps</span><span class="count" id="navQuestions" hidden></span></a>
+    <a class="nav-item" href="sources.html" title="01 Source"><svg class="i" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span class="lbl">Sources</span></a>
+    <a class="nav-item" href="insights.html" title="02 Insights"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg><span class="lbl">Insights</span><span class="count" id="navQuestions" hidden></span></a>
     <a class="nav-item" href="review.html" title="03 Build · Validation"><svg class="i" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg><span class="lbl">Review</span><span class="count" id="navReview" hidden></span></a>
     <a class="nav-item" href="approved.html" title="04 Distribute"><svg class="i" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg><span class="lbl">Approved answers</span><span class="count" id="navApproved" hidden></span></a>
     <a class="nav-item" href="readout.html" title="Decide"><svg class="i" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="lbl">Readout</span></a>
@@ -794,18 +794,18 @@ const GROUPS = [
     ['G21', 'Workspaces and +', 'The account menu lists workspaces; + creates a new one.', [B(() => { $('meBtn').click(); }, 'Open the menu'), B(() => { $('meBtn').click(); $('wsAdd').click(); }, 'New workspace')]],
     ['G23', 'Delete a workspace', 'Bin icon on each workspace; type the web-address name to confirm.', [B(() => { $('meBtn').click(); document.querySelector('[data-del="w2"]').click(); }, 'Open the confirmation')]],
   ]],
-  ['Documents', [
-    ['G2', 'Failed to process', 'Red row with the reason, “Try again” and “Remove”.', [L('documents.html', 'Open documents')]],
-    ['G3', 'Upload errors', 'Wrong type, too large, already uploaded — listed above the table.', [L('documents.html?demo=upload', 'Show errors')]],
-    ['G4', 'Retire a document', 'Confirmation, then a greyed, struck-through row with “Restore”. Hover a row for “Retire”.', [L('documents.html', 'Open documents')]],
-    ['G19', '“Waiting” status', 'Queued before processing starts.', [L('documents.html', 'Open documents')]],
-    ['G17', 'Scope checkbox', 'Amber banner with the checkbox before scope is confirmed.', [L('documents.html?scope=unconfirmed', 'Show unconfirmed')]],
+  ['Sources', [
+    ['G2', 'Failed to process', 'Red row with the reason, “Try again” and “Remove”.', [L('sources.html', 'Open sources')]],
+    ['G3', 'Upload errors', 'Wrong type, too large, already uploaded — listed above the table.', [L('sources.html?demo=upload', 'Show errors')]],
+    ['G4', 'Retire a document', 'Confirmation, then a greyed, struck-through row with “Restore”. Hover a row for “Retire”.', [L('sources.html', 'Open sources')]],
+    ['G19', '“Waiting” status', 'Queued before processing starts.', [L('sources.html', 'Open sources')]],
+    ['G17', 'Scope checkbox', 'Amber banner with the checkbox before scope is confirmed.', [L('sources.html?scope=unconfirmed', 'Show unconfirmed')]],
   ]],
-  ['Questions', [
-    ['G5', 'Draft failed', '“Draft failed” with the reason and “Try again”.', [L('questions.html?demo=failed', 'Open')]],
-    ['G6', 'Already in the list', 'Adding a duplicate counts the ask and offers “Show it”.', [L('questions.html?demo=dup', 'Show message')]],
-    ['G7', '“Asked 3 times” badge', 'On questions asked more than once.', [L('questions.html', 'Open questions')]],
-    ['G8', 'Leave out, with a note', 'Optional note; “Left out” filter and the note on the row.', [L('questions.html?demo=leave', 'Leave one out')]],
+  ['Insights', [
+    ['G5', 'Draft failed', '“Draft failed” with the reason and “Try again”.', [L('insights.html?demo=failed', 'Open')]],
+    ['G6', 'Already in the list', 'Adding a duplicate counts the ask and offers “Show it”.', [L('insights.html?demo=dup', 'Show message')]],
+    ['G7', '“Asked 3 times” badge', 'On questions asked more than once.', [L('insights.html', 'Open insights')]],
+    ['G8', 'Leave out, with a note', 'Optional note; “Left out” filter and the note on the row.', [L('insights.html?demo=leave', 'Leave one out')]],
   ]],
   ['Review', [
     ['G9', 'Full source passage', '“Show full passage” with the quoted words highlighted.', [L('review.html?sel=r1&full=1', 'Open')]],

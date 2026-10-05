@@ -270,8 +270,8 @@ ICONS = {
 
 NAV = [
   (None, [('overview', 'dashboard.html', 'Dashboard', None)]),
-  ('<b>01</b> Source', [('documents', 'documents.html', 'Documents', None)]),
-  ('<b>02</b> Insights', [('questions', 'questions.html', 'Questions &amp; gaps', 'navQuestions')]),
+  ('<b>01</b> Source', [('documents', 'sources.html', 'Sources', None)]),
+  ('<b>02</b> Insights', [('questions', 'insights.html', 'Insights', 'navQuestions')]),
   ('<b>03</b> Build', [('review', 'review.html', 'Review', 'navReview')]),
   ('<b>04</b> Distribute', [('approved', 'approved.html', 'Approved answers', 'navApproved'), ('chat', 'chat.html', 'Chat', None)]),
   ('Decide', [('readout', 'readout.html', 'Readout', None)]),
@@ -279,8 +279,8 @@ NAV = [
 
 NAV_FLAT = [
   ('overview', 'dashboard.html', 'Dashboard', None, ''),
-  ('documents', 'documents.html', 'Documents', None, '01'),
-  ('questions', 'questions.html', 'Questions &amp; gaps', 'navQuestions', ''),
+  ('documents', 'sources.html', 'Sources', None, '01'),
+  ('questions', 'insights.html', 'Insights', 'navQuestions', ''),
   ('review', 'review.html', 'Review', 'navReview', ''),
   ('approved', 'approved.html', 'Approved answers', 'navApproved', ''),
   ('readout', 'readout.html', 'Readout', None, ''),
