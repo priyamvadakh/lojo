@@ -67,6 +67,32 @@ OVERVIEW = dict(
   .vs blockquote.warn{background:#FBF1E4}
   .vs blockquote em{display:block;font-style:normal;font-size:.7rem;font-weight:700;color:var(--muted);margin-bottom:3px}
   .vs .x{align-self:center;font-size:.7rem;font-weight:800;color:var(--muted)}
+  /* agents at work */
+  .agents{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+  .stg{border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--panel);display:flex;flex-direction:column;gap:12px;min-width:0}
+  .stg.is-wait{border-color:rgba(201,162,74,.55);box-shadow:0 14px 28px -24px rgba(201,162,74,.9)}
+  .stg__h{display:flex;align-items:center;gap:10px}
+  .stg__ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--rose);color:#fff;flex:none}
+  .stg__ic svg{width:17px;height:17px}
+  .stg__h b{font-family:var(--display);font-weight:700;font-size:1rem;flex:1;white-space:nowrap}
+  .pill{height:22px;padding:0 9px;border-radius:999px;font-size:.62rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+  .pill--run{background:rgba(63,143,95,.12);color:var(--success)}
+  .pill--run::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;animation:livePulse 1.4s ease-in-out infinite}
+  .pill--wait{background:var(--amber-soft);color:#8A6212}
+  .pill--idle{background:var(--bg-soft);color:var(--muted)}
+  @keyframes livePulse{50%{opacity:.3}}
+  .ag{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+  .ag li{display:grid;grid-template-columns:10px 1fr;gap:4px 10px;align-items:baseline;padding:8px 0;border-top:1px solid var(--line)}
+  .ag li:first-child{border-top:0}
+  .ag .d{width:8px;height:8px;border-radius:50%;background:var(--line-2);transform:translateY(-1px)}
+  .ag .d.on{background:var(--success);box-shadow:0 0 0 3px rgba(63,143,95,.18);animation:livePulse 1.4s ease-in-out infinite}
+  .ag .d.ok{background:var(--rose)}
+  .ag b{font-size:.84rem;font-weight:600}
+  .ag span{grid-column:2;font-size:.76rem;color:var(--muted)}
+  .ag li.is-quiet b{color:var(--muted);font-weight:500}
+  .stg__f{margin-top:auto;padding-top:10px;border-top:1px dashed var(--line-2);font-size:.78rem;color:var(--muted)}
+  .stg__f b{color:var(--ink)}
+  @media (max-width:1320px){.agents{grid-template-columns:repeat(2,minmax(0,1fr))}}
   .feed{list-style:none;margin:0;padding:0;display:grid}
   .feed li{display:grid;grid-template-columns:30px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
   .feed li:first-child{border-top:0;padding-top:0}
@@ -208,6 +234,11 @@ OVERVIEW = dict(
       </div>
     </section>
 
+    <section class="sec" aria-labelledby="agH">
+      <div class="sec__head"><h2 id="agH">Agents at work</h2><span>· Who’s working on each stage of your loop, and when they last did something</span></div>
+      <div class="agents" id="agents"></div>
+    </section>
+
     <section class="sec" aria-labelledby="feedH">
         <div class="sec__head"><h2 id="feedH">Since you last looked</h2></div>
         <ul class="feed" id="feed"></ul>
@@ -342,6 +373,31 @@ function render() {
     { ic: 'doc', t: 'Security overview indexed', s: '51 passages, searchable by meaning · yesterday' },
     { ic: 'check', t: 'You approved ' + c.approved + ' answers', s: 'They’re in the store, ready for the chat · Tue 29 Sep' },
   ];
+  // agents at work: stage status comes from people (waiting on you), agent status from runs
+  const ago = (m) => m < 1 ? 'Running now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' d ago';
+  const SIC = { src: '<svg class="i" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>',
+    ins: '<svg class="i" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>',
+    bld: '<svg class="i" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>',
+    dis: '<svg class="i" viewBox="0 0 24 24"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/></svg>' };
+  const STAGES = [
+    { n: '01 Source', ic: 'src', href: 'sources.html', agents: [['Sync agent', 0, 'Reading Partner terms.docx'], ['Indexer', 6, 'Indexed Security overview']],
+      foot: '<b>' + c.docs + '</b> documents · <b>' + c.passages + '</b> passages' },
+    { n: '02 Insights', ic: 'ins', href: 'insights.html', agents: [['Question finder', 42, 'Found 4 new questions'], ['Gap finder', 180, 'Flagged 1 contradiction']],
+      foot: '<b>' + c.gaps + '</b> open gaps · <b>1</b> contradiction', wait: c.needCall },
+    { n: '03 Build', ic: 'bld', href: 'build.html', agents: [['Drafting agent', 75, 'Drafted 3 answers with sources'], ['Rewrite agent', 600, 'Rewrote 2 rejected drafts']],
+      foot: '<b>' + c.pending + '</b> drafts waiting for you', wait: c.pending },
+    { n: '04 Distribute', ic: 'dis', href: 'distribute.html', agents: [['Chat agent', 11, 'Answered “How fast can we call the API?”'], ['Publisher', null, 'Comes with the full build']],
+      foot: '<b>' + c.approved + '</b> approved answers live in the chat' },
+  ];
+  $('agents').innerHTML = STAGES.map(s => {
+    const running = s.agents.some(a => a[1] === 0);
+    const pill = s.wait ? '<span class="pill pill--wait">Waiting on you</span>' : running ? '<span class="pill pill--run">Working</span>' : '<span class="pill pill--idle">Idle</span>';
+    return '<a class="stg' + (s.wait ? ' is-wait' : '') + '" href="' + s.href + '" style="text-decoration:none;color:inherit"><div class="stg__h"><span class="stg__ic">' + SIC[s.ic] + '</span><b>' + s.n + '</b>' + pill + '</div><ul class="ag">' +
+      s.agents.map(([name, min, what]) => min === null
+        ? '<li class="is-quiet"><i class="d"></i><b>' + esc(name) + '</b><span>' + esc(what) + '</span></li>'
+        : '<li><i class="d ' + (min === 0 ? 'on' : 'ok') + '"></i><b>' + esc(name) + '</b><span>' + (min === 0 ? '<b style="color:var(--success);font-weight:600">Running now</b> · ' : ago(min) + ' · ') + esc(what) + '</span></li>').join('') +
+      '</ul><div class="stg__f">' + s.foot + '</div></a>';
+  }).join('');
   $('feed').innerHTML = feed.map(f => '<li><span class="dot">' + ICON[f.ic] + '</span><div><b>' + esc(f.t) + '</b><span>' + esc(f.s) + '</span></div></li>').join('');
 
   // merged tiles
