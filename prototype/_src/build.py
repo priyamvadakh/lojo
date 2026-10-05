@@ -518,14 +518,14 @@ DOCUMENTS = dict(
 let open = null;
 const extra = [];
 const APPS = [
+  { id: 'notion', name: 'Notion', kind: 'Pages & wikis', mono: 'N', color: '#191919', n: 5 },
+  { id: 'website', name: 'Website', kind: 'Web parsing', mono: 'W', color: '#3E6FA6', n: 3 },
   { id: 'gdrive', name: 'Google Drive', kind: 'Docs & files', mono: 'GD', color: '#1A73E8', n: 6 },
   { id: 'sharepoint', name: 'SharePoint', kind: 'Sites & libraries', mono: 'SP', color: '#036C70', n: 5 },
-  { id: 'notion', name: 'Notion', kind: 'Pages & wikis', mono: 'N', color: '#191919', n: 5 },
   { id: 'confluence', name: 'Confluence', kind: 'Spaces', mono: 'C', color: '#0C66E4', n: 4 },
   { id: 'gmail', name: 'Gmail', kind: 'Email', mono: 'M', color: '#D93025', n: 3 },
   { id: 'aircall', name: 'Aircall', kind: 'Calls', mono: 'A', color: '#00B388', n: 2 },
   { id: 'gsheets', name: 'Google Sheets', kind: 'Spreadsheets', mono: 'GS', color: '#188038', n: 2 },
-  { id: 'website', name: 'Website', kind: 'Public pages', mono: 'W', color: '#3E6FA6', n: 3 },
 ];
 ST.apps = ST.apps || {};
 function passagesFor(id) {
