@@ -199,7 +199,7 @@ OVERVIEW = dict(
         <p class="label">Up next</p>
         <h2 id="nextH">Review 10 drafts</h2>
         <p id="nextSub"></p>
-        <a class="btn btn--grad" href="review.html" id="nextCta">Start reviewing →</a>
+        <a class="btn btn--grad" href="build.html" id="nextCta">Start reviewing →</a>
       </div>
       <div class="next__side">
         <h3>Also waiting on you</h3>
@@ -222,7 +222,7 @@ OVERVIEW = dict(
             <blockquote><em>Pricing &amp; plans 2026 · p. 4</em>“SAML single sign-on is available to Growth and Scale workspaces.”</blockquote>
           </div>
           <p>Sales calls back the 2026 pricing. Customers reading the help page are being told the wrong thing.</p>
-          <div><a class="btn btn--secondary btn--sm" href="review.html">See the draft answer →</a></div>
+          <div><a class="btn btn--secondary btn--sm" href="build.html">See the draft answer →</a></div>
         </div>
       </section>
 
@@ -265,8 +265,8 @@ function renderLoop() {
   const stages = [
     { a: -90, side: 'top', ic: 'src', t: '01 Source', s: c.docs + ' documents · ' + c.passages + ' passages', href: 'sources.html', st: 'is-done' },
     { a: 0, side: 'right', ic: 'ins', t: '02 Insights', s: c.questions + ' questions · ' + c.gaps + ' gaps', href: 'insights.html', st: 'is-done' },
-    { a: 90, side: 'bottom', ic: 'bld', t: '03 Build', s: c.drafts + ' drafts with sources', href: 'review.html', st: 'is-done' },
-    { a: 135, side: 'left', ic: 'val', t: 'Validation', s: valNow ? c.pending + ' drafts waiting on you' : 'First batch reviewed', href: 'review.html', st: valNow ? 'is-now' : 'is-done', gate: 1 },
+    { a: 90, side: 'bottom', ic: 'bld', t: '03 Build', s: c.drafts + ' drafts with sources', href: 'build.html', st: 'is-done' },
+    { a: 135, side: 'left', ic: 'val', t: 'Validation', s: valNow ? c.pending + ' drafts waiting on you' : 'First batch reviewed', href: 'build.html', st: valNow ? 'is-now' : 'is-done', gate: 1 },
     { a: 180, side: 'left', ic: 'dis', t: '04 Distribute', s: c.approved + ' approved · chat to try', href: 'chat.html', st: valNow ? '' : 'is-now' },
   ];
   $('lpNodes').innerHTML = stages.map(s => '<li class="' + s.st + (s.gate ? ' gate' : '') + '" data-side="' + s.side + '" style="left:' + (CX + R * Math.cos(rad(s.a))).toFixed(1) + 'px;top:' + (CY + R * Math.sin(rad(s.a))).toFixed(1) + 'px">' +
@@ -317,7 +317,7 @@ function render() {
   if (c.pending) {
     $('nextH').textContent = 'Review ' + c.pending + ' draft' + (c.pending > 1 ? 's' : '');
     $('nextSub').textContent = 'Approve, edit, or reject with a reason; a rejected draft is written again up to twice.';
-    $('nextCta').textContent = 'Start reviewing →'; $('nextCta').href = 'review.html';
+    $('nextCta').textContent = 'Start reviewing →'; $('nextCta').href = 'build.html';
   } else {
     $('nextH').textContent = 'Try the chat';
     $('nextSub').textContent = 'The first batch is reviewed. Ask it questions: it answers only from what you approved.';
@@ -347,7 +347,7 @@ function render() {
   // merged tiles
   const yours = allQuestions().filter(q => q.origin === 'you').length;
   $('today').innerHTML = [
-    '<a class="tile tile--soft" href="review.html">' + gauge(decided / c.drafts, '#4F7A2F') + '<span class="tile__lbl">Review progress ' + tip('Drafts in the first batch that you have approved, edited or left for a human answer.') + '</span><span class="tile__sub">' + decided + ' of ' + c.drafts + ' decided · ' + c.approved + ' approved</span><span class="tile__go">→</span></a>',
+    '<a class="tile tile--soft" href="build.html">' + gauge(decided / c.drafts, '#4F7A2F') + '<span class="tile__lbl">Review progress ' + tip('Drafts in the first batch that you have approved, edited or left for a human answer.') + '</span><span class="tile__sub">' + decided + ' of ' + c.drafts + ' decided · ' + c.approved + ' approved</span><span class="tile__go">→</span></a>',
     '<a class="tile tile--ok" href="sources.html"><span class="tile__tag">Indexed</span><span class="tile__lbl">Sources ' + tip('Documents you sent us. Their text is pulled out, split into passages and indexed by meaning.') + '</span><span class="tile__val">' + c.docs + '</span><span class="tile__sub">' + c.pages + ' pages · ' + c.passages + ' passages</span></a>',
     '<a class="tile' + (c.needCall ? ' tile--warn' : '') + '" href="insights.html">' + (c.needCall ? '<span class="tile__tag">' + c.needCall + ' need your call</span>' : '') + '<span class="tile__lbl">Questions ' + tip('Questions your documents answer, found by the agent, plus the ones you added.') + '</span><span class="tile__val">' + c.questions + '</span><span class="tile__sub">' + (c.questions - yours) + ' found · ' + yours + ' from you</span></a>',
     '<a class="tile' + (c.gaps ? ' tile--warn' : ' tile--ok') + '" href="insights.html#gaps">' + (c.gaps ? '<span class="tile__tag">Needs input</span>' : '') + '<span class="tile__lbl">Gaps ' + tip('Things your documents refer to but never explain. Expected at this stage: send a document or answer them yourself.') + '</span><span class="tile__val">' + c.gaps + '</span><span class="tile__sub">Referred to, never explained</span></a>',
@@ -562,7 +562,7 @@ function confirmRetire(id) {
   if (!dlg) { dlg = document.createElement('dialog'); dlg.id = 'retDlg'; dlg.className = 'dlg'; document.body.appendChild(dlg); }
   dlg.innerHTML = '<form method="dialog"><div class="dlg__b"><h3>Retire ' + esc(d.name) + '?</h3>' +
     '<p>Retire a document when it’s out of date. Its passages stop being used for new drafts and the chat. It stays listed here, and you can restore it.</p>' +
-    (qs ? '<div class="warn" style="background:rgba(217,154,43,.1);color:#7A5710">' + qs + ' question' + (qs === 1 ? '' : 's') + ' cite this document. Approved answers that rely on it are sent back to Review.</div>' : '') +
+    (qs ? '<div class="warn" style="background:rgba(217,154,43,.1);color:#7A5710">' + qs + ' question' + (qs === 1 ? '' : 's') + ' cite this document. Approved answers that rely on it are sent back to Build.</div>' : '') +
     '</div><div class="dlg__f"><button class="btn btn--secondary" value="cancel">Cancel</button><button class="btn btn--danger" type="button" id="retGo">Retire document</button></div></form>';
   dlg.showModal();
   $('retGo').onclick = () => { ST.retired[id] = true; save(); dlg.close(); open = null; renderRows(); toast(d.name + ' retired'); };
@@ -729,7 +729,7 @@ function renderQ() {
 $('qlist').addEventListener('click', (e) => {
   const r = e.target.closest('[data-retry]');
   if (r) { const id = r.dataset.retry; ST.draftFailed[id] = 'retrying'; renderQ();
-    setTimeout(() => { delete ST.draftFailed[id]; save(); renderQ(); toast('Drafted. It’s waiting in Review.'); }, 1500); return; }
+    setTimeout(() => { delete ST.draftFailed[id]; save(); renderQ(); toast('Drafted. It’s waiting in Build.'); }, 1500); return; }
   if (e.target.closest('[data-leave-x]')) { leaving = null; renderQ(); return; }
   const g = e.target.closest('[data-leave-go]');
   if (g) { const id = g.dataset.leaveGo, n = $('leaveNote').value.trim(); ST.matters[id] = false; if (n) ST.notes[id] = n; else delete ST.notes[id]; leaving = null; save(); renderQ(); toast('Left out. It won’t be drafted.'); return; }
@@ -799,7 +799,7 @@ if (QD === 'failed') $('row-q17').scrollIntoView({ block: 'center' });
 
 # ============================================================ REVIEW
 REVIEW = dict(
-  active='review', title='Review',
+  active='review', title='Build',
   css=r"""
   .meter{min-width:260px}
   .meter b{font-family:var(--display);font-size:1rem}
@@ -865,7 +865,7 @@ REVIEW = dict(
     <div class="head">
       <div>
         <p class="label">03 Build · Validation</p>
-        <h1>Review</h1>
+        <h1>Build</h1>
         <p>First batch of drafts. Approve, edit, or reject with a reason. A rejected draft is written again once; if it’s still wrong, it waits for a human answer.</p>
       </div>
       <span class="spacer"></span>
@@ -1111,8 +1111,20 @@ render();
 
 # ============================================================ APPROVED
 APPROVED = dict(
-  active='approved', title='Approved answers',
+  active='approved', title='Distribute',
   css=r"""
+  .chan{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:26px}
+  .ch{display:grid;grid-template-columns:36px 1fr;gap:4px 12px;align-items:center;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--panel);text-decoration:none;color:inherit}
+  .ch b{display:block;font-size:.9rem}
+  .ch span span{display:block;color:var(--muted);font-size:.76rem}
+  .ch em{grid-column:2;font-style:normal;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+  .ch__ic{grid-row:1/span 2;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--bg-soft);font-size:1rem}
+  .ch.is-live em{color:var(--success)}
+  a.ch.is-live:hover{border-color:rgba(232,93,117,.4);box-shadow:0 12px 24px -20px rgba(36,26,20,.5);text-decoration:none}
+  .ch.is-off{opacity:.6}
+  .ch.is-off em{color:var(--muted)}
+  .sech{font-size:.8rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8E2F45;margin:0 0 12px}
+  @media (max-width:1000px){.chan{grid-template-columns:1fr 1fr}}
   .bar{display:flex;gap:12px;align-items:center;margin-bottom:14px}
   .bar .text{max-width:420px}
   .alist{display:grid;gap:12px}
@@ -1127,13 +1139,20 @@ APPROVED = dict(
     <div class="head">
       <div>
         <p class="label">04 Distribute</p>
-        <h1>Approved answers</h1>
-        <p>The approved store. The chat reads only from these answers. It isn’t published anywhere in this phase, and you keep everything as an export.</p>
+        <h1>Distribute</h1>
+        <p>Approved answers go out from here. In this phase they power the chat and an export; publishing to your own pages comes with the full build.</p>
       </div>
       <span class="spacer"></span>
       <button class="btn btn--secondary" id="csv">Export CSV</button>
       <button class="btn btn--primary" id="json">Export JSON</button>
     </div>
+    <section class="chan" aria-label="Where answers go">
+      <a class="ch is-live" href="chat.html"><span class="ch__ic"><svg class="i" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></span><span><b>Chat</b><span>Reads only approved answers</span></span><em>Live · open →</em></a>
+      <div class="ch is-live"><span class="ch__ic"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg></span><span><b>Ask lojo button</b><span>On every page of this workspace</span></span><em>Live</em></div>
+      <div class="ch is-off"><span class="ch__ic"><svg class="i" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></span><span><b>Help centre</b><span>Publish answers to your own pages</span></span><em>Full build</em></div>
+      <div class="ch is-off"><span class="ch__ic"><svg class="i" viewBox="0 0 24 24"><path d="M5 9h14M5 15h14M10 4 8 20M16 4l-2 16"/></svg></span><span><b>Slack &amp; Teams</b><span>Answer where your team asks</span></span><em>Full build</em></div>
+    </section>
+    <h2 class="sech">Approved answers</h2>
     <div class="bar"><input class="text" id="filter" placeholder="Filter approved answers" aria-label="Filter"><span class="sub" id="meta"></span></div>
     <div class="alist" id="alist"></div>
 """,
@@ -1146,7 +1165,7 @@ function render() {
   $('alist').innerHTML = list.length ? list.map(x => '<article class="ans"><h3>' + esc(x.q) + '</h3><div class="ansbody">' + md(x.a) + '</div><div class="meta">' +
     x.r.src.map(([d, loc]) => srcChip(d, loc)).join('') + (x.d.edited ? '<span class="badge badge--muted">Edited</span>' : '') + (x.d.redrafted ? '<span class="badge badge--info">Redrafted</span>' : '') +
     '<span class="by">Approved' + (x.d.at ? ' · ' + esc(x.d.at) : '') + '</span></div></article>').join('')
-    : '<div class="card empty"><b>' + (all.length ? 'No matches' : 'Nothing approved yet') + '</b>' + (all.length ? 'Try another word.' : '<a href="review.html">Review the first batch</a> to fill the store.') + '</div>';
+    : '<div class="card empty"><b>' + (all.length ? 'No matches' : 'Nothing approved yet') + '</b>' + (all.length ? 'Try another word.' : '<a href="build.html">Review the first batch</a> to fill the store.') + '</div>';
 }
 function download(name, text, type) {
   const a = document.createElement('a');
@@ -1167,7 +1186,7 @@ render();
 
 # ============================================================ CHAT
 CHAT = dict(
-  active='chat', title='Chat',
+  active='approved', title='Chat',
   css=r"""
   .chat{display:flex;flex-direction:column;height:calc(100vh - 230px);min-height:460px;max-width:860px}
   .log{flex:1;overflow:auto;padding:22px;display:grid;gap:14px;align-content:start}
@@ -1228,7 +1247,7 @@ function ask(q) {
 }
 const n = store().length;
 $('chatSub').textContent = 'It answers only from the ' + n + ' approved answer' + (n === 1 ? '' : 's') + ', shows where each answer came from, and says so when it doesn’t know.';
-bubble('bot', n ? 'Ask me about Nimbus Pay. I only use the ' + n + ' approved answers.' : 'Nothing is approved yet, so I can’t answer anything. <a href="review.html">Review the first batch</a> to fill the store.');
+bubble('bot', n ? 'Ask me about Nimbus Pay. I only use the ' + n + ' approved answers.' : 'Nothing is approved yet, so I can’t answer anything. <a href="build.html">Review the first batch</a> to fill the store.');
 const SUGG = ['Hi', 'How fast can we call the API?', 'Is our data encrypted?', 'Do you offer a free trial?', 'Thanks'];
 $('sugg').innerHTML = SUGG.map(s => '<button type="button" class="chip">' + esc(s) + '</button>').join('');
 $('sugg').addEventListener('click', (e) => { const c = e.target.closest('.chip'); if (c) ask(c.textContent); });
@@ -1275,7 +1294,7 @@ READOUT = dict(
       </div>
       <span class="spacer"></span>
       <button class="btn btn--secondary no-print" onclick="window.print()">Print</button>
-      <a class="btn btn--primary no-print" href="approved.html">Export approved answers</a>
+      <a class="btn btn--primary no-print" href="distribute.html">Export approved answers</a>
     </div>
     <div class="doc">
       <p class="draft no-print"><b>Draft.</b> Numbers update as your reviewer works through the batch. The final readout goes out in week 4.</p>
@@ -1411,21 +1430,24 @@ const GROUPS = [
     ['G7', '“Asked 3 times” badge', 'On questions asked more than once.', [L('insights.html', 'Open insights')]],
     ['G8', 'Leave out, with a note', 'Optional note; “Left out” filter and the note on the row.', [L('insights.html?demo=leave', 'Leave one out')]],
   ]],
-  ['Review', [
-    ['G9', 'Full source passage', '“Show full passage” with the quoted words highlighted.', [L('review.html?sel=r1&full=1', 'Open')]],
-    ['G10', 'Someone else decided it', 'Banner with who and when; your actions are hidden.', [L('review.html?sel=r12', 'Open')]],
-    ['G14', 'Rewritten twice', '“Rewritten twice” badge and the earlier drafts with their reasons.', [L('review.html?sel=r8', 'Open')]],
+  ['Build', [
+    ['G9', 'Full source passage', '“Show full passage” with the quoted words highlighted.', [L('build.html?sel=r1&full=1', 'Open')]],
+    ['G10', 'Someone else decided it', 'Banner with who and when; your actions are hidden.', [L('build.html?sel=r12', 'Open')]],
+    ['G14', 'Rewritten twice', '“Rewritten twice” badge and the earlier drafts with their reasons.', [L('build.html?sel=r8', 'Open')]],
   ]],
   ['Chat', [
     ['G29', 'Small talk', '“Hi” and “Thanks” get a short reply with no sources.', [L('chat.html?say=Hi|Thanks', 'Open')]],
     ['G30', 'Formatted answers', 'Headings, lists and bold, sized to the bubble.', [L('chat.html?say=How fast can we call the API?', 'Open')]],
+  ]],
+  ['Distribute', [
+    ['—', 'Distribute page', 'Approved answers plus where they go: chat and Ask lojo live, help centre and Slack in the full build.', [L('distribute.html', 'Open')]],
   ]],
   ['Readout', [
     ['G11', 'Chat numbers', 'Asked, answered, declined and the answer rate.', [L('readout.html', 'Open readout')]],
   ]],
   ['Everywhere', [
     ['G12', 'Error pages', 'Page not found, no access, something went wrong.', [L('auth.html?s=404', '404'), L('auth.html?s=403', '403'), L('auth.html?s=500', '500')]],
-    ['G13', 'When an action fails', 'Error toast that says what failed and offers “Try again”.', [B(() => toastError('Couldn’t approve. Your edit is kept.', () => toast('Approved')), 'Show it'), L('approved.html?fail=export', 'Failed export')]],
+    ['G13', 'When an action fails', 'Error toast that says what failed and offers “Try again”.', [B(() => toastError('Couldn’t approve. Your edit is kept.', () => toast('Approved')), 'Show it'), L('distribute.html?fail=export', 'Failed export')]],
     ['G18', 'Connection badge', '“Reconnecting…” while offline, “Catching up…” when back.', [B(() => lojoConn('reconnecting'), 'Reconnecting'), B(() => { lojoConn('catching'); setTimeout(() => lojoConn('online'), 1500); }, 'Catching up')]],
   ]],
 ];
@@ -1437,7 +1459,7 @@ $('groups').innerHTML = GROUPS.map(([g, items]) => '<section class="grp"><h2>' +
 $('groups').addEventListener('click', (e) => { const b = e.target.closest('[data-act]'); if (b) { e.stopPropagation(); acts[+b.dataset.act](); } });
 """)
 
-PAGES = {'states': STATES, 'dashboard': OVERVIEW, 'sources': DOCUMENTS, 'insights': QUESTIONS_PAGE, 'review': REVIEW, 'approved': APPROVED, 'chat': CHAT, 'readout': READOUT}
+PAGES = {'states': STATES, 'dashboard': OVERVIEW, 'sources': DOCUMENTS, 'insights': QUESTIONS_PAGE, 'build': REVIEW, 'distribute': APPROVED, 'chat': CHAT, 'readout': READOUT}
 for name, p in PAGES.items():
     html = page(p['active'], p['title'], p['css'], p['body'], p['js'], p.get('desc', ''))
     with open(os.path.join(OUT, name + '.html'), 'w') as f:

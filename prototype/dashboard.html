@@ -514,8 +514,8 @@
     <a class="nav-item is-active" href="dashboard.html" aria-current="page"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg><span class="lbl">Dashboard</span></a>
     <a class="nav-item" href="sources.html" title="01 Source"><svg class="i" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span class="lbl">Sources</span></a>
     <a class="nav-item" href="insights.html" title="02 Insights"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg><span class="lbl">Insights</span><span class="count" id="navQuestions" hidden></span></a>
-    <a class="nav-item" href="review.html" title="03 Build · Validation"><svg class="i" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg><span class="lbl">Review</span><span class="count" id="navReview" hidden></span></a>
-    <a class="nav-item" href="approved.html" title="04 Distribute"><svg class="i" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg><span class="lbl">Approved answers</span><span class="count" id="navApproved" hidden></span></a>
+    <a class="nav-item" href="build.html" title="03 Build · Validation"><svg class="i" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg><span class="lbl">Build</span><span class="count" id="navReview" hidden></span></a>
+    <a class="nav-item" href="distribute.html" title="04 Distribute"><svg class="i" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg><span class="lbl">Distribute</span><span class="count" id="navApproved" hidden></span></a>
     <a class="nav-item" href="readout.html" title="Decide"><svg class="i" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="lbl">Readout</span></a>
   </nav>
   <div class="side__foot">
@@ -569,7 +569,7 @@
         <p class="label">Up next</p>
         <h2 id="nextH">Review 10 drafts</h2>
         <p id="nextSub"></p>
-        <a class="btn btn--grad" href="review.html" id="nextCta">Start reviewing →</a>
+        <a class="btn btn--grad" href="build.html" id="nextCta">Start reviewing →</a>
       </div>
       <div class="next__side">
         <h3>Also waiting on you</h3>
@@ -592,7 +592,7 @@
             <blockquote><em>Pricing &amp; plans 2026 · p. 4</em>“SAML single sign-on is available to Growth and Scale workspaces.”</blockquote>
           </div>
           <p>Sales calls back the 2026 pricing. Customers reading the help page are being told the wrong thing.</p>
-          <div><a class="btn btn--secondary btn--sm" href="review.html">See the draft answer →</a></div>
+          <div><a class="btn btn--secondary btn--sm" href="build.html">See the draft answer →</a></div>
         </div>
       </section>
 
@@ -1010,8 +1010,8 @@ function renderLoop() {
   const stages = [
     { a: -90, side: 'top', ic: 'src', t: '01 Source', s: c.docs + ' documents · ' + c.passages + ' passages', href: 'sources.html', st: 'is-done' },
     { a: 0, side: 'right', ic: 'ins', t: '02 Insights', s: c.questions + ' questions · ' + c.gaps + ' gaps', href: 'insights.html', st: 'is-done' },
-    { a: 90, side: 'bottom', ic: 'bld', t: '03 Build', s: c.drafts + ' drafts with sources', href: 'review.html', st: 'is-done' },
-    { a: 135, side: 'left', ic: 'val', t: 'Validation', s: valNow ? c.pending + ' drafts waiting on you' : 'First batch reviewed', href: 'review.html', st: valNow ? 'is-now' : 'is-done', gate: 1 },
+    { a: 90, side: 'bottom', ic: 'bld', t: '03 Build', s: c.drafts + ' drafts with sources', href: 'build.html', st: 'is-done' },
+    { a: 135, side: 'left', ic: 'val', t: 'Validation', s: valNow ? c.pending + ' drafts waiting on you' : 'First batch reviewed', href: 'build.html', st: valNow ? 'is-now' : 'is-done', gate: 1 },
     { a: 180, side: 'left', ic: 'dis', t: '04 Distribute', s: c.approved + ' approved · chat to try', href: 'chat.html', st: valNow ? '' : 'is-now' },
   ];
   $('lpNodes').innerHTML = stages.map(s => '<li class="' + s.st + (s.gate ? ' gate' : '') + '" data-side="' + s.side + '" style="left:' + (CX + R * Math.cos(rad(s.a))).toFixed(1) + 'px;top:' + (CY + R * Math.sin(rad(s.a))).toFixed(1) + 'px">' +
@@ -1062,7 +1062,7 @@ function render() {
   if (c.pending) {
     $('nextH').textContent = 'Review ' + c.pending + ' draft' + (c.pending > 1 ? 's' : '');
     $('nextSub').textContent = 'Approve, edit, or reject with a reason; a rejected draft is written again up to twice.';
-    $('nextCta').textContent = 'Start reviewing →'; $('nextCta').href = 'review.html';
+    $('nextCta').textContent = 'Start reviewing →'; $('nextCta').href = 'build.html';
   } else {
     $('nextH').textContent = 'Try the chat';
     $('nextSub').textContent = 'The first batch is reviewed. Ask it questions: it answers only from what you approved.';
@@ -1092,7 +1092,7 @@ function render() {
   // merged tiles
   const yours = allQuestions().filter(q => q.origin === 'you').length;
   $('today').innerHTML = [
-    '<a class="tile tile--soft" href="review.html">' + gauge(decided / c.drafts, '#4F7A2F') + '<span class="tile__lbl">Review progress ' + tip('Drafts in the first batch that you have approved, edited or left for a human answer.') + '</span><span class="tile__sub">' + decided + ' of ' + c.drafts + ' decided · ' + c.approved + ' approved</span><span class="tile__go">→</span></a>',
+    '<a class="tile tile--soft" href="build.html">' + gauge(decided / c.drafts, '#4F7A2F') + '<span class="tile__lbl">Review progress ' + tip('Drafts in the first batch that you have approved, edited or left for a human answer.') + '</span><span class="tile__sub">' + decided + ' of ' + c.drafts + ' decided · ' + c.approved + ' approved</span><span class="tile__go">→</span></a>',
     '<a class="tile tile--ok" href="sources.html"><span class="tile__tag">Indexed</span><span class="tile__lbl">Sources ' + tip('Documents you sent us. Their text is pulled out, split into passages and indexed by meaning.') + '</span><span class="tile__val">' + c.docs + '</span><span class="tile__sub">' + c.pages + ' pages · ' + c.passages + ' passages</span></a>',
     '<a class="tile' + (c.needCall ? ' tile--warn' : '') + '" href="insights.html">' + (c.needCall ? '<span class="tile__tag">' + c.needCall + ' need your call</span>' : '') + '<span class="tile__lbl">Questions ' + tip('Questions your documents answer, found by the agent, plus the ones you added.') + '</span><span class="tile__val">' + c.questions + '</span><span class="tile__sub">' + (c.questions - yours) + ' found · ' + yours + ' from you</span></a>',
     '<a class="tile' + (c.gaps ? ' tile--warn' : ' tile--ok') + '" href="insights.html#gaps">' + (c.gaps ? '<span class="tile__tag">Needs input</span>' : '') + '<span class="tile__lbl">Gaps ' + tip('Things your documents refer to but never explain. Expected at this stage: send a document or answer them yourself.') + '</span><span class="tile__val">' + c.gaps + '</span><span class="tile__sub">Referred to, never explained</span></a>',
