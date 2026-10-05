@@ -309,6 +309,8 @@
   .next__main{padding:24px 26px;background:linear-gradient(135deg,#FFF6F2,#FFFDFB 60%);border-right:1px solid var(--line)}
   .next__main h2{font-family:var(--display);font-weight:700;font-size:1.5rem;letter-spacing:-.01em;margin:8px 0 4px}
   .next__main p{margin:0;color:var(--muted)}
+  .next__main .btn{margin-top:26px}
+  .next__main{display:flex;flex-direction:column;align-items:flex-start;justify-content:center}
   .target{margin:18px 0 20px}
   .target__row{display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:6px}
   .target__row b{font-weight:700}
@@ -562,11 +564,6 @@
         <p class="label">Up next</p>
         <h2 id="nextH">Review 10 drafts</h2>
         <p id="nextSub"></p>
-        <div class="target">
-          <div class="target__row"><b id="tgtTxt"></b><span id="tgtDue"></span></div>
-          <div class="target__bar"><i id="tgtBar"></i><u id="tgtMark"></u></div>
-          <small id="tgtPace"></small>
-        </div>
         <a class="btn btn--grad" href="review.html" id="nextCta">Start reviewing →</a>
       </div>
       <div class="next__side">
@@ -575,8 +572,11 @@
       </div>
     </section>
 
-    <div class="duo">
-      <section class="sec" aria-labelledby="fH">
+    <section class="sec" aria-labelledby="feedH">
+        <div class="sec__head"><h2 id="feedH">Since you last looked</h2></div>
+        <ul class="feed" id="feed"></ul>
+      </section>
+    <section class="sec" aria-labelledby="fH">
         <div class="sec__head"><h2 id="fH">Worth knowing</h2><span>· Found in your documents</span></div>
         <div class="finding">
           <h3>Your help page and your pricing disagree about SSO</h3>
@@ -589,11 +589,6 @@
           <div><a class="btn btn--secondary btn--sm" href="review.html">See the draft answer →</a></div>
         </div>
       </section>
-      <section class="sec" aria-labelledby="feedH">
-        <div class="sec__head"><h2 id="feedH">Since you last looked</h2></div>
-        <ul class="feed" id="feed"></ul>
-      </section>
-    </div>
 
     <section class="sec" aria-labelledby="s1">
       <div class="sec__head"><h2 id="s1">Your knowledge today</h2><span>· What Nimbus Pay has in lojo right now</span></div>
@@ -1060,25 +1055,19 @@ function render() {
   const decided = c.approved + c.final, mins = Math.max(1, Math.round(c.pending * 1.2));
   if (c.pending) {
     $('nextH').textContent = 'Review ' + c.pending + ' draft' + (c.pending > 1 ? 's' : '');
-    $('nextSub').textContent = 'About ' + mins + ' minutes. Approve, edit, or reject with a reason; a rejected draft is written again once.';
+    $('nextSub').textContent = 'Approve, edit, or reject with a reason; a rejected draft is written again up to twice.';
     $('nextCta').textContent = 'Start reviewing →'; $('nextCta').href = 'review.html';
   } else {
     $('nextH').textContent = 'Try the chat';
     $('nextSub').textContent = 'The first batch is reviewed. Ask it questions: it answers only from what you approved.';
     $('nextCta').textContent = 'Open the chat →'; $('nextCta').href = 'chat.html';
   }
-  // expected pace: Monday → Friday, today is Wednesday
-  const expected = Math.round(TARGET * 0.6);
-  $('tgtTxt').textContent = decided + ' of about ' + TARGET + ' drafts reviewed this week';
-  $('tgtDue').textContent = 'Due ' + DUE;
-  $('tgtBar').style.width = Math.min(100, decided / TARGET * 100) + '%';
-  $('tgtMark').style.left = (expected / TARGET * 100) + '%';
-  const ahead = decided >= expected;
-  $('tgtPace').textContent = ahead ? '✓ On pace for Friday' : '⚠ ' + (expected - decided) + ' behind the pace for Friday';
-  $('tgtPace').style.color = ahead ? 'var(--success)' : '#A5561A';
 
   const also = [];
-  if (c.final) also.push({ ic: 'hand', t: c.final + ' draft' + (c.final > 1 ? 's need' : ' needs') + ' a human answer', s: 'Rejected twice', href: 'review.html' });
+  const noSource = allQuestions().filter(q => (!q.docs || !q.docs.length) && matters(q) !== false).length;
+  const human = c.final + noSource, failedDrafts = Object.keys(ST.draftFailed || {}).filter(k => ST.draftFailed[k] && ST.draftFailed[k] !== 'retrying').length;
+  if (human) also.push({ ic: 'hand', t: human + ' question' + (human === 1 ? ' needs' : 's need') + ' a human answer', s: 'No source, or rejected three times', href: 'questions.html' });
+  if (failedDrafts) also.push({ ic: 'q', t: failedDrafts + ' draft' + (failedDrafts === 1 ? '' : 's') + ' could not be written', s: 'Try ' + (failedDrafts === 1 ? 'it' : 'them') + ' again from Questions', href: 'questions.html?demo=failed' });
   if (c.needCall) also.push({ ic: 'q', t: 'Say whether ' + c.needCall + ' question' + (c.needCall > 1 ? 's matter' : ' matters'), s: 'Only those get drafted', href: 'questions.html' });
   if (c.gaps) also.push({ ic: 'gap', t: c.gaps + ' gaps need a source', s: 'Send a document or add them as questions', href: 'questions.html#gaps' });
   $('also').innerHTML = also.length ? also.map(i => '<a class="also" href="' + i.href + '"><span class="ic">' + ICON[i.ic] + '</span><div><b>' + esc(i.t) + '</b><span>' + esc(i.s) + '</span></div><em>→</em></a>').join('') : '<p class="sub">Nothing else right now.</p>';
