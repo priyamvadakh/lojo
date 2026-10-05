@@ -243,19 +243,6 @@ OVERVIEW = dict(
         <div class="sec__head"><h2 id="feedH">Since you last looked</h2></div>
         <ul class="feed" id="feed"></ul>
       </section>
-    <section class="sec" aria-labelledby="fH">
-        <div class="sec__head"><h2 id="fH">Worth knowing</h2><span>· Found in your documents</span></div>
-        <div class="finding">
-          <h3>Your help page and your pricing disagree about SSO</h3>
-          <div class="vs">
-            <blockquote class="warn"><em>Help Center · 9 months old</em>“SSO is an Enterprise-only feature.”</blockquote>
-            <span class="x">VS</span>
-            <blockquote><em>Pricing &amp; plans 2026 · p. 4</em>“SAML single sign-on is available to Growth and Scale workspaces.”</blockquote>
-          </div>
-          <p>Sales calls back the 2026 pricing. Customers reading the help page are being told the wrong thing.</p>
-          <div><a class="btn btn--secondary btn--sm" href="build.html">See the draft answer →</a></div>
-        </div>
-      </section>
 
     <section class="sec" aria-labelledby="s1">
       <div class="sec__head"><h2 id="s1">Your knowledge today</h2><span>· What Nimbus Pay has in lojo right now</span></div>
@@ -436,32 +423,29 @@ DOCUMENTS = dict(
   .scope-detail{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding-top:12px;border-top:1px solid rgba(63,143,95,.2);font-size:.82rem}
   .scope-detail h4{margin:0 0 6px;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
   .scope-detail ul{margin:0;padding-left:16px;display:grid;gap:4px}
-  .cols{display:grid;grid-template-columns:1fr;gap:20px;align-items:start}
-  table{width:100%;border-collapse:collapse;font-size:.84rem}
-  th{text-align:left;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:10px 12px;border-bottom:1px solid var(--line)}
-  td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}
-  tr.row{cursor:pointer}
-  tr.row:hover td{background:var(--bg-soft)}
-  tr.row.is-open td{background:var(--bg-soft)}
-  td.num{text-align:right;font-variant-numeric:tabular-nums}
-  th.num{text-align:right}
-  .dname{display:flex;align-items:center;gap:10px;font-weight:600}
-  .ext{width:30px;height:30px;border-radius:8px;background:var(--bg-soft);display:grid;place-items:center;font-size:.58rem;font-weight:700;color:var(--muted);text-transform:uppercase;flex:none}
-  .stage{display:inline-flex;align-items:center;gap:6px;font-size:.76rem;font-weight:600;color:var(--success)}
-  .stage.is-run{color:var(--info)}
-  tr.detail td{padding:0 12px 16px 52px;background:var(--bg-soft)}
-  .passage{border-left:3px solid var(--line-2);padding:6px 12px;margin:8px 0;font-size:.82rem;color:var(--ink)}
+  .scope.is-pending{grid-template-columns:36px 1fr;background:rgba(217,154,43,.07);border-color:rgba(217,154,43,.35)}
+  .scope.is-pending .ok{background:rgba(217,154,43,.16);color:#94660F}
+  .scope .confirm{grid-column:2;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:4px}
+  .scope .confirm label{display:flex;gap:8px;align-items:center;font-size:.86rem;font-weight:600;cursor:pointer}
+  .scope .confirm input{width:17px;height:17px;accent-color:var(--rose)}
+  .listhead{display:flex;align-items:baseline;gap:10px;margin:26px 0 0}
+  .listhead h2{font-family:var(--display);font-weight:700;font-size:1.05rem;margin:0}
+  .file{cursor:default}
+  .file.is-row{cursor:pointer}
+  .file.is-row:hover,.file.is-open{border-color:var(--line-2);background:var(--bg-soft)}
+  .file.is-failed{border-color:rgba(198,69,69,.3);background:rgba(198,69,69,.03)}
+  .file.is-retired .name{opacity:.6;text-decoration:line-through;text-decoration-color:rgba(36,26,20,.3)}
+  .file.is-retired .ext{opacity:.6}
+  .why{display:block;font-size:.78rem;color:var(--error);font-weight:500;margin-top:3px;white-space:normal}
+  .why.mute{color:var(--muted)}
+  .acts{display:flex;gap:6px;justify-content:flex-end;min-width:72px}
+  .acts .btn{height:30px;padding:0 12px;font-size:.76rem}
+  .file.is-row .acts .btn--ghost{opacity:0}
+  .file.is-row:hover .acts .btn--ghost,.file.is-row .acts .btn--ghost:focus-visible{opacity:1}
+  .fdetail{grid-column:1/-1;padding:6px 0 4px 50px}
+  .passage{border-left:3px solid var(--line-2);padding:6px 12px;margin:8px 0;font-size:.84rem;color:var(--ink);background:var(--panel);border-radius:0 8px 8px 0}
   .passage em{display:block;font-style:normal;color:var(--muted);font-size:.72rem;margin-bottom:2px}
-  .search{display:flex;gap:8px}
-  .hits{display:grid;gap:10px;margin-top:14px}
-  .hit{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
-  .hit__top{display:flex;gap:8px;align-items:center;margin-bottom:4px;flex-wrap:wrap}
-  .hit__top b{font-size:.8rem}
-  .hit__top em{font-style:normal;color:var(--muted);font-size:.74rem}
-  .hit__top .sc{margin-left:auto;font-family:var(--display);font-weight:700;color:var(--rose)}
-  .hit p{margin:0;font-size:.84rem}
-  .folder{display:flex;gap:8px;margin-top:12px}
-  .up-hint{display:block;font-size:.74rem;color:var(--muted);text-align:right;margin-top:6px}
+  .folder{display:flex;gap:8px;margin-top:14px}
   .uperr{margin:0 0 16px;padding:14px 16px;border-radius:14px;border:1px solid rgba(198,69,69,.3);background:rgba(198,69,69,.05)}
   .uperr__h{display:flex;align-items:center;gap:10px;font-weight:700;font-size:.9rem;color:var(--error)}
   .uperr__h button{margin-left:auto}
@@ -469,38 +453,18 @@ DOCUMENTS = dict(
   .uperr li{display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:.84rem;align-items:baseline}
   .uperr li b{font-weight:600}
   .uperr li span{color:var(--muted)}
-  .stage.is-fail{color:var(--error)}
-  .stage.is-wait{color:var(--muted)}
-  .stage.is-wait::before{content:"";width:8px;height:8px;border-radius:50%;border:2px solid currentColor}
-  .stage.is-ret{color:var(--muted)}
-  tr.is-retired td{color:var(--muted)}
-  tr.is-retired .dname{opacity:.6;text-decoration:line-through;text-decoration-color:rgba(36,26,20,.3)}
-  tr.is-failed td{background:rgba(198,69,69,.03)}
-  .why{display:block;font-size:.76rem;color:var(--error);font-weight:500;margin-top:4px;white-space:normal;max-width:420px}
-  .why.mute{color:var(--muted)}
-  .acts{white-space:nowrap;text-align:right}
-  .acts .btn{height:28px;padding:0 10px;font-size:.74rem}
-  tr.row .acts .btn--ghost{opacity:0}
-  tr.row:hover .acts .btn--ghost,tr.row .acts .btn--ghost:focus-visible{opacity:1}
-  .scope.is-pending{grid-template-columns:36px 1fr;background:rgba(217,154,43,.07);border-color:rgba(217,154,43,.35)}
-  .scope.is-pending .ok{background:rgba(217,154,43,.16);color:#94660F}
-  .scope .confirm{grid-column:2;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:4px}
-  .scope .confirm label{display:flex;gap:8px;align-items:center;font-size:.86rem;font-weight:600;cursor:pointer}
-  .scope .confirm input{width:17px;height:17px;accent-color:var(--rose)}
+  .synced{display:grid;gap:8px;margin-top:16px}
+  .synced .file{grid-template-columns:36px minmax(0,1fr) auto auto}
+  @media (max-width:760px){.scope-detail{grid-template-columns:1fr}.fdetail{padding-left:0}.folder{flex-direction:column}}
 """,
   body=r"""
     <div class="head">
       <div>
         <p class="label">01 Source</p>
         <h1>Sources</h1>
-        <p>One source: documents you upload, or a folder you send us. We pull the text out, split it into passages and index it by meaning, so answers are found even when the wording differs. Ten documents is enough to start.</p>
+        <p>Upload documents or connect an app. We pull the text out, split it into passages and index each one by meaning, so a question finds the right passage even when the words differ.</p>
       </div>
-      <span class="spacer"></span>
-      <button class="btn btn--secondary" id="folderBtn">Send a folder</button>
-      <div><label class="btn btn--primary" id="upBtn" style="cursor:pointer">Upload documents<input type="file" id="fileInput" multiple hidden></label><span class="up-hint">PDF, DOCX, MD or TXT · up to 25 MB each</span></div>
     </div>
-
-    <section class="uperr" id="upErr" hidden role="alert"></section>
 
     <section class="scope" id="scope">
       <span class="ok">✓</span>
@@ -514,23 +478,56 @@ DOCUMENTS = dict(
       </div>
     </section>
 
-    <div class="cols">
-      <section class="card" aria-labelledby="docH">
-        <div class="card__head"><h2 id="docH">Your sources</h2><span class="sub" id="docMeta"></span></div>
-        <div class="folder" id="folderRow" hidden style="padding:14px 20px 0">
-          <input class="text" id="folderLink" placeholder="Paste a Google Drive, SharePoint or Dropbox folder link">
-          <button class="btn btn--primary btn--sm" id="folderSend" style="height:40px">Send</button>
-        </div>
-        <table>
-          <thead><tr><th>Source</th><th class="num">Pages</th><th class="num">Passages</th><th class="num">Questions</th><th>Status</th><th class="acts"><span class="sr-only" style="position:absolute;left:-9999px">Actions</span></th></tr></thead>
-          <tbody id="docRows"></tbody>
-        </table>
-      </section>
+    <div class="ptabs" role="tablist" aria-label="Source type">
+      <button class="ptab" role="tab" data-tab="docs" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>Documents <span class="n" id="nDocs">0</span></button>
+      <button class="ptab" role="tab" data-tab="connect" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M9 7V3M15 7V3M7 7h10v4a5 5 0 0 1-10 0zM12 16v5"/></svg>Connect <span class="n" id="nConn">0</span></button>
     </div>
+
+    <section id="tabDocs">
+      <section class="uperr" id="upErr" hidden role="alert"></section>
+      <label class="drop" id="drop">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg></span>
+        <strong>Drop files here, or browse</strong>
+        <p class="hint">PDF, DOCX, Markdown or TXT · up to 25 MB each</p>
+        <input type="file" id="fileInput" multiple hidden>
+        <span class="row"><span class="btn btn--secondary btn--sm">Browse files</span></span>
+      </label>
+      <div class="listhead"><h2>Your documents</h2><span class="sub" id="docMeta"></span></div>
+      <ul class="files" id="docRows"></ul>
+    </section>
+
+    <section id="tabConnect" hidden>
+      <!-- ASSUMPTION: connector list is illustrative; sign-in is simulated. check with Eric -->
+      <div class="panel">
+        <h3>Connect an app</h3>
+        <p class="sub" style="margin-bottom:14px">You sign in with that app and pick what lojo can read. lojo only reads; it never edits your files.</p>
+        <div class="apps" id="apps"></div>
+        <div class="synced" id="synced"></div>
+      </div>
+      <div class="panel">
+        <h3>Send us a folder</h3>
+        <p class="sub">Share a Google Drive, SharePoint or Dropbox folder. Give view access to ingest@lojo.ai, then paste the link.</p>
+        <div class="folder">
+          <input class="text" id="folderLink" placeholder="https://drive.google.com/drive/folders/…" aria-label="Shared folder link">
+          <button class="btn btn--primary" id="folderSend">Send</button>
+        </div>
+      </div>
+    </section>
 """,
   js=r"""
 let open = null;
 const extra = [];
+const APPS = [
+  { id: 'gdrive', name: 'Google Drive', kind: 'Docs & files', mono: 'GD', color: '#1A73E8', n: 6 },
+  { id: 'sharepoint', name: 'SharePoint', kind: 'Sites & libraries', mono: 'SP', color: '#036C70', n: 5 },
+  { id: 'notion', name: 'Notion', kind: 'Pages & wikis', mono: 'N', color: '#191919', n: 5 },
+  { id: 'confluence', name: 'Confluence', kind: 'Spaces', mono: 'C', color: '#0C66E4', n: 4 },
+  { id: 'gmail', name: 'Gmail', kind: 'Email', mono: 'M', color: '#D93025', n: 3 },
+  { id: 'aircall', name: 'Aircall', kind: 'Calls', mono: 'A', color: '#00B388', n: 2 },
+  { id: 'gsheets', name: 'Google Sheets', kind: 'Spreadsheets', mono: 'GS', color: '#188038', n: 2 },
+  { id: 'website', name: 'Website', kind: 'Public pages', mono: 'W', color: '#3E6FA6', n: 3 },
+];
+ST.apps = ST.apps || {};
 function passagesFor(id) {
   const out = [];
   DRAFTS.forEach(r => r.src.forEach(([d, loc, text]) => { if (d === id && !out.some(p => p.text === text)) out.push({ loc, text }); }));
@@ -541,74 +538,90 @@ const qsFor = (id) => allQuestions().filter(q => (q.docs || []).includes(id));
 const MAX_MB = 25, OK_EXT = ['pdf', 'docx', 'doc', 'md', 'txt'];
 const forceScope = new URLSearchParams(location.search).get('scope') === 'unconfirmed';
 ST.retired = ST.retired || {};
+const pendingScope = () => forceScope ? !ST.__scopeOk : !ST.scope.signed;
 function renderScope() {
-  const pending = forceScope ? !ST.__scopeOk : !ST.scope.signed;
   const el = $('scope');
-  el.classList.toggle('is-pending', pending);
-  if (pending) {
+  el.classList.toggle('is-pending', pendingScope());
+  if (pendingScope()) {
     // G17: before scope is confirmed, documents wait and the checkbox sits on this page
     el.innerHTML = '<span class="ok">!</span><div><b>Confirm what’s in scope</b><span class="sub">We hold your documents until you confirm them. Personal details are not removed automatically in this phase, so only include what we agreed on.</span></div>' +
       '<div class="confirm"><label><input type="checkbox" id="scopeChk"> These documents are in scope</label><button class="btn btn--primary btn--sm" id="scopeGo" disabled>Confirm and start processing</button></div>';
     $('scopeChk').onchange = () => { $('scopeGo').disabled = !$('scopeChk').checked; };
     $('scopeGo').onclick = () => { ST.scope.signed = true; ST.__scopeOk = true; save(); renderScope(); render(); toast('Scope confirmed. Processing starts now.'); };
+  } else {
+    $('scopeSub').textContent = 'By ' + ST.scope.by + ' on ' + ST.scope.at + ' · personal details are not removed automatically';
   }
 }
+const fileRow = (o) => '<li class="file' + (o.cls || '') + '"' + (o.id ? ' data-id="' + o.id + '"' : '') + '><span class="ext">' + esc(o.ext) + '</span>' +
+  '<span style="min-width:0"><span class="name"><span style="overflow:hidden;text-overflow:ellipsis">' + esc(o.name) + '</span>' + (o.badge || '') + '</span><span class="meta">' + o.meta + '</span>' + (o.why || '') + '</span>' +
+  o.stage + '<span class="acts">' + (o.acts || '') + '</span>' + (o.detail || '') + '</li>';
 function render() {
-  const c = counts();
-  if (!$('scopeSub')) return renderRows();
-  $('scopeSub').textContent = 'By ' + ST.scope.by + ' on ' + ST.scope.at + ' · personal details are not removed automatically';
-  renderRows();
-}
-function renderRows() {
-  const c = counts();
   const docx = ST.docx || [];
-  $('docMeta').textContent = (c.docs + extra.length + docx.length) + ' documents · ' + c.pages + ' pages · ' + c.passages + ' passages';
-  const pending = forceScope ? !ST.__scopeOk : !ST.scope.signed;
-  const rows = DOCS.map(d => {
-    if (ST.retired[d.id]) return retiredRow({ id: d.id, name: d.name, ext: d.name.split('.').pop(), pages: d.pages, retiredNote: 'Retired just now by Sara Lindqvist' }, true);
+  const live = DOCS.filter(d => !ST.retired[d.id]).length + extra.length + docx.filter(d => d.status !== 'retired').length;
+  $('nDocs').textContent = live;
+  $('nConn').textContent = Object.keys(ST.apps).length;
+  const c = counts();
+  $('docMeta').textContent = live + ' documents · ' + c.pages + ' pages · ' + c.passages + ' passages';
+  const rows = [];
+  docx.forEach(d => {
+    if (d.status === 'retired') return;
+    const base = { ext: d.ext, name: d.name };
+    if (d.status === 'failed') rows.push(fileRow({ ...base, cls: ' is-failed', meta: 'Added ' + esc(d.added || 'today'), why: '<span class="why">' + esc(d.reason) + '</span>', stage: '<span class="pstage is-fail">Couldn’t process</span>',
+      acts: '<button class="btn btn--secondary" data-retry="' + d.id + '">Try again</button><button class="btn btn--ghost" style="opacity:1" data-remove="' + d.id + '">Remove</button>' }));
+    else if (d.status === 'waiting') rows.push(fileRow({ ...base, meta: pendingScope() ? 'Waiting for you to confirm scope' : 'In the queue · processing starts in about 2 minutes', stage: '<span class="pstage is-wait">Waiting</span>',
+      acts: '<button class="btn btn--ghost" style="opacity:1" data-remove="' + d.id + '">Cancel</button>' }));
+    else if (d.status === 'running') rows.push(fileRow({ ...base, meta: 'Processing', stage: '<span class="pstage is-run">' + esc(d.stage || 'Extracting text') + '</span>' }));
+    else rows.push(fileRow({ ...base, meta: (d.pages || 4) + ' pages · ' + Math.round((d.pages || 4) * 4.6) + ' passages', stage: '<span class="pstage is-done">Indexed</span>' }));
+  });
+  extra.forEach(f => rows.push(fileRow({ ext: f.ext, name: f.name, meta: f.done ? f.pages + ' pages · ' + f.passages + ' passages · just now' : 'Uploaded just now',
+    stage: '<span class="pstage ' + (f.done ? 'is-done">Indexed' : 'is-run">' + esc(f.stage)) + '</span>' })));
+  DOCS.forEach(d => {
+    if (ST.retired[d.id]) return;
     const ext = d.name.split('.').pop(), n = Math.round(d.pages * 4.6), qs = qsFor(d.id);
-    let html = '<tr class="row' + (open === d.id ? ' is-open' : '') + '" data-id="' + d.id + '"><td><span class="dname"><span class="ext">' + ext + '</span>' + esc(d.name) +
-      (d.faq ? ' <span class="badge badge--info">Your help pages</span>' : '') + '</span></td><td class="num">' + d.pages + '</td><td class="num">' + n + '</td><td class="num">' + qs.length + '</td>' +
-      '<td><span class="stage">✓ Indexed</span></td><td class="acts"><button class="btn btn--ghost" data-retire="' + d.id + '">Retire</button></td></tr>';
+    let detail = '';
     if (open === d.id) {
       const ps = passagesFor(d.id).slice(0, 3);
-      html += '<tr class="detail"><td colspan="5"><p class="sub" style="margin:10px 0 4px">Sample passages</p>' +
+      detail = '<div class="fdetail"><p class="sub" style="margin:6px 0 2px">Sample passages</p>' +
         (ps.length ? ps.map(p => '<div class="passage"><em>' + esc(p.loc) + '</em>' + esc(p.text) + '</div>').join('') : '<p class="sub">No passages sampled yet.</p>') +
-        (qs.length ? '<p class="sub" style="margin:10px 0 6px">Questions found here</p><div class="chips">' + qs.map(q => '<a class="chip" href="insights.html">' + esc(q.q) + '</a>').join('') + '</div>' : '') + '</td><td></td></tr>';
+        (qs.length ? '<p class="sub" style="margin:10px 0 6px">Questions found here</p><div class="chips">' + qs.map(q => '<a class="chip" href="insights.html">' + esc(q.q) + '</a>').join('') + '</div>' : '') + '</div>';
     }
-    return html;
+    rows.push(fileRow({ id: d.id, cls: ' is-row' + (open === d.id ? ' is-open' : ''), ext, name: d.name, badge: d.faq ? '<span class="badge badge--info">Your help pages</span>' : '',
+      meta: d.pages + ' pages · ' + n + ' passages · ' + qs.length + ' question' + (qs.length === 1 ? '' : 's') + ' · added ' + d.added,
+      stage: '<span class="pstage is-done">Indexed</span>', acts: '<button class="btn btn--ghost" data-retire="' + d.id + '">Retire</button>', detail }));
   });
-  extra.forEach(f => rows.push('<tr><td><span class="dname"><span class="ext">' + esc(f.ext) + '</span>' + esc(f.name) + '</span></td><td class="num">' + (f.pages || '–') + '</td><td class="num">' + (f.passages || '–') + '</td><td class="num">–</td><td><span class="stage ' + (f.done ? '' : 'is-run') + '">' + (f.done ? '✓ Indexed' : '<span class="spin" style="width:11px;height:11px"></span> ' + esc(f.stage)) + '</span></td><td></td></tr>'));
-  docx.forEach(d => {
-    if (d.status === 'retired') { rows.push(retiredRow(d)); return; }
-    const head = '<tr class="' + (d.status === 'failed' ? 'is-failed' : '') + '"><td><span class="dname"><span class="ext">' + esc(d.ext) + '</span><span>' + esc(d.name) +
-      (d.status === 'failed' ? '<span class="why">' + esc(d.reason) + '</span>' : d.status === 'waiting' ? '<span class="why mute">' + (pending ? 'Waiting for you to confirm scope.' : 'In the queue. Processing starts in about 2 minutes.') + '</span>' : '') + '</span></span></td>' +
-      '<td class="num">–</td><td class="num">–</td><td class="num">–</td>';
-    if (d.status === 'failed') rows.push(head + '<td><span class="stage is-fail">✕ Couldn’t process</span></td><td class="acts"><button class="btn btn--secondary" data-retry="' + d.id + '">Try again</button> <button class="btn btn--ghost" style="opacity:1" data-remove="' + d.id + '">Remove</button></td></tr>');
-    else if (d.status === 'waiting') rows.push(head + '<td><span class="stage is-wait">Waiting</span></td><td class="acts"><button class="btn btn--ghost" style="opacity:1" data-remove="' + d.id + '">Cancel</button></td></tr>');
-    else if (d.status === 'running') rows.push(head + '<td><span class="stage is-run"><span class="spin" style="width:11px;height:11px"></span> ' + esc(d.stage || 'Extracting text') + '</span></td><td></td></tr>');
-    else rows.push(head.replace('<td class="num">–</td><td class="num">–</td>', '<td class="num">' + (d.pages || 4) + '</td><td class="num">' + Math.round((d.pages || 4) * 4.6) + '</td>') + '<td><span class="stage">✓ Indexed</span></td><td></td></tr>');
-  });
+  // G4: retired documents stay listed, greyed, and can be restored
+  DOCS.filter(d => ST.retired[d.id]).forEach(d => rows.push(fileRow({ cls: ' is-retired', ext: d.name.split('.').pop(), name: d.name, meta: 'Retired just now by Sara Lindqvist', stage: '<span class="pstage">Retired</span>',
+    acts: '<button class="btn btn--secondary" data-restore="' + d.id + '" data-base="1">Restore</button>' })));
+  docx.filter(d => d.status === 'retired').forEach(d => rows.push(fileRow({ cls: ' is-retired', ext: d.ext, name: d.name, meta: esc(d.retiredNote), stage: '<span class="pstage">Retired</span>',
+    acts: '<button class="btn btn--secondary" data-restore="' + d.id + '">Restore</button>' })));
   $('docRows').innerHTML = rows.join('');
+  renderApps();
 }
-// G4: retired documents stay listed, greyed, and can be restored
-function retiredRow(d, base) {
-  return '<tr class="is-retired"><td><span class="dname"><span class="ext">' + esc(d.ext) + '</span><span>' + esc(d.name) + '<span class="why mute">' + esc(d.retiredNote) + '</span></span></span></td>' +
-    '<td class="num">' + (d.pages || '–') + '</td><td class="num">–</td><td class="num">–</td><td><span class="stage is-ret">Retired</span></td>' +
-    '<td class="acts"><button class="btn btn--secondary" data-restore="' + d.id + '"' + (base ? ' data-base="1"' : '') + '>Restore</button></td></tr>';
+function renderApps() {
+  $('apps').innerHTML = APPS.map(a => '<button type="button" class="app' + (ST.apps[a.id] ? ' is-on' : '') + '" data-app="' + a.id + '"><span class="mono" style="background:' + a.color + '">' + a.mono + '</span><span><b>' + esc(a.name) + '</b><span class="k">' + (ST.apps[a.id] ? 'Connected · ' + a.n + ' documents' : esc(a.kind)) + '</span></span></button>').join('');
+  const on = APPS.filter(a => ST.apps[a.id]);
+  $('synced').innerHTML = on.map(a => '<div class="file"><span class="mono" style="background:' + a.color + '">' + a.mono + '</span><span><span class="name">' + esc(a.name) + '</span><span class="meta">Connected as sara@nimbuspay.com · ' + a.n + ' documents · reads only</span></span><span class="pstage is-done">Synced</span><span class="acts"><button class="btn btn--ghost" style="opacity:1" data-off="' + a.id + '">Disconnect</button></span></div>').join('');
 }
+$('apps').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-app]'); if (!b || ST.apps[b.dataset.app]) return;
+  const a = APPS.find(x => x.id === b.dataset.app);
+  b.classList.add('is-busy'); b.disabled = true;
+  b.querySelector('.k').innerHTML = '<span class="spin" style="width:11px;height:11px;vertical-align:-1px"></span> Connecting…';
+  setTimeout(() => { ST.apps[a.id] = true; save(); render(); toast(a.name + ' connected as sara@nimbuspay.com'); }, 900);
+});
+$('synced').addEventListener('click', (e) => { const b = e.target.closest('[data-off]'); if (!b) return; delete ST.apps[b.dataset.off]; save(); render(); toast('Disconnected. Documents already indexed stay until you retire them.'); });
 $('docRows').addEventListener('click', (e) => {
-  const b = e.target.closest('button'); if (!b) return;
-  e.stopPropagation();
+  const b = e.target.closest('button');
+  if (!b) { const li = e.target.closest('.file.is-row'); if (li && !e.target.closest('a')) { open = open === li.dataset.id ? null : li.dataset.id; render(); } return; }
   const docx = ST.docx || [];
   if (b.dataset.retry) {
-    const d = docx.find(x => x.id === b.dataset.retry); d.status = 'running'; d.stage = 'Extracting text'; renderRows();
-    setTimeout(() => { d.status = 'failed'; d.reason = 'Still password-protected. Remove the password in your PDF app, then upload the file again.'; save(); renderRows(); toastError('Holiday policy 2025.pdf still couldn’t be processed.'); }, 1600);
+    const d = docx.find(x => x.id === b.dataset.retry); d.status = 'running'; d.stage = 'Extracting text'; render();
+    setTimeout(() => { d.status = 'failed'; d.reason = 'Still password-protected. Remove the password in your PDF app, then upload the file again.'; save(); render(); toastError('Holiday policy 2025.pdf still couldn’t be processed.'); }, 1600);
   }
-  if (b.dataset.remove) { ST.docx = docx.filter(x => x.id !== b.dataset.remove); save(); renderRows(); toast('Removed'); }
+  if (b.dataset.remove) { ST.docx = docx.filter(x => x.id !== b.dataset.remove); save(); render(); toast('Removed'); }
   if (b.dataset.restore) {
     if (b.dataset.base) delete ST.retired[b.dataset.restore]; else { const d = docx.find(x => x.id === b.dataset.restore); d.status = 'indexed'; }
-    save(); renderRows(); toast('Restored. Its passages are used for drafts again.');
+    save(); render(); toast('Restored. Its passages are used for drafts again.');
   }
   if (b.dataset.retire) confirmRetire(b.dataset.retire);
 });
@@ -621,9 +634,8 @@ function confirmRetire(id) {
     (qs ? '<div class="warn" style="background:rgba(217,154,43,.1);color:#7A5710">' + qs + ' question' + (qs === 1 ? '' : 's') + ' cite this document. Approved answers that rely on it are sent back to Build.</div>' : '') +
     '</div><div class="dlg__f"><button class="btn btn--secondary" value="cancel">Cancel</button><button class="btn btn--danger" type="button" id="retGo">Retire document</button></div></form>';
   dlg.showModal();
-  $('retGo').onclick = () => { ST.retired[id] = true; save(); dlg.close(); open = null; renderRows(); toast(d.name + ' retired'); };
+  $('retGo').onclick = () => { ST.retired[id] = true; save(); dlg.close(); open = null; render(); toast(d.name + ' retired'); };
 }
-$('docRows').addEventListener('click', (e) => { const tr = e.target.closest('tr.row'); if (!tr || e.target.closest('a')) return; open = open === tr.dataset.id ? null : tr.dataset.id; render(); });
 $('scopeToggle').addEventListener('click', () => { const d = $('scopeDetail'); d.hidden = !d.hidden; $('scopeToggle').setAttribute('aria-expanded', !d.hidden); $('scopeToggle').textContent = d.hidden ? 'What’s in scope' : 'Hide'; });
 // G3: reject wrong type, too large and duplicates up front; upload the rest
 function showUploadErrors(errs) {
@@ -634,9 +646,9 @@ function showUploadErrors(errs) {
   el.hidden = false; $('upErrX').onclick = () => { el.hidden = true; };
 }
 window.demoUploadErrors = () => showUploadErrors([['Q3 board deck.pptx', 'This file type isn’t supported. Use PDF, DOCX, MD or TXT.'], ['Call recordings.zip', 'Too large: 212 MB. Each file can be up to 25 MB.'], ['Billing FAQ.docx', 'Already uploaded on 10 Sep. Retire the old one first if this is a newer version.']]);
-$('fileInput').addEventListener('change', (e) => {
+function addFiles(list) {
   const errs = [], names = DOCS.map(d => d.name.toLowerCase()).concat((ST.docx || []).map(d => d.name.toLowerCase()), extra.map(x => x.name.toLowerCase()));
-  const files = [...e.target.files].filter(f => {
+  const files = [...list].filter(f => {
     const ext = (f.name.split('.').pop() || '').toLowerCase();
     if (!OK_EXT.includes(ext)) { errs.push([f.name, 'This file type isn’t supported. Use PDF, DOCX, MD or TXT.']); return false; }
     if (f.size > MAX_MB * 1048576) { errs.push([f.name, 'Too large: ' + Math.round(f.size / 1048576) + ' MB. Each file can be up to 25 MB.']); return false; }
@@ -646,26 +658,36 @@ $('fileInput').addEventListener('change', (e) => {
   showUploadErrors(errs);
   files.forEach(f => {
     const item = { name: f.name, ext: (f.name.split('.').pop() || '').slice(0, 4), stage: 'Extracting text', done: false, pages: Math.max(1, Math.round(f.size / 40000)) };
-    extra.push(item);
+    extra.unshift(item);
     setTimeout(() => { item.stage = 'Splitting into passages'; render(); }, 900);
     setTimeout(() => { item.stage = 'Indexing by meaning'; render(); }, 1800);
     setTimeout(() => { item.done = true; item.passages = Math.round(item.pages * 4.6); render(); toast(item.name + ' indexed'); }, 2800);
   });
-  e.target.value = ''; render();
-});
-$('folderBtn').addEventListener('click', () => { $('folderRow').hidden = !$('folderRow').hidden; if (!$('folderRow').hidden) $('folderLink').focus(); });
+  render();
+}
+$('fileInput').addEventListener('change', (e) => { addFiles(e.target.files); e.target.value = ''; });
+const drop = $('drop');
+['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('is-over'); }));
+['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove('is-over'); }));
+drop.addEventListener('drop', (e) => addFiles(e.dataTransfer.files));
 $('folderSend').addEventListener('click', () => {
   const v = $('folderLink').value.trim();
   if (!/^https?:\/\/\S+\.\S+/.test(v)) { $('folderLink').focus(); toast('Paste a full folder link'); return; }
-  extra.push({ name: 'Shared folder · ' + v.replace(/^https?:\/\//, '').slice(0, 32) + '…', ext: 'dir', stage: 'Waiting for access', done: false });
-  $('folderLink').value = ''; $('folderRow').hidden = true; render();
+  extra.unshift({ name: 'Shared folder · ' + v.replace(/^https?:\/\//, '').slice(0, 32) + '…', ext: 'dir', stage: 'Waiting for access', done: false });
+  $('folderLink').value = ''; render(); show('docs');
   toast('We’ll pull the documents once ingest@lojo.ai has view access');
 });
-
+function show(tab) {
+  document.querySelectorAll('.ptab').forEach(t => t.setAttribute('aria-selected', t.dataset.tab === tab));
+  $('tabDocs').hidden = tab !== 'docs'; $('tabConnect').hidden = tab !== 'connect';
+}
+document.querySelectorAll('.ptab').forEach(t => t.addEventListener('click', () => { show(t.dataset.tab); history.replaceState(null, '', location.search + (t.dataset.tab === 'connect' ? '#connect' : '')); }));
 renderScope();
 render();
+show(location.hash === '#connect' ? 'connect' : 'docs');
 if (new URLSearchParams(location.search).get('demo') === 'upload') demoUploadErrors();
 """)
+
 
 # ============================================================ QUESTIONS & GAPS
 QUESTIONS_PAGE = dict(
@@ -716,12 +738,18 @@ QUESTIONS_PAGE = dict(
       <div>
         <p class="label">02 Insights</p>
         <h1>Insights</h1>
-        <p>Questions your documents answer, drawn from the documents themselves, plus the ones you give us. Tell us which matter; only those get drafted. Gaps are things your documents refer to but never explain.</p>
+        <p>What lojo found in your sources: the questions they answer, and the gaps they leave. Tell us which questions matter; only those get drafted.</p>
       </div>
     </div>
-    <div class="tabs" role="tablist">
-      <button class="tab" role="tab" data-tab="q" aria-selected="true">Questions <span class="n" id="nQ">0</span></button>
-      <button class="tab" role="tab" data-tab="g" aria-selected="false">Gaps <span class="n" id="nG">0</span></button>
+    <div class="stats">
+      <div class="stat"><b id="stPages">0</b><span>pages read</span></div>
+      <div class="stat"><b id="stPassages">0</b><span>passages created</span></div>
+      <div class="stat is-key"><b id="stIndexed">0%</b><span>indexed by meaning</span></div>
+    </div>
+    <div class="ptabs" role="tablist" aria-label="Insights">
+      <button class="ptab" role="tab" data-tab="q" aria-selected="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg>Questions <span class="n" id="nQ">0</span></button>
+      <button class="ptab" role="tab" data-tab="g" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Gaps <span class="n" id="nG">0</span></button>
+      <button class="ptab" role="tab" data-tab="ix" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>Reading <span class="n" id="nIx">0</span></button>
     </div>
 
     <section id="tabQ">
@@ -742,6 +770,10 @@ QUESTIONS_PAGE = dict(
 
     <section id="tabG" hidden>
       <div class="gaps" id="gapList"></div>
+    </section>
+
+    <section id="tabIx" hidden>
+      <div class="panel"><ul class="ix" id="ixList"></ul></div>
     </section>
 """,
   js=r"""
@@ -841,12 +873,30 @@ $('gapList').addEventListener('click', (e) => {
   save(); renderG(); renderQ();
 });
 
-function show(tab) {
-  document.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-selected', t.dataset.tab === tab));
-  $('tabQ').hidden = tab !== 'q'; $('tabG').hidden = tab !== 'g';
+// Reading: each source goes through the same three stages as in setup
+const IX_STAGES = ['Extract text', 'Split into passages', 'Index by meaning'];
+const ixDocs = DOCS.filter(d => !(ST.retired || {})[d.id]).map(d => ({ name: d.name, pages: d.pages, done: 3 }))
+  .concat((ST.docx || []).filter(d => d.status === 'waiting' || d.status === 'running').map(d => ({ name: d.name, pages: 6, done: 1, live: true })));
+function renderIx() {
+  const pages = ixDocs.reduce((a, d) => a + (d.done === 3 ? d.pages : 0), 0);
+  $('stPages').textContent = pages; $('stPassages').textContent = ixDocs.reduce((a, d) => a + (d.done === 3 ? Math.round(d.pages * 4.6) : 0), 0);
+  const pct = Math.round(ixDocs.reduce((a, d) => a + d.done, 0) / (ixDocs.length * 3) * 100);
+  $('stIndexed').textContent = pct + '%'; $('nIx').textContent = ixDocs.length;
+  $('ixList').innerHTML = ixDocs.map(d => '<li><span class="name">' + esc(d.name) + '</span><span class="stages">' +
+    IX_STAGES.map((s, i) => '<span class="pstage' + (i < d.done ? ' is-done' : i === d.done ? ' is-run' : '') + '">' + s + '</span>').join('') +
+    '</span><span class="pbar"><i style="width:' + Math.round(d.done / 3 * 100) + '%"></i></span></li>').join('');
 }
-document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => { show(t.dataset.tab); history.replaceState(null, '', t.dataset.tab === 'g' ? '#gaps' : '#'); }));
-renderQ(); renderG(); show(location.hash === '#gaps' ? 'g' : 'q');
+// the queued source works through its stages while you watch
+ixDocs.filter(d => d.live).forEach(d => {
+  setTimeout(() => { d.done = 2; renderIx(); }, 2200);
+  setTimeout(() => { d.done = 3; renderIx(); toast(d.name + ' indexed'); }, 4400);
+});
+function show(tab) {
+  document.querySelectorAll('.ptab').forEach(t => t.setAttribute('aria-selected', t.dataset.tab === tab));
+  $('tabQ').hidden = tab !== 'q'; $('tabG').hidden = tab !== 'g'; $('tabIx').hidden = tab !== 'ix';
+}
+document.querySelectorAll('.ptab').forEach(t => t.addEventListener('click', () => { show(t.dataset.tab); history.replaceState(null, '', location.search + ({ g: '#gaps', ix: '#reading' }[t.dataset.tab] || '')); }));
+renderQ(); renderG(); renderIx(); show({ '#gaps': 'g', '#reading': 'ix' }[location.hash] || 'q');
 const QD = new URLSearchParams(location.search).get('demo');
 if (QD === 'dup') { $('addQ').value = 'What are the API rate limits'; $('addForm').requestSubmit(); }
 if (QD === 'leave') { leaving = 'q16'; renderQ(); $('row-q16').scrollIntoView({ block: 'center' }); $('leaveNote').focus(); }
@@ -857,104 +907,79 @@ if (QD === 'failed') $('row-q17').scrollIntoView({ block: 'center' });
 REVIEW = dict(
   active='review', title='Build',
   css=r"""
-  .meter{min-width:260px}
-  .meter b{font-family:var(--display);font-size:1rem}
-  .meter span{color:var(--muted);font-size:.8rem;margin-left:6px}
-  .meter .bar{height:6px;border-radius:6px;background:var(--bg-soft);margin-top:8px;overflow:hidden}
-  .meter .bar i{display:block;height:100%;background:var(--brand-gradient);transition:width .4s ease}
-  .rv{display:grid;grid-template-columns:340px minmax(0,1fr);gap:20px;align-items:start}
-  .list{position:sticky;top:84px;max-height:calc(100vh - 110px);display:flex;flex-direction:column;overflow:hidden}
-  .list .tabs{padding:0 10px;margin:0}
-  .list .tab{padding:12px 8px;font-size:.8rem;white-space:nowrap}
-  .items{list-style:none;margin:0;padding:6px;overflow:auto}
-  .item{padding:11px 12px;border-radius:10px;cursor:pointer;display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:5px;align-items:start}
-  .item > b,.item > .meta{grid-column:2}
-  .item .pick{grid-row:1/span 2;margin-top:2px}
-  .pick{width:17px;height:17px;margin:0;accent-color:var(--rose);cursor:pointer}
-  .item.is-picked{background:rgba(232,93,117,.06)}
-  .bulk{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
-  .bulk label{display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:600;cursor:pointer;margin-right:auto}
-  .bulk.is-on{background:#FFF6F3}
-  .bulk .btn{height:30px;padding:0 12px;font-size:.76rem}
-  .bulkrej{display:grid;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--bg-soft)}
-  .bulkrej .row{display:flex;gap:8px}
-  .item:hover{background:var(--bg-soft)}
-  .item.is-sel{background:var(--bg-soft);box-shadow:inset 3px 0 0 var(--rose)}
-  .item b{font-size:.84rem;font-weight:600;line-height:1.35}
-  .item .meta{display:flex;gap:6px;flex-wrap:wrap}
-  .detail{padding:24px 26px}
-  .detail h2{font-family:var(--display);font-weight:700;font-size:1.3rem;letter-spacing:-.01em;margin:10px 0 16px;line-height:1.25}
-  .seclbl{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
-  .answer{font-size:.98rem;line-height:1.6;margin:0 0 22px;padding:16px 18px;border-radius:12px;background:var(--bg-soft)}
-  .quotes{display:grid;gap:10px;margin-bottom:22px}
-  .quote{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
-  .quote.is-warn{border-color:rgba(217,154,43,.5);background:rgba(217,154,43,.05)}
-  .quote .qtop{display:flex;gap:8px;align-items:center;margin-bottom:4px}
-  .quote .qtop b{font-size:.8rem}
-  .quote .qtop em{font-style:normal;color:var(--muted);font-size:.74rem}
-  .quote p{margin:0;font-size:.86rem}
-  .quote .more{border:0;background:none;padding:0;margin-top:8px;font-size:.76rem;font-weight:700;color:#B73C54;cursor:pointer}
-  .quote .full{margin-top:10px;padding:12px 14px;border-radius:10px;background:var(--bg-soft);font-size:.84rem;line-height:1.65;color:var(--muted)}
-  .quote .full mark{background:rgba(255,177,153,.55);color:var(--ink);padding:1px 2px;border-radius:3px}
-  :root[data-theme="dark"] .quote .full mark{background:rgba(232,93,117,.35)}
-  .other{display:grid;grid-template-columns:36px 1fr;gap:12px;align-items:start;padding:14px 16px;border-radius:12px;background:rgba(62,111,166,.08);border:1px solid rgba(62,111,166,.25);margin-bottom:18px;font-size:.88rem}
+  .q__body .md p{margin:0 0 8px}
+  .q__body .md p:last-child{margin:0}
+  .srcbtn{cursor:pointer;font:inherit;font-size:.74rem;font-weight:600;color:var(--ink)}
+  .srcbtn:hover,.srcbtn[aria-expanded="true"]{border-color:var(--rose)}
+  .srcbtn[aria-expanded="true"]{background:rgba(232,93,117,.06)}
+  .pfull{margin-top:10px;padding:12px 14px;border-radius:10px;background:var(--bg-soft);font-size:.86rem;line-height:1.65;color:var(--muted)}
+  .pfull em{display:block;font-style:normal;font-size:.72rem;font-weight:700;color:var(--ink);margin-bottom:4px}
+  .pfull mark{background:rgba(255,177,153,.55);color:var(--ink);padding:1px 2px;border-radius:3px}
+  :root[data-theme="dark"] .pfull mark{background:rgba(232,93,117,.35)}
+  .other{display:grid;grid-template-columns:36px 1fr;gap:12px;align-items:start;padding:14px 16px;border-radius:12px;background:rgba(62,111,166,.08);border:1px solid rgba(62,111,166,.25);margin-top:12px;font-size:.88rem}
   .other .av{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#7A8BA6,#B3C2D6);color:#fff;font-weight:800;font-size:.76rem;display:grid;place-items:center}
   .other b{display:block}
   .other .btns{display:flex;gap:8px;margin-top:10px}
-  .hist{margin:0 0 22px;border:1px solid var(--line);border-radius:12px;padding:0 14px}
-  .hist summary{cursor:pointer;padding:12px 0;font-size:.84rem;font-weight:700;color:var(--muted)}
+  .hist{margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:0 14px}
+  .hist summary{cursor:pointer;padding:10px 0;font-size:.84rem;font-weight:700;color:var(--muted)}
   .hist ol{margin:0 0 12px;padding-left:20px;display:grid;gap:10px;font-size:.84rem}
   .hist li span{display:block;color:var(--error);font-size:.76rem;font-weight:600;margin-top:2px}
-  .prev{margin:0 0 22px;padding:12px 14px;border-left:3px solid var(--line-2);color:var(--muted);font-size:.84rem}
+  .prev{margin-top:12px;padding:10px 12px;border-left:3px solid var(--line-2);color:var(--muted);font-size:.84rem}
   .prev b{color:var(--ink)}
-  .acts{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-top:18px;border-top:1px solid var(--line)}
-  .acts .spacer{flex:1}
-  kbd{font-family:var(--body);font-size:.66rem;font-weight:700;border:1px solid var(--line-2);border-radius:5px;padding:1px 5px;color:var(--muted);background:var(--panel)}
-  .btn--primary kbd{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);color:#fff}
-  .reject{display:grid;gap:10px;margin-bottom:18px;padding:16px;border-radius:12px;background:var(--bg-soft)}
-  .done-note{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:12px;margin-bottom:18px;font-size:.86rem}
+  .done-note{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:.84rem}
   .done-note.ok{background:rgba(63,143,95,.08);color:var(--success)}
   .done-note.no{background:rgba(198,69,69,.07);color:var(--error)}
-  @media (max-width:1000px){.rv{grid-template-columns:1fr}.list{position:static;max-height:none}}
+  .reject .seclbl{font-size:.8rem;font-weight:700;margin:0}
+  .reject .row{display:flex;gap:8px}
 """,
   body=r"""
     <div class="head">
       <div>
         <p class="label">03 Build · Validation</p>
         <h1>Build</h1>
-        <p>First batch of drafts. Approve, edit, or reject with a reason. A rejected draft is written again once; if it’s still wrong, it waits for a human answer.</p>
+        <p>The agent drafts each answer from your sources. Approve, edit, or reject with a reason; a rejected draft is written again up to twice, then waits for a human answer.</p>
       </div>
+    </div>
+
+    <div class="panel">
+      <div class="agent">
+        <span class="ava-agent" aria-hidden="true"></span>
+        <div><b id="agentTitle"></b><span id="agentSub"></span></div>
+      </div>
+      <form class="own" id="ownForm">
+        <input class="text" id="ownInput" placeholder="Add a question you get asked, e.g. Do you support Apple Pay?" aria-label="Add your own question">
+        <button class="btn btn--secondary">Add to queue</button>
+      </form>
+    </div>
+
+    <div class="ptabs" role="tablist" id="rtabs" style="margin-top:24px">
+      <button class="ptab" role="tab" data-f="pending" aria-selected="true">To review <span class="n" id="nP">0</span></button>
+      <button class="ptab" role="tab" data-f="approved" aria-selected="false">Approved <span class="n" id="nA">0</span></button>
+      <button class="ptab" role="tab" data-f="final" aria-selected="false">Needs a human answer <span class="n" id="nF">0</span></button>
+    </div>
+
+    <div class="toolbar">
+      <div class="meter"><b id="mCount">0 of 0</b><span>decided</span><div class="pbar"><i id="mBar"></i></div></div>
+      <!-- ASSUMPTION: low-risk = backed by one source with no conflict, never rewritten. check with Eric -->
+      <button class="btn btn--secondary btn--sm" id="lowRisk" type="button">Approve low-risk</button>
+    </div>
+    <div class="selbar" id="selbar">
+      <label><input type="checkbox" class="pick" id="pickAll"> <span id="pickTxt">Select all</span></label>
       <span class="spacer"></span>
-      <div class="meter"><b id="mCount">0 of 0</b><span>reviewed</span><div class="bar"><i id="mBar"></i></div></div>
+      <button class="btn btn--primary btn--sm" id="selApprove" type="button" disabled>Approve</button>
+      <button class="btn btn--danger btn--sm" id="selReject" type="button" disabled>Reject</button>
     </div>
-    <div class="rv">
-      <section class="card list" aria-label="Drafts">
-        <div class="tabs" role="tablist" id="rtabs">
-          <button class="tab" data-f="pending" aria-selected="true">To review <span class="n" id="nP">0</span></button>
-          <button class="tab" data-f="approved" aria-selected="false">Approved <span class="n" id="nA">0</span></button>
-          <button class="tab" data-f="final" aria-selected="false">Human <span class="n" id="nF">0</span></button>
-        </div>
-        <div class="bulk" id="bulk" hidden>
-          <label><input type="checkbox" class="pick" id="pickAll"> <span id="pickTxt">Select all</span></label>
-          <button class="btn btn--primary" id="bulkApprove" type="button" disabled>Approve</button>
-          <button class="btn btn--danger" id="bulkReject" type="button" disabled>Reject</button>
-        </div>
-        <div class="bulkrej" id="bulkRej" hidden>
-          <span class="sub" id="bulkRejTxt"></span>
-          <select class="text" id="bulkWhy"></select>
-          <input class="text" id="bulkNote" placeholder="What should change? (optional)">
-          <div class="row"><button class="btn btn--danger btn--sm" id="bulkRejGo" type="button">Reject selected</button><button class="btn btn--ghost btn--sm" id="bulkRejCancel" type="button">Cancel</button></div>
-        </div>
-        <ul class="items" id="items"></ul>
-      </section>
-      <section class="card detail" id="detail" aria-live="polite"></section>
+    <div class="selrej" id="selRej" hidden>
+      <span class="sub" id="selRejTxt"></span>
+      <div class="row"><select class="text" id="selWhy"></select><input class="text" id="selNote" placeholder="What should change? (optional)" style="flex:1;min-width:200px"></div>
+      <div class="row"><button class="btn btn--danger btn--sm" id="selRejGo" type="button">Reject selected</button><button class="btn btn--ghost btn--sm" id="selRejX" type="button">Cancel</button></div>
     </div>
+    <div id="cards" aria-live="polite"></div>
 """,
   js=r"""
-let tab = 'pending', sel = null, mode = 'view';
-const picked = new Set();
+let tab = 'pending', editId = null, rejectId = null, flashId = null;
+const picked = new Set(), openFull = new Set();
 const REASONS = ['Wrong answer', 'Outdated source', 'Missing detail', 'Not a question we answer'];
-const openFull = new Set();
 const CONTEXT = {
   'd1|p. 4': ['Plans and features. Every plan includes the help centre, the chat and email support. ', ' Starter workspaces sign in with email or with Google. An Owner turns single sign-on on under Settings → Security.'],
   'd5|Brightline call, 12 Aug': ['Brightline asked about access for their 40-person support team. ', ' They want to roll it out before their October audit. Follow-up: send the SSO setup guide.'],
@@ -979,191 +1004,174 @@ const CONTEXT = {
   'd9|§2': ['§2 Renewals. ', ' We email a reminder 30 days before each renewal.'],
 };
 const Q = (r) => QUESTIONS.find(q => q.id === r.qid).q;
-const inTab = (r) => { const s = decision(r).status; return tab === 'pending' ? (s === 'pending' || s === 'redrafting') : s === tab; };
+const tabOf = (r) => { const s = decision(r).status; return s === 'redrafting' ? 'pending' : s; };
+const other = (r) => ST.others && ST.others[r.id] && decision(r).status === 'pending' ? ST.others[r.id] : null;
+const lowRisk = (r) => decision(r).status === 'pending' && !other(r) && r.src.length === 1 && !r.conflict && !decision(r).redrafted;
+const todayStr = () => new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }).replace(',', '');
+const dec = (id) => ST.decisions[id] = ST.decisions[id] || { status: 'pending' };
 function badges(r) {
   const d = decision(r); let b = '';
+  if (d.status === 'approved') b += '<span class="badge badge--ok">Approved' + (d.edited ? ' · edited' : '') + '</span>';
+  if (d.status === 'final') b += '<span class="badge badge--err">Needs a human answer</span>';
   if (r.conflict) b += '<span class="badge badge--amber">Sources disagree</span>';
-  if (r.src.length > 1 && !r.conflict) b += '<span class="badge badge--muted">' + r.src.length + ' sources</span>';
   if (d.redrafted) b += '<span class="badge badge--info">' + (d.redrafted === 2 ? 'Rewritten twice' : 'Redrafted') + '</span>';
-  if (ST.others && ST.others[r.id] && d.status === 'pending') b += '<span class="badge badge--rose">Decided by ' + esc(ST.others[r.id].by.split(' ')[0]) + '</span>';
+  if (other(r)) b += '<span class="badge badge--rose">Decided by ' + esc(other(r).by.split(' ')[0]) + '</span>';
   if (d.by) b += '<span class="badge badge--muted">By ' + esc(d.by.split(' ')[0]) + '</span>';
-  if (d.edited) b += '<span class="badge badge--muted">Edited</span>';
+  if (!r.conflict && r.src.length === 1 && d.status === 'pending' && !d.redrafted) b += '<span class="badge badge--muted">Low risk</span>';
   return b;
 }
-function renderList() {
+function card(r) {
+  const d = decision(r), ans = answerOf(r), o = other(r);
+  const cls = d.status === 'approved' ? ' is-approved' : d.status === 'final' ? ' is-final' : '';
+  const canPick = d.status === 'pending' && !o && editId !== r.id && rejectId !== r.id;
+  let h = '<article class="q' + cls + (picked.has(r.id) ? ' is-picked' : '') + (flashId === r.id ? ' is-flash' : '') + '" id="card-' + r.id + '" data-id="' + r.id + '"><div class="q__head">' +
+    (canPick ? '<input type="checkbox" class="pick" data-pick="' + r.id + '" aria-label="Select: ' + esc(Q(r)) + '"' + (picked.has(r.id) ? ' checked' : '') + '>' : '') +
+    '<h4>' + esc(Q(r)) + '</h4><div class="q__badges">' + badges(r) + '</div></div>';
+  // G10: someone else decided this draft while it was open here
+  if (o) h += '<div class="other"><span class="av">' + esc(o.by.split(' ').map(x => x[0]).join('')) + '</span><div><b>' + esc(o.by) + ' ' + esc(o.action) + ' this ' + esc(o.when) + '.</b>' +
+    'Your screen was out of date, so nothing you do here will change it. Their decision stands.<div class="btns"><button class="btn btn--primary btn--sm" data-a="ackOther">Got it, next draft</button><button class="btn btn--ghost btn--sm" data-a="seeOther">See their version</button></div></div></div>';
+  if (d.status === 'redrafting') h += '<div class="q__drafting"><span class="spin"></span>Writing it again with your reason: “' + esc(d.reason) + '”</div>';
+  else if (editId === r.id) h += '<div class="q__body"><textarea class="text" id="edit-' + r.id + '" aria-label="Edit answer">' + esc(ans) + '</textarea></div>';
+  else h += '<div class="q__body"><div class="md">' + md(ans) + '</div></div>';
+  // G14: a draft rewritten more than once keeps its history
+  if (d.history && d.history.length > 1) h += '<details class="hist"><summary>Earlier drafts (' + d.history.length + ')</summary><ol>' + d.history.map(x => '<li>' + esc(x.text) + '<span>Rejected · ' + esc(x.reason) + '</span></li>').join('') + '</ol></details>';
+  else if (d.redrafted && d.prev) h += '<p class="prev"><b>Rejected draft</b> (' + esc(d.reason) + '): ' + esc(d.prev) + '</p>';
+  // G9: each source opens to the whole passage, with the quoted words highlighted
+  h += '<div class="srcs">' + r.src.map(([doc, loc]) => { const k = doc + '|' + loc; return '<button type="button" class="src srcbtn' + (r.conflict === doc ? ' src--warn' : '') + '" data-full="' + esc(k) + '" aria-expanded="' + openFull.has(k + '|' + r.id) + '" title="Show full passage">' + esc(docShort(doc)) + ' <em>' + esc(loc) + '</em></button>'; }).join('') + '</div>';
+  r.src.forEach(([doc, loc, text]) => { const k = doc + '|' + loc; if (!openFull.has(k + '|' + r.id)) return; const c = CONTEXT[k] || ['', '']; h += '<div class="pfull"><em>' + esc(docShort(doc)) + ' · ' + esc(loc) + (r.conflict === doc ? ' · conflicts with the others' : '') + '</em>' + esc(c[0]) + '<mark>' + esc(text) + '</mark>' + esc(c[1]) + '</div>'; });
+  if (d.status === 'approved') h += '<div class="done-note ok">✓ Approved' + (d.by ? ' by ' + esc(d.by) : '') + (d.at ? ' · ' + esc(d.at) : '') + '. It’s in the store and the chat can use it.</div>';
+  if (d.status === 'final') h += '<div class="done-note no">Rejected ' + (d.redrafted === 2 ? 'three times' : 'twice') + ' (' + esc(d.reason) + '). Write the answer yourself, or leave it out.</div>';
+  if (rejectId === r.id) h += '<div class="reject"><label class="seclbl" for="why-' + r.id + '">Reason</label><select class="text" id="why-' + r.id + '">' + REASONS.map(x => '<option>' + x + '</option>').join('') + '</select>' +
+    '<textarea class="text" id="note-' + r.id + '" placeholder="What should change? (optional)" style="min-height:70px"></textarea>' +
+    '<p class="sub">' + (d.redrafted === 2 ? 'This draft has been rewritten twice. Rejecting it again leaves it for a human answer.' : d.redrafted ? 'It has been rewritten once. The agent tries one last time with your reason.' : 'The agent writes it again using your reason.') + '</p></div>';
+  let acts = '';
+  if (d.status === 'redrafting' || o) acts = '';
+  else if (editId === r.id) acts = '<button class="btn btn--primary btn--sm" data-a="save">Save &amp; approve</button><button class="btn btn--ghost btn--sm" data-a="cancel">Cancel</button>';
+  else if (rejectId === r.id) acts = '<button class="btn btn--danger btn--sm" data-a="confirm">' + (d.redrafted === 2 ? 'Reject' : 'Reject &amp; rewrite') + '</button><button class="btn btn--ghost btn--sm" data-a="cancel">Cancel</button>';
+  else if (d.status === 'pending') acts = '<button class="btn btn--primary btn--sm" data-a="approve">Approve</button><button class="btn btn--secondary btn--sm" data-a="edit">Edit</button><button class="btn btn--danger btn--sm" data-a="reject">Reject</button>';
+  else if (d.status === 'final') acts = '<button class="btn btn--primary btn--sm" data-a="edit">Write the answer</button><button class="btn btn--ghost btn--sm" data-a="undo">Back to review</button>';
+  else acts = '<button class="btn btn--ghost btn--sm" data-a="undo">Undo approval</button>';
+  return h + (acts ? '<div class="q__actions">' + acts + '</div>' : '') + '</article>';
+}
+function render() {
   const c = counts();
-  $('nP').textContent = c.pending; $('nA').textContent = c.approved; $('nF').textContent = c.final;
+  $('nP').textContent = DRAFTS.filter(r => tabOf(r) === 'pending').length; $('nA').textContent = c.approved; $('nF').textContent = c.final;
   const done = c.approved + c.final;
   $('mCount').textContent = done + ' of ' + c.drafts; $('mBar').style.width = (done / c.drafts * 100) + '%';
-  const list = DRAFTS.filter(inTab);
-  if (!list.some(r => r.id === sel)) { sel = list.length ? list[0].id : null; mode = 'view'; }
-  const pickable = tab === 'pending';
-  [...picked].forEach(id => { if (!list.some(r => r.id === id && decision(r).status === 'pending')) picked.delete(id); });
-  $('items').innerHTML = list.length ? list.map(r => '<li class="item' + (r.id === sel ? ' is-sel' : '') + (picked.has(r.id) ? ' is-picked' : '') + '" data-id="' + r.id + '">' +
-    (pickable ? '<input type="checkbox" class="pick" data-pick="' + r.id + '" aria-label="Select: ' + esc(Q(r)) + '"' + (picked.has(r.id) ? ' checked' : '') + (decision(r).status !== 'pending' || (ST.others && ST.others[r.id]) ? ' disabled' : '') + '>' : '<span></span>') +
-    '<b>' + esc(Q(r)) + '</b><span class="meta">' + (badges(r) || '<span class="badge badge--muted">1 source</span>') + '</span></li>').join('')
-    : '<li class="empty"><b>' + (tab === 'pending' ? 'Nothing to review.' : 'Nothing here yet.') + '</b>' + (tab === 'pending' ? 'The first batch is done.' : '') + '</li>';
-  renderBulk(list.filter(r => decision(r).status === 'pending'));
+  const rewritten = DRAFTS.filter(r => decision(r).redrafted).length;
+  $('agentTitle').textContent = 'Drafted ' + c.drafts + ' answers from ' + c.docs + ' documents';
+  $('agentSub').textContent = 'Each with its sources' + (rewritten ? ' · ' + rewritten + ' rejected draft' + (rewritten === 1 ? ' was' : 's were') + ' written again using your reasons' : '') + '. Questions you add go into the same queue.';
+  const lr = DRAFTS.filter(lowRisk).length;
+  $('lowRisk').hidden = tab !== 'pending'; $('lowRisk').disabled = !lr; $('lowRisk').textContent = 'Approve low-risk (' + lr + ')';
+  const list = DRAFTS.filter(r => tabOf(r) === tab);
+  $('cards').innerHTML = list.length ? list.map(card).join('')
+    : '<div class="panel empty"><b>' + (tab === 'pending' ? 'Nothing to review.' : 'Nothing here yet.') + '</b>' + (tab === 'pending' ? 'The loop is running. Approved answers are in Distribute.' : '') + '</div>';
+  renderSel();
+  if (editId) { const t = $('edit-' + editId); if (t && document.activeElement !== t) { t.focus(); t.setSelectionRange(t.value.length, t.value.length); } }
 }
-function renderBulk(open) {
-  const on = tab === 'pending' && open.length > 0, n = picked.size;
-  $('bulk').hidden = !on;
-  if (!on) { $('bulkRej').hidden = true; return; }
-  $('bulk').classList.toggle('is-on', n > 0);
+function renderSel() {
+  const open = DRAFTS.filter(r => tabOf(r) === tab && decision(r).status === 'pending' && !other(r));
+  [...picked].forEach(id => { if (!open.some(r => r.id === id)) picked.delete(id); });
+  const n = picked.size;
+  $('selbar').hidden = tab !== 'pending' || !open.length;
+  $('selbar').classList.toggle('is-on', n > 0);
   $('pickAll').checked = n > 0 && n === open.length;
   $('pickAll').indeterminate = n > 0 && n < open.length;
-  $('pickTxt').textContent = n ? n + ' selected' : 'Select all (' + open.length + ')';
-  $('bulkApprove').disabled = $('bulkReject').disabled = !n;
-  $('bulkApprove').textContent = n ? 'Approve ' + n : 'Approve';
-  $('bulkReject').textContent = n ? 'Reject ' + n : 'Reject';
-  if (!n) $('bulkRej').hidden = true;
+  $('pickTxt').textContent = n ? n + ' of ' + open.length + ' selected' : 'Select all (' + open.length + ')';
+  $('selApprove').disabled = $('selReject').disabled = !n;
+  $('selApprove').textContent = n ? 'Approve ' + n : 'Approve';
+  $('selReject').textContent = n ? 'Reject ' + n : 'Reject';
+  if (!n) $('selRej').hidden = true;
 }
-function renderDetail() {
-  const r = DRAFTS.find(x => x.id === sel);
-  if (!r) { $('detail').innerHTML = '<div class="empty"><b>Nothing to review. The loop is running.</b>Approved answers are in the store; try them in the chat.</div>'; return; }
-  const d = decision(r), ans = answerOf(r);
-  let h = '<div class="meta" style="display:flex;gap:6px;flex-wrap:wrap">' + badges(r) + '</div><h2>' + esc(Q(r)) + '</h2>';
-  const other = ST.others && ST.others[r.id];
-  // G10: someone else decided this draft while it was open here
-  if (other && d.status === 'pending') h += '<div class="other"><span class="av">' + esc(other.by.split(' ').map(x => x[0]).join('')) + '</span><div><b>' + esc(other.by) + ' ' + esc(other.action) + ' this ' + esc(other.when) + '.</b>' +
-    'Your screen was out of date, so nothing you do here will change it. Their decision stands.<div class="btns"><button class="btn btn--primary btn--sm" data-a="ackOther">Got it, next draft</button><button class="btn btn--ghost btn--sm" data-a="seeOther">See their version</button></div></div></div>';
-  if (d.status === 'approved') h += '<div class="done-note ok">✓ Approved' + (d.by ? ' by ' + esc(d.by) : '') + (d.at ? ' · ' + esc(d.at) : '') + '. It’s in the store and the chat can use it.</div>';
-  if (d.status === 'final') h += '<div class="done-note no">Rejected twice (' + esc(d.reason) + '). Write the answer yourself with Edit, or leave it out.</div>';
-  if (d.status === 'redrafting') {
-    h += '<div class="answer" style="display:flex;gap:10px;align-items:center;color:var(--muted)"><span class="spin"></span>Writing it again with your reason: “' + esc(d.reason) + '”</div>';
-  } else if (mode === 'edit') {
-    h += '<p class="seclbl">Your answer</p><textarea class="text" id="editBox" style="min-height:120px;margin-bottom:22px">' + esc(ans) + '</textarea>';
-  } else {
-    h += '<p class="seclbl">' + (d.redrafted === 2 ? 'Third draft' : d.redrafted ? 'Rewritten draft' : 'Draft answer') + '</p><div class="answer">' + md(ans) + '</div>';
-  }
-  // G14: a draft rewritten more than once keeps its history
-  if (d.history && d.history.length) h += '<details class="hist"><summary>Earlier drafts (' + d.history.length + ')</summary><ol>' + d.history.map(x => '<li>' + esc(x.text) + '<span>Rejected · ' + esc(x.reason) + '</span></li>').join('') + '</ol></details>';
-  else if (d.redrafted && d.prev) h += '<p class="prev"><b>First draft, rejected</b> (' + esc(d.reason) + '): ' + esc(d.prev) + '</p>';
-  h += '<p class="seclbl">Where it came from</p><div class="quotes">' + r.src.map(([doc, loc, text]) => {
-    const warn = r.conflict === doc;
-    const key = doc + '|' + loc, ctx = CONTEXT[key] || ['', ''], openQ = openFull.has(key);
-    // G9: the whole passage, with the quoted words highlighted
-    return '<div class="quote' + (warn ? ' is-warn' : '') + '"><div class="qtop"><b>' + esc(docShort(doc)) + '</b><em>' + esc(loc) + '</em>' + (warn ? '<span class="badge badge--amber">Conflicts</span>' : '') + '</div><p>“' + esc(text) + '”</p>' +
-      (openQ ? '<div class="full">' + esc(ctx[0]) + '<mark>' + esc(text) + '</mark>' + esc(ctx[1]) + '</div>' : '') +
-      '<button class="more" type="button" data-full="' + esc(key) + '" aria-expanded="' + openQ + '">' + (openQ ? 'Hide full passage' : 'Show full passage') + '</button></div>';
-  }).join('') + '</div>';
-  if (mode === 'reject') {
-    h += '<div class="reject"><label class="seclbl" for="why" style="margin:0">Reason</label><select class="text" id="why">' + REASONS.map(x => '<option>' + x + '</option>').join('') + '</select>' +
-      '<textarea class="text" id="note" placeholder="What should change? (optional)" style="min-height:70px"></textarea>' +
-      '<p class="sub">' + (d.redrafted === 2 ? 'This draft has been rewritten twice. Rejecting it again leaves it for a human answer.' : d.redrafted ? 'This draft was already rewritten once. Rejecting it again leaves it for a human answer.' : 'The agent writes it again once, using your reason.') + '</p></div>';
-  }
-  let acts = '';
-  if (d.status === 'redrafting') acts = '';
-  else if (mode === 'edit') acts = '<button class="btn btn--primary" data-a="save">Save &amp; approve</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
-  else if (mode === 'reject') acts = '<button class="btn btn--danger" data-a="confirm">' + (d.redrafted ? 'Reject' : 'Reject &amp; rewrite') + '</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
-  else if (d.status === 'pending' && ST.others && ST.others[r.id]) acts = '';
-  else if (d.status === 'pending') acts = '<button class="btn btn--primary" data-a="approve">Approve <kbd>A</kbd></button><button class="btn btn--secondary" data-a="edit">Edit &amp; approve <kbd>E</kbd></button><button class="btn btn--danger" data-a="reject">Reject <kbd>R</kbd></button><span class="spacer"></span><span class="sub"><kbd>J</kbd> <kbd>K</kbd> to move</span>';
-  else if (d.status === 'final') acts = '<button class="btn btn--primary" data-a="edit">Write the answer</button><button class="btn btn--ghost" data-a="undo">Back to review</button>';
-  else acts = '<button class="btn btn--ghost" data-a="undo">Undo approval</button>';
-  if (acts) h += '<div class="acts">' + acts + '</div>';
-  $('detail').innerHTML = h;
-  if (mode === 'edit') { const t = $('editBox'); t.focus(); t.setSelectionRange(t.value.length, t.value.length); }
+// a rejected draft is written again up to twice; the third rejection leaves it for a person
+function reject(r, reason) {
+  const d = dec(r.id);
+  if (d.redrafted === 2) { d.status = 'final'; d.reason = reason; return 'human'; }
+  d.history = (d.history || []).concat([{ text: answerOf(r), reason }]);
+  d.status = 'redrafting'; d.reason = reason; d.prev = answerOf(r);
+  setTimeout(() => { const x = ST.decisions[r.id]; x.status = 'pending'; x.redrafted = (x.redrafted || 0) + 1; save(); render(); }, 1500);
+  return 'rewrite';
 }
-function render() { renderList(); renderDetail(); }
-function next() {
-  const list = DRAFTS.filter(inTab);
-  if (!list.length) { sel = null; return; }
-  const i = DRAFTS.findIndex(x => x.id === sel);
-  const after = DRAFTS.slice(i + 1).find(inTab) || list[0];
-  sel = after.id;
-}
-function act(a) {
-  const r = DRAFTS.find(x => x.id === sel); if (!r) return;
-  const d = ST.decisions[r.id] = ST.decisions[r.id] || { status: 'pending' };
-  const today = new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }).replace(',', '');
-  if (a === 'approve') { d.status = 'approved'; d.at = today; toast('Approved'); mode = 'view'; save(); next(); }
+function act(a, r) {
+  const d = dec(r.id);
+  if (a === 'approve') { d.status = 'approved'; d.at = todayStr(); toast('Approved'); }
   if (a === 'ackOther' || a === 'seeOther') {
-    const o = ST.others[r.id]; d.status = 'approved'; d.by = o.by; d.at = o.when; delete ST.others[r.id]; save();
-    if (a === 'ackOther') { next(); } else { tab = 'approved'; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === 'approved')); sel = r.id; }
+    const o = ST.others[r.id]; d.status = 'approved'; d.by = o.by; d.at = o.when; delete ST.others[r.id];
+    if (a === 'seeOther') { setTab('approved'); flashId = r.id; }
   }
-  if (a === 'edit') mode = 'edit';
-  if (a === 'reject') mode = 'reject';
-  if (a === 'cancel') mode = 'view';
-  if (a === 'undo') { d.status = 'pending'; mode = 'view'; save(); }
+  if (a === 'edit') { editId = r.id; rejectId = null; }
+  if (a === 'reject') { rejectId = r.id; editId = null; }
+  if (a === 'cancel') { editId = rejectId = null; }
+  if (a === 'undo') { d.status = 'pending'; }
   if (a === 'save') {
-    const v = $('editBox').value.trim(); if (!v) return;
-    d.edited = v !== answerOf(r) || d.edited; d.answer = v; d.status = 'approved'; d.at = today; mode = 'view';
-    toast('Edited and approved'); save(); next();
+    const v = $('edit-' + r.id).value.trim(); if (!v) return;
+    d.edited = v !== answerOf(r) || d.edited; d.answer = v; d.status = 'approved'; d.at = todayStr(); editId = null; toast('Edited and approved');
   }
   if (a === 'confirm') {
-    const reason = $('why').value + ($('note').value.trim() ? ': ' + $('note').value.trim() : '');
-    mode = 'view';
-    if (d.redrafted) { d.status = 'final'; d.reason = reason; toast('Left for a human answer'); save(); next(); }
-    else {
-      d.status = 'redrafting'; d.reason = reason; d.prev = answerOf(r); d.history = (d.history || []).concat([{ text: answerOf(r), reason }]); save();
-      const id = r.id;
-      setTimeout(() => { const x = ST.decisions[id]; x.status = 'pending'; x.redrafted = true; save(); if (sel === id || tab === 'pending') render(); toast('Rewritten once. Have another look.'); }, 1500);
-    }
+    const note = $('note-' + r.id).value.trim(), reason = $('why-' + r.id).value + (note ? ': ' + note : '');
+    rejectId = null;
+    toast(reject(r, reason) === 'human' ? 'Left for a human answer' : 'Sent back. It’s being written again.');
   }
-  render();
+  save(); render();
+  if (a === 'seeOther') $('card-' + r.id).scrollIntoView({ block: 'center', behavior: 'smooth' });
 }
-$('detail').addEventListener('click', (e) => {
-  const f = e.target.closest('[data-full]'); if (f) { const k = f.dataset.full; openFull.has(k) ? openFull.delete(k) : openFull.add(k); renderDetail(); return; }
-  const b = e.target.closest('[data-a]'); if (b) act(b.dataset.a);
+$('cards').addEventListener('change', (e) => {
+  const cb = e.target.closest('[data-pick]'); if (!cb) return;
+  cb.checked ? picked.add(cb.dataset.pick) : picked.delete(cb.dataset.pick); render();
 });
-$('items').addEventListener('click', (e) => {
-  const cb = e.target.closest('[data-pick]');
-  if (cb) { cb.checked ? picked.add(cb.dataset.pick) : picked.delete(cb.dataset.pick); renderList(); return; }
-  const li = e.target.closest('[data-id]'); if (li) { sel = li.dataset.id; mode = 'view'; render(); }
+$('cards').addEventListener('click', (e) => {
+  const art = e.target.closest('[data-id]'); if (!art) return;
+  const r = DRAFTS.find(x => x.id === art.dataset.id);
+  const f = e.target.closest('[data-full]'); if (f) { const k = f.dataset.full + '|' + r.id; openFull.has(k) ? openFull.delete(k) : openFull.add(k); render(); return; }
+  const b = e.target.closest('[data-a]'); if (b) act(b.dataset.a, r);
 });
 $('pickAll').addEventListener('change', () => {
-  const open = DRAFTS.filter(r => inTab(r) && decision(r).status === 'pending' && !(ST.others && ST.others[r.id]));
-  if ($('pickAll').checked) open.forEach(r => picked.add(r.id)); else picked.clear();
-  renderList();
+  if ($('pickAll').checked) DRAFTS.filter(r => tabOf(r) === tab && decision(r).status === 'pending' && !other(r)).forEach(r => picked.add(r.id)); else picked.clear();
+  render();
 });
-const todayStr = () => new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }).replace(',', '');
-$('bulkApprove').addEventListener('click', () => {
+$('selApprove').addEventListener('click', () => {
   const n = picked.size, at = todayStr();
-  picked.forEach(id => { const d = ST.decisions[id] = ST.decisions[id] || { status: 'pending' }; d.status = 'approved'; d.at = at; });
-  picked.clear(); $('bulkRej').hidden = true; save(); sel = null; render();
-  toast(n + ' draft' + (n === 1 ? '' : 's') + ' approved');
+  picked.forEach(id => { const d = dec(id); d.status = 'approved'; d.at = at; });
+  picked.clear(); save(); render(); toast(n + ' draft' + (n === 1 ? '' : 's') + ' approved');
 });
-$('bulkReject').addEventListener('click', () => {
-  const ids = [...picked], again = ids.filter(id => (ST.decisions[id] || {}).redrafted).length;
-  $('bulkWhy').innerHTML = REASONS.map(x => '<option>' + x + '</option>').join('');
-  $('bulkRejTxt').textContent = 'One reason for all ' + ids.length + '. Each is written again once' + (again ? '; ' + again + ' already rewritten will be left for a human answer.' : '.');
-  $('bulkRej').hidden = false; $('bulkWhy').focus();
+$('selReject').addEventListener('click', () => {
+  const ids = [...picked], last = ids.filter(id => (ST.decisions[id] || {}).redrafted === 2).length;
+  $('selWhy').innerHTML = REASONS.map(x => '<option>' + x + '</option>').join('');
+  $('selRejTxt').textContent = 'One reason for all ' + ids.length + '. Each is written again' + (last ? '; ' + last + ' already rewritten twice will be left for a human answer.' : '.');
+  $('selRej').hidden = false; $('selWhy').focus();
 });
-$('bulkRejCancel').addEventListener('click', () => { $('bulkRej').hidden = true; });
-$('bulkRejGo').addEventListener('click', () => {
-  const reason = $('bulkWhy').value + ($('bulkNote').value.trim() ? ': ' + $('bulkNote').value.trim() : '');
-  const ids = [...picked]; let rewrite = 0, human = 0;
-  ids.forEach(id => {
-    const r = DRAFTS.find(x => x.id === id), d = ST.decisions[id] = ST.decisions[id] || { status: 'pending' };
-    if (d.redrafted) { d.status = 'final'; d.reason = reason; human++; return; }
-    d.status = 'redrafting'; d.reason = reason; d.prev = answerOf(r); rewrite++;
-  });
-  picked.clear(); $('bulkRej').hidden = true; $('bulkNote').value = ''; save(); render();
+$('selRejX').addEventListener('click', () => { $('selRej').hidden = true; });
+$('selRejGo').addEventListener('click', () => {
+  const reason = $('selWhy').value + ($('selNote').value.trim() ? ': ' + $('selNote').value.trim() : '');
+  let rewrite = 0, human = 0;
+  [...picked].forEach(id => { reject(DRAFTS.find(x => x.id === id), reason) === 'human' ? human++ : rewrite++; });
+  picked.clear(); $('selRej').hidden = true; $('selNote').value = ''; save(); render();
   toast(rewrite + ' sent back to be rewritten' + (human ? ' · ' + human + ' left for a human' : ''));
-  if (rewrite) setTimeout(() => {
-    ids.forEach(id => { const x = ST.decisions[id]; if (x && x.status === 'redrafting') { x.status = 'pending'; x.redrafted = true; } });
-    save(); render(); toast('Rewritten once. Have another look.');
-  }, 1600);
 });
-document.querySelectorAll('#rtabs .tab').forEach(t => t.addEventListener('click', () => {
-  tab = t.dataset.f; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x === t)); sel = null; mode = 'view'; picked.clear(); render();
-}));
-document.addEventListener('keydown', (e) => {
-  if (e.target.closest('input,textarea,select') || e.metaKey || e.ctrlKey) return;
-  const k = e.key.toLowerCase(), r = DRAFTS.find(x => x.id === sel);
-  if (k === 'j' || k === 'k') {
-    const list = DRAFTS.filter(inTab), i = list.findIndex(x => x.id === sel);
-    const n = list[Math.max(0, Math.min(list.length - 1, i + (k === 'j' ? 1 : -1)))]; if (n) { sel = n.id; mode = 'view'; render(); }
-  }
-  if (r && decision(r).status === 'pending' && mode === 'view') {
-    if (k === 'a') act('approve'); if (k === 'e') act('edit'); if (k === 'r') act('reject');
-  }
-  if (k === 'escape' && mode !== 'view') act('cancel');
+$('lowRisk').addEventListener('click', () => {
+  const at = todayStr(), list = DRAFTS.filter(lowRisk);
+  list.forEach(r => { const d = dec(r.id); d.status = 'approved'; d.at = at; });
+  save(); render(); toast(list.length + ' low-risk answer' + (list.length === 1 ? '' : 's') + ' approved');
 });
-const RP = new URLSearchParams(location.search);
-if (RP.get('sel')) { sel = RP.get('sel'); if (RP.get('full')) { const r = DRAFTS.find(x => x.id === sel); if (r) openFull.add(r.src[0][0] + '|' + r.src[0][1]); } }
+$('ownForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  let v = $('ownInput').value.trim(); if (!v) return;
+  if (!v.endsWith('?')) v += '?';
+  ST.extra.push({ id: 'x' + Date.now(), q: v, origin: 'you', docs: [] });
+  save(); $('ownInput').value = '';
+  toast('Added. The agent drafts it if your sources answer it; you’ll find it in Insights.');
+});
+function setTab(t) {
+  tab = t; editId = rejectId = null; picked.clear();
+  document.querySelectorAll('#rtabs .ptab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === t));
+}
+document.querySelectorAll('#rtabs .ptab').forEach(t => t.addEventListener('click', () => { setTab(t.dataset.f); render(); }));
+const RP = new URLSearchParams(location.search), sel = DRAFTS.find(r => r.id === RP.get('sel'));
+if (sel) { setTab(tabOf(sel)); flashId = sel.id; if (RP.get('full')) openFull.add(sel.src[0][0] + '|' + sel.src[0][1] + '|' + sel.id); }
 render();
+if (sel) $('card-' + sel.id).scrollIntoView({ block: 'center' });
 """)
+
 
 # ============================================================ APPROVED
 APPROVED = dict(

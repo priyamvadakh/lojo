@@ -55,7 +55,7 @@ DARK_BASE = r"""
   :root[data-theme="dark"] a:where(:not(.nav-item):not(.btn):not(.also):not(.tile):not(.pop__row):not(.logo):not(.stat)){color:#F29BAA}
   :root[data-theme="dark"] .btn--grad{color:#15100D}
   :root[data-theme="dark"] .btn--primary kbd{background:rgba(21,16,13,.1);border-color:rgba(21,16,13,.3);color:#15100D}
-  :root[data-theme="dark"] .btn--primary,:root[data-theme="dark"] .chip[aria-pressed="true"],:root[data-theme="dark"] .toast{color:#15100D}
+  :root[data-theme="dark"] .btn--primary,:root[data-theme="dark"] .chip[aria-pressed="true"],:root[data-theme="dark"] .ptab[aria-selected="true"],:root[data-theme="dark"] .ptab[aria-selected="true"] .n,:root[data-theme="dark"] .toast{color:#15100D}
   :root[data-theme="dark"] .btn--secondary:hover{background:var(--bg-soft)}
   :root[data-theme="dark"] .btn--danger{background:transparent}
   :root[data-theme="dark"] .text{background:var(--bg-soft);color:var(--ink)}

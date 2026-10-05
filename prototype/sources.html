@@ -146,6 +146,96 @@
   .toast{position:fixed;left:calc(50% + var(--side) / 2 + 6px);bottom:28px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--ink);color:#fff;padding:11px 18px;border-radius:12px;font-size:.88rem;font-weight:600;transition:opacity .25s ease,transform .25s ease;box-shadow:0 16px 40px -20px rgba(36,26,20,.7);z-index:60}
   .toast.show{opacity:1;transform:translate(-50%,0)}
 
+  /* ---------- onboarding components, shared by Sources, Insights and Build ---------- */
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 24px}
+  .panel + .panel{margin-top:16px}
+  .panel h3{font-family:var(--display);font-weight:700;font-size:1rem;margin:0 0 4px}
+  .ptabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
+  .ptab{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:999px;border:1px solid var(--line-2);background:var(--panel);font-weight:600;font-size:.86rem;color:var(--muted);cursor:pointer;transition:background-color .15s ease,border-color .15s ease,color .15s ease}
+  .ptab:hover{color:var(--ink);border-color:rgba(36,26,20,.3)}
+  .ptab svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .ptab .n{min-width:22px;height:20px;padding:0 7px;border-radius:999px;display:grid;place-items:center;font-size:.7rem;font-weight:700;background:var(--bg-soft);color:var(--ink)}
+  .ptab[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .ptab[aria-selected="true"] .n{background:rgba(255,255,255,.18);color:#fff}
+  .drop{display:grid;justify-items:center;gap:8px;text-align:center;padding:34px 20px;border:1.5px dashed var(--line-2);border-radius:14px;background:var(--panel);transition:border-color .15s ease,background-color .15s ease}
+  .drop.is-over{border-color:var(--rose);background:rgba(232,93,117,.04)}
+  .drop .ico{width:44px;height:44px;border-radius:12px;background:var(--bg-soft);display:grid;place-items:center}
+  .drop .ico svg{width:22px;height:22px;stroke:var(--ink);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .drop strong{font-size:1rem}
+  .drop .hint{margin:0;color:var(--muted);font-size:.84rem}
+  .drop .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+  .files{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:8px}
+  .file{display:grid;grid-template-columns:36px minmax(0,1fr) auto auto;gap:4px 14px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+  .file .ext{width:36px;height:36px;border-radius:9px;background:var(--bg-soft);display:grid;place-items:center;font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase}
+  .file .name{font-weight:600;font-size:.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;gap:8px;align-items:center}
+  .file .meta{color:var(--muted);font-size:.8rem}
+  .apps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+  .app{position:relative;display:flex;align-items:center;gap:12px;padding:14px;text-align:left;cursor:pointer;border:1px solid var(--line-2);border-radius:12px;background:var(--panel);color:var(--ink);font:inherit;transition:border-color .15s ease,box-shadow .15s ease}
+  .app:hover{border-color:rgba(36,26,20,.3);box-shadow:0 8px 20px -16px rgba(36,26,20,.5)}
+  .app[disabled]{cursor:progress;opacity:.6}
+  .app b{display:block;font-size:.9rem;line-height:1.3}
+  .app .k{color:var(--muted);font-size:.78rem}
+  .app.is-busy{opacity:1;border-color:var(--rose)}
+  .app.is-on{border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,93,117,.14)}
+  .app.is-on::after{content:"✓";position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:var(--rose);color:#fff;font-size:.7rem;font-weight:700;display:grid;place-items:center}
+  .mono{width:36px;height:36px;border-radius:10px;flex:none;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.02em}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+  .stat b{display:block;font-family:var(--display);font-weight:800;font-size:1.6rem;letter-spacing:-.02em;line-height:1.1}
+  .stat span{color:var(--muted);font-size:.85rem}
+  .stat.is-key b{color:var(--rose)}
+  .ix{list-style:none;margin:0;padding:0;display:grid}
+  .ix li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}
+  .ix li:first-child{border-top:0;padding-top:4px}
+  .ix .name{font-weight:600;font-size:.92rem}
+  .ix .stages{display:flex;gap:6px;flex-wrap:wrap}
+  .pstage{height:24px;padding:0 10px;border-radius:999px;font-size:.74rem;font-weight:600;display:inline-flex;align-items:center;gap:6px;background:rgba(36,26,20,.05);color:var(--muted);white-space:nowrap}
+  .pstage.is-run{background:rgba(62,111,166,.1);color:var(--info)}
+  .pstage.is-run::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 1s ease-in-out infinite}
+  .pstage.is-done{background:rgba(63,143,95,.12);color:var(--success)}
+  .pstage.is-done::before{content:"✓"}
+  .pstage.is-fail{background:rgba(198,69,69,.1);color:var(--error)}
+  .pstage.is-wait{background:rgba(36,26,20,.05);color:var(--muted)}
+  .pbar{grid-column:1/-1;height:4px;border-radius:4px;background:rgba(36,26,20,.06);overflow:hidden}
+  .pbar i{display:block;height:100%;width:0;background:var(--brand-gradient);transition:width .4s ease}
+  .agent{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .ava-agent{width:40px;height:40px;border-radius:22%;background:url(assets/lojo-icon.png) center/104% no-repeat;flex:none}
+  .agent b{display:block;font-size:.95rem}
+  .agent span{color:var(--muted);font-size:.86rem}
+  .own{display:flex;gap:10px;margin-top:6px}
+  .own .text{flex:1}
+  .q{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:18px 20px;transition:border-color .15s ease,box-shadow .15s ease}
+  .q + .q{margin-top:12px}
+  .q__head{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}
+  .q__head h4{flex:1 1 320px;margin:0;font-family:var(--display);font-weight:700;font-size:.98rem;line-height:1.35}
+  .q__badges{display:flex;gap:6px;flex-wrap:wrap}
+  .q__body{margin-top:10px;font-size:.94rem}
+  .q__body p{margin:0}
+  .q__drafting{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.9rem;margin-top:10px}
+  .q__actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .q.is-picked{border-color:rgba(232,93,117,.45);box-shadow:0 0 0 3px rgba(232,93,117,.08)}
+  .q.is-approved{border-color:rgba(63,143,95,.35)}
+  .q.is-final{border-color:rgba(198,69,69,.3)}
+  .q.is-flash{animation:qflash 1.8s ease}
+  @keyframes qflash{0%,40%{box-shadow:0 0 0 4px rgba(232,93,117,.25)}100%{box-shadow:none}}
+  .srcs{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+  .meter{flex:1;min-width:200px}
+  .meter b{font-family:var(--display);font-size:1.05rem}
+  .meter span{color:var(--muted);font-size:.86rem;margin-left:6px}
+  .meter .pbar{margin-top:8px;height:6px}
+  .selbar{display:flex;align-items:center;gap:8px;padding:10px 14px;margin-bottom:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+  .selbar.is-on{border-color:rgba(232,93,117,.35);background:rgba(232,93,117,.04)}
+  .selbar label{display:flex;align-items:center;gap:8px;font-size:.84rem;font-weight:600;cursor:pointer}
+  .selbar .spacer{flex:1}
+  .pick{width:18px;height:18px;margin:0;accent-color:var(--rose);cursor:pointer;flex:none}
+  .q__head .pick{margin-top:2px}
+  .selrej{display:grid;gap:8px;padding:12px 14px;margin:-4px 0 12px;border-radius:12px;background:var(--bg-soft)}
+  .selrej .row{display:flex;gap:8px;flex-wrap:wrap}
+  .selrej select{max-width:280px}
+  .reject{margin-top:14px;padding:16px;border-radius:12px;background:var(--bg-soft);display:grid;gap:10px}
+  @media (max-width:760px){.stats{grid-template-columns:1fr 1fr}.file{grid-template-columns:36px minmax(0,1fr)}.file > :nth-child(n+3){grid-column:2}.own{flex-direction:column}}
+
   /* ---------- Ask lojo FAB ---------- */
   .fab{position:fixed;right:24px;bottom:24px;z-index:50;width:58px;height:58px;border-radius:50%;border:0;padding:0;cursor:pointer;background:var(--brand-gradient);box-shadow:0 18px 36px -14px rgba(232,93,117,.8);display:grid;place-items:center;transition:transform .2s ease,box-shadow .2s ease}
   .fab:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 22px 40px -14px rgba(232,93,117,.9)}
@@ -293,32 +383,29 @@
   .scope-detail{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding-top:12px;border-top:1px solid rgba(63,143,95,.2);font-size:.82rem}
   .scope-detail h4{margin:0 0 6px;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
   .scope-detail ul{margin:0;padding-left:16px;display:grid;gap:4px}
-  .cols{display:grid;grid-template-columns:1fr;gap:20px;align-items:start}
-  table{width:100%;border-collapse:collapse;font-size:.84rem}
-  th{text-align:left;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:10px 12px;border-bottom:1px solid var(--line)}
-  td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}
-  tr.row{cursor:pointer}
-  tr.row:hover td{background:var(--bg-soft)}
-  tr.row.is-open td{background:var(--bg-soft)}
-  td.num{text-align:right;font-variant-numeric:tabular-nums}
-  th.num{text-align:right}
-  .dname{display:flex;align-items:center;gap:10px;font-weight:600}
-  .ext{width:30px;height:30px;border-radius:8px;background:var(--bg-soft);display:grid;place-items:center;font-size:.58rem;font-weight:700;color:var(--muted);text-transform:uppercase;flex:none}
-  .stage{display:inline-flex;align-items:center;gap:6px;font-size:.76rem;font-weight:600;color:var(--success)}
-  .stage.is-run{color:var(--info)}
-  tr.detail td{padding:0 12px 16px 52px;background:var(--bg-soft)}
-  .passage{border-left:3px solid var(--line-2);padding:6px 12px;margin:8px 0;font-size:.82rem;color:var(--ink)}
+  .scope.is-pending{grid-template-columns:36px 1fr;background:rgba(217,154,43,.07);border-color:rgba(217,154,43,.35)}
+  .scope.is-pending .ok{background:rgba(217,154,43,.16);color:#94660F}
+  .scope .confirm{grid-column:2;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:4px}
+  .scope .confirm label{display:flex;gap:8px;align-items:center;font-size:.86rem;font-weight:600;cursor:pointer}
+  .scope .confirm input{width:17px;height:17px;accent-color:var(--rose)}
+  .listhead{display:flex;align-items:baseline;gap:10px;margin:26px 0 0}
+  .listhead h2{font-family:var(--display);font-weight:700;font-size:1.05rem;margin:0}
+  .file{cursor:default}
+  .file.is-row{cursor:pointer}
+  .file.is-row:hover,.file.is-open{border-color:var(--line-2);background:var(--bg-soft)}
+  .file.is-failed{border-color:rgba(198,69,69,.3);background:rgba(198,69,69,.03)}
+  .file.is-retired .name{opacity:.6;text-decoration:line-through;text-decoration-color:rgba(36,26,20,.3)}
+  .file.is-retired .ext{opacity:.6}
+  .why{display:block;font-size:.78rem;color:var(--error);font-weight:500;margin-top:3px;white-space:normal}
+  .why.mute{color:var(--muted)}
+  .acts{display:flex;gap:6px;justify-content:flex-end;min-width:72px}
+  .acts .btn{height:30px;padding:0 12px;font-size:.76rem}
+  .file.is-row .acts .btn--ghost{opacity:0}
+  .file.is-row:hover .acts .btn--ghost,.file.is-row .acts .btn--ghost:focus-visible{opacity:1}
+  .fdetail{grid-column:1/-1;padding:6px 0 4px 50px}
+  .passage{border-left:3px solid var(--line-2);padding:6px 12px;margin:8px 0;font-size:.84rem;color:var(--ink);background:var(--panel);border-radius:0 8px 8px 0}
   .passage em{display:block;font-style:normal;color:var(--muted);font-size:.72rem;margin-bottom:2px}
-  .search{display:flex;gap:8px}
-  .hits{display:grid;gap:10px;margin-top:14px}
-  .hit{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
-  .hit__top{display:flex;gap:8px;align-items:center;margin-bottom:4px;flex-wrap:wrap}
-  .hit__top b{font-size:.8rem}
-  .hit__top em{font-style:normal;color:var(--muted);font-size:.74rem}
-  .hit__top .sc{margin-left:auto;font-family:var(--display);font-weight:700;color:var(--rose)}
-  .hit p{margin:0;font-size:.84rem}
-  .folder{display:flex;gap:8px;margin-top:12px}
-  .up-hint{display:block;font-size:.74rem;color:var(--muted);text-align:right;margin-top:6px}
+  .folder{display:flex;gap:8px;margin-top:14px}
   .uperr{margin:0 0 16px;padding:14px 16px;border-radius:14px;border:1px solid rgba(198,69,69,.3);background:rgba(198,69,69,.05)}
   .uperr__h{display:flex;align-items:center;gap:10px;font-weight:700;font-size:.9rem;color:var(--error)}
   .uperr__h button{margin-left:auto}
@@ -326,24 +413,9 @@
   .uperr li{display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:.84rem;align-items:baseline}
   .uperr li b{font-weight:600}
   .uperr li span{color:var(--muted)}
-  .stage.is-fail{color:var(--error)}
-  .stage.is-wait{color:var(--muted)}
-  .stage.is-wait::before{content:"";width:8px;height:8px;border-radius:50%;border:2px solid currentColor}
-  .stage.is-ret{color:var(--muted)}
-  tr.is-retired td{color:var(--muted)}
-  tr.is-retired .dname{opacity:.6;text-decoration:line-through;text-decoration-color:rgba(36,26,20,.3)}
-  tr.is-failed td{background:rgba(198,69,69,.03)}
-  .why{display:block;font-size:.76rem;color:var(--error);font-weight:500;margin-top:4px;white-space:normal;max-width:420px}
-  .why.mute{color:var(--muted)}
-  .acts{white-space:nowrap;text-align:right}
-  .acts .btn{height:28px;padding:0 10px;font-size:.74rem}
-  tr.row .acts .btn--ghost{opacity:0}
-  tr.row:hover .acts .btn--ghost,tr.row .acts .btn--ghost:focus-visible{opacity:1}
-  .scope.is-pending{grid-template-columns:36px 1fr;background:rgba(217,154,43,.07);border-color:rgba(217,154,43,.35)}
-  .scope.is-pending .ok{background:rgba(217,154,43,.16);color:#94660F}
-  .scope .confirm{grid-column:2;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:4px}
-  .scope .confirm label{display:flex;gap:8px;align-items:center;font-size:.86rem;font-weight:600;cursor:pointer}
-  .scope .confirm input{width:17px;height:17px;accent-color:var(--rose)}
+  .synced{display:grid;gap:8px;margin-top:16px}
+  .synced .file{grid-template-columns:36px minmax(0,1fr) auto auto}
+  @media (max-width:760px){.scope-detail{grid-template-columns:1fr}.fdetail{padding-left:0}.folder{flex-direction:column}}
 
   :root[data-theme="dark"]{
     --ink:#F2EBE5; --bg:#15100D; --bg-soft:#231B16; --panel:#1C1612;
@@ -355,7 +427,7 @@
   :root[data-theme="dark"] a:where(:not(.nav-item):not(.btn):not(.also):not(.tile):not(.pop__row):not(.logo):not(.stat)){color:#F29BAA}
   :root[data-theme="dark"] .btn--grad{color:#15100D}
   :root[data-theme="dark"] .btn--primary kbd{background:rgba(21,16,13,.1);border-color:rgba(21,16,13,.3);color:#15100D}
-  :root[data-theme="dark"] .btn--primary,:root[data-theme="dark"] .chip[aria-pressed="true"],:root[data-theme="dark"] .toast{color:#15100D}
+  :root[data-theme="dark"] .btn--primary,:root[data-theme="dark"] .chip[aria-pressed="true"],:root[data-theme="dark"] .ptab[aria-selected="true"],:root[data-theme="dark"] .ptab[aria-selected="true"] .n,:root[data-theme="dark"] .toast{color:#15100D}
   :root[data-theme="dark"] .btn--secondary:hover{background:var(--bg-soft)}
   :root[data-theme="dark"] .btn--danger{background:transparent}
   :root[data-theme="dark"] .text{background:var(--bg-soft);color:var(--ink)}
@@ -444,14 +516,9 @@
       <div>
         <p class="label">01 Source</p>
         <h1>Sources</h1>
-        <p>One source: documents you upload, or a folder you send us. We pull the text out, split it into passages and index it by meaning, so answers are found even when the wording differs. Ten documents is enough to start.</p>
+        <p>Upload documents or connect an app. We pull the text out, split it into passages and index each one by meaning, so a question finds the right passage even when the words differ.</p>
       </div>
-      <span class="spacer"></span>
-      <button class="btn btn--secondary" id="folderBtn">Send a folder</button>
-      <div><label class="btn btn--primary" id="upBtn" style="cursor:pointer">Upload documents<input type="file" id="fileInput" multiple hidden></label><span class="up-hint">PDF, DOCX, MD or TXT · up to 25 MB each</span></div>
     </div>
-
-    <section class="uperr" id="upErr" hidden role="alert"></section>
 
     <section class="scope" id="scope">
       <span class="ok">✓</span>
@@ -465,19 +532,41 @@
       </div>
     </section>
 
-    <div class="cols">
-      <section class="card" aria-labelledby="docH">
-        <div class="card__head"><h2 id="docH">Your sources</h2><span class="sub" id="docMeta"></span></div>
-        <div class="folder" id="folderRow" hidden style="padding:14px 20px 0">
-          <input class="text" id="folderLink" placeholder="Paste a Google Drive, SharePoint or Dropbox folder link">
-          <button class="btn btn--primary btn--sm" id="folderSend" style="height:40px">Send</button>
-        </div>
-        <table>
-          <thead><tr><th>Source</th><th class="num">Pages</th><th class="num">Passages</th><th class="num">Questions</th><th>Status</th><th class="acts"><span class="sr-only" style="position:absolute;left:-9999px">Actions</span></th></tr></thead>
-          <tbody id="docRows"></tbody>
-        </table>
-      </section>
+    <div class="ptabs" role="tablist" aria-label="Source type">
+      <button class="ptab" role="tab" data-tab="docs" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>Documents <span class="n" id="nDocs">0</span></button>
+      <button class="ptab" role="tab" data-tab="connect" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M9 7V3M15 7V3M7 7h10v4a5 5 0 0 1-10 0zM12 16v5"/></svg>Connect <span class="n" id="nConn">0</span></button>
     </div>
+
+    <section id="tabDocs">
+      <section class="uperr" id="upErr" hidden role="alert"></section>
+      <label class="drop" id="drop">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg></span>
+        <strong>Drop files here, or browse</strong>
+        <p class="hint">PDF, DOCX, Markdown or TXT · up to 25 MB each</p>
+        <input type="file" id="fileInput" multiple hidden>
+        <span class="row"><span class="btn btn--secondary btn--sm">Browse files</span></span>
+      </label>
+      <div class="listhead"><h2>Your documents</h2><span class="sub" id="docMeta"></span></div>
+      <ul class="files" id="docRows"></ul>
+    </section>
+
+    <section id="tabConnect" hidden>
+      <!-- ASSUMPTION: connector list is illustrative; sign-in is simulated. check with Eric -->
+      <div class="panel">
+        <h3>Connect an app</h3>
+        <p class="sub" style="margin-bottom:14px">You sign in with that app and pick what lojo can read. lojo only reads; it never edits your files.</p>
+        <div class="apps" id="apps"></div>
+        <div class="synced" id="synced"></div>
+      </div>
+      <div class="panel">
+        <h3>Send us a folder</h3>
+        <p class="sub">Share a Google Drive, SharePoint or Dropbox folder. Give view access to ingest@lojo.ai, then paste the link.</p>
+        <div class="folder">
+          <input class="text" id="folderLink" placeholder="https://drive.google.com/drive/folders/…" aria-label="Shared folder link">
+          <button class="btn btn--primary" id="folderSend">Send</button>
+        </div>
+      </div>
+    </section>
 
   </main>
 </div>
@@ -857,6 +946,17 @@ function srcChip(docId, loc, warn) {
 
 let open = null;
 const extra = [];
+const APPS = [
+  { id: 'gdrive', name: 'Google Drive', kind: 'Docs & files', mono: 'GD', color: '#1A73E8', n: 6 },
+  { id: 'sharepoint', name: 'SharePoint', kind: 'Sites & libraries', mono: 'SP', color: '#036C70', n: 5 },
+  { id: 'notion', name: 'Notion', kind: 'Pages & wikis', mono: 'N', color: '#191919', n: 5 },
+  { id: 'confluence', name: 'Confluence', kind: 'Spaces', mono: 'C', color: '#0C66E4', n: 4 },
+  { id: 'gmail', name: 'Gmail', kind: 'Email', mono: 'M', color: '#D93025', n: 3 },
+  { id: 'aircall', name: 'Aircall', kind: 'Calls', mono: 'A', color: '#00B388', n: 2 },
+  { id: 'gsheets', name: 'Google Sheets', kind: 'Spreadsheets', mono: 'GS', color: '#188038', n: 2 },
+  { id: 'website', name: 'Website', kind: 'Public pages', mono: 'W', color: '#3E6FA6', n: 3 },
+];
+ST.apps = ST.apps || {};
 function passagesFor(id) {
   const out = [];
   DRAFTS.forEach(r => r.src.forEach(([d, loc, text]) => { if (d === id && !out.some(p => p.text === text)) out.push({ loc, text }); }));
@@ -867,74 +967,90 @@ const qsFor = (id) => allQuestions().filter(q => (q.docs || []).includes(id));
 const MAX_MB = 25, OK_EXT = ['pdf', 'docx', 'doc', 'md', 'txt'];
 const forceScope = new URLSearchParams(location.search).get('scope') === 'unconfirmed';
 ST.retired = ST.retired || {};
+const pendingScope = () => forceScope ? !ST.__scopeOk : !ST.scope.signed;
 function renderScope() {
-  const pending = forceScope ? !ST.__scopeOk : !ST.scope.signed;
   const el = $('scope');
-  el.classList.toggle('is-pending', pending);
-  if (pending) {
+  el.classList.toggle('is-pending', pendingScope());
+  if (pendingScope()) {
     // G17: before scope is confirmed, documents wait and the checkbox sits on this page
     el.innerHTML = '<span class="ok">!</span><div><b>Confirm what’s in scope</b><span class="sub">We hold your documents until you confirm them. Personal details are not removed automatically in this phase, so only include what we agreed on.</span></div>' +
       '<div class="confirm"><label><input type="checkbox" id="scopeChk"> These documents are in scope</label><button class="btn btn--primary btn--sm" id="scopeGo" disabled>Confirm and start processing</button></div>';
     $('scopeChk').onchange = () => { $('scopeGo').disabled = !$('scopeChk').checked; };
     $('scopeGo').onclick = () => { ST.scope.signed = true; ST.__scopeOk = true; save(); renderScope(); render(); toast('Scope confirmed. Processing starts now.'); };
+  } else {
+    $('scopeSub').textContent = 'By ' + ST.scope.by + ' on ' + ST.scope.at + ' · personal details are not removed automatically';
   }
 }
+const fileRow = (o) => '<li class="file' + (o.cls || '') + '"' + (o.id ? ' data-id="' + o.id + '"' : '') + '><span class="ext">' + esc(o.ext) + '</span>' +
+  '<span style="min-width:0"><span class="name"><span style="overflow:hidden;text-overflow:ellipsis">' + esc(o.name) + '</span>' + (o.badge || '') + '</span><span class="meta">' + o.meta + '</span>' + (o.why || '') + '</span>' +
+  o.stage + '<span class="acts">' + (o.acts || '') + '</span>' + (o.detail || '') + '</li>';
 function render() {
-  const c = counts();
-  if (!$('scopeSub')) return renderRows();
-  $('scopeSub').textContent = 'By ' + ST.scope.by + ' on ' + ST.scope.at + ' · personal details are not removed automatically';
-  renderRows();
-}
-function renderRows() {
-  const c = counts();
   const docx = ST.docx || [];
-  $('docMeta').textContent = (c.docs + extra.length + docx.length) + ' documents · ' + c.pages + ' pages · ' + c.passages + ' passages';
-  const pending = forceScope ? !ST.__scopeOk : !ST.scope.signed;
-  const rows = DOCS.map(d => {
-    if (ST.retired[d.id]) return retiredRow({ id: d.id, name: d.name, ext: d.name.split('.').pop(), pages: d.pages, retiredNote: 'Retired just now by Sara Lindqvist' }, true);
+  const live = DOCS.filter(d => !ST.retired[d.id]).length + extra.length + docx.filter(d => d.status !== 'retired').length;
+  $('nDocs').textContent = live;
+  $('nConn').textContent = Object.keys(ST.apps).length;
+  const c = counts();
+  $('docMeta').textContent = live + ' documents · ' + c.pages + ' pages · ' + c.passages + ' passages';
+  const rows = [];
+  docx.forEach(d => {
+    if (d.status === 'retired') return;
+    const base = { ext: d.ext, name: d.name };
+    if (d.status === 'failed') rows.push(fileRow({ ...base, cls: ' is-failed', meta: 'Added ' + esc(d.added || 'today'), why: '<span class="why">' + esc(d.reason) + '</span>', stage: '<span class="pstage is-fail">Couldn’t process</span>',
+      acts: '<button class="btn btn--secondary" data-retry="' + d.id + '">Try again</button><button class="btn btn--ghost" style="opacity:1" data-remove="' + d.id + '">Remove</button>' }));
+    else if (d.status === 'waiting') rows.push(fileRow({ ...base, meta: pendingScope() ? 'Waiting for you to confirm scope' : 'In the queue · processing starts in about 2 minutes', stage: '<span class="pstage is-wait">Waiting</span>',
+      acts: '<button class="btn btn--ghost" style="opacity:1" data-remove="' + d.id + '">Cancel</button>' }));
+    else if (d.status === 'running') rows.push(fileRow({ ...base, meta: 'Processing', stage: '<span class="pstage is-run">' + esc(d.stage || 'Extracting text') + '</span>' }));
+    else rows.push(fileRow({ ...base, meta: (d.pages || 4) + ' pages · ' + Math.round((d.pages || 4) * 4.6) + ' passages', stage: '<span class="pstage is-done">Indexed</span>' }));
+  });
+  extra.forEach(f => rows.push(fileRow({ ext: f.ext, name: f.name, meta: f.done ? f.pages + ' pages · ' + f.passages + ' passages · just now' : 'Uploaded just now',
+    stage: '<span class="pstage ' + (f.done ? 'is-done">Indexed' : 'is-run">' + esc(f.stage)) + '</span>' })));
+  DOCS.forEach(d => {
+    if (ST.retired[d.id]) return;
     const ext = d.name.split('.').pop(), n = Math.round(d.pages * 4.6), qs = qsFor(d.id);
-    let html = '<tr class="row' + (open === d.id ? ' is-open' : '') + '" data-id="' + d.id + '"><td><span class="dname"><span class="ext">' + ext + '</span>' + esc(d.name) +
-      (d.faq ? ' <span class="badge badge--info">Your help pages</span>' : '') + '</span></td><td class="num">' + d.pages + '</td><td class="num">' + n + '</td><td class="num">' + qs.length + '</td>' +
-      '<td><span class="stage">✓ Indexed</span></td><td class="acts"><button class="btn btn--ghost" data-retire="' + d.id + '">Retire</button></td></tr>';
+    let detail = '';
     if (open === d.id) {
       const ps = passagesFor(d.id).slice(0, 3);
-      html += '<tr class="detail"><td colspan="5"><p class="sub" style="margin:10px 0 4px">Sample passages</p>' +
+      detail = '<div class="fdetail"><p class="sub" style="margin:6px 0 2px">Sample passages</p>' +
         (ps.length ? ps.map(p => '<div class="passage"><em>' + esc(p.loc) + '</em>' + esc(p.text) + '</div>').join('') : '<p class="sub">No passages sampled yet.</p>') +
-        (qs.length ? '<p class="sub" style="margin:10px 0 6px">Questions found here</p><div class="chips">' + qs.map(q => '<a class="chip" href="insights.html">' + esc(q.q) + '</a>').join('') + '</div>' : '') + '</td><td></td></tr>';
+        (qs.length ? '<p class="sub" style="margin:10px 0 6px">Questions found here</p><div class="chips">' + qs.map(q => '<a class="chip" href="insights.html">' + esc(q.q) + '</a>').join('') + '</div>' : '') + '</div>';
     }
-    return html;
+    rows.push(fileRow({ id: d.id, cls: ' is-row' + (open === d.id ? ' is-open' : ''), ext, name: d.name, badge: d.faq ? '<span class="badge badge--info">Your help pages</span>' : '',
+      meta: d.pages + ' pages · ' + n + ' passages · ' + qs.length + ' question' + (qs.length === 1 ? '' : 's') + ' · added ' + d.added,
+      stage: '<span class="pstage is-done">Indexed</span>', acts: '<button class="btn btn--ghost" data-retire="' + d.id + '">Retire</button>', detail }));
   });
-  extra.forEach(f => rows.push('<tr><td><span class="dname"><span class="ext">' + esc(f.ext) + '</span>' + esc(f.name) + '</span></td><td class="num">' + (f.pages || '–') + '</td><td class="num">' + (f.passages || '–') + '</td><td class="num">–</td><td><span class="stage ' + (f.done ? '' : 'is-run') + '">' + (f.done ? '✓ Indexed' : '<span class="spin" style="width:11px;height:11px"></span> ' + esc(f.stage)) + '</span></td><td></td></tr>'));
-  docx.forEach(d => {
-    if (d.status === 'retired') { rows.push(retiredRow(d)); return; }
-    const head = '<tr class="' + (d.status === 'failed' ? 'is-failed' : '') + '"><td><span class="dname"><span class="ext">' + esc(d.ext) + '</span><span>' + esc(d.name) +
-      (d.status === 'failed' ? '<span class="why">' + esc(d.reason) + '</span>' : d.status === 'waiting' ? '<span class="why mute">' + (pending ? 'Waiting for you to confirm scope.' : 'In the queue. Processing starts in about 2 minutes.') + '</span>' : '') + '</span></span></td>' +
-      '<td class="num">–</td><td class="num">–</td><td class="num">–</td>';
-    if (d.status === 'failed') rows.push(head + '<td><span class="stage is-fail">✕ Couldn’t process</span></td><td class="acts"><button class="btn btn--secondary" data-retry="' + d.id + '">Try again</button> <button class="btn btn--ghost" style="opacity:1" data-remove="' + d.id + '">Remove</button></td></tr>');
-    else if (d.status === 'waiting') rows.push(head + '<td><span class="stage is-wait">Waiting</span></td><td class="acts"><button class="btn btn--ghost" style="opacity:1" data-remove="' + d.id + '">Cancel</button></td></tr>');
-    else if (d.status === 'running') rows.push(head + '<td><span class="stage is-run"><span class="spin" style="width:11px;height:11px"></span> ' + esc(d.stage || 'Extracting text') + '</span></td><td></td></tr>');
-    else rows.push(head.replace('<td class="num">–</td><td class="num">–</td>', '<td class="num">' + (d.pages || 4) + '</td><td class="num">' + Math.round((d.pages || 4) * 4.6) + '</td>') + '<td><span class="stage">✓ Indexed</span></td><td></td></tr>');
-  });
+  // G4: retired documents stay listed, greyed, and can be restored
+  DOCS.filter(d => ST.retired[d.id]).forEach(d => rows.push(fileRow({ cls: ' is-retired', ext: d.name.split('.').pop(), name: d.name, meta: 'Retired just now by Sara Lindqvist', stage: '<span class="pstage">Retired</span>',
+    acts: '<button class="btn btn--secondary" data-restore="' + d.id + '" data-base="1">Restore</button>' })));
+  docx.filter(d => d.status === 'retired').forEach(d => rows.push(fileRow({ cls: ' is-retired', ext: d.ext, name: d.name, meta: esc(d.retiredNote), stage: '<span class="pstage">Retired</span>',
+    acts: '<button class="btn btn--secondary" data-restore="' + d.id + '">Restore</button>' })));
   $('docRows').innerHTML = rows.join('');
+  renderApps();
 }
-// G4: retired documents stay listed, greyed, and can be restored
-function retiredRow(d, base) {
-  return '<tr class="is-retired"><td><span class="dname"><span class="ext">' + esc(d.ext) + '</span><span>' + esc(d.name) + '<span class="why mute">' + esc(d.retiredNote) + '</span></span></span></td>' +
-    '<td class="num">' + (d.pages || '–') + '</td><td class="num">–</td><td class="num">–</td><td><span class="stage is-ret">Retired</span></td>' +
-    '<td class="acts"><button class="btn btn--secondary" data-restore="' + d.id + '"' + (base ? ' data-base="1"' : '') + '>Restore</button></td></tr>';
+function renderApps() {
+  $('apps').innerHTML = APPS.map(a => '<button type="button" class="app' + (ST.apps[a.id] ? ' is-on' : '') + '" data-app="' + a.id + '"><span class="mono" style="background:' + a.color + '">' + a.mono + '</span><span><b>' + esc(a.name) + '</b><span class="k">' + (ST.apps[a.id] ? 'Connected · ' + a.n + ' documents' : esc(a.kind)) + '</span></span></button>').join('');
+  const on = APPS.filter(a => ST.apps[a.id]);
+  $('synced').innerHTML = on.map(a => '<div class="file"><span class="mono" style="background:' + a.color + '">' + a.mono + '</span><span><span class="name">' + esc(a.name) + '</span><span class="meta">Connected as sara@nimbuspay.com · ' + a.n + ' documents · reads only</span></span><span class="pstage is-done">Synced</span><span class="acts"><button class="btn btn--ghost" style="opacity:1" data-off="' + a.id + '">Disconnect</button></span></div>').join('');
 }
+$('apps').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-app]'); if (!b || ST.apps[b.dataset.app]) return;
+  const a = APPS.find(x => x.id === b.dataset.app);
+  b.classList.add('is-busy'); b.disabled = true;
+  b.querySelector('.k').innerHTML = '<span class="spin" style="width:11px;height:11px;vertical-align:-1px"></span> Connecting…';
+  setTimeout(() => { ST.apps[a.id] = true; save(); render(); toast(a.name + ' connected as sara@nimbuspay.com'); }, 900);
+});
+$('synced').addEventListener('click', (e) => { const b = e.target.closest('[data-off]'); if (!b) return; delete ST.apps[b.dataset.off]; save(); render(); toast('Disconnected. Documents already indexed stay until you retire them.'); });
 $('docRows').addEventListener('click', (e) => {
-  const b = e.target.closest('button'); if (!b) return;
-  e.stopPropagation();
+  const b = e.target.closest('button');
+  if (!b) { const li = e.target.closest('.file.is-row'); if (li && !e.target.closest('a')) { open = open === li.dataset.id ? null : li.dataset.id; render(); } return; }
   const docx = ST.docx || [];
   if (b.dataset.retry) {
-    const d = docx.find(x => x.id === b.dataset.retry); d.status = 'running'; d.stage = 'Extracting text'; renderRows();
-    setTimeout(() => { d.status = 'failed'; d.reason = 'Still password-protected. Remove the password in your PDF app, then upload the file again.'; save(); renderRows(); toastError('Holiday policy 2025.pdf still couldn’t be processed.'); }, 1600);
+    const d = docx.find(x => x.id === b.dataset.retry); d.status = 'running'; d.stage = 'Extracting text'; render();
+    setTimeout(() => { d.status = 'failed'; d.reason = 'Still password-protected. Remove the password in your PDF app, then upload the file again.'; save(); render(); toastError('Holiday policy 2025.pdf still couldn’t be processed.'); }, 1600);
   }
-  if (b.dataset.remove) { ST.docx = docx.filter(x => x.id !== b.dataset.remove); save(); renderRows(); toast('Removed'); }
+  if (b.dataset.remove) { ST.docx = docx.filter(x => x.id !== b.dataset.remove); save(); render(); toast('Removed'); }
   if (b.dataset.restore) {
     if (b.dataset.base) delete ST.retired[b.dataset.restore]; else { const d = docx.find(x => x.id === b.dataset.restore); d.status = 'indexed'; }
-    save(); renderRows(); toast('Restored. Its passages are used for drafts again.');
+    save(); render(); toast('Restored. Its passages are used for drafts again.');
   }
   if (b.dataset.retire) confirmRetire(b.dataset.retire);
 });
@@ -947,9 +1063,8 @@ function confirmRetire(id) {
     (qs ? '<div class="warn" style="background:rgba(217,154,43,.1);color:#7A5710">' + qs + ' question' + (qs === 1 ? '' : 's') + ' cite this document. Approved answers that rely on it are sent back to Build.</div>' : '') +
     '</div><div class="dlg__f"><button class="btn btn--secondary" value="cancel">Cancel</button><button class="btn btn--danger" type="button" id="retGo">Retire document</button></div></form>';
   dlg.showModal();
-  $('retGo').onclick = () => { ST.retired[id] = true; save(); dlg.close(); open = null; renderRows(); toast(d.name + ' retired'); };
+  $('retGo').onclick = () => { ST.retired[id] = true; save(); dlg.close(); open = null; render(); toast(d.name + ' retired'); };
 }
-$('docRows').addEventListener('click', (e) => { const tr = e.target.closest('tr.row'); if (!tr || e.target.closest('a')) return; open = open === tr.dataset.id ? null : tr.dataset.id; render(); });
 $('scopeToggle').addEventListener('click', () => { const d = $('scopeDetail'); d.hidden = !d.hidden; $('scopeToggle').setAttribute('aria-expanded', !d.hidden); $('scopeToggle').textContent = d.hidden ? 'What’s in scope' : 'Hide'; });
 // G3: reject wrong type, too large and duplicates up front; upload the rest
 function showUploadErrors(errs) {
@@ -960,9 +1075,9 @@ function showUploadErrors(errs) {
   el.hidden = false; $('upErrX').onclick = () => { el.hidden = true; };
 }
 window.demoUploadErrors = () => showUploadErrors([['Q3 board deck.pptx', 'This file type isn’t supported. Use PDF, DOCX, MD or TXT.'], ['Call recordings.zip', 'Too large: 212 MB. Each file can be up to 25 MB.'], ['Billing FAQ.docx', 'Already uploaded on 10 Sep. Retire the old one first if this is a newer version.']]);
-$('fileInput').addEventListener('change', (e) => {
+function addFiles(list) {
   const errs = [], names = DOCS.map(d => d.name.toLowerCase()).concat((ST.docx || []).map(d => d.name.toLowerCase()), extra.map(x => x.name.toLowerCase()));
-  const files = [...e.target.files].filter(f => {
+  const files = [...list].filter(f => {
     const ext = (f.name.split('.').pop() || '').toLowerCase();
     if (!OK_EXT.includes(ext)) { errs.push([f.name, 'This file type isn’t supported. Use PDF, DOCX, MD or TXT.']); return false; }
     if (f.size > MAX_MB * 1048576) { errs.push([f.name, 'Too large: ' + Math.round(f.size / 1048576) + ' MB. Each file can be up to 25 MB.']); return false; }
@@ -972,24 +1087,33 @@ $('fileInput').addEventListener('change', (e) => {
   showUploadErrors(errs);
   files.forEach(f => {
     const item = { name: f.name, ext: (f.name.split('.').pop() || '').slice(0, 4), stage: 'Extracting text', done: false, pages: Math.max(1, Math.round(f.size / 40000)) };
-    extra.push(item);
+    extra.unshift(item);
     setTimeout(() => { item.stage = 'Splitting into passages'; render(); }, 900);
     setTimeout(() => { item.stage = 'Indexing by meaning'; render(); }, 1800);
     setTimeout(() => { item.done = true; item.passages = Math.round(item.pages * 4.6); render(); toast(item.name + ' indexed'); }, 2800);
   });
-  e.target.value = ''; render();
-});
-$('folderBtn').addEventListener('click', () => { $('folderRow').hidden = !$('folderRow').hidden; if (!$('folderRow').hidden) $('folderLink').focus(); });
+  render();
+}
+$('fileInput').addEventListener('change', (e) => { addFiles(e.target.files); e.target.value = ''; });
+const drop = $('drop');
+['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('is-over'); }));
+['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove('is-over'); }));
+drop.addEventListener('drop', (e) => addFiles(e.dataTransfer.files));
 $('folderSend').addEventListener('click', () => {
   const v = $('folderLink').value.trim();
   if (!/^https?:\/\/\S+\.\S+/.test(v)) { $('folderLink').focus(); toast('Paste a full folder link'); return; }
-  extra.push({ name: 'Shared folder · ' + v.replace(/^https?:\/\//, '').slice(0, 32) + '…', ext: 'dir', stage: 'Waiting for access', done: false });
-  $('folderLink').value = ''; $('folderRow').hidden = true; render();
+  extra.unshift({ name: 'Shared folder · ' + v.replace(/^https?:\/\//, '').slice(0, 32) + '…', ext: 'dir', stage: 'Waiting for access', done: false });
+  $('folderLink').value = ''; render(); show('docs');
   toast('We’ll pull the documents once ingest@lojo.ai has view access');
 });
-
+function show(tab) {
+  document.querySelectorAll('.ptab').forEach(t => t.setAttribute('aria-selected', t.dataset.tab === tab));
+  $('tabDocs').hidden = tab !== 'docs'; $('tabConnect').hidden = tab !== 'connect';
+}
+document.querySelectorAll('.ptab').forEach(t => t.addEventListener('click', () => { show(t.dataset.tab); history.replaceState(null, '', location.search + (t.dataset.tab === 'connect' ? '#connect' : '')); }));
 renderScope();
 render();
+show(location.hash === '#connect' ? 'connect' : 'docs');
 if (new URLSearchParams(location.search).get('demo') === 'upload') demoUploadErrors();
 
 </script>
