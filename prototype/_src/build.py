@@ -359,7 +359,7 @@ function render() {
     '<span><span class="ok">✓</span>' + rewrites + ' rejected draft' + (rewrites === 1 ? '' : 's') + ' rewritten once</span>' +
     '<span class="' + (early ? 'muted' : '') + '">Approval rate ' + rate + '% · ' + decided + ' decided' + (early ? ' (too early to judge)' : '') + '</span>' +
     '<span class="muted">Processing $18.40 · $1.84 per document</span>' +
-    '<a href="readout.html">See readout →</a>';
+    '<a href="knowledge.html">See knowledge →</a>';
 
   $('scopeBy').innerHTML = '<b>Scope signed off</b> by ' + esc(ST.scope.by) + ' on ' + esc(ST.scope.at) + ' · personal details are not removed automatically';
 }
@@ -1257,7 +1257,7 @@ const SAY = new URLSearchParams(location.search).get('say'); if (SAY) SAY.split(
 
 # ============================================================ READOUT
 READOUT = dict(
-  active='readout', title='Readout',
+  active='readout', title='Knowledge',
   desc='<!-- ASSUMPTION: processing costs are illustrative placeholders until real usage is metered. check with Eric -->',
   css=r"""
   .doc{max-width:880px;display:grid;gap:20px}
@@ -1289,7 +1289,7 @@ READOUT = dict(
     <div class="head">
       <div>
         <p class="label">Decide · Week 4</p>
-        <h1>Readout</h1>
+        <h1>Knowledge</h1>
         <p>What we found, what it cost to process, and what a full build would take.</p>
       </div>
       <span class="spacer"></span>
@@ -1442,8 +1442,8 @@ const GROUPS = [
   ['Distribute', [
     ['—', 'Distribute page', 'Approved answers plus where they go: chat and Ask lojo live, help centre and Slack in the full build.', [L('distribute.html', 'Open')]],
   ]],
-  ['Readout', [
-    ['G11', 'Chat numbers', 'Asked, answered, declined and the answer rate.', [L('readout.html', 'Open readout')]],
+  ['Knowledge', [
+    ['G11', 'Chat numbers', 'Asked, answered, declined and the answer rate.', [L('knowledge.html', 'Open knowledge')]],
   ]],
   ['Everywhere', [
     ['G12', 'Error pages', 'Page not found, no access, something went wrong.', [L('auth.html?s=404', '404'), L('auth.html?s=403', '403'), L('auth.html?s=500', '500')]],
@@ -1459,7 +1459,7 @@ $('groups').innerHTML = GROUPS.map(([g, items]) => '<section class="grp"><h2>' +
 $('groups').addEventListener('click', (e) => { const b = e.target.closest('[data-act]'); if (b) { e.stopPropagation(); acts[+b.dataset.act](); } });
 """)
 
-PAGES = {'states': STATES, 'dashboard': OVERVIEW, 'sources': DOCUMENTS, 'insights': QUESTIONS_PAGE, 'build': REVIEW, 'distribute': APPROVED, 'chat': CHAT, 'readout': READOUT}
+PAGES = {'states': STATES, 'dashboard': OVERVIEW, 'sources': DOCUMENTS, 'insights': QUESTIONS_PAGE, 'build': REVIEW, 'distribute': APPROVED, 'chat': CHAT, 'knowledge': READOUT}
 for name, p in PAGES.items():
     html = page(p['active'], p['title'], p['css'], p['body'], p['js'], p.get('desc', ''))
     with open(os.path.join(OUT, name + '.html'), 'w') as f:

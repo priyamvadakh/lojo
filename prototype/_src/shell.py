@@ -274,7 +274,7 @@ NAV = [
   ('<b>02</b> Insights', [('questions', 'insights.html', 'Insights', 'navQuestions')]),
   ('<b>03</b> Build', [('review', 'build.html', 'Build', 'navReview')]),
   ('<b>04</b> Distribute', [('approved', 'distribute.html', 'Distribute', 'navApproved'), ('chat', 'chat.html', 'Chat', None)]),
-  ('Decide', [('readout', 'readout.html', 'Readout', None)]),
+  ('Decide', [('readout', 'knowledge.html', 'Knowledge', None)]),
 ]
 
 NAV_FLAT = [
@@ -283,7 +283,7 @@ NAV_FLAT = [
   ('questions', 'insights.html', 'Insights', 'navQuestions', ''),
   ('review', 'build.html', 'Build', 'navReview', ''),
   ('approved', 'distribute.html', 'Distribute', 'navApproved', ''),
-  ('readout', 'readout.html', 'Readout', None, ''),
+  ('readout', 'knowledge.html', 'Knowledge', None, ''),
 ]
 LOOP_STAGE = {'documents': '01 Source', 'questions': '02 Insights', 'review': '03 Build · Validation', 'approved': '04 Distribute', 'chat': '04 Distribute', 'readout': 'Decide'}
 
