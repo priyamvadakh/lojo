@@ -328,7 +328,7 @@ CSS = r"""
   .am .from{display:block;margin-top:6px;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
   .askp__foot{padding:10px 12px;border-top:1px solid var(--line);display:grid;gap:8px}
   /* answers: the asked-for fact first, then the rest */
-  .fact{display:grid;gap:8px;margin:2px 0 6px}
+  .fact{display:grid;gap:6px;margin:2px 0 8px;max-width:440px}
   .fact__row{display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;border-radius:12px;background:var(--panel);border:1px solid var(--line)}
   .fact__ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(232,93,117,.1);color:#C7385B;flex:none}
   .fact__ic svg,.srcbox__ic svg,.fact__cp svg,.aacts svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
@@ -451,6 +451,32 @@ CSS = r"""
   .rel span{color:var(--muted)}
   .rel:hover{border-color:rgba(232,93,117,.4)}
   .rel:hover span{color:#C7385B}
+  /* answers, quieter: compact fact rows, one-line source, actions on hover */
+  .fact__row{gap:10px;padding:8px 8px 8px 10px;border-radius:10px}
+  .fact__ic{width:28px;height:28px;border-radius:8px}
+  .fact__ic svg{width:14px;height:14px}
+  .fact__v small{font-size:.6rem;letter-spacing:.1em}
+  .fact__v b{font-family:var(--body);font-size:.95rem;font-weight:700;letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fact__go,.fact__cp{width:30px;height:30px;padding:0;border-radius:8px;border:1px solid var(--line-2);background:var(--panel)!important;color:var(--muted)!important;display:grid;place-items:center;box-shadow:none!important}
+  .fact__go svg,.fact__cp svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .fact__go:hover,.fact__cp:hover{color:var(--ink)!important;border-color:rgba(36,26,20,.3)}
+  .more summary{font-size:.74rem}
+  .srcbox{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px;margin-top:10px;padding:0;border:0;background:none}
+  .srcbox__ic{width:18px;height:18px;border-radius:50%;background:rgba(63,143,95,.14)}
+  .srcbox__ic svg{width:11px;height:11px}
+  .srcbox__t{font-size:.74rem;font-weight:600;color:var(--success)}
+  .srcbox__t em{font-style:normal;font-weight:500;color:var(--muted)}
+  .srcbox .srcs{display:flex;gap:5px;margin:0}
+  .srcbox .src{font-size:.7rem;padding:2px 7px;border-radius:6px}
+  .aacts{opacity:0;transition:opacity .15s ease;min-height:26px}
+  .arow2:hover .aacts,.aacts:focus-within,.aacts:has(.is-on),.aacts:has(.is-done),.fact__go:focus-visible{opacity:1}
+  .fact__go,.fact__cp{opacity:0;transition:opacity .15s ease}
+  .fact__row:hover .fact__go,.fact__row:hover .fact__cp,.fact__row:focus-within .fact__go,.fact__row:focus-within .fact__cp{opacity:1}
+  @media (hover:none){.aacts,.fact__go,.fact__cp{opacity:1}}
+  .related{display:flex;flex-wrap:wrap;align-items:center;gap:6px;border-top:0;padding-top:0;margin-top:10px}
+  .related small{margin-right:4px}
+  .rel{display:inline-flex;width:auto;padding:5px 10px;border-radius:999px;font-size:.76rem;color:var(--muted)}
+  .rel:hover{color:var(--ink)}
   /* composer note */
   .askp__foot{padding:10px 14px 12px}
   .askp__foot .chips:empty{display:none}
@@ -908,14 +934,14 @@ function answerHTML(q, a, fromQ, srcs) {
   let h = '';
   if (hits.length) {
     h += '<div class="fact">' + hits.map(v => '<div class="fact__row"><span class="fact__ic">' + ICO[f.kind] + '</span><span class="fact__v"><small>' + f.label + '</small><b>' + esc(v) + '</b></span>' +
-      (href(f.kind, v) ? '<a class="fact__go" href="' + href(f.kind, v) + '"' + (f.kind === 'url' ? ' target="_blank" rel="noopener"' : '') + '>' + { phone: 'Call', email: 'Write', url: 'Open' }[f.kind] + '</a>' : '') +
-      '<button class="fact__cp" type="button" data-copy="' + esc(v) + '" aria-label="Copy">' + ICO.copy + '</button></div>').join('') + '</div>' +
-      '<details class="more"><summary>More from the approved answer</summary><div class="md">' + md(a) + '</div></details>';
+      (href(f.kind, v) ? '<a class="fact__go" href="' + href(f.kind, v) + '"' + (f.kind === 'url' ? ' target="_blank" rel="noopener"' : '') + ' title="' + { phone: 'Call', email: 'Write an email', url: 'Open link' }[f.kind] + '" aria-label="' + { phone: 'Call', email: 'Write an email', url: 'Open link' }[f.kind] + '">' + { phone: ICO.phone, email: ICO.email, url: '<svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>' }[f.kind] + '</a>' : '') +
+      '<button class="fact__cp" type="button" data-copy="' + esc(v) + '" aria-label="Copy" title="Copy">' + ICO.copy + '</button></div>').join('') + '</div>' +
+      '<details class="more"><summary>Full answer</summary><div class="md">' + md(a) + '</div></details>';
   } else h += '<div class="md">' + md(a) + '</div>';
   // name the approved question only when it reads differently from what was asked
   const wq = (s) => new Set(s.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(w => w.length > 3));
   const A = wq(q), B = wq(fromQ), same = [...A].filter(w => B.has(w)).length / Math.max(1, Math.min(A.size, B.size)) >= 0.6;
-  h += '<div class="srcbox"><span class="srcbox__ic">' + ICO.check + '</span><span><small>Approved answer</small>' + (same ? '' : '<b>Answers: ' + esc(fromQ) + '</b>') + (srcs ? '<span class="srcs">' + srcs + '</span>' : '') + '</span></div>';
+  h += '<div class="srcbox"><span class="srcbox__ic">' + ICO.check + '</span><span class="srcbox__t">Approved answer' + (same ? '' : ' · <em>' + esc(fromQ) + '</em>') + '</span>' + (srcs ? '<span class="srcs">' + srcs + '</span>' : '') + '</div>';
   h += '<div class="aacts"><button type="button" data-copy="' + esc(a) + '" title="Copy answer">' + ICO.copy + '<span>Copy</span></button><button type="button" data-rate="up" aria-label="Helpful" title="Helpful">' + ICO.up + '</button><button type="button" data-rate="down" aria-label="Not helpful" title="Not helpful" class="down">' + ICO.up + '</button><span class="fb" role="status"></span></div>';
   // two related approved questions to keep going
   const ok = DRAFTS.filter(r => decision(r).status === 'approved').map(r => QUESTIONS.find(x => x.id === r.qid).q).filter(x => x !== fromQ);
