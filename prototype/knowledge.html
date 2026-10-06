@@ -651,7 +651,7 @@
   .kstat small{display:block;font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
   .kstat b{display:block;font-family:var(--display);font-weight:800;font-size:2rem;line-height:1.1;margin:4px 0 2px}
   .kstat span{font-size:.8rem;color:var(--muted);line-height:1.4}
-  .kgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:26px}
+  .kgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:26px}
   .kbox{padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
   .kbox h3{display:flex;align-items:center;gap:8px;margin:0 0 4px;font-size:.74rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
   .kbox h3 svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
@@ -779,6 +779,26 @@
   .kstat{position:relative}
   .kstat .tip::after{white-space:normal;width:210px;left:50%;transform:translate(-50%,4px);text-transform:none;letter-spacing:0;font-weight:500;font-size:.76rem;line-height:1.4;z-index:30}
   .kstat .tip:hover::after,.kstat .tip:focus::after{transform:translate(-50%,0)}
+  /* bigger squares, plus the spaces tile with its hover card */
+  .kstat{width:196px;min-height:150px;justify-content:center;padding:18px}
+  .kstat b{font-size:2.3rem;margin-top:10px}
+  .kstat.sp i.bar{background:#3E6FA6}
+  .kstat.sp{cursor:default}
+  .kstat__hint{margin-top:6px;font-size:.66rem;color:var(--muted)}
+  .kpop{position:absolute;top:calc(100% + 8px);left:50%;transform:translate(-50%,6px);width:340px;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:var(--panel);box-shadow:0 24px 50px -24px rgba(36,26,20,.45);text-align:left;opacity:0;pointer-events:none;transition:opacity .15s ease,transform .15s ease;z-index:40}
+  .kstat.sp:hover .kpop,.kstat.sp:focus-within .kpop{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+  .kpop::before{content:"";position:absolute;left:0;right:0;top:-10px;height:10px}
+  .kpop__h{margin:0 0 10px!important;font-size:.7rem!important;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .kpop{align-items:stretch}
+  .kpop .donut{display:flex!important;flex-direction:row;align-items:center;gap:14px}
+  .kpop .donut svg{width:88px;height:88px}
+  .kpop .legend b{font-size:.8rem!important;margin:0!important;line-height:1.2!important;font-family:var(--body)!important}
+  .kpop .legend i{display:block!important;width:10px!important;height:10px!important;margin:0!important;border-radius:3px!important}
+  .kpop{text-align:left!important}
+  .kpop .legend i,.kpop .legend b,.kpop .legend em,.kpop .legend span{grid-column:auto!important;grid-row:auto!important}
+  .kpop .legend{display:grid!important;flex:1}
+  .kpop .legend li{display:block}
+  .kpop .legend button{display:grid!important;grid-template-columns:10px minmax(0,1fr) auto 36px!important;align-items:center!important;text-align:left!important;flex-direction:row!important}
 
   :root[data-theme="dark"]{
     --ink:#F2EBE5; --bg:#15100D; --bg-soft:#231B16; --panel:#1C1612;
@@ -889,7 +909,6 @@
 
     <div class="kstats" id="kstats"></div>
     <div class="kgrid">
-      <section class="kbox"><h3><svg viewBox="0 0 24 24"><path d="M12 3 2 8l10 5 10-5z"/><path d="m2 13 10 5 10-5"/></svg>Knowledge spaces</h3><p>Access is decided per space. A space you can’t read is never listed here.</p><div id="kspaces"></div></section>
       <section class="kbox"><h3><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>Where it comes from</h3><div id="ktypes"></div><p class="sub2">Sensitivity</p><div id="ksens"></div></section>
       <section class="kbox"><h3><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Recently updated</h3><p>Newest first.</p><div id="kspark" hidden></div><ul class="recent" id="krecent"></ul></section>
     </div>
@@ -1666,14 +1685,16 @@ function render() {
   const all = entries(), n = (s) => all.filter(e => e.state === s).length;
   $('kstats').innerHTML = [['all', 'Knowledge entries', all.length, 'Everything lojo holds for this workspace'], ['ok', 'Published', n('Published'), 'Approved by a person, then published as company truth.'],
     ['warn', 'Needs review', n('Needs review'), 'Conflicting or rejected. Not company truth until a person reviews it.'], ['ref', 'Reference', n('Reference'), 'Saved from an authorised source. Never published on its own.']]
-    .map(([c, l, v, s]) => '<div class="kstat ' + c + '"><i class="bar"></i><small>' + l + ' <i class="tip" tabindex="0" data-tip="' + esc(s) + '">i</i></small><b>' + v + '</b></div>').join('');
+    .map(([c, l, v, s]) => '<div class="kstat ' + c + '"><i class="bar"></i><small>' + l + ' <i class="tip" tabindex="0" data-tip="' + esc(s) + '">i</i></small><b>' + v + '</b></div>').join('') +
+    '<div class="kstat sp" tabindex="0"><i class="bar"></i><small>Knowledge spaces <i class="tip" tabindex="0" data-tip="Access is decided per space. A space you can’t read is never listed here.">i</i></small><b id="kspN"></b><span class="kstat__hint">Hover to see all</span><div class="kpop" id="kspaces"></div></div>';
   const count = (key) => uniq(all.map(e => e[key])).map(v => [v, all.filter(e => e[key] === v).length]);
   const pills = (key, sel) => count(key).map(([v, c]) => '<button type="button" class="kpill" data-pick="' + sel + '" data-v="' + esc(v) + '">' + esc(v) + ' <b>' + c + '</b></button>').join('');
   // spaces: a donut with a clickable legend
   const COLS = ['#E85D75', '#3E6FA6', '#C9A24A', '#3F8F5F', '#8C6FD8', '#8C817B'];
   const sp = count('space').sort((a, b) => b[1] - a[1]), tot = all.length, R0 = 34, C0 = 2 * Math.PI * R0;
   let off = 0;
-  $('kspaces').innerHTML = '<div class="donut"><svg viewBox="0 0 90 90"><circle cx="45" cy="45" r="' + R0 + '" fill="none" stroke="var(--bg-soft)" stroke-width="12"/>' +
+  $('kspN').textContent = sp.length;
+  $('kspaces').innerHTML = '<p class="kpop__h">' + sp.length + ' spaces · ' + tot + ' entries</p><div class="donut"><svg viewBox="0 0 90 90"><circle cx="45" cy="45" r="' + R0 + '" fill="none" stroke="var(--bg-soft)" stroke-width="12"/>' +
     sp.map(([v, n], i) => { const len = C0 * n / tot, s = '<circle cx="45" cy="45" r="' + R0 + '" fill="none" stroke="' + COLS[i % 6] + '" stroke-width="12" stroke-dasharray="' + (len - 1.5).toFixed(1) + ' ' + C0.toFixed(1) + '" stroke-dashoffset="' + (-off).toFixed(1) + '" transform="rotate(-90 45 45)"><title>' + esc(v) + ': ' + n + '</title></circle>'; off += len; return s; }).join('') +
     '<text x="45" y="43" text-anchor="middle" class="dn__n">' + tot + '</text><text x="45" y="56" text-anchor="middle" class="dn__l">entries</text></svg>' +
     '<ul class="legend">' + sp.map(([v, n], i) => '<li><button type="button" data-pick="fSpace" data-v="' + esc(v) + '"><i style="background:' + COLS[i % 6] + '"></i>' + esc(v) + '<b>' + n + '</b><em>' + Math.round(n / tot * 100) + '%</em></button></li>').join('') + '</ul></div>';
