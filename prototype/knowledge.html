@@ -515,6 +515,14 @@
   .askp.is-page .askp__foot{padding:14px max(28px,calc(50% - 410px)) 16px}
   @media (max-width:900px){.askp.is-page .askp__hist{display:none}}
 
+  /* Ask lojo as a push drawer: docks on the right and the page makes room */
+  .askp:not(.is-full):not(.is-page){top:12px;bottom:12px;right:12px;height:auto;width:420px;border-radius:20px;transform-origin:right center;animation:drawerIn .25s cubic-bezier(.2,.8,.2,1)}
+  @keyframes drawerIn{from{opacity:0;transform:translateX(24px)}}
+  .main{transition:margin .3s cubic-bezier(.2,.8,.2,1)}
+  body.ask-open .main{margin-right:444px}
+  body.ask-open .fab{opacity:0;pointer-events:none;transform:scale(.8)}
+  @media (max-width:1100px){body.ask-open .main{margin-right:0}.askp:not(.is-full):not(.is-page){width:min(420px,calc(100vw - 24px))}}
+
   /* ---------- phone: sidebar becomes a drawer ---------- */
   .mnav{display:none;position:fixed;top:14px;left:12px;z-index:35;width:40px;height:40px;border-radius:12px;border:1px solid var(--line-2);background:var(--panel);color:var(--ink);place-items:center;cursor:pointer;box-shadow:0 8px 20px -14px rgba(36,26,20,.5)}
   .mnav svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
@@ -1459,6 +1467,7 @@ function srcChip(docId, loc, warn) {
   function toggle(open) {
     if (isPage) return;
     panel.hidden = !open; fab.classList.toggle('is-open', open); fab.setAttribute('aria-expanded', open);
+    document.body.classList.toggle('ask-open', open);
     if (!open) { full(false); panel.classList.remove('show-hist'); }
     if (open && !log.children.length) load();
     if (open) $('askIn').focus();
@@ -1470,6 +1479,7 @@ function srcChip(docId, loc, warn) {
   function full(on) {
     if (isPage) return;
     panel.classList.toggle('is-full', on); $('askBg').hidden = !on; panel.classList.remove('show-hist');
+    document.body.classList.toggle('ask-open', !on && !panel.hidden);
     $('askFull').setAttribute('aria-label', on ? 'Exit full screen' : 'Full screen'); $('askFull').title = on ? 'Exit full screen' : 'Full screen';
     $('askFull').innerHTML = on ? '<svg viewBox="0 0 24 24"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg>' : '<svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>';
   }

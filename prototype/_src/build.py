@@ -61,6 +61,9 @@ OVERVIEW = dict(
   :root[data-theme="dark"] .stack .card{background:var(--panel);border-color:var(--line)}
   :root[data-theme="dark"] .stack .ln,:root[data-theme="dark"] .stack .acts i{background:var(--bg-soft)}
   @media (max-width:1320px){.stack{display:none}.next__copy{max-width:none}}
+  body.ask-open .stack{display:none}
+  body.ask-open .next__copy{max-width:none}
+  @media (max-width:1500px){body.ask-open .next,body.ask-open .duo{grid-template-columns:1fr}body.ask-open .next__main{border-right:0;border-bottom:1px solid var(--line)}}
   @media (prefers-reduced-motion:reduce){.stack .card:nth-child(3),.next__main .label::before{animation:none}}
   .next__main h2{font-family:var(--display);font-weight:700;font-size:1.5rem;letter-spacing:-.01em;margin:8px 0 4px}
   .next__main p{margin:0;color:var(--muted)}
