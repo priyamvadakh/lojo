@@ -771,7 +771,7 @@ QUESTIONS_PAGE = dict(
   .icount b{font-family:var(--display);font-weight:800;font-size:1.3rem;color:var(--ink);margin-right:6px}
   .icount .spacer{flex:1}
   .ifilters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
-  .ifilters select.text{width:auto;min-width:0;height:42px;padding-right:28px;flex:0 1 auto}
+  .ifilters select.text{width:auto;min-width:0;height:42px;flex:0 1 auto}
   .isearch{flex:1 1 200px;min-width:180px;display:flex;align-items:center;gap:8px;height:42px;padding:0 13px;border-radius:11px;border:1px solid var(--line-2);background:var(--panel)}
   .isearch:focus-within{border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,93,117,.16)}
   .isearch svg{width:17px;height:17px;fill:none;stroke:var(--muted);stroke-width:1.8;flex:none}
@@ -1916,6 +1916,38 @@ READOUT = dict(
   .archived{opacity:.6}
   @media (max-width:1200px){.kfil{grid-template-columns:repeat(3,minmax(0,1fr))}.kgrid{grid-template-columns:1fr 1fr}}
   @media (max-width:1000px){.kb{grid-template-columns:1fr}.klist{position:static;max-height:420px}.kstats{grid-template-columns:1fr 1fr}}
+  /* compact */
+  .kstats{gap:10px;margin-bottom:10px}
+  .kstat{padding:12px 16px;border-radius:12px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:12px;align-items:center}
+  .kstat i{grid-column:1/-1;width:22px;height:3px;margin-bottom:8px}
+  .kstat small{grid-column:1/-1;font-size:.62rem}
+  .kstat b{font-size:1.5rem;margin:2px 0 0}
+  .kstat span{font-size:.72rem;line-height:1.3}
+  .kgrid{gap:10px;margin-bottom:16px}
+  .kbox{padding:12px 14px;border-radius:12px}
+  .kbox h3{font-size:.66rem}
+  .kbox p{font-size:.74rem;margin-bottom:8px}
+  .kpill{height:24px;padding:0 9px;font-size:.72rem}
+  .recent li{padding:5px 0;font-size:.78rem}
+  .kfil{gap:8px;margin-bottom:10px}
+  .kfil label{font-size:.66rem}
+  .kfil select,.kfil input{height:36px;font-size:.84rem}
+  .kb{grid-template-columns:360px minmax(0,1fr);gap:14px}
+  .klist__h{padding:10px 14px;font-size:.76rem}
+  .kitem{padding:10px 12px;gap:4px}
+  .kitem b{font-size:.84rem}
+  .kitem .ex{font-size:.76rem;-webkit-line-clamp:1}
+  .kitem .ksrc{display:none}
+  .kc{height:20px;font-size:.66rem;padding:0 8px}
+  .kdet{padding:20px 24px}
+  .kdet h2{font-size:1.35rem;margin:10px 0}
+  .kdet__acts{margin:10px 0 0}
+  .kdet__acts .btn{height:30px;font-size:.78rem}
+  .kdet .ask{height:34px;font-size:.8rem;margin-bottom:12px}
+  .kdet__body{font-size:.9rem;line-height:1.6;margin-bottom:14px}
+  .kpanel{padding:12px 14px;margin-bottom:10px;border-radius:12px}
+  .kpanel h4{font-size:.78rem;margin-bottom:8px}
+  .gov p{font-size:.78rem;margin-bottom:8px}
 """,
   body=r"""
     <div class="head">

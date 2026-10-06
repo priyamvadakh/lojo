@@ -108,7 +108,10 @@ CSS = r"""
   .src--warn{border-color:rgba(217,154,43,.5);background:rgba(217,154,43,.07)}
   .text{width:100%;height:40px;padding:0 13px;border-radius:11px;border:1px solid var(--line-2);background:var(--panel);font-size:.9rem;transition:border-color .15s ease,box-shadow .15s ease}
   textarea.text{height:auto;min-height:90px;padding:10px 13px;line-height:1.5;resize:vertical}
-  select.text{padding:0 10px}
+  select.text{padding:0 38px 0 13px}
+  select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A6C66' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")!important;background-repeat:no-repeat!important;background-position:right 12px center!important;background-size:16px 16px!important;padding-right:38px!important;cursor:pointer;text-overflow:ellipsis}
+  select::-ms-expand{display:none}
+
   .text:focus{outline:none;border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,93,117,.16)}
   .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px}
   .tab{border:0;background:none;padding:10px 12px;margin-bottom:-1px;border-bottom:2px solid transparent;font-weight:600;font-size:.88rem;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
