@@ -775,16 +775,12 @@
     <section class="step" data-step="4" aria-labelledby="h4">
       <p class="label">Step 3 of 5 · Build</p>
       <h1 id="h4">The agent is drafting answers</h1>
-      <p class="lead">It reads your documents, works out which questions they answer, and drafts each answer with its sources. Questions you add go into the same queue.</p>
+      <p class="lead">It reads your documents, works out which questions they answer, and drafts each answer with its sources.</p>
       <div class="panel">
-        <div class="agent">
+        <div class="agent" style="margin-bottom:0">
           <span class="ava-agent" aria-hidden="true"></span>
           <div><b id="agentTitle">Reading 6 documents…</b><span id="agentSub">Looking for questions your documents can answer.</span></div>
         </div>
-        <form class="own" id="ownForm">
-          <input class="text" id="ownInput" placeholder="Add a question you get asked, e.g. Do you support Apple Pay?" aria-label="Add your own question">
-          <button class="btn btn--secondary">Add</button>
-        </form>
       </div>
       <div id="draftList" style="margin-top:16px"></div>
       <div class="actions">
@@ -828,7 +824,7 @@
     <section class="step" data-step="6" aria-labelledby="h6">
       <p class="label">Step 5 of 5 · Distribute</p>
       <h1 id="h6">Your approved store is live</h1>
-      <p class="lead">The chat reads only from approved answers. If something isn't approved yet, it says so instead of guessing.</p>
+      <p class="lead">Ask lojo reads only from approved answers. If something isn't approved yet, it says so instead of guessing.</p>
       <div class="final">
         <div class="panel store">
           <h3><span id="storeCount">0</span> approved answers</h3>
@@ -1363,13 +1359,6 @@ function addOwn(q, silent) {
   }, 1200);
   if (!silent) toast('Added to the queue');
 }
-$('ownForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const q = $('ownInput').value.trim();
-  if (!q) return;
-  addOwn(q.endsWith('?') ? q : q + '?');
-  $('ownInput').value = '';
-});
 
 function srcChips(it) {
   if (!it.src.length) return '';
@@ -1667,11 +1656,11 @@ if (INSIDE.has('inside')) {
     ['02 Insights', questions + ' questions · ' + gaps + ' gaps', 'insights.html', '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>'],
     ['03 Build', drafts + ' drafts with sources', 'build.html', '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>'],
     ['Validation', atVal ? pending + ' drafts waiting for you' : 'First batch reviewed', 'build.html', '<path d="M5 12.5l4.5 4.5L19 7.5"/>'],
-    ['04 Distribute', approved + ' approved answers in the chat', 'distribute.html', '<path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/>']];
+    ['04 Distribute', approved + ' approved answers in Ask lojo', 'distribute.html', '<path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/>']];
   const nowI = atVal ? 3 : 4;
   $('inList').innerHTML = ST.map(([t, s, href, d], i) => '<li class="' + (i < nowI ? 'is-done' : i === nowI ? 'is-now' : '') + '"><a href="' + href + '"><span class="n"><svg viewBox="0 0 24 24">' + d + '</svg></span><span><b>' + t + '</b><span class="s">' + s + '</span></span><em>' + (i < nowI ? 'Done' : i === nowI ? 'You’re here' : 'Next') + '</em><span class="go">→</span></a></li>').join('');
   if (atVal) { $('hIn').textContent = pending + ' draft' + (pending === 1 ? ' is' : 's are') + ' waiting for you'; }
-  else { $('inLabel').textContent = 'Step 5 of 5 · Distribute'; $('hIn').textContent = 'Your approved answers are live'; $('inLead').textContent = 'The chat reads only approved answers. The loop keeps running as your sources change.'; $('inCta').textContent = 'Open the chat →'; $('inCta').href = 'chat.html'; }
+  else { $('inLabel').textContent = 'Step 5 of 5 · Distribute'; $('hIn').textContent = 'Your approved answers are live'; $('inLead').textContent = 'Ask lojo reads only approved answers. The loop keeps running as your sources change.'; $('inCta').textContent = 'Open Ask lojo →'; $('inCta').href = 'chat.html'; }
   // a loop stage opens its page in the app, not a setup step
   const PAGE = { 2: 'sources.html', 3: 'insights.html', 4: 'build.html', 5: 'build.html', 6: 'distribute.html' };
   ['stepper', 'setupList'].forEach(id => $(id).addEventListener('click', (e) => {

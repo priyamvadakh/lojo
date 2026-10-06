@@ -278,9 +278,9 @@ OVERVIEW = dict(
 
     <div class="strip">
       <img src="assets/lojo-icon.png" alt="">
-      <span><b>Coming in week 4:</b> the chat opens for your team, and the readout lands.</span>
+      <span><b>Coming in week 4:</b> Ask lojo opens for your team, and the readout lands.</span>
       <span class="spacer"></span>
-      <a class="btn btn--secondary btn--sm" href="chat.html">Preview the chat →</a>
+      <a class="btn btn--secondary btn--sm" href="chat.html">Preview Ask lojo →</a>
     </div>
 
     <!-- ASSUMPTION: server location wording is a placeholder until the week-1 sign-off is written up. check with Eric -->
@@ -317,7 +317,7 @@ function miniLoop(c) {
   $('miniArc').setAttribute('stroke-dasharray', (L * idx / 5).toFixed(1) + ' ' + L.toFixed(1));
   $('miniFrac').textContent = idx + '/5';
   $('miniNow').textContent = valNow ? 'Validation' : '04 Distribute';
-  $('miniWhy').textContent = valNow ? c.pending + ' draft' + (c.pending === 1 ? '' : 's') + ' waiting' : 'Chat ready to try';
+  $('miniWhy').textContent = valNow ? c.pending + ' draft' + (c.pending === 1 ? '' : 's') + ' waiting' : 'Ask lojo ready to try';
   $('miniK').textContent = c.approved;
 }
 // agents at work: one list, filtered by stage or by who's running now
@@ -355,9 +355,9 @@ function render() {
     $('nextSub').textContent = 'Approve, edit, or reject with a reason; a rejected draft is written again up to twice.';
     $('nextCta').innerHTML = 'Start reviewing <span class="ar">→</span>'; $('nextCta').href = 'build.html';
   } else {
-    $('nextH').textContent = 'Try the chat';
+    $('nextH').textContent = 'Try Ask lojo';
     $('nextSub').textContent = 'The first batch is reviewed. Ask it questions: it answers only from what you approved.';
-    $('nextCta').innerHTML = 'Open the chat <span class="ar">→</span>'; $('nextCta').href = 'chat.html'; $('stack').hidden = true;
+    $('nextCta').innerHTML = 'Open Ask lojo <span class="ar">→</span>'; $('nextCta').href = 'chat.html'; $('stack').hidden = true;
   }
 
   const also = [];
@@ -376,7 +376,7 @@ function render() {
     { ic: 'sync', t: rewrites + ' rejected draft' + (rewrites === 1 ? ' was' : 's were') + ' written again', s: 'Using your reasons · overnight' },
     { ic: 'q', t: '4 new questions found', s: 'In Sales call notes, Billing FAQ and your help pages · yesterday' },
     { ic: 'doc', t: 'Security overview indexed', s: '51 passages, searchable by meaning · yesterday' },
-    { ic: 'check', t: 'You approved ' + c.approved + ' answers', s: 'They’re in the store, ready for the chat · Tue 29 Sep' },
+    { ic: 'check', t: 'You approved ' + c.approved + ' answers', s: 'They’re in the store, ready for Ask lojo · Tue 29 Sep' },
   ];
   renderAgents(c);
   $('feed').innerHTML = feed.map(f => '<li><span class="dot">' + ICON[f.ic] + '</span><div><b>' + esc(f.t) + '</b><span>' + esc(f.s) + '</span></div></li>').join('');
@@ -626,7 +626,7 @@ function confirmRetire(id) {
   let dlg = $('retDlg');
   if (!dlg) { dlg = document.createElement('dialog'); dlg.id = 'retDlg'; dlg.className = 'dlg'; document.body.appendChild(dlg); }
   dlg.innerHTML = '<form method="dialog"><div class="dlg__b"><h3>Retire ' + esc(d.name) + '?</h3>' +
-    '<p>Retire a document when it’s out of date. Its passages stop being used for new drafts and the chat. It stays listed here, and you can restore it.</p>' +
+    '<p>Retire a document when it’s out of date. Its passages stop being used for new drafts and Ask lojo. It stays listed here, and you can restore it.</p>' +
     (qs ? '<div class="warn" style="background:rgba(217,154,43,.1);color:#7A5710">' + qs + ' question' + (qs === 1 ? '' : 's') + ' cite this document. Approved answers that rely on it are sent back to Build.</div>' : '') +
     '</div><div class="dlg__f"><button class="btn btn--secondary" value="cancel">Cancel</button><button class="btn btn--danger" type="button" id="retGo">Retire document</button></div></form>';
   dlg.showModal();
@@ -822,9 +822,6 @@ QUESTIONS_PAGE = dict(
           <button class="chip" data-f="no" aria-pressed="false">Left out</button>
           <button class="chip" data-f="you" aria-pressed="false">From you</button>
         </div>
-        <span class="spacer"></span>
-        <form class="add" id="addForm"><input class="text" id="addQ" placeholder="Add a question we missed" aria-label="Add a question"><button class="btn btn--primary">Add</button></form>
-        <div class="addmsg" id="addMsg" hidden role="status"></div>
       </div>
       <section class="card"><ul class="qlist" id="qlist"></ul></section>
     </section>
@@ -860,7 +857,7 @@ function renderQ() {
     const m = matters(q), [st, cls] = statusOf(q), [ol, oc] = ORIGIN[q.origin];
     const asks = ST.asks[q.id] || 0, failed = ST.draftFailed[q.id];
     return '<li class="qrow' + (m === false ? ' is-out' : '') + (m === null ? ' is-call' : '') + (flashId === q.id ? ' is-flash' : '') + '" id="row-' + q.id + '"><div><b>' + esc(q.q) + '</b><div class="qmeta"><span class="badge ' + oc + '">' + ol + '</span>' +
-      (asks >= 2 ? '<span class="badge badge--amber" title="Asked in the chat or added by your team">Asked ' + asks + ' times</span>' : '') +
+      (asks >= 2 ? '<span class="badge badge--amber" title="Asked in Ask lojo or added by your team">Asked ' + asks + ' times</span>' : '') +
       (q.docs || []).map(d => '<span class="src">' + esc(docShort(d)) + '</span>').join('') + '</div>' +
       (m === false && ST.notes[q.id] ? '<span class="note">' + esc(ST.notes[q.id]) + '</span>' : '') +
       (failed && failed !== 'retrying' && m !== false ? '<span class="failnote">' + esc(failed) + '</span>' : '') + '</div>' +
@@ -887,25 +884,6 @@ $('qlist').addEventListener('keydown', (e) => { if (e.target.id === 'leaveNote' 
 $('filters').addEventListener('click', (e) => {
   const b = e.target.closest('[data-f]'); if (!b) return;
   filter = b.dataset.f; document.querySelectorAll('#filters .chip').forEach(x => x.setAttribute('aria-pressed', x === b)); renderQ();
-});
-$('addQ').addEventListener('input', () => { $('addMsg').hidden = true; });
-$('addForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  let v = $('addQ').value.trim(); if (!v) return;
-  if (!v.endsWith('?')) v += '?';
-  // G6: already in the list — count the ask instead of adding a copy
-  const norm = (s) => s.toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim();
-  const dup = allQuestions().find(q => norm(q.q) === norm(v));
-  if (dup) {
-    ST.asks[dup.id] = Math.max(2, (ST.asks[dup.id] || 1) + 1); save();
-    $('addMsg').innerHTML = '<span>Already in the list: <b>' + esc(dup.q) + '</b> · now asked ' + ST.asks[dup.id] + ' times.</span><button class="btn btn--secondary" type="button" id="showDup">Show it</button>';
-    $('addMsg').hidden = false;
-    $('showDup').onclick = () => { filter = 'all'; document.querySelectorAll('#filters .chip').forEach(x => x.setAttribute('aria-pressed', x.dataset.f === 'all')); flashId = dup.id; renderQ(); $('row-' + dup.id).scrollIntoView({ block: 'center', behavior: 'smooth' }); $('addMsg').hidden = true; };
-    renderQ(); return;
-  }
-  $('addMsg').hidden = true;
-  ST.extra.push({ id: 'x' + Date.now(), q: v, origin: 'you', docs: [] });
-  save(); $('addQ').value = ''; renderQ(); toast('Added. It joins the same drafting queue.');
 });
 
 function renderG() {
@@ -1065,7 +1043,6 @@ document.querySelectorAll('.ptab').forEach(t => t.addEventListener('click', () =
 const QD = new URLSearchParams(location.search).get('demo');
 fillFilters(); renderIn(); renderQ(); renderG();
 show({ '#gaps': 'g', '#questions': 'q' }[location.hash] || (QD ? 'q' : 'in'));
-if (QD === 'dup') { $('addQ').value = 'What are the API rate limits'; $('addForm').requestSubmit(); }
 if (QD === 'leave') { leaving = 'q16'; renderQ(); $('row-q16').scrollIntoView({ block: 'center' }); $('leaveNote').focus(); }
 if (QD === 'failed') $('row-q17').scrollIntoView({ block: 'center' });
 """)
@@ -1256,14 +1233,14 @@ function renderBulk(open) {
 }
 function renderDetail() {
   const r = DRAFTS.find(x => x.id === sel);
-  if (!r) { $('detail').innerHTML = '<div class="empty"><b>Nothing to review. The loop is running.</b>Approved answers are in the store; try them in the chat.</div>'; return; }
+  if (!r) { $('detail').innerHTML = '<div class="empty"><b>Nothing to review. The loop is running.</b>Approved answers are in the store; try them in Ask lojot.</div>'; return; }
   const d = decision(r), ans = answerOf(r);
   let h = '<div class="meta" style="display:flex;gap:6px;flex-wrap:wrap">' + badges(r) + '</div><h2>' + esc(Q(r)) + '</h2>';
   const other = ST.others && ST.others[r.id];
   // G10: someone else decided this draft while it was open here
   if (other && d.status === 'pending') h += '<div class="other"><span class="av">' + esc(other.by.split(' ').map(x => x[0]).join('')) + '</span><div><b>' + esc(other.by) + ' ' + esc(other.action) + ' this ' + esc(other.when) + '.</b>' +
     'Your screen was out of date, so nothing you do here will change it. Their decision stands.<div class="btns"><button class="btn btn--primary btn--sm" data-a="ackOther">Got it, next draft</button><button class="btn btn--ghost btn--sm" data-a="seeOther">See their version</button></div></div></div>';
-  if (d.status === 'approved') h += '<div class="done-note ok">✓ Approved' + (d.by ? ' by ' + esc(d.by) : '') + (d.at ? ' · ' + esc(d.at) : '') + '. It’s in the store and the chat can use it.</div>';
+  if (d.status === 'approved') h += '<div class="done-note ok">✓ Approved' + (d.by ? ' by ' + esc(d.by) : '') + (d.at ? ' · ' + esc(d.at) : '') + '. It’s in the store and Ask lojo can use it.</div>';
   if (d.status === 'final') h += '<div class="done-note no">Rejected three times (' + esc(d.reason) + '). Nothing lojo wrote was right, so write the answer yourself, or leave it out.</div>';
   if (d.status === 'redrafting') {
     h += '<div class="answer" style="display:flex;gap:10px;align-items:center;color:var(--muted)"><span class="spin"></span>Writing it again with your reason: “' + esc(d.reason) + '”</div>';
@@ -1466,14 +1443,14 @@ APPROVED = dict(
       <div>
         <p class="label">04 Distribute</p>
         <h1>Distribute</h1>
-        <p>Approved answers go out from here. In this phase they power the chat and an export; publishing to your own pages comes with the full build.</p>
+        <p>Approved answers go out from here. In this phase they power Ask lojo and an export; publishing to your own pages comes with the full build.</p>
       </div>
       <span class="spacer"></span>
       <button class="btn btn--secondary" id="csv">Export CSV</button>
       <button class="btn btn--primary" id="json">Export JSON</button>
     </div>
     <section class="chan" aria-label="Where answers go">
-      <a class="ch is-live" href="chat.html"><span class="ch__ic"><svg class="i" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></span><span><b>Chat</b><span>Reads only approved answers</span></span><em>Live · open →</em></a>
+      <a class="ch is-live" href="chat.html"><span class="ch__ic"><svg class="i" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></span><span><b>Ask lojo page</b><span>Reads only approved answers</span></span><em>Live · open →</em></a>
       <div class="ch is-live"><span class="ch__ic"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg></span><span><b>Ask lojo button</b><span>On every page of this workspace</span></span><em>Live</em></div>
       <div class="ch is-off"><span class="ch__ic"><svg class="i" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></span><span><b>Help centre</b><span>Publish answers to your own pages</span></span><em>Full build</em></div>
       <div class="ch is-off"><span class="ch__ic"><svg class="i" viewBox="0 0 24 24"><path d="M5 9h14M5 15h14M10 4 8 20M16 4l-2 16"/></svg></span><span><b>Slack &amp; Teams</b><span>Answer where your team asks</span></span><em>Full build</em></div>
@@ -1607,7 +1584,7 @@ render();
 
 # ============================================================ CHAT
 CHAT = dict(
-  active='approved', title='Chat',
+  active='approved', title='Ask lojo',
   css=r"""
   .chat{display:flex;flex-direction:column;height:calc(100vh - 230px);min-height:460px;max-width:860px}
   .log{flex:1;overflow:auto;padding:22px;display:grid;gap:14px;align-content:start}
@@ -1627,23 +1604,25 @@ CHAT = dict(
     <div class="head">
       <div>
         <p class="label">04 Distribute</p>
-        <h1>Chat</h1>
+        <h1>Ask lojo</h1>
         <p id="chatSub">It answers only from approved answers, shows where each answer came from, and says so when it doesn’t know.</p>
       </div>
       <span class="spacer"></span>
       <span class="badge badge--muted">Not published anywhere in this phase</span>
+      <button class="btn btn--secondary btn--sm" id="newConv" type="button">New conversation</button>
     </div>
     <section class="card chat">
       <div class="log" id="log" aria-live="polite"></div>
       <div class="foot">
         <div class="chips" id="sugg"></div>
-        <form id="form"><input class="text" id="ask" placeholder="Ask a question…" aria-label="Ask a question"><button class="btn btn--primary">Ask</button></form>
+        <form id="form"><input class="text" id="ask" placeholder="Ask a question, or drop a document to ask about it…" aria-label="Ask a question"><button class="btn btn--primary">Ask</button></form>
       </div>
     </section>
 """,
   js=r"""
 const store = () => DRAFTS.filter(r => decision(r).status === 'approved').map(r => ({ r, q: QUESTIONS.find(q => q.id === r.qid).q, a: answerOf(r) }));
-function bubble(cls, html) {
+function bubble(cls, html, replay) {
+  if (!replay) askHistory.push(cls.startsWith('me') ? 'me' : /miss/.test(cls) ? 'miss' : 'bot', html);
   const d = document.createElement('div'); d.className = 'msg msg--' + cls; d.innerHTML = html;
   let row = d;
   // the Chat agent's replies carry its avatar
@@ -1656,11 +1635,12 @@ function ask(q) {
   setTimeout(() => {
     typing.parentNode.remove();
     if (SMALLTALK.test(q)) { bubble('bot', esc(smalltalkReply(q))); countChat('smalltalk'); return; }
+    const dq = aboutDoc(q, store); if (dq) { bubble('bot', dq); countChat('answered'); return; }
     let best = null, bs = 0;
     store().forEach(x => { const s = score(q, x.q + ' ' + x.a); if (s.c > 0 && s.s > bs) { best = x; bs = s.s; } });
     if (best && bs >= 2) {
       countChat('answered');
-      bubble('bot', md(best.a) + '<span class="from">From the approved answer: ' + esc(best.q) + '</span><div class="srcs">' + best.r.src.map(([d, loc]) => srcChip(d, loc)).join('') + '</div>');
+      bubble('bot', answerHTML(q, best.a, best.q, best.r.src.map(([d, loc]) => srcChip(d, loc)).join('')));
     } else {
       countChat('declined');
       const b = bubble('bot miss', 'I don’t know. Nothing approved covers this yet, so I won’t guess.<br><button class="btn btn--secondary btn--sm" type="button">Add it to your questions</button>');
@@ -1674,12 +1654,21 @@ function ask(q) {
 }
 const n = store().length;
 $('chatSub').textContent = 'It answers only from the ' + n + ' approved answer' + (n === 1 ? '' : 's') + ', shows where each answer came from, and says so when it doesn’t know.';
-bubble('bot', n ? 'Ask me about Nimbus Pay. I only use the ' + n + ' approved answers.' : 'Nothing is approved yet, so I can’t answer anything. <a href="build.html">Review the first batch</a> to fill the store.');
-const SUGG = ['Hi', 'How fast can we call the API?', 'Is our data encrypted?', 'Do you offer a free trial?', 'Thanks'];
+function greet() {
+  $('log').innerHTML = '';
+  bubble('bot', n ? 'Ask me about Nimbus Pay. I only use the ' + n + ' approved answers.' : 'Nothing is approved yet, so I can’t answer anything. <a href="build.html">Review the first batch</a> to fill the store.', true);
+}
+greet();
+// the same conversation as the Ask lojo panel
+askHistory.all().forEach(m => bubble(m.kind === 'me' ? 'me' : m.kind === 'miss' ? 'bot miss' : 'bot', m.html, true));
+$('newConv').addEventListener('click', () => { askHistory.clear(); greet(); $('ask').focus(); });
+const SUGG = ['What is the phone number for support?', 'How fast can we call the API?', 'What is the support email?', 'Is our data encrypted?', 'Hi'];
 $('sugg').innerHTML = SUGG.map(s => '<button type="button" class="chip">' + esc(s) + '</button>').join('');
 $('sugg').addEventListener('click', (e) => { const c = e.target.closest('.chip'); if (c) ask(c.textContent); });
 $('form').addEventListener('submit', (e) => { e.preventDefault(); const v = $('ask').value.trim(); if (!v) return; $('ask').value = ''; ask(v); });
 const SAY = new URLSearchParams(location.search).get('say'); if (SAY) SAY.split('|').forEach((q, i) => setTimeout(() => ask(q), i * 900));
+// drop a document anywhere on the chat, or attach it with the paperclip
+const aboutDoc = chatDocs(document.querySelector('.chat'), $('form'), bubble, (list) => { if (list) $('sugg').innerHTML = list.map(x => '<button class="chip" type="button">' + esc(x) + '</button>').join(''); else $('sugg').innerHTML = SUGG.map(x => '<button type="button" class="chip">' + esc(x) + '</button>').join(''); });
 """)
 
 # ============================================================ READOUT
@@ -1741,7 +1730,7 @@ READOUT = dict(
         </ul>
       </div></section>
 
-      <section class="card"><div class="card__head"><h2>How the chat did</h2><span class="sub">Questions people asked in the chat this phase</span></div><div class="card__body">
+      <section class="card"><div class="card__head"><h2>How Ask lojo did</h2><span class="sub">Questions people asked Ask lojo this phase</span></div><div class="card__body">
         <div class="tiles">
           <div class="tile"><b id="chA">0</b><span>questions asked</span></div>
           <div class="tile is-key"><b id="chOk">0</b><span>answered from approved answers</span></div>
@@ -1795,7 +1784,7 @@ function render() {
   const d = ST.decision;
   $('decision').innerHTML = d ? '<div class="decided ' + (d === 'go' ? 'go' : 'stop') + '">' + (d === 'go' ? '✓ You chose to go on to the full build. We’ll send a plan for the twelve weeks.' : 'You chose not to go on for now. You keep the approved answers as an export.') +
     ' <button class="btn btn--ghost btn--sm" id="undoD">Change</button></div>'
-    : '<p class="sub" style="margin-bottom:14px">After trying the chat, decide whether to go on. Either way, you keep the approved answers.</p><div class="decide"><button class="btn btn--grad" id="go">Go on to the full build</button><button class="btn btn--secondary" id="stop">Not now</button></div>';
+    : '<p class="sub" style="margin-bottom:14px">After trying Ask lojo, decide whether to go on. Either way, you keep the approved answers.</p><div class="decide"><button class="btn btn--grad" id="go">Go on to the full build</button><button class="btn btn--secondary" id="stop">Not now</button></div>';
   if ($('go')) { $('go').onclick = () => { ST.decision = 'go'; save(); render(); }; $('stop').onclick = () => { ST.decision = 'stop'; save(); render(); }; }
   if ($('undoD')) $('undoD').onclick = () => { ST.decision = null; save(); render(); };
 }
@@ -1853,7 +1842,6 @@ const GROUPS = [
   ]],
   ['Insights', [
     ['G5', 'Draft failed', '“Draft failed” with the reason and “Try again”.', [L('insights.html?demo=failed', 'Open')]],
-    ['G6', 'Already in the list', 'Adding a duplicate counts the ask and offers “Show it”.', [L('insights.html?demo=dup', 'Show message')]],
     ['G7', '“Asked 3 times” badge', 'On questions asked more than once.', [L('insights.html#questions', 'Open questions')]],
     ['G8', 'Leave out, with a note', 'Optional note; “Left out” filter and the note on the row.', [L('insights.html?demo=leave', 'Leave one out')]],
   ]],
@@ -1862,15 +1850,15 @@ const GROUPS = [
     ['G10', 'Someone else decided it', 'Banner with who and when; your actions are hidden.', [L('build.html?sel=r12', 'Open')]],
     ['G14', 'Rewritten twice', '“Rewritten twice” badge and the earlier drafts with their reasons.', [L('build.html?sel=r8', 'Open')]],
   ]],
-  ['Chat', [
+  ['Ask lojo', [
     ['G29', 'Small talk', '“Hi” and “Thanks” get a short reply with no sources.', [L('chat.html?say=Hi|Thanks', 'Open')]],
     ['G30', 'Formatted answers', 'Headings, lists and bold, sized to the bubble.', [L('chat.html?say=How fast can we call the API?', 'Open')]],
   ]],
   ['Distribute', [
-    ['—', 'Distribute page', 'Approved answers plus where they go: chat and Ask lojo live, help centre and Slack in the full build.', [L('distribute.html', 'Open')]],
+    ['—', 'Distribute page', 'Approved answers plus where they go: the Ask lojo page and button live, help centre and Slack in the full build.', [L('distribute.html', 'Open')]],
   ]],
   ['Knowledge', [
-    ['G11', 'Chat numbers', 'Asked, answered, declined and the answer rate.', [L('knowledge.html', 'Open knowledge')]],
+    ['G11', 'Ask lojo numbers', 'Asked, answered, declined and the answer rate.', [L('knowledge.html', 'Open knowledge')]],
   ]],
   ['Everywhere', [
     ['G12', 'Error pages', 'Page not found, no access, something went wrong.', [L('auth.html?s=404', '404'), L('auth.html?s=403', '403'), L('auth.html?s=500', '500')]],

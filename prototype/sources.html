@@ -325,6 +325,45 @@
   .am--miss{background:rgba(217,154,43,.1);border:1px solid rgba(217,154,43,.3)}
   .am .from{display:block;margin-top:6px;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
   .askp__foot{padding:10px 12px;border-top:1px solid var(--line);display:grid;gap:8px}
+  /* answers: the asked-for fact first, then the rest */
+  .fact{display:grid;gap:8px;margin:2px 0 6px}
+  .fact__row{display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;border-radius:12px;background:var(--panel);border:1px solid var(--line)}
+  .fact__ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(232,93,117,.1);color:#C7385B;flex:none}
+  .fact__ic svg,.srcbox__ic svg,.fact__cp svg,.aacts svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .fact__v{flex:1;min-width:0}
+  .fact__v small{display:block;font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .fact__v b{display:block;font-family:var(--display);font-size:1.12rem;font-weight:700;letter-spacing:-.01em;overflow-wrap:anywhere}
+  .fact__go{height:30px;padding:0 12px;border-radius:999px;background:var(--ink);color:#fff!important;font-size:.76rem;font-weight:700;display:inline-flex;align-items:center;text-decoration:none}
+  .fact__go:hover{text-decoration:none;box-shadow:0 8px 16px -10px rgba(36,26,20,.8)}
+  .fact__cp{width:30px;height:30px;border-radius:9px;border:1px solid var(--line-2);background:var(--panel);color:var(--muted);display:grid;place-items:center;cursor:pointer}
+  .fact__cp:hover{color:var(--ink)}
+  .more{margin-top:4px;font-size:.92em}
+  .more summary{cursor:pointer;color:var(--muted);font-size:.78rem;font-weight:700;list-style-position:inside}
+  .more .md{margin-top:6px}
+  .md a,.am a,.msg a{color:#B73C54;font-weight:600}
+  .srcbox{display:flex;align-items:center;gap:10px;margin-top:10px;padding:8px 10px;border-radius:10px;background:rgba(63,143,95,.07);border:1px solid rgba(63,143,95,.18)}
+  .srcbox__ic{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:rgba(63,143,95,.14);color:var(--success);flex:none}
+  .srcbox small{display:block;font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--success)}
+  .srcbox b{display:block;font-size:.8rem;font-weight:600}
+  .aacts{display:flex;gap:4px;margin-top:8px}
+  .aacts button{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 8px;border-radius:8px;border:0;background:none;color:var(--muted);font:inherit;font-size:.72rem;font-weight:600;cursor:pointer}
+  .aacts button:hover{background:var(--panel);color:var(--ink)}
+  .aacts button.is-on{color:#C7385B;background:rgba(232,93,117,.1)}
+  .aacts .down svg{transform:rotate(180deg)}
+  .clip{flex:none;width:40px;height:40px;border-radius:11px;border:1px solid var(--line-2);background:var(--panel);display:grid;place-items:center;cursor:pointer;color:var(--muted)}
+  .clip:hover{color:var(--ink);border-color:rgba(36,26,20,.3);background:var(--bg-soft)}
+  .clip svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .cdoc{display:flex;align-items:center;gap:8px;padding:8px 8px 8px 12px;border-radius:12px;border:1px solid rgba(232,93,117,.3);background:rgba(232,93,117,.05)}
+  .cdoc[hidden]{display:none}
+  .cdoc__f{display:flex;align-items:center;gap:8px;flex:1;min-width:0;font-size:.82rem}
+  .cdoc__f svg{width:15px;height:15px;fill:none;stroke:#C7385B;stroke-width:1.9;flex:none}
+  .cdoc__f b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cdoc__f em{font-style:normal;color:var(--muted);white-space:nowrap}
+  .cdoc button{border:0;background:none;width:26px;height:26px;border-radius:8px;color:var(--muted);cursor:pointer;font-size:1rem}
+  .cdoc button:hover{background:var(--panel);color:var(--ink)}
+  .is-drop{position:relative}
+  .is-drop::after{content:"Drop a document to ask about it";position:absolute;inset:8px;z-index:5;border:2px dashed var(--rose);border-radius:16px;background:rgba(255,246,242,.92);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:1.05rem;color:#B73C54;pointer-events:none}
+  :root[data-theme="dark"] .is-drop::after{background:rgba(30,22,18,.92)}
   .askp__foot form{display:flex;gap:8px}
   .askp__foot .chips .chip{font-size:.74rem;padding:4px 10px}
 
@@ -644,7 +683,7 @@
 <section class="askp" id="askp" hidden aria-label="Ask lojo">
   <div class="askp__head"><span class="agico" data-agent="Chat agent"></span><div><b>Ask lojo</b><span>Chat agent · answers only from approved answers</span></div><button class="btn btn--secondary btn--sm askp__new" id="askNew" type="button">New conversation</button><button class="askp__ic" id="askFull" type="button" aria-label="Open full screen" title="Full screen"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><button class="askp__x" id="askX" type="button" aria-label="Close" title="Close">×</button></div>
   <div class="askp__log" id="askLog" aria-live="polite"></div>
-  <div class="askp__foot"><div class="chips" id="askSugg"></div><form id="askForm"><input class="text" id="askIn" placeholder="Ask a question…" aria-label="Ask lojo"><button class="btn btn--primary btn--sm" style="height:40px">Ask</button></form></div>
+  <div class="askp__foot"><div class="chips" id="askSugg"></div><form id="askForm"><input class="text" id="askIn" placeholder="Ask a question, or drop a document…" aria-label="Ask lojo"><button class="btn btn--primary btn--sm" style="height:40px">Ask</button></form></div>
 </section>
 <div class="toast" id="toast" role="status"></div>
 
@@ -691,6 +730,7 @@ const QUESTIONS = [
   { id: 'q21', q: 'Do we support Apple Pay in Germany?', origin: 'you', docs: [] },
   { id: 'q22', q: 'What is the chargeback fee on Scale?', origin: 'you', docs: [], gap: 'g2' },
   { id: 'q23', q: 'How long do we keep call recordings?', origin: 'you', docs: [], gap: 'g3' },
+  { id: 'q24', q: 'How do customers contact support?', origin: 'faq', docs: ['d2'] },
 ];
 
 // things the documents refer to but never explain
@@ -753,6 +793,9 @@ const DRAFTS = [
   { id: 'r16', qid: 'q16', src: [['d4', '§3', 'Annual plans cancelled after 30 days are refunded for whole unused months.'], ['d9', '§2', 'Annual plans renew automatically unless cancelled 14 days before renewal.']],
     draft: 'Within 30 days: a full refund. After that, the customer gets back whole unused months. Annual plans renew unless cancelled 14 days before renewal.',
     redraft: 'Cancel within 30 days for a full refund. Later cancellations are refunded for whole unused months. Remember annual plans renew unless cancelled 14 days before.' },
+  { id: 'r17', qid: 'q24', src: [['d2', 'Contact us', 'Call +33 1 84 88 42 10, Monday to Friday 9:00–18:00 CET, or email support@nimbuspay.com.']],
+    draft: 'Customers can call support on +33 1 84 88 42 10 (Monday to Friday, 9:00–18:00 CET) or email support@nimbuspay.com. Answers to common questions are at help.nimbuspay.com.',
+    redraft: 'Call +33 1 84 88 42 10, weekdays 9:00–18:00 CET, or email support@nimbuspay.com. The help centre is at help.nimbuspay.com.' },
 ];
 const draftByQ = (qid) => DRAFTS.find(d => d.qid === qid);
 
@@ -769,6 +812,7 @@ const CONCEPTS = {
   export: ['export', 'download', 'get our data', 'take our data'],
   onboarding: ['onboarding', 'kickoff', 'training', 'onboard'],
   annual: ['annual', 'yearly', 'renew'],
+  contact: ['contact', 'support', 'phone', 'call us', 'call support', 'email', 'e-mail', 'reach', 'help centre', 'help center'],
 };
 const conceptsOf = (s) => { const t = ' ' + s.toLowerCase() + ' '; return Object.keys(CONCEPTS).filter(k => CONCEPTS[k].some(w => t.includes(w))); };
 const words = (s) => s.toLowerCase().match(/[a-z0-9]{4,}/g) || [];
@@ -787,7 +831,7 @@ const SEED = () => ({
     r2: { status: 'approved', at: 'Mon 28 Sep' }, r3: { status: 'approved', at: 'Mon 28 Sep' }, r5: { status: 'approved', at: 'Mon 28 Sep' },
     r7: { status: 'approved', at: 'Tue 29 Sep', edited: true, answer: 'Customers can pay by Visa, Mastercard, American Express or SEPA Direct Debit.' },
     r9: { status: 'approved', at: 'Tue 29 Sep', edited: true, answer: '### API rate limits\n- **Growth:** 100 requests per second per workspace\n- **Scale:** 500 requests per second per workspace\n\nOver the limit, the API answers **429 Too Many Requests**.' },
-    r13: { status: 'approved', at: 'Tue 29 Sep' },
+    r13: { status: 'approved', at: 'Tue 29 Sep' }, r17: { status: 'approved', at: 'Tue 29 Sep' },
     r8: { status: 'pending', redrafted: 2, reason: 'Missing detail: say which plans can pay by invoice',
       history: [
         { text: 'No. Starter is billed monthly by card. Invoicing is available on Scale and on annual Growth plans.', reason: 'Wrong answer: it reads as a flat no' },
@@ -873,6 +917,90 @@ function ava3d(k, name, min) {
   return '<span class="ava3d' + st + '" aria-hidden="true"><svg viewBox="0 0 44 44"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + deep + '"/><stop offset="1" stop-color="' + light + '"/></linearGradient></defs>' +
     '<rect width="44" height="44" rx="11" fill="url(#' + id + ')"/>' + CLOUD + '</svg>' +
     '<i class="ava3d__job" style="color:' + deep + '"><svg viewBox="0 0 24 24">' + (AVA_JOB[name] || '') + '</svg></i></span>';
+}
+// chats take documents: drop one or use the paperclip, then ask about it against the approved answers
+const CLIP = '<svg viewBox="0 0 24 24"><path d="m21 12-8.6 8.6a6 6 0 0 1-8.5-8.5l8.6-8.6a4 4 0 0 1 5.7 5.7l-8.6 8.6a2 2 0 0 1-2.8-2.8l7.9-7.9"/></svg>';
+// answers lead with exactly what was asked (a phone number, an email, a price…), then the rest folds away
+const FACTS = [
+  { ask: /\b(phone|telephone|call (?:you|support|us)|number for)\b/i, find: /\+?\d[\d\s().-]{6,}\d/g, kind: 'phone', label: 'Phone' },
+  { ask: /\be-?mail\b/i, find: /[\w.+-]+@[\w-]+\.[\w.-]+\w/g, kind: 'email', label: 'Email' },
+  { ask: /\b(website|link|url|faq|page)\b/i, find: /\b(?:https?:\/\/|www\.)[^\s,)]+[^\s.,)]/g, kind: 'url', label: 'Link' },
+  { ask: /\b(how much|price|cost|fee)\b/i, find: /(?:[€$£]\s?\d[\d,.]*|\d[\d,.]*\s?(?:€|EUR|USD|AED|per month|a month))/g, kind: 'text', label: 'Price' },
+  { ask: /\b(how long|how many days|how soon|when)\b/i, find: /\d+\s*(?:to\s*\d+\s*)?(?:working\s+)?(?:days?|weeks?|months?|hours?|minutes?)/gi, kind: 'text', label: 'Time' },
+  { ask: /\b(how fast|rate limits?|how many)\b/i, find: /\d[\d,]*\s+(?:requests|seats|transactions)[^.,;\n*]*[^.,;\n*\s-]/gi, kind: 'text', label: 'Limit' },
+];
+const ICO = {
+  phone: '<svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>',
+  email: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
+  url: '<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>',
+  text: '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  check: '<svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>',
+  copy: '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>',
+  up: '<svg viewBox="0 0 24 24"><path d="M7 10v11H4V10zM7 10l4-7a2 2 0 0 1 2 2v4h5.5a2 2 0 0 1 2 2.3l-1.2 7A2 2 0 0 1 17.3 20H7"/></svg>',
+};
+const linkify = (html) => html
+  .replace(/([\w.+-]+@[\w-]+\.[\w.-]+\w)/g, '<a href="mailto:$1">$1</a>')
+  .replace(/(^|[\s(])(\+\d[\d\s().-]{6,}\d)/g, (m, a, n) => a + '<a href="tel:' + n.replace(/[^\d+]/g, '') + '">' + n + '</a>')
+  .replace(/(^|[\s(])((?:https?:\/\/|www\.)[^\s<,)]+[^\s<.,)])/g, (m, a, u) => a + '<a href="' + (u.startsWith('http') ? u : 'https://' + u) + '" target="_blank" rel="noopener">' + u + '</a>');
+function answerHTML(q, a, fromQ, srcs) {
+  let f = null, hits = [];
+  for (const x of FACTS) { if (!x.ask.test(q)) continue; const m = [...new Set((a.match(x.find) || []).map(s => s.trim()))]; if (m.length) { f = x; hits = m.slice(0, 3); break; } }
+  const href = (k, v) => k === 'phone' ? 'tel:' + v.replace(/[^\d+]/g, '') : k === 'email' ? 'mailto:' + v : k === 'url' ? (v.startsWith('http') ? v : 'https://' + v) : '';
+  let h = '';
+  if (hits.length) {
+    h += '<div class="fact">' + hits.map(v => '<div class="fact__row"><span class="fact__ic">' + ICO[f.kind] + '</span><span class="fact__v"><small>' + f.label + '</small><b>' + esc(v) + '</b></span>' +
+      (href(f.kind, v) ? '<a class="fact__go" href="' + href(f.kind, v) + '"' + (f.kind === 'url' ? ' target="_blank" rel="noopener"' : '') + '>' + { phone: 'Call', email: 'Write', url: 'Open' }[f.kind] + '</a>' : '') +
+      '<button class="fact__cp" type="button" data-copy="' + esc(v) + '" aria-label="Copy">' + ICO.copy + '</button></div>').join('') + '</div>' +
+      '<details class="more"><summary>More from the approved answer</summary><div class="md">' + linkify(md(a)) + '</div></details>';
+  } else h += '<div class="md">' + linkify(md(a)) + '</div>';
+  h += '<div class="srcbox"><span class="srcbox__ic">' + ICO.check + '</span><span><small>From an approved answer</small><b>' + esc(fromQ) + '</b></span></div>' + (srcs ? '<div class="srcs">' + srcs + '</div>' : '');
+  h += '<div class="aacts"><button type="button" data-copy="' + esc(a) + '">' + ICO.copy + 'Copy</button><button type="button" data-rate="up" aria-label="Helpful">' + ICO.up + '</button><button type="button" data-rate="down" aria-label="Not helpful" class="down">' + ICO.up + '</button></div>';
+  return h;
+}
+// copy and rate work in every chat
+document.addEventListener('click', (e) => {
+  const c = e.target.closest('[data-copy]');
+  if (c) { try { navigator.clipboard.writeText(c.dataset.copy); } catch (err) {} toast('Copied'); return; }
+  const r = e.target.closest('[data-rate]');
+  if (r) { r.parentNode.querySelectorAll('[data-rate]').forEach(x => x.classList.toggle('is-on', x === r)); toast(r.dataset.rate === 'up' ? 'Thanks. Glad it helped.' : 'Thanks. It’s flagged for review in Build.'); }
+});
+const askHistory = {
+  all: () => ST.askLog || [],
+  push: (kind, html) => { if (/class="spin"/.test(html)) return; ST.askLog = (ST.askLog || []).concat([{ kind, html }]).slice(-60); save(); },
+  clear: () => { ST.askLog = []; save(); },
+};
+function chatDocs(zone, form, say, setSugg) {
+  let doc = null;
+  const clip = document.createElement('label'); clip.className = 'clip'; clip.title = 'Attach a document to ask about'; clip.setAttribute('aria-label', 'Attach a document');
+  clip.innerHTML = '<input type="file" hidden accept=".pdf,.docx,.doc,.md,.txt">' + CLIP; form.prepend(clip);
+  const bar = document.createElement('div'); bar.className = 'cdoc'; bar.hidden = true; form.parentNode.insertBefore(bar, form);
+  function take(f) {
+    const ext = (f.name.split('.').pop() || '').toLowerCase();
+    if (!['pdf', 'docx', 'doc', 'md', 'txt'].includes(ext)) { toast('Use a PDF, DOCX, Markdown or TXT file'); return; }
+    doc = { name: f.name, pages: Math.max(1, Math.round((f.size || 120000) / 40000)) };
+    bar.innerHTML = '<span class="cdoc__f">' + CLIP + '<b>' + esc(doc.name) + '</b><em>' + doc.pages + ' page' + (doc.pages === 1 ? '' : 's') + ' · only for this chat</em></span><button type="button" aria-label="Remove">×</button>';
+    bar.hidden = false; bar.querySelector('button').onclick = () => { doc = null; bar.hidden = true; setSugg(null); };
+    say('bot', 'I’ve read <b>' + esc(doc.name) + '</b>. Ask me about it: I answer from the approved answers and point out anything it says that isn’t approved yet. It isn’t added to your sources.');
+    setSugg(['Which of its questions do we already answer?', 'What does it say that isn’t approved?']);
+  }
+  clip.querySelector('input').addEventListener('change', (e) => { [...e.target.files].slice(0, 1).forEach(take); e.target.value = ''; });
+  let depth = 0;
+  zone.addEventListener('dragenter', (e) => { if (![...(e.dataTransfer.types || [])].includes('Files')) return; e.preventDefault(); depth++; zone.classList.add('is-drop'); });
+  zone.addEventListener('dragover', (e) => { if ([...(e.dataTransfer.types || [])].includes('Files')) e.preventDefault(); });
+  zone.addEventListener('dragleave', () => { if (--depth <= 0) { depth = 0; zone.classList.remove('is-drop'); } });
+  zone.addEventListener('drop', (e) => { e.preventDefault(); depth = 0; zone.classList.remove('is-drop'); const f = e.dataTransfer.files[0]; if (f) take(f); });
+  // questions about the attached document get their own answer; anything else falls through
+  return (q, store) => {
+    if (!doc) return null;
+    const s = store();
+    if (/already answer|which of its/i.test(q)) {
+      const hit = s.slice(0, 3);
+      return hit.length ? 'In <b>' + esc(doc.name) + '</b> I found ' + (hit.length + 1) + ' questions. ' + hit.length + ' are already answered:<ul>' + hit.map(x => '<li>' + esc(x.q) + '</li>').join('') + '</ul>One isn’t covered yet: <b>How long do refunds take to arrive?</b> I’ve added it to Insights so it can be answered.'
+        : 'Nothing is approved yet, so I can’t check it against anything.';
+    }
+    if (/isn.t approved|not approved|differ/i.test(q)) return '<b>' + esc(doc.name) + '</b> says refunds arrive within 5 working days. Nothing approved says how long they take, so I can’t confirm it. I’ve added the question to Insights.';
+    return null;
+  };
 }
 function agentIcon(name) {
   const [deep, light] = AVA_COL[name] || ['#E0486A', '#FFB199'], id = 'ai' + name.replace(/\W/g, '') + Math.random().toString(36).slice(2, 6);
@@ -1015,7 +1143,8 @@ function srcChip(docId, loc, warn) {
   const fab = $('fab'); if (!fab) return;
   const panel = $('askp'), log = $('askLog');
   const store = () => DRAFTS.filter(r => decision(r).status === 'approved').map(r => ({ r, q: QUESTIONS.find(q => q.id === r.qid).q, a: answerOf(r) }));
-  const say = (cls, html) => {
+  const say = (cls, html, replay) => {
+    if (!replay) askHistory.push(cls.startsWith('me') ? 'me' : /miss/.test(cls) ? 'miss' : 'bot', html);
     const d = document.createElement('div'); d.className = 'am am--' + cls; d.innerHTML = html;
     let row = d;
     if (cls.startsWith('bot')) { row = document.createElement('div'); row.className = 'arow2'; row.innerHTML = '<span class="agico">' + agentIcon('Chat agent') + '</span>'; row.appendChild(d); }
@@ -1033,9 +1162,10 @@ function srcChip(docId, loc, warn) {
     setTimeout(() => {
       typing.parentNode.remove();
       if (SMALLTALK.test(q)) { say('bot', esc(smalltalkReply(q))); countChat('smalltalk'); return; }
+      const d = window.__askDoc && window.__askDoc(q, store); if (d) { say('bot', d); countChat('answered'); return; }
       let best = null, bs = 0;
       store().forEach(x => { const s = score(q, x.q + ' ' + x.a); if (s.c > 0 && s.s > bs) { best = x; bs = s.s; } });
-      if (best && bs >= 2) { say('bot', md(best.a) + '<span class="from">From: ' + esc(best.q) + '</span>'); countChat('answered'); }
+      if (best && bs >= 2) { say('bot', answerHTML(q, best.a, best.q)); countChat('answered'); }
       else { say('bot am--miss', 'I don’t know. Nothing approved covers this yet, so I won’t guess.'); countChat('declined'); }
     }, 500);
   }
@@ -1044,7 +1174,8 @@ function srcChip(docId, loc, warn) {
     if (!open) full(false);
     if (open && !log.children.length) {
       intro();
-      $('askSugg').innerHTML = ['How fast can we call the API?', 'Is our data encrypted?', 'Do you offer a free trial?'].map(t => '<button type="button" class="chip">' + t + '</button>').join('');
+      askHistory.all().forEach(m => say(m.kind === 'me' ? 'me' : m.kind === 'miss' ? 'bot am--miss' : 'bot', m.html, true));
+      $('askSugg').innerHTML = SUGG.map(t => '<button type="button" class="chip">' + t + '</button>').join('');
     }
     if (open) $('askIn').focus();
   }
@@ -1058,10 +1189,13 @@ function srcChip(docId, loc, warn) {
   }
   $('askFull').addEventListener('click', () => { full(!panel.classList.contains('is-full')); $('askIn').focus(); });
   $('askBg').addEventListener('click', () => toggle(false));
-  $('askNew').addEventListener('click', () => { intro(); $('askIn').focus(); });
+  $('askNew').addEventListener('click', () => { askHistory.clear(); intro(); $('askIn').focus(); });
   // say what the button is once per visit
   try { if (!sessionStorage.getItem('lojo-ask-hint')) { sessionStorage.setItem('lojo-ask-hint', '1'); setTimeout(() => { fab.classList.add('is-hint'); setTimeout(() => fab.classList.remove('is-hint'), 3200); }, 900); } } catch (e) {}
   $('askSugg').addEventListener('click', (e) => { const c = e.target.closest('.chip'); if (c) ask(c.textContent); });
+  const SUGG = ['What is the phone number for support?', 'How fast can we call the API?', 'What is the support email?'];
+  const aboutDoc = chatDocs(panel, $('askForm'), say, (list) => { $('askSugg').innerHTML = (list || SUGG).map(t => '<button type="button" class="chip">' + esc(t) + '</button>').join(''); });
+  window.__askDoc = aboutDoc;
   $('askForm').addEventListener('submit', (e) => { e.preventDefault(); const v = $('askIn').value.trim(); if (!v) return; $('askIn').value = ''; ask(v); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !panel.hidden) toggle(false); });
 })();
@@ -1200,7 +1334,7 @@ function confirmRetire(id) {
   let dlg = $('retDlg');
   if (!dlg) { dlg = document.createElement('dialog'); dlg.id = 'retDlg'; dlg.className = 'dlg'; document.body.appendChild(dlg); }
   dlg.innerHTML = '<form method="dialog"><div class="dlg__b"><h3>Retire ' + esc(d.name) + '?</h3>' +
-    '<p>Retire a document when it’s out of date. Its passages stop being used for new drafts and the chat. It stays listed here, and you can restore it.</p>' +
+    '<p>Retire a document when it’s out of date. Its passages stop being used for new drafts and Ask lojo. It stays listed here, and you can restore it.</p>' +
     (qs ? '<div class="warn" style="background:rgba(217,154,43,.1);color:#7A5710">' + qs + ' question' + (qs === 1 ? '' : 's') + ' cite this document. Approved answers that rely on it are sent back to Build.</div>' : '') +
     '</div><div class="dlg__f"><button class="btn btn--secondary" value="cancel">Cancel</button><button class="btn btn--danger" type="button" id="retGo">Retire document</button></div></form>';
   dlg.showModal();
