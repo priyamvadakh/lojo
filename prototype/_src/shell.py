@@ -247,7 +247,7 @@ CSS = r"""
   /* ---------- Ask lojo FAB ---------- */
   .fab{position:fixed;right:24px;bottom:24px;z-index:50;width:58px;height:58px;border-radius:50%;border:0;padding:0;cursor:pointer;background:var(--brand-gradient);box-shadow:0 18px 36px -14px rgba(232,93,117,.8);display:grid;place-items:center;transition:transform .2s ease,box-shadow .2s ease}
   .fab:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 22px 40px -14px rgba(232,93,117,.9)}
-  .fab img{width:40px;height:40px;border-radius:22%}
+  .fab img{width:30px;height:30px;filter:drop-shadow(0 2px 3px rgba(150,40,60,.25))}
   .fab::after{content:"Ask lojo";position:absolute;right:calc(100% + 12px);top:50%;transform:translate(6px,-50%);white-space:nowrap;padding:8px 12px;border-radius:10px;background:var(--ink);color:#fff;font-size:.82rem;font-weight:600;opacity:0;pointer-events:none;transition:opacity .15s ease,transform .15s ease}
   .fab:hover::after,.fab:focus-visible::after{opacity:1;transform:translate(0,-50%)}
   .fab.is-open::after{display:none}
@@ -902,7 +902,7 @@ function srcChip(docId, loc, warn) {
 })();
 """
 
-FAB_HTML = '''<button class="fab" id="fab" type="button" aria-label="Ask lojo" aria-expanded="false"><img src="assets/lojo-icon.png" alt=""></button>
+FAB_HTML = '''<button class="fab" id="fab" type="button" aria-label="Ask lojo" aria-expanded="false"><img src="assets/lojo-cloud.png" alt=""></button>
 <div class="askp-bg" id="askBg" hidden></div>
 <section class="askp" id="askp" hidden aria-label="Ask lojo">
   <div class="askp__head"><span class="agico" data-agent="Chat agent"></span><div><b>Ask lojo</b><span>Chat agent · answers only from approved answers</span></div><button class="btn btn--secondary btn--sm askp__new" id="askNew" type="button">New conversation</button><button class="askp__ic" id="askFull" type="button" aria-label="Open full screen" title="Full screen"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><button class="askp__x" id="askX" type="button" aria-label="Close" title="Close">×</button></div>
