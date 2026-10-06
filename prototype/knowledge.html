@@ -19,7 +19,7 @@
     document.documentElement.setAttribute('data-theme-pref', pref);
   })();
 </script>
-<!-- ASSUMPTION: processing costs are illustrative placeholders until real usage is metered. check with Eric -->
+
 <style>
   :root{
     --rose:#E85D75; --peach:#FFB199; --brand-gradient:linear-gradient(135deg,#E85D75,#FFB199);
@@ -641,30 +641,70 @@
   .side .theme-toggle{flex-direction:column;width:30px;height:58px;padding:7px 0}
   :root[data-theme="dark"] .side .theme-toggle::before{transform:translateY(28px)}
 
-  .doc{max-width:880px;display:grid;gap:20px}
-  .draft{display:flex;gap:10px;align-items:center;padding:12px 16px;border-radius:12px;background:var(--amber-soft);color:#7A5710;font-size:.84rem}
-  .tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-  .tile{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-  .tile b{display:block;font-family:var(--display);font-weight:800;font-size:1.5rem;line-height:1.1}
-  .tile.is-key b{color:var(--rose)}
-  .tile span{color:var(--muted);font-size:.78rem}
-  .find{margin:16px 0 0;padding-left:18px;display:grid;gap:8px;font-size:.88rem}
-  table{width:100%;border-collapse:collapse;font-size:.86rem}
-  td{padding:10px 0;border-bottom:1px solid var(--line)}
-  td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
-  tr.total td{border-bottom:0;font-weight:700}
-  tr.total td:last-child{color:var(--rose);font-family:var(--display);font-size:1.1rem}
-  .build{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start}
-  .build .wk{font-family:var(--display);font-weight:800;font-size:2.4rem;line-height:1;color:var(--rose)}
-  .build .wk small{display:block;font-family:var(--body);font-size:.74rem;font-weight:600;color:var(--muted);margin-top:4px}
-  .adds{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-  .adds li{display:flex;gap:8px;align-items:flex-start;font-size:.86rem;padding:10px 12px;border-radius:10px;background:var(--bg-soft)}
-  .adds li::before{content:"+";font-weight:700;color:var(--rose)}
-  .decide{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .decided{display:flex;gap:10px;align-items:center;padding:12px 16px;border-radius:12px;font-size:.88rem}
-  .decided.go{background:rgba(63,143,95,.08);color:var(--success)}
-  .decided.stop{background:var(--bg-soft);color:var(--muted)}
-  @media print{.side,.top,.no-print{display:none!important}.main{margin:0}}
+  .kstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:14px}
+  .kstat{padding:18px 20px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+  .kstat i{display:block;width:28px;height:4px;border-radius:4px;margin-bottom:10px;background:var(--line-2)}
+  .kstat.ok i{background:var(--success)} .kstat.warn i{background:#C9A24A} .kstat.ref i{background:#8C817B} .kstat.all i{background:var(--rose)}
+  .kstat small{display:block;font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .kstat b{display:block;font-family:var(--display);font-weight:800;font-size:2rem;line-height:1.1;margin:4px 0 2px}
+  .kstat span{font-size:.8rem;color:var(--muted);line-height:1.4}
+  .kgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:26px}
+  .kbox{padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+  .kbox h3{display:flex;align-items:center;gap:8px;margin:0 0 4px;font-size:.74rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+  .kbox h3 svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .kbox p{margin:0 0 10px;font-size:.8rem;color:var(--muted)}
+  .kbox .pills{display:flex;flex-wrap:wrap;gap:6px}
+  .kpill{display:inline-flex;align-items:center;gap:8px;height:28px;padding:0 11px;border-radius:999px;border:1px solid var(--line-2);background:var(--bg-soft);font-size:.78rem;cursor:pointer;font-family:inherit;color:var(--ink)}
+  .kpill b{font-weight:700;color:var(--muted)}
+  .kpill:hover{border-color:rgba(36,26,20,.3)}
+  .kbox .sub2{margin:10px 0 6px;font-size:.74rem;color:var(--muted);font-weight:600}
+  .recent{list-style:none;margin:0;padding:0}
+  .recent li{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid var(--line);font-size:.82rem}
+  .recent li:first-child{border-top:0}
+  .recent button{border:0;background:none;padding:0;font:inherit;color:var(--ink);text-align:left;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .recent button:hover{color:#B73C54}
+  .recent time{color:var(--muted);white-space:nowrap;font-size:.76rem}
+  .kfil{display:grid;grid-template-columns:minmax(200px,1.4fr) repeat(5,minmax(0,1fr));gap:10px;margin-bottom:14px;align-items:end}
+  .kfil label{display:grid;gap:4px;font-size:.72rem;font-weight:600;color:var(--muted)}
+  .kfil select,.kfil input{height:40px}
+  .kb{display:grid;grid-template-columns:400px minmax(0,1fr);gap:18px;align-items:start}
+  .klist{position:sticky;top:96px;max-height:calc(100vh - 116px);display:flex;flex-direction:column;overflow:hidden}
+  .klist__h{padding:12px 16px;border-bottom:1px solid var(--line);font-size:.82rem;color:var(--muted)}
+  .klist ul{list-style:none;margin:0;padding:6px;overflow:auto}
+  .kitem{padding:14px;border-radius:12px;cursor:pointer;display:grid;gap:6px}
+  .kitem + .kitem{margin-top:2px}
+  .kitem:hover{background:var(--bg-soft)}
+  .kitem.is-sel{background:linear-gradient(90deg,rgba(232,93,117,.07),transparent);box-shadow:inset 3px 0 0 var(--rose)}
+  .kitem b{font-size:.9rem;font-weight:700;line-height:1.35}
+  .kitem .ex{font-size:.8rem;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .kitem .ft{font-size:.74rem;color:var(--muted)}
+  .chipsrow{display:flex;gap:6px;flex-wrap:wrap}
+  .kc{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:999px;background:var(--bg-soft);font-size:.7rem;font-weight:600;color:var(--muted)}
+  .kc svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2}
+  .kc.pub{background:rgba(63,143,95,.12);color:var(--success)} .kc.rev{background:var(--amber-soft);color:#8A6212} .kc.drf{background:rgba(62,111,166,.1);color:var(--info)} .kc.sp{background:rgba(62,111,166,.08);color:var(--info)}
+  .ksrc{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:9px;background:var(--bg-soft);font-size:.78rem;font-weight:600}
+  .ksrc svg{width:14px;height:14px;fill:none;stroke:var(--muted);stroke-width:1.8;flex:none}
+  .kdet{padding:26px 30px}
+  .kdet__acts{display:flex;gap:8px;margin:14px 0 4px}
+  .kdet__acts .btn{height:34px}
+  .kdet__acts .arch{color:#B73C54}
+  .kdet h2{font-family:var(--display);font-weight:700;font-size:1.7rem;letter-spacing:-.02em;line-height:1.2;margin:14px 0 14px}
+  .kdet .ask{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:12px;border:1px solid var(--line-2);background:var(--panel);font:inherit;font-weight:600;font-size:.86rem;cursor:pointer;color:var(--ink);margin-bottom:16px}
+  .kdet .ask:hover{border-color:rgba(232,93,117,.4)}
+  .kdet .ask svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9}
+  .kdet__body{font-size:.98rem;line-height:1.7;margin-bottom:20px}
+  .kpanel{border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:12px}
+  .kpanel h4{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:.84rem;font-weight:700}
+  .kpanel h4 svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9}
+  .kpanel .open{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:.82rem;font-weight:600;color:var(--ink)}
+  .kpanel .open svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2}
+  .gov{background:var(--bg-soft)}
+  .gov p{margin:0 0 10px;font-size:.84rem;color:var(--muted)}
+  .gov .row{display:flex;gap:8px;flex-wrap:wrap}
+  .kempty{padding:30px;text-align:center;color:var(--muted)}
+  .archived{opacity:.6}
+  @media (max-width:1200px){.kfil{grid-template-columns:repeat(3,minmax(0,1fr))}.kgrid{grid-template-columns:1fr 1fr}}
+  @media (max-width:1000px){.kb{grid-template-columns:1fr}.klist{position:static;max-height:420px}.kstats{grid-template-columns:1fr 1fr}}
 
   :root[data-theme="dark"]{
     --ink:#F2EBE5; --bg:#15100D; --bg-soft:#231B16; --panel:#1C1612;
@@ -765,53 +805,32 @@
 
     <div class="head">
       <div>
-        <p class="label">Decide · Week 4</p>
+        <p class="label">Company knowledge</p>
         <h1>Knowledge</h1>
-        <p>What we found and what it cost to process.</p>
+        <p>Published answers and the evidence behind them.</p>
       </div>
       <span class="spacer"></span>
-      <button class="btn btn--secondary no-print" onclick="window.print()">Print</button>
-      <a class="btn btn--primary no-print" href="distribute.html">Export approved answers</a>
+      <button class="btn btn--secondary" id="exp" type="button"><svg class="i" viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M4 18v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1"/></svg>Export sources</button>
     </div>
-    <div class="doc">
-      <p class="draft no-print"><b>Draft.</b> Numbers update as your reviewer works through the batch. The final readout goes out in week 4.</p>
 
-      <section class="card"><div class="card__head"><h2>What we found</h2></div><div class="card__body">
-        <div class="tiles">
-          <div class="tile is-key"><b id="tQ">0</b><span>questions your documents answer</span></div>
-          <div class="tile"><b id="tG">0</b><span>gaps: referred to, never explained</span></div>
-          <div class="tile"><b>1</b><span>contradiction between sources</span></div>
-          <div class="tile"><b id="tA">0</b><span>answers approved so far</span></div>
-        </div>
-        <ul class="find">
-          <li>Your help pages say SSO is Enterprise-only; the 2026 pricing and recent sales calls say Growth includes it. The help page is 9 months old.</li>
-          <li>Two documents say a chargeback fee applies but neither gives the amount. It’s your most-asked unanswered question.</li>
-          <li id="fEdit"></li>
-          <li>Three of your own questions have no source in the documents: Apple Pay in Germany, the chargeback fee, and call-recording retention.</li>
-        </ul>
-      </div></section>
+    <div class="kstats" id="kstats"></div>
+    <div class="kgrid">
+      <section class="kbox"><h3><svg viewBox="0 0 24 24"><path d="M12 3 2 8l10 5 10-5z"/><path d="m2 13 10 5 10-5"/></svg>Knowledge spaces</h3><p>Access is decided per space. A space you can’t read is never listed here.</p><div class="pills" id="kspaces"></div></section>
+      <section class="kbox"><h3><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>Where it comes from</h3><div class="pills" id="ktypes"></div><p class="sub2">Sensitivity</p><div class="pills" id="ksens"></div></section>
+      <section class="kbox"><h3><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Recently updated</h3><p>Newest first.</p><ul class="recent" id="krecent"></ul></section>
+    </div>
 
-      <section class="card"><div class="card__head"><h2>How Ask lojo did</h2><span class="sub">Questions people asked Ask lojo this phase</span></div><div class="card__body">
-        <div class="tiles">
-          <div class="tile"><b id="chA">0</b><span>questions asked</span></div>
-          <div class="tile is-key"><b id="chOk">0</b><span>answered from approved answers</span></div>
-          <div class="tile"><b id="chNo">0</b><span>declined: “I don’t know”</span></div>
-          <div class="tile"><b id="chRate">0%</b><span>answer rate</span></div>
-        </div>
-        <p class="sub" style="margin-top:12px" id="chNote"></p>
-      </div></section>
-
-      <section class="card"><div class="card__head"><h2>What it cost to process</h2><span class="sub">One fixed model, called through our proxy</span></div><div class="card__body">
-        <table>
-          <tr><td>Documents processed</td><td id="cDocs"></td></tr>
-          <tr><td>Pages read</td><td id="cPages"></td></tr>
-          <tr><td>Passages indexed by meaning</td><td id="cPass"></td></tr>
-          <tr><td>Model tokens (in / out)</td><td>2.1M / 0.3M</td></tr>
-          <tr><td>Indexing and search</td><td>$3.10</td></tr>
-          <tr><td>Question finding and drafting, including rewrites</td><td>$15.30</td></tr>
-          <tr class="total"><td>Total processing cost</td><td>$18.40 <span class="sub">· $1.84 per document</span></td></tr>
-        </table>
-      </div></section>
+    <div class="kfil">
+      <label>Search<input class="text" id="kq" placeholder="Search questions and answers"></label>
+      <label>Knowledge space<select class="text" id="fSpace"></select></label>
+      <label>State<select class="text" id="fState"></select></label>
+      <label>Source type<select class="text" id="fType"></select></label>
+      <label>Connected source<select class="text" id="fConn"></select></label>
+      <label>Topic<select class="text" id="fTopic"></select></label>
+    </div>
+    <div class="kb">
+      <section class="card klist"><div class="klist__h" id="kcount"></div><ul id="klist"></ul></section>
+      <section class="card kdet" id="kdet" aria-live="polite"></section>
     </div>
 
   </main>
@@ -1531,24 +1550,89 @@ function srcChip(docId, loc, warn) {
 })();
 
 
-function render() {
-  const c = counts();
-  const edited = DRAFTS.filter(r => decision(r).status === 'approved' && decision(r).edited).length;
-  const rewritten = DRAFTS.filter(r => decision(r).redrafted).length;
-  $('tQ').textContent = c.questions; $('tG').textContent = c.gaps; $('tA').textContent = c.approved + ' / ' + c.drafts;
-  $('fEdit').textContent = 'Your reviewer approved ' + c.approved + ' drafts, edited ' + edited + ' before approving, and sent ' + rewritten + ' back to be written again.';
-  const ch = ST.chat || { asked: 0, answered: 0, declined: 0, smalltalk: 0 };
-  $('chA').textContent = ch.asked; $('chOk').textContent = ch.answered; $('chNo').textContent = ch.declined;
-  $('chRate').textContent = (ch.asked ? Math.round(ch.answered / ch.asked * 100) : 0) + '%';
-  $('chNote').textContent = 'Greetings and thanks (' + (ch.smalltalk || 0) + ') aren’t counted. Declined questions are added to Insights so they can be answered next.';
-  $('cDocs').textContent = c.docs; $('cPages').textContent = c.pages; $('cPass').textContent = c.passages;
-  const d = ST.decision;
-  if ($('decision')) $('decision').innerHTML = d ? '<div class="decided ' + (d === 'go' ? 'go' : 'stop') + '">' + (d === 'go' ? '✓ You chose to go on to the full build. We’ll send a plan for the twelve weeks.' : 'You chose not to go on for now. You keep the approved answers as an export.') +
-    ' <button class="btn btn--ghost btn--sm" id="undoD">Change</button></div>'
-    : '<p class="sub" style="margin-bottom:14px">After trying Ask lojo, decide whether to go on. Either way, you keep the approved answers.</p><div class="decide"><button class="btn btn--grad" id="go">Go on to the full build</button><button class="btn btn--secondary" id="stop">Not now</button></div>';
-  if ($('go')) { $('go').onclick = () => { ST.decision = 'go'; save(); render(); }; $('stop').onclick = () => { ST.decision = 'stop'; save(); render(); }; }
-  if ($('undoD')) $('undoD').onclick = () => { ST.decision = null; save(); render(); };
+// every piece of company knowledge: drafts with their state, plus reference passages saved from sources
+const IC = {
+  layers: '<svg viewBox="0 0 24 24"><path d="M12 3 2 8l10 5 10-5z"/><path d="m2 13 10 5 10-5"/></svg>',
+  shield: '<svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/></svg>',
+  doc: '<svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>',
+};
+const TOPICS = { sso: 'Sign-in & SSO', refund: 'Refunds', plan: 'Plans & pricing', upgrade: 'Plan changes', pay: 'Payments & billing', api: 'API', chargeback: 'Disputes', security: 'Security', storage: 'Data & hosting', export: 'Data export', onboarding: 'Onboarding', annual: 'Renewals', contact: 'Support' };
+const SPACE = (docId) => ({ d7: 'Security', d8: 'Product', d3: 'Product' })[docId] || 'General';
+const TYPE = (docId) => docId === 'd5' ? 'Call notes' : docById(docId).faq ? 'Help pages' : docById(docId).name.endsWith('.md') ? 'Markdown' : docById(docId).name.split('.').pop().toUpperCase();
+const CONN = (docId) => docById(docId).faq ? 'Website' : 'Upload';
+const DAY = ['Sep 9, 2026', 'Sep 10, 2026', 'Sep 28, 2026', 'Sep 29, 2026', 'Oct 2, 2026', 'Oct 5, 2026'];
+ST.archived = ST.archived || {};
+function entries() {
+  const out = [];
+  DRAFTS.forEach((r, i) => {
+    const d = decision(r), q = QUESTIONS.find(x => x.id === r.qid), s = d.status;
+    const state = s === 'approved' ? 'Published' : (s === 'final' || r.conflict) ? 'Needs review' : 'Draft';
+    const doc = r.src[0][0];
+    out.push({ id: r.id, kind: 'answer', state, title: q.q, body: answerOf(r), src: r.src, space: SPACE(doc), type: TYPE(doc), conn: CONN(doc),
+      topic: (conceptsOf(q.q)[0] || 'contact'), sens: 'Internal', at: s === 'approved' ? DAY[3 + i % 3] : DAY[i % 2], by: d.by || (s === 'approved' ? 'Sara Lindqvist' : '') });
+  });
+  const seen = new Set();
+  DRAFTS.concat(GAPS.map(g => ({ src: g.where }))).forEach(r => r.src.forEach(([doc, loc, text], i) => {
+    const k = doc + loc; if (seen.has(k)) return; seen.add(k);
+    out.push({ id: 'ref-' + k.replace(/\W/g, ''), kind: 'ref', state: 'Reference', title: docShort(doc) + ' · ' + loc, body: text, src: [[doc, loc, text]], space: SPACE(doc), type: TYPE(doc), conn: CONN(doc),
+      topic: conceptsOf(text)[0] || 'contact', sens: 'Internal', at: DAY[seen.size % 2], by: '' });
+  }));
+  return out.filter(e => !ST.archived[e.id]);
 }
+const stateChip = (s) => '<span class="kc ' + ({ Published: 'pub', 'Needs review': 'rev', Draft: 'drf' }[s] || '') + '">' + s + '</span>';
+let sel = null;
+const uniq = (arr) => [...new Set(arr)];
+function opts(id, label, vals) { const keep = $(id).value; $(id).innerHTML = '<option value="">' + label + '</option>' + vals.map(v => '<option value="' + esc(v) + '">' + esc(id === 'fTopic' ? TOPICS[v] || v : v) + '</option>').join(''); $(id).value = vals.includes(keep) ? keep : ''; }
+function filtered(all) {
+  const q = $('kq').value.trim().toLowerCase();
+  return all.filter(e => (!q || (e.title + ' ' + e.body).toLowerCase().includes(q)) && (!$('fSpace').value || e.space === $('fSpace').value) && (!$('fState').value || e.state === $('fState').value) &&
+    (!$('fType').value || e.type === $('fType').value) && (!$('fConn').value || e.conn === $('fConn').value) && (!$('fTopic').value || e.topic === $('fTopic').value));
+}
+function render() {
+  const all = entries(), n = (s) => all.filter(e => e.state === s).length;
+  $('kstats').innerHTML = [['all', 'Knowledge entries', all.length, 'Everything lojo holds for this workspace'], ['ok', 'Published', n('Published'), 'Approved by a person, then published as company truth.'],
+    ['warn', 'Needs review', n('Needs review'), 'Conflicting or rejected. Not company truth until a person reviews it.'], ['ref', 'Reference', n('Reference'), 'Saved from an authorised source. Never published on its own.']]
+    .map(([c, l, v, s]) => '<div class="kstat ' + c + '"><i></i><small>' + l + '</small><b>' + v + '</b><span>' + s + '</span></div>').join('');
+  const count = (key) => uniq(all.map(e => e[key])).map(v => [v, all.filter(e => e[key] === v).length]);
+  const pills = (key, sel) => count(key).map(([v, c]) => '<button type="button" class="kpill" data-pick="' + sel + '" data-v="' + esc(v) + '">' + esc(v) + ' <b>' + c + '</b></button>').join('');
+  $('kspaces').innerHTML = pills('space', 'fSpace'); $('ktypes').innerHTML = pills('type', 'fType'); $('ksens').innerHTML = count('sens').map(([v, c]) => '<span class="kpill">' + v + ' <b>' + c + '</b></span>').join('');
+  $('krecent').innerHTML = all.filter(e => e.kind === 'answer').sort((a, b) => Date.parse(b.at) - Date.parse(a.at)).slice(0, 5).map(e => '<li><button type="button" data-open="' + e.id + '">' + esc(e.title) + '</button><time>' + e.at + '</time></li>').join('');
+  opts('fSpace', 'All spaces', uniq(all.map(e => e.space))); opts('fState', 'Any state', ['Published', 'Needs review', 'Draft', 'Reference']);
+  opts('fType', 'All source types', uniq(all.map(e => e.type))); opts('fConn', 'All connected sources', uniq(all.map(e => e.conn))); opts('fTopic', 'All topics', uniq(all.map(e => e.topic)));
+  const list = filtered(all);
+  if (!list.some(e => e.id === sel)) sel = list.length ? list[0].id : null;
+  $('kcount').textContent = list.length + ' matching entr' + (list.length === 1 ? 'y' : 'ies');
+  $('klist').innerHTML = list.length ? list.map(e => '<li class="kitem' + (e.id === sel ? ' is-sel' : '') + '" data-id="' + e.id + '"><div class="chipsrow">' + stateChip(e.state) + '<span class="kc sp">' + IC.layers + esc(e.space) + '</span><span class="kc">' + IC.shield + e.sens + '</span></div>' +
+    '<b>' + esc(e.title) + '</b><span class="ex">' + esc(e.body.replace(/[#*_>-]/g, '')) + '</span><span class="ksrc">' + IC.doc + esc(e.type) + ' · ' + esc(docShort(e.src[0][0])) + '</span><span class="ft">' + e.src.length + ' source' + (e.src.length === 1 ? '' : 's') + ' · Updated ' + e.at + '</span></li>').join('')
+    : '<li class="kempty">Nothing matches these filters.</li>';
+  detail(all.find(e => e.id === sel));
+}
+function detail(e) {
+  if (!e) { $('kdet').innerHTML = '<div class="kempty">Pick an entry to see it here.</div>'; return; }
+  const gov = { Published: 'Approved by ' + (e.by || 'a person') + ' and published. Ask lojo answers from it.', 'Needs review': 'Its sources disagree or it was rejected. It isn’t company truth until a person reviews it.', Draft: 'Drafted by lojo with sources. Waiting for a person to approve it.', Reference: 'Saved as reference from its source. It has never been published.' }[e.state];
+  $('kdet').innerHTML = '<div class="chipsrow">' + stateChip(e.state) + '<span class="kc sp">' + IC.layers + esc(e.space) + '</span><span class="kc">' + IC.shield + e.sens + '</span><span class="kc">' + esc(TOPICS[e.topic] || e.topic) + '</span></div>' +
+    '<div class="kdet__acts">' + (e.kind === 'answer' ? '<a class="btn btn--secondary btn--sm" href="build.html?sel=' + e.id + '&edit=1"><svg class="i" viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Edit</a>' : '') +
+    '<button class="btn btn--secondary btn--sm arch" data-arch="' + e.id + '" type="button"><svg class="i" viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4"/></svg>Archive</button></div>' +
+    '<h2>' + esc(e.title) + '</h2>' + (e.kind === 'answer' ? '<button class="ask" type="button" data-askq="' + esc(e.title) + '"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L3 21l1.9-5.6A8.5 8.5 0 1 1 21 11.5z"/></svg>Ask lojo</button>' : '') +
+    '<div class="kdet__body">' + md(e.body) + '</div>' +
+    '<div class="kpanel"><h4>' + IC.doc + 'Provenance</h4><div class="chipsrow">' + e.src.map(([d, loc]) => srcChip(d, loc)).join('') + '</div><a class="open" href="sources.html?doc=' + e.src[0][0] + '&loc=' + encodeURIComponent(e.src[0][1]) + '">Open original <svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a></div>' +
+    '<div class="kpanel gov"><h4>' + IC.shield + 'Governance</h4><p>lojo proposes. A person approves. Only then does an answer become company truth.</p><div class="row">' + stateChip(e.state) + '</div><p style="margin-top:10px">' + gov + '</p><div class="row"><span class="kc">Review due ' + (e.state === 'Published' ? 'Mar 29, 2027' : 'now') + '</span><span class="kc">Updated ' + e.at + '</span></div></div>';
+}
+$('klist').addEventListener('click', (ev) => { const li = ev.target.closest('[data-id]'); if (li) { sel = li.dataset.id; render(); } });
+document.querySelector('.kgrid').addEventListener('click', (ev) => {
+  const p = ev.target.closest('[data-pick]'); if (p) { $(p.dataset.pick).value = $(p.dataset.pick).value === p.dataset.v ? '' : p.dataset.v; render(); document.querySelector('.kfil').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  const o = ev.target.closest('[data-open]'); if (o) { ['kq', 'fSpace', 'fState', 'fType', 'fConn', 'fTopic'].forEach(id => { $(id).value = ''; }); sel = o.dataset.open; render(); document.querySelector('.kb').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+});
+$('kdet').addEventListener('click', (ev) => {
+  const a = ev.target.closest('[data-arch]'); if (a) { ST.archived[a.dataset.arch] = true; save(); sel = null; render(); toast('Archived. It no longer appears in Knowledge.'); }
+  const q = ev.target.closest('[data-askq]'); if (q && window.__askQ) window.__askQ(q.dataset.askq);
+});
+['kq', 'fSpace', 'fState', 'fType', 'fConn', 'fTopic'].forEach(id => $(id).addEventListener('input', render));
+$('exp').addEventListener('click', () => {
+  const rows = entries().map(e => [e.state, e.title, e.body.replace(/\n/g, ' '), e.src.map(([d, l]) => docById(d).name + ' (' + l + ')').join('; '), e.space, e.at]);
+  const csv = ['state,title,content,sources,space,updated'].concat(rows.map(r => r.map(x => '"' + String(x).replace(/"/g, '""') + '"').join(','))).join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'oslo-knowledge-sources.csv'; a.click(); toast('Exported ' + rows.length + ' entries');
+});
 render();
 
 </script>
