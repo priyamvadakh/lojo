@@ -758,10 +758,10 @@
 <section class="askp" id="askp" hidden aria-label="Ask lojo">
   <div class="askp__head"><span class="agico" data-agent="Chat agent"></span><div class="askp__id"><b>Ask lojo</b><span><i class="live"></i><span id="askMeta">Approved answers</span></span></div><span class="spacer"></span>
     <button class="hbtn" id="askHistBtn" type="button" aria-label="Chats" title="Chats"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg></button>
-    <button class="hbtn" id="askNew" type="button" aria-label="New chat" title="New chat"><svg viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.4 2.6a2.1 2.1 0 0 1 3 3l-9 9a2 2 0 0 1-.9.5l-2.9.8.8-2.9a2 2 0 0 1 .5-.8z"/></svg></button>
+    <button class="hbtn" id="askNew" type="button" aria-label="New chat" title="New chat"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L3 21l1.9-5.6A8.5 8.5 0 1 1 21 11.5z"/><path d="M12 8v7M8.5 11.5h7"/></svg></button>
     <button class="hbtn" id="askFull" type="button" aria-label="Full screen" title="Full screen"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button>
     <button class="hbtn" id="askX" type="button" aria-label="Close" title="Close (Esc)"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
-  <div class="askp__body"><aside class="askp__hist" aria-label="Chats"><button class="cl__new" id="askNew2" type="button"><svg viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.4 2.6a2.1 2.1 0 0 1 3 3l-9 9a2 2 0 0 1-.9.5l-2.9.8.8-2.9a2 2 0 0 1 .5-.8z"/></svg>New chat</button><div class="cl" id="askConvs"></div></aside><div class="askp__main">
+  <div class="askp__body"><aside class="askp__hist" aria-label="Chats"><button class="cl__new" id="askNew2" type="button"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L3 21l1.9-5.6A8.5 8.5 0 1 1 21 11.5z"/><path d="M12 8v7M8.5 11.5h7"/></svg>New chat</button><div class="cl" id="askConvs"></div></aside><div class="askp__main">
   <div class="askp__log" id="askLog" aria-live="polite"></div>
   <div class="askp__foot"><div class="chips" id="askSugg"></div><form class="composer" id="askForm"><textarea id="askIn" rows="1" placeholder="Ask about Oslo…" aria-label="Ask lojo"></textarea><div class="composer__bar"><span class="composer__tools"></span><span class="spacer"></span><button class="send" type="submit" aria-label="Send" disabled><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button></div></form>
   <p class="askp__note"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>Answers come only from approved knowledge</p></div>
@@ -1129,7 +1129,7 @@ function convList(el, onPick) {
   });
   askHistory.on(draw); draw();
 }
-const NEWCHAT_ICON = '<svg viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.4 2.6a2.1 2.1 0 0 1 3 3l-9 9a2 2 0 0 1-.9.5l-2.9.8.8-2.9a2 2 0 0 1 .5-.8z"/></svg>';
+const NEWCHAT_ICON = '<svg viewBox="0 0 24 24"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L3 21l1.9-5.6A8.5 8.5 0 1 1 21 11.5z"/><path d="M12 8v7M8.5 11.5h7"/></svg>';
 function chatDocs(zone, form, say, setSugg) {
   let doc = null;
   const clip = document.createElement('label'); clip.className = 'clip'; clip.title = 'Attach a document or image'; clip.setAttribute('aria-label', 'Attach a document or image');
@@ -1424,7 +1424,12 @@ function srcChip(docId, loc, warn) {
   $('askFull').addEventListener('click', () => { full(!panel.classList.contains('is-full')); $('askIn').focus(); });
   $('askBg').addEventListener('click', () => toggle(false));
   $('askHistBtn').addEventListener('click', () => panel.classList.toggle('show-hist'));
-  const fresh = () => { askHistory.newChat(); panel.classList.remove('show-hist'); load(); $('askIn').focus(); };
+  const fresh = () => {
+    const had = askHistory.all().length;
+    askHistory.newChat(); panel.classList.remove('show-hist'); load();
+    $('askIn').value = ''; $('askIn').dispatchEvent(new Event('input')); $('askIn').focus();
+    toast(had ? 'New chat started. Your last one is saved in Chats.' : 'New chat started');
+  };
   $('askNew').addEventListener('click', fresh); $('askNew2').addEventListener('click', fresh);
   convList($('askConvs'), () => { panel.classList.remove('show-hist'); load(); });
   // say what the button is once per visit
