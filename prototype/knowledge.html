@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Knowledge · lojo</title>
 <link rel="icon" type="image/png" href="assets/lojo-icon.png">
+<script src="assets/oslo-pack.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -315,7 +316,7 @@
   .arow2 .am{max-width:none}
   .arow2 .agico{width:24px;height:24px}
   /* full screen */
-  .askp.is-full{inset:28px 28px 28px calc(var(--side) + 40px);width:auto;height:auto;border-radius:24px;transform-origin:center;animation:askFull .25s cubic-bezier(.2,.8,.2,1)}
+  .askp.is-full{inset:0!important;top:0!important;right:0!important;bottom:0!important;width:auto!important;height:auto!important;border-radius:0!important;border:0!important;z-index:80!important;width:auto;height:auto;border-radius:24px;transform-origin:center;animation:askFull .25s cubic-bezier(.2,.8,.2,1)}
   @keyframes askFull{from{opacity:0;transform:scale(.97)}}
   .askp.is-full .askp__head{padding:22px 28px;gap:14px}
   .askp.is-full .askp__head .agico{width:46px;height:46px}
@@ -332,7 +333,7 @@
   .askp.is-full .askp__foot{padding:16px max(28px,calc(50% - 420px)) 22px}
   .askp.is-full .composer textarea{font-size:1rem}
   .askp.is-full .askp__foot .chips .chip{font-size:.8rem;padding:6px 12px}
-  @media (max-width:760px){.askp.is-full{inset:10px}}
+
   .fab.is-hint::after{opacity:1;transform:translate(0,-50%)}
   .askp__x{width:30px;height:30px;border-radius:50%;border:0;background:none;color:var(--muted);font-size:1.1rem;cursor:pointer}
   .askp__x:hover{background:var(--bg-soft);color:var(--ink)}
@@ -480,6 +481,8 @@
   .srcbox__ic{width:18px;height:18px;border-radius:50%;background:rgba(63,143,95,.14)}
   .srcbox__ic svg{width:11px;height:11px}
   .srcbox__t{font-size:.74rem;font-weight:600;color:var(--success)}
+  .srcbox.is-doc .srcbox__ic{background:rgba(62,111,166,.12);color:var(--info)}
+  .srcbox.is-doc .srcbox__t{color:var(--info)}
   .srcbox__t em{font-style:normal;font-weight:500;color:var(--muted)}
   .srcbox .srcs{display:flex;gap:5px;margin:0}
   .srcbox .src{font-size:.7rem;padding:2px 7px;border-radius:6px}
@@ -492,6 +495,10 @@
   .related small{margin-right:4px}
   .rel{display:inline-flex;width:auto;padding:5px 10px;border-radius:999px;font-size:.76rem;color:var(--muted)}
   .rel:hover{color:var(--ink)}
+  .askp.is-full #askX{width:40px;height:40px;border:1px solid var(--line-2);border-radius:12px;color:var(--ink)}
+  .askp.is-full #askX svg{width:20px;height:20px}
+  .askp.is-full #askFull{display:none}
+  .askp.is-full .askp__head{padding:14px 24px}
   /* composer note */
   .askp__foot{padding:10px 14px 12px}
   .askp__foot .chips:empty{display:none}
@@ -1113,12 +1120,13 @@ function answerHTML(q, a, fromQ, srcs) {
   // name the approved question only when it reads differently from what was asked
   const wq = (s) => new Set(s.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(w => w.length > 3));
   const A = wq(q), B = wq(fromQ), same = [...A].filter(w => B.has(w)).length / Math.max(1, Math.min(A.size, B.size)) >= 0.6;
-  h += '<div class="srcbox"><span class="srcbox__ic">' + ICO.check + '</span><span class="srcbox__t">Approved answer' + (same ? '' : ' · <em>' + esc(fromQ) + '</em>') + '</span>' + (srcs ? '<span class="srcs">' + srcs + '</span>' : '') + '</div>';
+  const fromDoc = /^From /.test(fromQ);
+  h += '<div class="srcbox' + (fromDoc ? ' is-doc' : '') + '"><span class="srcbox__ic">' + ICO.check + '</span><span class="srcbox__t">' + (fromDoc ? 'From the attached document · <em>not yet approved</em>' : 'Approved answer' + (same ? '' : ' · <em>' + esc(fromQ) + '</em>')) + '</span>' + (srcs ? '<span class="srcs">' + srcs + '</span>' : '') + '</div>';
   h += '<div class="aacts"><button type="button" data-copy="' + esc(a) + '" title="Copy answer">' + ICO.copy + '<span>Copy</span></button><button type="button" data-rate="up" aria-label="Helpful" title="Helpful">' + ICO.up + '</button><button type="button" data-rate="down" aria-label="Not helpful" title="Not helpful" class="down">' + ICO.up + '</button><span class="fb" role="status"></span></div>';
   // two related approved questions to keep going
   const ok = DRAFTS.filter(r => decision(r).status === 'approved').map(r => QUESTIONS.find(x => x.id === r.qid).q).filter(x => x !== fromQ);
   const cq = conceptsOf(q + ' ' + fromQ), rel = ok.filter(x => conceptsOf(x).some(c => cq.includes(c))).concat(ok).filter((x, i, arr) => arr.indexOf(x) === i).slice(0, 2);
-  if (rel.length) h += '<div class="related"><small>Related</small>' + rel.map(x => '<button type="button" class="rel" data-ask="' + esc(x) + '">' + esc(x) + '<span>→</span></button>').join('') + '</div>';
+  if (rel.length && !fromDoc) h += '<div class="related"><small>Related</small>' + rel.map(x => '<button type="button" class="rel" data-ask="' + esc(x) + '">' + esc(x) + '<span>→</span></button>').join('') + '</div>';
   return h;
 }
 // copy, rate, follow-ups and "not approved yet" actions work in every chat
@@ -1223,6 +1231,13 @@ function chatDocs(zone, form, say, setSugg) {
     const thumb = img && f instanceof Blob ? '<img src="' + URL.createObjectURL(f) + '" alt="">' : CLIP;
     bar.innerHTML = '<span class="cdoc__f">' + thumb + '<b>' + esc(doc.name) + '</b><em>' + (img ? 'image' : doc.pages + ' page' + (doc.pages === 1 ? '' : 's')) + ' · only for this chat</em></span><button type="button" aria-label="Remove">×</button>';
     bar.hidden = false; bar.querySelector('button').onclick = () => { doc = null; bar.hidden = true; setSugg(null); };
+    if (window.OSLO_PACK && OSLO_PACK.match(doc.name)) {
+      doc.pages = OSLO_PACK.doc.pages;
+      bar.querySelector('em').textContent = OSLO_PACK.doc.pages + ' pages · only for this chat';
+      say('bot', 'I’ve read <b>' + esc(doc.name) + '</b>: Oslo Pet Insurance’s policy summary, 4 pages in English and Arabic. It covers the three plans, what they pay for, waiting periods, exclusions, cancelling, claims and how to get in touch. Ask me anything about it.');
+      setSugg(['What plans does Oslo offer?', 'Are pre-existing conditions covered?', 'How do I make a claim?', 'What is the phone number for support?']);
+      return;
+    }
     say('bot', (doc.img ? 'I’ve read the text in <b>' + esc(doc.name) + '</b>.' : 'I’ve read <b>' + esc(doc.name) + '</b>.') + ' Ask me about it: I answer from the approved answers and point out anything it says that isn’t approved yet. It isn’t added to your sources.');
     setSugg(['Which of its questions do we already answer?', 'What does it say that isn’t approved?']);
   }
@@ -1232,6 +1247,12 @@ function chatDocs(zone, form, say, setSugg) {
   // questions about the attached document get their own answer; anything else falls through
   return (q, store) => {
     if (!doc) return null;
+    // the Oslo policy summary is read for real: answer from its passages, with the page
+    if (window.OSLO_PACK && OSLO_PACK.match(doc.name)) {
+      const ps = OSLO_PACK.answer(q);
+      if (!ps.length) return '<div class="miss"><b>Not in ' + esc(doc.name) + '</b><p>I couldn’t find this in the document. Try asking about plans, cover, waiting periods, exclusions, cancelling, claims or contact details.</p></div>';
+      return answerHTML(q, ps.map(p => p.text).join('\n\n'), 'From ' + doc.name, [...new Set(ps.map(p => p.loc))].map(l => '<span class="src">' + esc(doc.name.replace(/\.[a-z]+$/i, '')) + ' <em>' + esc(l) + '</em></span>').join(''));
+    }
     const s = store();
     if (/already answer|which of its/i.test(q)) {
       const hit = s.slice(0, 3);

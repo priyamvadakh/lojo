@@ -855,9 +855,10 @@
 
 <div class="toast" id="toast" role="status"></div>
 
+<script src="assets/oslo-pack.js"></script>
 <script>
 /* ---------------- data ---------------- */
-const SAMPLE = [
+let SAMPLE = [
   { name: 'Pricing & plans 2026.pdf', size: '1.2 MB', pages: 14 },
   { name: 'Help Center export.md', size: '840 KB', pages: 62 },
   { name: 'SSO setup guide.pdf', size: '410 KB', pages: 6 },
@@ -885,7 +886,7 @@ const CONNECTORS = [
     scopes: [['Pricing matrix', [0]], ['Onboarding tracker', [5]]] },
 ];
 
-const PASSAGES = [
+let PASSAGES = [
   { id: 'p1', doc: 0, loc: 'p. 4', c: ['sso', 'plan'], text: 'SAML single sign-on is available to Growth and Scale workspaces. Starter workspaces sign in with email or Google.' },
   { id: 'p2', doc: 1, loc: 'Security & login · updated 9 months ago', c: ['sso'], stale: true, text: 'SSO is an Enterprise-only feature. Contact sales to enable it.' },
   { id: 'p3', doc: 4, loc: 'Brightline call, 12 Aug', c: ['sso', 'plan'], text: 'Told Brightline their Growth plan covers SSO. Confirmed with product the same day.' },
@@ -897,7 +898,7 @@ const PASSAGES = [
 ];
 
 // meaning groups: a query touching any of these words maps to the concept
-const CONCEPTS = {
+let CONCEPTS = {
   sso: ['sso', 'single sign', 'sign-on', 'signon', 'saml', 'okta', 'azure ad', 'entra', 'log in', 'login', 'identity provider', 'idp'],
   refund: ['refund', 'money back', 'cancel', 'cancellation', 'return', 'reimburse', 'charge back', 'get paid back'],
   plan: ['plan', 'pricing', 'price', 'tier', 'starter', 'growth', 'scale', 'mid-tier', 'cheapest', 'package', 'subscription'],
@@ -906,7 +907,7 @@ const CONCEPTS = {
   setup: ['set up', 'setup', 'configure', 'onboarding', 'kickoff', 'training', 'implementation', 'get started'],
 };
 
-const SEED = [
+let SEED = [
   { id: 'q1', q: 'Is SSO included on the Growth plan?', src: ['p1', 'p3', 'p2'], conflict: 'p2', risk: 'high',
     draft: 'Yes. SAML SSO is included on the Growth and Scale plans. The Help Center says Enterprise-only, but that article is 9 months old and conflicts with Pricing & plans 2026 and recent sales notes.',
     redraft: 'Yes. SAML single sign-on is included on Growth and Scale. Starter workspaces sign in with email or Google. The Help Center article that says Enterprise-only is out of date.',
@@ -927,6 +928,17 @@ const SEED = [
     draft: 'Scale customers get a 60-minute kickoff, a named onboarding manager and two admin training sessions.',
     redraft: 'Every Scale customer gets a named onboarding manager, a 60-minute kickoff call and two admin training sessions.' },
 ];
+
+// the Oslo policy summary brings its own passages, questions and answers (assets/oslo-pack.js)
+function useOsloPack() {
+  const K = window.OSLO_PACK; if (!K) return false;
+  SAMPLE = [{ ...K.doc }];
+  PASSAGES = K.passages.map(p => ({ ...p, doc: 0 }));
+  CONCEPTS = K.concepts;
+  SEED = K.seeds.map(s => ({ ...s }));
+  return true;
+}
+const hasOslo = () => S.mode === 'upload' && S.files.some(f => window.OSLO_PACK && OSLO_PACK.match(f.name));
 
 /* ---------------- state ---------------- */
 const S = { picked: new Set(), step: 1, reached: 1, mode: null, conn: null, scopes: [], files: [], folder: '', queue: [], seeded: false, indexed: false, finished: false };
@@ -1181,7 +1193,8 @@ const fmtSize = (b) => b > 1e6 ? (b / 1e6).toFixed(1) + ' MB' : Math.max(1, Math
 function addFiles(list) {
   [...list].forEach(f => {
     if (S.files.some(x => x.name === f.name)) return;
-    S.files.push({ name: f.name, size: fmtSize(f.size), pages: Math.max(1, Math.round(f.size / 40000)) });
+    const oslo = window.OSLO_PACK && OSLO_PACK.match(f.name);
+    S.files.push({ name: f.name, size: fmtSize(f.size), pages: oslo ? OSLO_PACK.doc.pages : Math.max(1, Math.round(f.size / 40000)), passages: oslo ? OSLO_PACK.doc.passages : undefined });
   });
   renderFiles();
 }
@@ -1260,7 +1273,7 @@ function checkSource() {
 }
 $('scopeOk').addEventListener('change', checkSource);
 checkSource();
-$('toIndex').addEventListener('click', () => { S.indexed = false; S.seeded = false; S.queue = []; go(3); });
+$('toIndex').addEventListener('click', () => { S.indexed = false; S.seeded = false; S.queue = []; if (hasOslo()) useOsloPack(); go(3); });
 
 /* ---------------- 3 · index ---------------- */
 function runIndexing() {
@@ -1286,7 +1299,7 @@ function runIndexing() {
       pills[si].classList.replace('is-run', 'is-done');
       doneStages++;
       if (si === 0) pages += docs[di].pages;
-      if (si === 1) passages += Math.round(docs[di].pages * 4.6);
+      if (si === 1) passages += docs[di].passages || Math.round(docs[di].pages * 4.6);
       $('bar' + di).style.width = ((si + 1) / 3 * 100) + '%';
       $('stPages').textContent = pages.toLocaleString();
       $('stPassages').textContent = passages.toLocaleString();
