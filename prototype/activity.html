@@ -205,6 +205,8 @@
   @keyframes ring{0%{opacity:.9;transform:scale(.96)}100%{opacity:0;transform:scale(1.18)}}
   @media (prefers-reduced-motion:reduce){.ava3d.is-run,.ava3d.is-run::before{animation:none}}
   .lbl-sub{font-style:normal;color:var(--muted);font-weight:500}
+  .dlbtn{width:30px;height:30px;padding:0!important;border-radius:9px;display:inline-grid;place-items:center}
+  .dlbtn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
   .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
   .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
   .stat b{display:block;font-family:var(--display);font-weight:800;font-size:1.6rem;letter-spacing:-.02em;line-height:1.1}
@@ -917,6 +919,14 @@ document.addEventListener('click', (e) => {
   const r = e.target.closest('[data-rate]');
   if (r) { r.parentNode.querySelectorAll('[data-rate]').forEach(x => x.classList.toggle('is-on', x === r)); toast(r.dataset.rate === 'up' ? 'Thanks. Glad it helped.' : 'Thanks. It’s flagged for review in Build.'); }
 });
+// download a source document (the prototype hands back a stand-in copy with its passages)
+const DL_ICON = '<svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M4 18v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1"/></svg>';
+function downloadDoc(name, text) {
+  const blob = new Blob(['Demo copy of ' + name + '\n\n' + (text || 'This prototype does not keep the original file.') + '\n'], { type: 'text/plain' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name.replace(/\.(pdf|docx?)$/i, '') + (/\.(md|txt)$/i.test(name) ? '' : '.txt');
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  toast('Downloading ' + name);
+}
 const askHistory = {
   all: () => ST.askLog || [],
   push: (kind, html) => { if (/class="spin"/.test(html)) return; ST.askLog = (ST.askLog || []).concat([{ kind, html }]).slice(-60); save(); },

@@ -583,7 +583,7 @@ function render() {
     }
     rows.push(fileRow({ id: d.id, cls: ' is-row' + (open === d.id ? ' is-open' : ''), ext, name: d.name, badge: d.faq ? '<span class="badge badge--info">Your help pages</span>' : '',
       meta: d.pages + ' pages · ' + n + ' passages · ' + qs.length + ' question' + (qs.length === 1 ? '' : 's') + ' · added ' + d.added,
-      stage: '<span class="pstage is-done">Indexed</span>', acts: '<button class="btn btn--ghost" data-retire="' + d.id + '">Retire</button>', detail }));
+      stage: '<span class="pstage is-done">Indexed</span>', acts: '<button class="btn btn--secondary dlbtn" data-dl="' + d.id + '" title="Download" aria-label="Download ' + esc(d.name) + '">' + DL_ICON + '</button><button class="btn btn--ghost" data-retire="' + d.id + '">Retire</button>', detail }));
   });
   // G4: retired documents stay listed, greyed, and can be restored
   DOCS.filter(d => ST.retired[d.id]).forEach(d => rows.push(fileRow({ cls: ' is-retired', ext: d.name.split('.').pop(), name: d.name, meta: 'Retired just now by Sara Lindqvist', stage: '<span class="pstage">Retired</span>',
@@ -620,6 +620,7 @@ $('docRows').addEventListener('click', (e) => {
     save(); render(); toast('Restored. Its passages are used for drafts again.');
   }
   if (b.dataset.retire) confirmRetire(b.dataset.retire);
+  if (b.dataset.dl) { const d = docById(b.dataset.dl); downloadDoc(d.name, passagesFor(d.id).map(p => p.loc + '\n' + p.text).join('\n\n')); }
 });
 function confirmRetire(id) {
   const d = docById(id), qs = qsFor(id).length;
@@ -999,6 +1000,7 @@ function renderDetail() {
   if (s === 'ready') acts.push('<button class="btn btn--grad" data-act="analyze">→ Analyze ' + ch.one.toLowerCase() + '</button>');
   if (s === 'analyzed') acts.push('<button class="btn btn--secondary" data-act="analyze">Analyze again</button>');
   if (s === 'awaiting') acts.push('<button class="btn btn--secondary" disabled>Waiting for the transcript from ' + INTEGRATIONS[x.int].name + '</button>');
+  if (x.doc) acts.push('<button class="btn btn--secondary" data-act="dl">' + DL_ICON.replace('<svg', '<svg style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9"') + ' Download</button>');
   if (txt) acts.push('<button class="btn btn--secondary" data-act="full">' + (fullText ? 'Show less' : 'Open full ' + ch.body.toLowerCase()) + '</button>');
   if (acts.length) h += '<div class="iacts">' + acts.join('') + '</div>';
   if (s === 'analyzed') {
@@ -1026,6 +1028,7 @@ $('iDetail').addEventListener('click', (e) => {
   const b = e.target.closest('[data-act]');
   if (b && b.dataset.act === 'analyze') analyze([sel]);
   if (b && b.dataset.act === 'full') { fullText = !fullText; renderDetail(); }
+  if (b && b.dataset.act === 'dl') { const x = INBOX.find(i => i.id === sel); downloadDoc(x.title, textOf(x)); }
   const c = e.target.closest('[data-q]');
   if (c) { show('q'); filter = 'all'; document.querySelectorAll('#filters .chip').forEach(x => x.setAttribute('aria-pressed', x.dataset.f === 'all')); flashId = c.dataset.q; renderQ(); const r = $('row-' + c.dataset.q); if (r) r.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
 });
