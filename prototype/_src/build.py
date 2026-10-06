@@ -2209,6 +2209,9 @@ READOUT = dict(
   .kt b{font-family:var(--display);font-weight:800;font-size:1.6rem;line-height:1.05;letter-spacing:-.02em}
   .kt__sub{font-size:.78rem;color:var(--muted)}
   .kt{padding-top:34px}
+  .kt{align-items:center;text-align:center}
+  .kt .tip::after{left:50%;transform:translate(-50%,4px)}
+  .kt .tip:hover::after,.kt .tip:focus::after{transform:translate(-50%,0)}
   .kt__tag{position:absolute;top:10px;right:10px;height:20px;padding:0 9px;border-radius:999px;font-size:.62rem;font-weight:700;display:inline-flex;align-items:center;color:#fff}
   .kt--ok{background:#F2F7EC;border-color:#DCE8CE}.kt--ok b{color:#2F6B47}.kt--ok .kt__tag{background:var(--success)}
   .kt--warn{background:#FBF1E4;border-color:#F0DCC0}.kt--warn b{color:#8A5A12}.kt--warn .kt__tag{background:#C98A2E}
