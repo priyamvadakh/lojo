@@ -264,7 +264,7 @@
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const P = new URLSearchParams(location.search);
-  let user = { name: 'Sara', email: 'sara@nimbuspay.com' };
+  let user = { name: 'Sara', email: 'sara@oslo.com' };
   try { const u = JSON.parse(sessionStorage.getItem('lojo-user')); if (u && u.email) user = u; } catch (e) {}
   const email = P.get('email') || user.email;
   const I = {
@@ -285,7 +285,7 @@
   const SCREENS = {
     // G26
     forgot: () => ({ title: 'Reset your password', html: icon('key') + '<h2>Reset your password</h2><p class="lead">Enter your work email and we’ll send you a link to set a new password.</p>' +
-      '<form id="f" class="stack" novalidate><div class="field" id="fe"><label for="em">Work email</label><div class="input"><input id="em" type="email" autocomplete="email" value="' + esc(P.get('email') || '') + '" placeholder="sara@nimbuspay.com"></div><span class="err">Enter a valid email, like sara@nimbuspay.com.</span></div>' +
+      '<form id="f" class="stack" novalidate><div class="field" id="fe"><label for="em">Work email</label><div class="input"><input id="em" type="email" autocomplete="email" value="' + esc(P.get('email') || '') + '" placeholder="sara@oslo.com"></div><span class="err">Enter a valid email, like sara@oslo.com.</span></div>' +
       '<button class="btn btn--primary" type="submit"><span class="spin"></span><span class="txt">Send reset link</span></button></form>' + back,
       init: () => { $('em').focus(); $('f').onsubmit = (e) => { e.preventDefault(); const v = $('em').value.trim();
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) { $('fe').classList.add('has-error'); $('em').focus(); return; }
@@ -296,8 +296,8 @@
       init: () => { const r = $('resend'); r.onclick = () => { let n = 30; r.disabled = true; const t = setInterval(() => { r.textContent = 'Resend in ' + n-- + 's'; if (n < 0) { clearInterval(t); r.disabled = false; r.textContent = 'Resend link'; } }, 1000); }; } }),
     // G27
     set: () => { const invite = P.get('from') === 'invite';
-      return { title: invite ? 'Join Nimbus Pay' : 'Set a new password', html: icon(invite ? 'user' : 'key') +
-        '<h2>' + (invite ? 'Join Nimbus Pay on lojo' : 'Set a new password') + '</h2><p class="lead">' + (invite ? 'Lena Okafor invited you. Set a password to finish creating your account.' : 'Choose a new password for your lojo account.') + '</p>' +
+      return { title: invite ? 'Join Oslo' : 'Set a new password', html: icon(invite ? 'user' : 'key') +
+        '<h2>' + (invite ? 'Join Oslo on lojo' : 'Set a new password') + '</h2><p class="lead">' + (invite ? 'Lena Okafor invited you. Set a password to finish creating your account.' : 'Choose a new password for your lojo account.') + '</p>' +
         '<div class="who"><span class="av">' + esc(email[0].toUpperCase()) + '</span><b>' + esc(email) + '</b></div>' +
         '<form id="f" class="stack" novalidate><div class="field"><label for="p1">New password</label><div class="input input--pw"><input id="p1" type="password" autocomplete="new-password"><button class="reveal" type="button" id="rv">Show</button></div>' +
         '<ul class="rules" id="rules"><li data-r="len">At least 8 characters</li><li data-r="num">At least one number</li><li data-r="match">Both passwords match</li></ul></div>' +
@@ -328,8 +328,8 @@
     // G15
     region: () => ({ title: 'Choose a region', html: icon('globe') + '<h2>Choose a region</h2><p class="lead">' + esc(email) + ' belongs to workspaces in more than one region. Your data stays in the region you pick.</p>' +
       '<form id="f" class="stack"><div class="regions">' +
-      '<label class="region"><input type="radio" name="rg" value="eu" checked><div><b>Europe · Frankfurt</b><span>Nimbus Pay · Nimbus Pay — Sandbox</span></div></label>' +
-      '<label class="region"><input type="radio" name="rg" value="us"><div><b>United States · Virginia</b><span>Nimbus Pay US</span></div></label>' +
+      '<label class="region"><input type="radio" name="rg" value="eu" checked><div><b>Europe · Frankfurt</b><span>Oslo · Oslo — Sandbox</span></div></label>' +
+      '<label class="region"><input type="radio" name="rg" value="us"><div><b>United States · Virginia</b><span>Oslo US</span></div></label>' +
       '<label class="region"><input type="radio" name="rg" value="none"><div><b>Asia Pacific · Singapore</b><span>No workspaces yet</span></div></label></div>' +
       '<label class="check"><input type="checkbox" checked> Remember my choice on this device</label>' +
       '<button class="btn btn--primary" type="submit"><span class="spin"></span><span class="txt">Continue</span></button></form>' + back,

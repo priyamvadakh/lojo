@@ -258,7 +258,7 @@ OVERVIEW = dict(
     </section>
 
     <section class="sec" aria-labelledby="s1">
-      <div class="sec__head"><h2 id="s1">Your knowledge today</h2><span>· What Nimbus Pay has in lojo right now</span></div>
+      <div class="sec__head"><h2 id="s1">Your knowledge today</h2><span>· What Oslo has in lojo right now</span></div>
       <div class="tiles" id="today"></div>
       <div class="checks" id="checks"></div>
     </section>
@@ -635,14 +635,14 @@ function render() {
 function renderApps() {
   $('apps').innerHTML = APPS.map(a => '<button type="button" class="app' + (ST.apps[a.id] ? ' is-on' : '') + '" data-app="' + a.id + '"><span class="mono logo" style="color:' + a.color + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + LOGO[a.id] + '</svg></span><span><b>' + esc(a.name) + '</b><span class="k">' + (ST.apps[a.id] ? 'Connected · ' + a.n + ' documents' : esc(a.kind)) + '</span></span></button>').join('');
   const on = APPS.filter(a => ST.apps[a.id]);
-  $('synced').innerHTML = on.map(a => '<div class="file"><span class="mono logo" style="color:' + a.color + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + LOGO[a.id] + '</svg></span><span><span class="name">' + esc(a.name) + '</span><span class="meta">Connected as sara@nimbuspay.com · ' + a.n + ' documents · reads only</span></span><span class="pstage is-done">Synced</span><span class="acts"><button class="btn btn--ghost" style="opacity:1" data-off="' + a.id + '">Disconnect</button></span></div>').join('');
+  $('synced').innerHTML = on.map(a => '<div class="file"><span class="mono logo" style="color:' + a.color + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + LOGO[a.id] + '</svg></span><span><span class="name">' + esc(a.name) + '</span><span class="meta">Connected as sara@oslo.com · ' + a.n + ' documents · reads only</span></span><span class="pstage is-done">Synced</span><span class="acts"><button class="btn btn--ghost" style="opacity:1" data-off="' + a.id + '">Disconnect</button></span></div>').join('');
 }
 $('apps').addEventListener('click', (e) => {
   const b = e.target.closest('[data-app]'); if (!b || ST.apps[b.dataset.app]) return;
   const a = APPS.find(x => x.id === b.dataset.app);
   b.classList.add('is-busy'); b.disabled = true;
   b.querySelector('.k').innerHTML = '<span class="spin" style="width:11px;height:11px;vertical-align:-1px"></span> Connecting…';
-  setTimeout(() => { ST.apps[a.id] = true; save(); render(); toast(a.name + ' connected as sara@nimbuspay.com'); }, 900);
+  setTimeout(() => { ST.apps[a.id] = true; save(); render(); toast(a.name + ' connected as sara@oslo.com'); }, 900);
 });
 $('synced').addEventListener('click', (e) => { const b = e.target.closest('[data-off]'); if (!b) return; delete ST.apps[b.dataset.off]; save(); render(); toast('Disconnected. Documents already indexed stay until you retire them.'); });
 $('docRows').addEventListener('click', (e) => {
@@ -1008,9 +1008,9 @@ const INBOX = DOCS.map((d, i) => ({ id: 'i' + d.id, int: 'upload', title: d.name
   .concat([
     { id: 'n1', int: 'notion', title: 'Pricing wiki', at: T(5, 16, 40), len: '6 pages', status: 'analyzed', text: 'Starter: 3 seats and 1,000 transactions a month. Growth: 15 seats, SAML SSO included. Scale: unlimited seats, a named onboarding manager.', found: ['q1', 'q3'] },
     { id: 'n2', int: 'notion', title: 'Onboarding playbook', at: T(6, 9, 5), len: '11 pages', status: 'ready', text: 'Week 1: kickoff call and admin set-up. Week 2: import customers and connect your bank. Scale customers get two admin training sessions and a named onboarding manager.' },
-    { id: 'w1', int: 'website', title: 'nimbuspay.com/pricing', at: T(5, 8, 2), len: '1 page', status: 'analyzed', text: 'Compare plans. Starter from €29 a month. Growth from €99 a month, includes SAML single sign-on. Scale: talk to sales.', found: ['q1'] },
-    { id: 'w2', int: 'website', title: 'help.nimbuspay.com/sso', at: T(6, 7, 48), len: '1 page', status: 'ready', text: 'Single sign-on (SSO). SSO is an Enterprise-only feature. Contact sales to enable it.' },
-    { id: 'w3', int: 'website', title: 'nimbuspay.com/legal/refunds', at: T(6, 13, 2), len: '1 page', status: 'analyzing', text: 'Refunds. You can cancel within 30 days for a full refund. After that, refunds are prorated to the unused months.' },
+    { id: 'w1', int: 'website', title: 'oslo.com/pricing', at: T(5, 8, 2), len: '1 page', status: 'analyzed', text: 'Compare plans. Starter from €29 a month. Growth from €99 a month, includes SAML single sign-on. Scale: talk to sales.', found: ['q1'] },
+    { id: 'w2', int: 'website', title: 'help.oslo.com/sso', at: T(6, 7, 48), len: '1 page', status: 'ready', text: 'Single sign-on (SSO). SSO is an Enterprise-only feature. Contact sales to enable it.' },
+    { id: 'w3', int: 'website', title: 'oslo.com/legal/refunds', at: T(6, 13, 2), len: '1 page', status: 'analyzing', text: 'Refunds. You can cancel within 30 days for a full refund. After that, refunds are prorated to the unused months.' },
     { id: 'e1', int: 'gmail', title: 'SSO stopped working after we upgraded', who: 'Marta Ruiz · Brightline', at: T(6, 11, 30), len: '4 messages', status: 'attention', text: 'Hi, we moved to Growth yesterday and SSO now shows “not available on your plan”. Our help page says it is Enterprise only, but sales told us Growth includes it. Can you confirm?' },
     { id: 'e2', int: 'gmail', title: 'Invoice for our annual plan', who: 'Lea Martin · Kontor', at: T(6, 10, 14), len: '2 messages', status: 'ready', text: 'Can we pay the annual Growth plan by invoice instead of card? Our finance team needs a PO number on it.' },
     { id: 'e3', int: 'gmail', title: 'Apple Pay in Germany?', who: 'Jonas Weber', at: T(5, 15, 2), len: '1 message', status: 'analyzed', text: 'Do you support Apple Pay for customers in Germany? We could not find it in your docs.', found: ['q16'], gaps: 1 },
@@ -1255,8 +1255,8 @@ const CONTEXT = {
   'd1|p. 2': ['Starter is for small teams getting started. ', ' Teams that need more move to Growth, which includes 15 seats and 25,000 transactions a month.'],
   'd3|pp. 2–4': ['Before you start, make sure you are a workspace Owner and are on Growth or Scale. ', ' Test the connection by signing in from a private window before you turn it on for everyone.'],
   'd1|p. 6': ['Changing plans. You can change plan at any time from Billing. ', ' Your invoice shows the change on its own line.'],
-  'd6|p. 1': ['Welcome to Nimbus Pay. Here is what happens in your first month. ', ' Growth customers get a 30-minute kickoff and our onboarding guides.'],
-  'd9|§1': ['§1 Paying for Nimbus Pay. ', ' Prices are shown in euros and charged in your local currency.'],
+  'd6|p. 1': ['Welcome to Oslo. Here is what happens in your first month. ', ' Growth customers get a 30-minute kickoff and our onboarding guides.'],
+  'd9|§1': ['§1 Paying for Oslo. ', ' Prices are shown in euros and charged in your local currency.'],
   'd9|§4': ['§4 Invoices. ', ' Invoices are sent on the first working day of the month and are due within 30 days.'],
   'd1|p. 5': ['Billing. ', ' Card payments are taken on the same day each month.'],
   'd8|Rate limits': ['Rate limits keep the API fast for everyone. ', ' Limits apply per workspace, not per API key.'],
@@ -1329,7 +1329,7 @@ function renderDetail() {
       '<div class="assist"><label class="abtn"><input type="file" id="attFile" hidden accept=".pdf,.docx,.doc,.md,.txt">' + AIC.doc + 'Attach document</label>' +
       '<button class="abtn" type="button" data-a="link">' + AIC.link + 'Add link</button><button class="abtn ai" type="button" data-a="ai">' + AIC.ai + 'Draft with AI</button>' +
       '<span class="spacer"></span><span class="sub">Attachments are kept as this answer’s sources.</span></div>' +
-      (linking ? '<div class="alink"><input class="text" id="linkIn" placeholder="https://help.nimbuspay.com/…" aria-label="Link"><button class="btn btn--secondary btn--sm" type="button" data-a="addlink">Add</button><button class="btn btn--ghost btn--sm" type="button" data-a="nolink">Cancel</button></div>' : '') +
+      (linking ? '<div class="alink"><input class="text" id="linkIn" placeholder="https://help.oslo.com/…" aria-label="Link"><button class="btn btn--secondary btn--sm" type="button" data-a="addlink">Add</button><button class="btn btn--ghost btn--sm" type="button" data-a="nolink">Cancel</button></div>' : '') +
       (refs.length ? '<div class="arefs">' + refs.map((x, i) => '<span class="aref">' + (x.kind === 'link' ? AIC.link : AIC.doc) + esc(x.name) + '<button type="button" data-rm="' + i + '" aria-label="Remove">×</button></span>').join('') + '</div>' : '') +
       '<div style="height:22px"></div>';
   } else {
@@ -1629,11 +1629,11 @@ function download(name, text, type) {
 }
 const rows = () => approved().map(x => ({ question: x.q, answer: x.a, sources: x.r.src.map(([d, loc]) => docById(d).name + ' (' + loc + ')'), edited: !!x.d.edited, approved: x.d.at || '' }));
 function exportGuard(run) { if (!navigator.onLine || new URLSearchParams(location.search).get('fail') === 'export') { toastError('Export failed. Your answers are safe; check your connection.', run); return false; } return true; }
-$('json').addEventListener('click', () => { if (!exportGuard(() => $('json').click())) return; download('nimbus-pay-approved-answers.json', JSON.stringify(rows(), null, 2), 'application/json'); toast('Exported ' + rows().length + ' answers'); });
+$('json').addEventListener('click', () => { if (!exportGuard(() => $('json').click())) return; download('oslo-approved-answers.json', JSON.stringify(rows(), null, 2), 'application/json'); toast('Exported ' + rows().length + ' answers'); });
 $('csv').addEventListener('click', () => { if (!exportGuard(() => $('csv').click())) return;
   const q = (s) => '"' + String(s).replace(/"/g, '""') + '"';
   const csv = ['question,answer,sources,edited,approved'].concat(rows().map(r => [r.question, r.answer, r.sources.join('; '), r.edited, r.approved].map(q).join(','))).join('\n');
-  download('nimbus-pay-approved-answers.csv', csv, 'text/csv'); toast('Exported ' + rows().length + ' answers');
+  download('oslo-approved-answers.csv', csv, 'text/csv'); toast('Exported ' + rows().length + ' answers');
 });
 render();
 """)
@@ -1904,7 +1904,7 @@ const B = (fn, label) => ({ fn, label });
 const GROUPS = [
   ['Signing in', [
     ['G25', 'Email, then password', 'Two steps. The email shows as a chip with “Change” on the password step.', [L('login.html', 'Open sign in')]],
-    ['G26', 'Forgot your password?', 'Ask for a reset link, then a “Check your email” page with a resend timer.', [L('auth.html?s=forgot', 'Forgot'), L('auth.html?s=sent&email=sara@nimbuspay.com', 'Check your email')]],
+    ['G26', 'Forgot your password?', 'Ask for a reset link, then a “Check your email” page with a resend timer.', [L('auth.html?s=forgot', 'Forgot'), L('auth.html?s=sent&email=sara@oslo.com', 'Check your email')]],
     ['G27', 'Set your password', 'From an invite or a reset email. Live rules: length, a number, both match.', [L('auth.html?s=set&from=invite', 'From invite'), L('auth.html?s=set&from=reset', 'From reset')]],
     ['G24', 'Your details', 'First sign-in with a missing last name (e.g. Microsoft didn’t share it).', [L('auth.html?s=details', 'Open')]],
     ['G28', 'Error, notice, expired', 'Sign-in error with a reference, signed-out notice, expired link.', [L('auth.html?s=error', 'Error'), L('auth.html?s=notice', 'Notice'), L('auth.html?s=expired', 'Expired')]],

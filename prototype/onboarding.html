@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <!-- ASSUMPTION: onboarding uses the app shell with other sections locked until setup is done. check with Eric -->
-<!-- ASSUMPTION: the prototype always indexes Nimbus Pay sample content, whatever files are chosen. check with Eric -->
+<!-- ASSUMPTION: the prototype always indexes Oslo sample content, whatever files are chosen. check with Eric -->
 <script>
   (function () {
     var pref = 'system';
@@ -618,7 +618,7 @@
       <svg class="side__caret" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
     </button>
     <div class="pop" id="mePop" role="menu" hidden>
-      <div class="pop__h" id="meEmail">sara@nimbuspay.com</div>
+      <div class="pop__h" id="meEmail">sara@oslo.com</div>
       <button class="pop__row" id="restartSetup" type="button" role="menuitem"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg>Start setup again</button>
       <a class="pop__row" href="login.html" id="signOut" role="menuitem"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sign out</a>
     </div>
@@ -674,7 +674,7 @@
         <div id="lcHub" hidden>
           <p class="lc-title">Your loop</p>
           <span class="lc-ico" aria-hidden="true"></span>
-          <b id="lcWs">Nimbus Pay</b>
+          <b id="lcWs">Oslo</b>
           <span id="lcNext">Next: connect a source</span>
           <button class="lc-btn" id="lcGo" type="button">Start with Source →</button>
         </div>
@@ -729,7 +729,7 @@
           <input type="file" id="fileInput" multiple accept=".pdf,.docx,.doc,.md,.txt" hidden>
           <span class="row">
             <span class="btn btn--secondary btn--sm" id="browse">Browse files</span>
-            <button type="button" class="btn btn--ghost btn--sm" id="useSample">Use Nimbus Pay sample documents</button>
+            <button type="button" class="btn btn--ghost btn--sm" id="useSample">Use Oslo sample documents</button>
           </span>
         </label>
         <ul class="files" id="fileList"></ul>
@@ -832,7 +832,7 @@
       <div class="final">
         <div class="panel store">
           <h3><span id="storeCount">0</span> approved answers</h3>
-          <p class="sub" style="margin-bottom:8px">Nimbus Pay · approved store</p>
+          <p class="sub" style="margin-bottom:8px">Oslo · approved store</p>
           <div id="storeList"></div>
         </div>
         <div class="panel chat">
@@ -870,7 +870,7 @@ const CONNECTORS = [
   { id: 'notion', name: 'Notion', kind: 'Pages & wikis', mono: 'N', color: 'var(--ink)', unit: 'Teamspace',
     scopes: [['Pricing wiki', [0]], ['Help Center', [1]], ['Security docs', [2]], ['Policies', [3]], ['Onboarding playbook', [5]]] },
   { id: 'website', name: 'Website', kind: 'Web parsing', mono: 'W', color: '#3E6FA6', unit: 'Section',
-    scopes: [['nimbuspay.com/pricing', [0]], ['help.nimbuspay.com', [1, 2]], ['nimbuspay.com/legal', [3]]] },
+    scopes: [['oslo.com/pricing', [0]], ['help.oslo.com', [1, 2]], ['oslo.com/legal', [3]]] },
   { id: 'gdrive', name: 'Google Drive', kind: 'Docs & files', mono: 'GD', color: '#1A73E8', unit: 'Folder',
     scopes: [['Sales / Pricing', [0, 4]], ['Support / Help Center', [1]], ['Security', [2]], ['Policies', [3]], ['Customer success', [5]]] },
   { id: 'sharepoint', name: 'SharePoint', kind: 'Sites & libraries', mono: 'SP', color: '#036C70', unit: 'Site',
@@ -878,7 +878,7 @@ const CONNECTORS = [
   { id: 'confluence', name: 'Confluence', kind: 'Spaces', mono: 'C', color: '#0C66E4', unit: 'Space',
     scopes: [['Go-to-market', [0, 4]], ['Support KB', [1, 3]], ['Security', [2]], ['Onboarding', [5]]] },
   { id: 'gmail', name: 'Gmail', kind: 'Email', mono: 'M', color: '#D93025', unit: 'Label',
-    scopes: [['support@nimbuspay.com', [1, 3]], ['sales@nimbuspay.com', [0, 4]], ['security@nimbuspay.com', [2]]] },
+    scopes: [['support@oslo.com', [1, 3]], ['sales@oslo.com', [0, 4]], ['security@oslo.com', [2]]] },
   { id: 'aircall', name: 'Aircall', kind: 'Calls', mono: 'A', color: '#00B388', unit: 'Line',
     scopes: [['Sales line', [4, 0]], ['Support line', [1, 3]]] },
   { id: 'gsheets', name: 'Google Sheets', kind: 'Spreadsheets', mono: 'GS', color: '#188038', unit: 'Sheet',
@@ -935,7 +935,7 @@ const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt
 const P = (id) => PASSAGES.find(p => p.id === id);
 const docName = (i) => SAMPLE[i].name.replace(/\.[a-z]+$/, '');
 
-let user = { name: 'Sara', email: 'sara@nimbuspay.com' };
+let user = { name: 'Sara', email: 'sara@oslo.com' };
 try { const u = JSON.parse(sessionStorage.getItem('lojo-user')); if (u && u.name) user = u; } catch (e) {}
 {
   const full = user.name === 'Sara' ? 'Sara Lindqvist' : user.name;
@@ -1646,7 +1646,7 @@ $('finish').addEventListener('click', () => {
 const INSIDE = new URLSearchParams(location.search);
 if (INSIDE.has('inside')) {
   const [docs, questions, gaps, drafts, pending, approved] = (INSIDE.get('c') || '10.23.5.16.10.6').split('.').map(Number);
-  $('wsName').textContent = 'Nimbus Pay'; $('wsInput').value = 'Nimbus Pay';
+  $('wsName').textContent = 'Oslo'; $('wsInput').value = 'Oslo';
   S.ws = true; S.indexed = true; S.seeded = true;
   const atVal = pending > 0, k = atVal ? 5 : 6;
   S.reached = k; S.step = k;
@@ -1665,7 +1665,7 @@ if (INSIDE.has('inside')) {
     ? '<a class="nav-item" href="' + href + '">' + IC(d) + '<span class="lbl">' + l + '</span></a>'
     : '<span class="nav-item is-active" aria-current="page">' + IC(d) + '<span class="lbl">' + l + '</span></span>').join('');
   const note = document.querySelector('.side__note'); if (note) note.remove();
-  $('wsPill').innerHTML = '<i></i><span id="wsName">Nimbus Pay</span> · week 3 of 4';
+  $('wsPill').innerHTML = '<i></i><span id="wsName">Oslo</span> · week 3 of 4';
   // right panel: where you are, and every stage with a link into the app
   const ST = [['01 Source', docs + ' documents indexed', 'sources.html', '<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>'],
     ['02 Insights', questions + ' questions · ' + gaps + ' gaps', 'insights.html', '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>'],

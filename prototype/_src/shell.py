@@ -614,7 +614,7 @@ def sidebar(active):
            '  <div class="me">',
            '    <button class="side__user" id="meBtn" type="button" aria-expanded="false"><span class="side__ava" id="topAva">SL</span><span class="side__who"><b id="meName">Sara Lindqvist</b><span class="badge badge--rose">Owner</span></span></button>',
            '    <div class="pop" id="mePop" hidden>',
-           '      <div class="pop__h" id="meEmail">sara@nimbuspay.com</div>',
+           '      <div class="pop__h" id="meEmail">sara@oslo.com</div>',
            '      <div class="pop__sep"></div>',
            '      <div class="ws-h">Workspaces <button class="ws-add" id="wsAdd" type="button" aria-label="New workspace" title="New workspace">+</button></div>',
            '      <form class="ws-new" id="wsNew" hidden><input id="wsNewName" placeholder="Workspace name" aria-label="New workspace name"><button class="btn btn--primary" type="submit">Create</button></form>',
@@ -637,7 +637,7 @@ def sidebar(active):
             '  <div class="side__foot">',
             '    ' + SEG_HTML,
             '    <div class="side__rule"></div>',
-            '    <div class="product"><img src="assets/lojo-icon.png" alt="" width="44" height="44"><div><b>lojo</b><span id="pocWeek">Nimbus Pay · week 3 of 4</span><div class="poc__weeks" id="pocWeeks"><i></i><i></i><i></i><i></i></div></div></div>',
+            '    <div class="product"><img src="assets/lojo-icon.png" alt="" width="44" height="44"><div><b>lojo</b><span id="pocWeek">Oslo · week 3 of 4</span><div class="poc__weeks" id="pocWeeks"><i></i><i></i><i></i><i></i></div></div></div>',
             '  </div>',
             '</aside>']
     return '\n'.join(out)
@@ -736,7 +736,7 @@ const DRAFTS = [
     draft: 'Upload the order record, proof of delivery and any customer messages within 7 days of the dispute notice.',
     redraft: 'Within 7 days of the dispute notice, upload three things: the order record, proof of delivery, and the messages with the customer.' },
   { id: 'r12', qid: 'q12', src: [['d10', '§4', 'Card networks usually decide within 30 to 75 days.']],
-    draft: 'Usually 30 to 75 days. The card network decides, not Nimbus Pay.',
+    draft: 'Usually 30 to 75 days. The card network decides, not Oslo.',
     redraft: 'The card network decides, usually within 30 to 75 days of the dispute being opened.' },
   { id: 'r13', qid: 'q13', src: [['d7', 'p. 3', 'All customer data is encrypted at rest with AES-256.']],
     draft: 'Yes. All customer data is encrypted at rest with AES-256.',
@@ -750,9 +750,9 @@ const DRAFTS = [
   { id: 'r16', qid: 'q16', src: [['d4', '§3', 'Annual plans cancelled after 30 days are refunded for whole unused months.'], ['d9', '§2', 'Annual plans renew automatically unless cancelled 14 days before renewal.']],
     draft: 'Within 30 days: a full refund. After that, the customer gets back whole unused months. Annual plans renew unless cancelled 14 days before renewal.',
     redraft: 'Cancel within 30 days for a full refund. Later cancellations are refunded for whole unused months. Remember annual plans renew unless cancelled 14 days before.' },
-  { id: 'r17', qid: 'q24', src: [['d2', 'Contact us', 'Call +33 1 84 88 42 10, Monday to Friday 9:00–18:00 CET, or email support@nimbuspay.com.']],
-    draft: 'Customers can call support on +33 1 84 88 42 10 (Monday to Friday, 9:00–18:00 CET) or email support@nimbuspay.com. Answers to common questions are at help.nimbuspay.com.',
-    redraft: 'Call +33 1 84 88 42 10, weekdays 9:00–18:00 CET, or email support@nimbuspay.com. The help centre is at help.nimbuspay.com.' },
+  { id: 'r17', qid: 'q24', src: [['d2', 'Contact us', 'Call +33 1 84 88 42 10, Monday to Friday 9:00–18:00 CET, or email support@oslo.com.']],
+    draft: 'Customers can call support on +33 1 84 88 42 10 (Monday to Friday, 9:00–18:00 CET) or email support@oslo.com. Answers to common questions are at help.oslo.com.',
+    redraft: 'Call +33 1 84 88 42 10, weekdays 9:00–18:00 CET, or email support@oslo.com. The help centre is at help.oslo.com.' },
 ];
 const draftByQ = (qid) => DRAFTS.find(d => d.qid === qid);
 
@@ -782,7 +782,7 @@ function score(query, text) {
 
 const SEED = () => ({
   v: 2,
-  workspaces: [{ id: 'w1', name: 'Nimbus Pay', slug: 'nimbus-pay', region: 'Europe · Frankfurt', current: true }, { id: 'w2', name: 'Nimbus Pay — Sandbox', slug: 'nimbus-pay-sandbox', region: 'Europe · Frankfurt' }],
+  workspaces: [{ id: 'w1', name: 'Oslo', slug: 'oslo', region: 'Europe · Frankfurt', current: true }, { id: 'w2', name: 'Oslo — Sandbox', slug: 'oslo-sandbox', region: 'Europe · Frankfurt' }],
   chat: { asked: 48, answered: 37, declined: 8, smalltalk: 3 },
   decisions: {
     r2: { status: 'approved', at: 'Mon 28 Sep' }, r3: { status: 'approved', at: 'Mon 28 Sep' }, r5: { status: 'approved', at: 'Mon 28 Sep' },
@@ -1107,10 +1107,10 @@ function md(src) {
 // G29: greetings and thanks get a short reply with no sources
 const SMALLTALK = /^\s*(hi|hello|hey|hiya|good (morning|afternoon|evening)|thanks|thank you|thx|cheers|ok|okay|great|cool|bye|goodbye)\b[\s!.?]*$/i;
 function smalltalkReply(q) {
-  return /thank|thx|cheers/i.test(q) ? 'You’re welcome. Ask me anything else about Nimbus Pay.'
+  return /thank|thx|cheers/i.test(q) ? 'You’re welcome. Ask me anything else about Oslo.'
     : /bye/i.test(q) ? 'Bye for now.'
     : /^(ok|okay|great|cool)/i.test(q) ? 'Anything else you’d like to know?'
-    : 'Hi! Ask me a question about Nimbus Pay and I’ll answer from the approved answers.';
+    : 'Hi! Ask me a question about Oslo and I’ll answer from the approved answers.';
 }
 function countChat(kind) { ST.chat = ST.chat || { asked: 0, answered: 0, declined: 0, smalltalk: 0 }; if (kind !== 'smalltalk') ST.chat.asked++; ST.chat[kind]++; save(); }
 function refreshNav() {
@@ -1128,13 +1128,13 @@ function srcChip(docId, loc, warn) {
   return '<span class="src' + (warn ? ' src--warn' : '') + '">' + esc(docShort(docId)) + ' <em>' + esc(loc) + '</em>' + (warn ? ' <em>· conflicts</em>' : '') + '</span>';
 }
 (function shell() {
-  let user = { name: 'Sara', email: 'sara@nimbuspay.com' };
+  let user = { name: 'Sara', email: 'sara@oslo.com' };
   try { const u = JSON.parse(sessionStorage.getItem('lojo-user')); if (u && u.name) user = u; } catch (e) {}
   const full = user.name === 'Sara' ? 'Sara Lindqvist' : user.name;
   $('meName').textContent = full;
   $('topAva').textContent = full.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
   $('meEmail').textContent = user.email;
-  $('pocWeek').textContent = 'Nimbus Pay · week ' + POC_WEEK + ' of 4';
+  $('pocWeek').textContent = 'Oslo · week ' + POC_WEEK + ' of 4';
   try { if (localStorage.getItem('lojo-side') === 'collapsed') document.body.classList.add('is-collapsed'); } catch (e) {}
   const col = $('collapse');
   const syncCol = () => { const c = document.body.classList.contains('is-collapsed'); col.setAttribute('aria-expanded', !c); col.setAttribute('aria-label', c ? 'Expand sidebar' : 'Collapse sidebar'); };
@@ -1232,7 +1232,7 @@ function srcChip(docId, loc, warn) {
     const firstQ = qs.find(x => /contact|support/i.test(x)); if (firstQ) qs.unshift(...qs.splice(qs.indexOf(firstQ), 1));
     const w = document.createElement('div'); w.className = 'aw'; w.id = 'askWelcome';
     w.innerHTML = '<span class="aw__ava">' + agentIcon('Chat agent') + '</span><h3>How can I help?</h3>' +
-      (n ? '<p>I answer from Nimbus Pay’s <b>' + n + ' approved answer' + (n === 1 ? '' : 's') + '</b> and show the source behind each one. If something isn’t approved yet, I’ll say so instead of guessing.</p>' +
+      (n ? '<p>I answer from Oslo’s <b>' + n + ' approved answer' + (n === 1 ? '' : 's') + '</b> and show the source behind each one. If something isn’t approved yet, I’ll say so instead of guessing.</p>' +
         '<div class="aw__list">' + qs.slice(0, 4).map(x => '<button type="button" class="aw__q" data-ask="' + esc(x) + '"><span class="aw__qi">?</span><span>' + esc(x) + '</span><em>→</em></button>').join('') + '</div>'
         : '<p>Nothing is approved yet, so there’s nothing I can answer from. <a href="build.html">Review the first drafts</a> to fill the store.</p>') +
       '<div class="aw__tip">' + CLIP + '<span>Drop a document or image to check it against what’s approved</span></div>' +
@@ -1314,7 +1314,7 @@ FAB_HTML = '''<button class="fab" id="fab" type="button" aria-label="Ask lojo" a
     <button class="hbtn" id="askX" type="button" aria-label="Close" title="Close (Esc)"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
   <div class="askp__body"><aside class="askp__hist" aria-label="Chats"><button class="cl__new" id="askNew2" type="button"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M12 9v6M9 12h6"/></svg>New chat</button><div class="cl" id="askConvs"></div></aside><div class="askp__main">
   <div class="askp__log" id="askLog" aria-live="polite"></div>
-  <div class="askp__foot"><div class="chips" id="askSugg"></div><form class="composer" id="askForm"><textarea id="askIn" rows="1" placeholder="Ask about Nimbus Pay…" aria-label="Ask lojo"></textarea><div class="composer__bar"><span class="composer__tools"></span><span class="spacer"></span><button class="send" type="submit" aria-label="Send" disabled><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button></div></form>
+  <div class="askp__foot"><div class="chips" id="askSugg"></div><form class="composer" id="askForm"><textarea id="askIn" rows="1" placeholder="Ask about Oslo…" aria-label="Ask lojo"></textarea><div class="composer__bar"><span class="composer__tools"></span><span class="spacer"></span><button class="send" type="submit" aria-label="Send" disabled><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button></div></form>
   <p class="askp__note"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>Answers come only from approved knowledge</p></div>
   </div></div>
 </section>

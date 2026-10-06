@@ -258,8 +258,8 @@
 
         <div class="field" id="f-email">
           <label for="email">Work email</label>
-          <div class="input"><input id="email" name="email" type="email" autocomplete="email" placeholder="sara@nimbuspay.com"></div>
-          <span class="err">Enter a valid email, like sara@nimbuspay.com.</span>
+          <div class="input"><input id="email" name="email" type="email" autocomplete="email" placeholder="sara@oslo.com"></div>
+          <span class="err">Enter a valid email, like sara@oslo.com.</span>
         </div>
 
         <div class="who" id="who" hidden><span class="av" id="whoAv">S</span><b id="whoEm"></b><button type="button" id="changeEm">Change</button></div>
@@ -385,8 +385,8 @@
     btn.addEventListener('click', () => {
       const provider = btn.dataset.sso;
       busy(btn, provider + '…');
-      // ASSUMPTION: SSO returns Sara's Nimbus Pay identity for the demo. check with Eric
-      setTimeout(() => enter({ name: 'Sara', email: 'sara@nimbuspay.com', via: provider }, provider === 'Microsoft' ? 'details' : 'loading'), 1100);
+      // ASSUMPTION: SSO returns Sara's Oslo identity for the demo. check with Eric
+      setTimeout(() => enter({ name: 'Sara', email: 'sara@oslo.com', via: provider }, provider === 'Microsoft' ? 'details' : 'loading'), 1100);
     });
   });
 
