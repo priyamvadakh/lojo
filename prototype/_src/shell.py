@@ -250,7 +250,7 @@ CSS = r"""
   /* ---------- Ask lojo FAB ---------- */
   .fab{position:fixed;right:24px;bottom:24px;z-index:50;width:58px;height:58px;border-radius:50%;border:0;padding:0;cursor:pointer;background:var(--brand-gradient);box-shadow:0 18px 36px -14px rgba(232,93,117,.8);display:grid;place-items:center;transition:transform .2s ease,box-shadow .2s ease}
   .fab:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 22px 40px -14px rgba(232,93,117,.9)}
-  .fab img{width:30px;height:30px;filter:drop-shadow(0 2px 3px rgba(150,40,60,.25))}
+  .fab img{width:38px;height:38px;filter:drop-shadow(0 2px 3px rgba(150,40,60,.25))}
   .fab::after{content:"Ask lojo";position:absolute;right:calc(100% + 12px);top:50%;transform:translate(6px,-50%);white-space:nowrap;padding:8px 12px;border-radius:10px;background:var(--ink);color:#fff;font-size:.82rem;font-weight:600;opacity:0;pointer-events:none;transition:opacity .15s ease,transform .15s ease}
   .fab:hover::after,.fab:focus-visible::after{opacity:1;transform:translate(0,-50%)}
   .fab.is-open::after{display:none}
