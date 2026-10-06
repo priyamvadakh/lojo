@@ -1212,11 +1212,8 @@ function chatDocs(zone, form, say, setSugg) {
     setSugg(['Which of its questions do we already answer?', 'What does it say that isn’t approved?']);
   }
   clip.querySelector('input').addEventListener('change', (e) => { [...e.target.files].slice(0, 1).forEach(take); e.target.value = ''; });
-  let depth = 0;
-  zone.addEventListener('dragenter', (e) => { if (![...(e.dataTransfer.types || [])].includes('Files')) return; e.preventDefault(); depth++; zone.classList.add('is-drop'); });
-  zone.addEventListener('dragover', (e) => { if ([...(e.dataTransfer.types || [])].includes('Files')) e.preventDefault(); });
-  zone.addEventListener('dragleave', () => { if (--depth <= 0) { depth = 0; zone.classList.remove('is-drop'); } });
-  zone.addEventListener('drop', (e) => { e.preventDefault(); depth = 0; zone.classList.remove('is-drop'); const f = e.dataTransfer.files[0]; if (f) take(f); });
+  // the page-wide drop handler (below) routes files here
+  zone.__take = take; zone.classList.add('askdrop');
   // questions about the attached document get their own answer; anything else falls through
   return (q, store) => {
     if (!doc) return null;
@@ -1230,6 +1227,28 @@ function chatDocs(zone, form, say, setSugg) {
     return null;
   };
 }
+// drop a file anywhere on an app page and it goes to Ask lojo (the Sources upload box keeps its own drops)
+(function dropAnywhere() {
+  const isFileDrag = (e) => { const t = [...((e.dataTransfer && e.dataTransfer.types) || [])]; return t.includes('Files') || t.includes('text/uri-list'); };
+  const target = () => document.querySelector('.chat.askdrop') || document.querySelector('.askp.askdrop');
+  const ownZone = (e) => e.target.closest && e.target.closest('.drop');
+  let depth = 0;
+  const on = (z) => { if (!z) return; if (z.hidden && window.__openAsk) window.__openAsk(); z.classList.add('is-drop'); };
+  const off = () => { depth = 0; document.querySelectorAll('.askdrop.is-drop').forEach(z => z.classList.remove('is-drop')); };
+  document.addEventListener('dragenter', (e) => { if (!isFileDrag(e) || ownZone(e)) return; e.preventDefault(); depth++; on(target()); });
+  document.addEventListener('dragover', (e) => { if (!isFileDrag(e) || ownZone(e)) return; e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; });
+  document.addEventListener('dragleave', (e) => { if (!isFileDrag(e) || ownZone(e)) return; if (--depth <= 0 || !e.relatedTarget) off(); });
+  document.addEventListener('drop', (e) => {
+    if (!isFileDrag(e) || ownZone(e)) return;
+    e.preventDefault(); off();
+    const z = target(); if (!z || !z.__take) return;
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) { z.__take(f); return; }
+    // an image or link dragged from another web page arrives as a URL
+    const url = (e.dataTransfer.getData('text/uri-list') || e.dataTransfer.getData('text/plain') || '').split('\n')[0].trim();
+    if (url) { const name = decodeURIComponent(url.split(/[?#]/)[0].split('/').pop() || 'image.png'); z.__take({ name: /\.[a-z0-9]{2,5}$/i.test(name) ? name : name + '.png', type: 'image/png', size: 120000 }); }
+  });
+})();
 function agentIcon(name) {
   const [deep, light] = AVA_COL[name] || ['#E0486A', '#FFB199'], id = 'ai' + name.replace(/\W/g, '') + Math.random().toString(36).slice(2, 6);
   return '<svg viewBox="0 0 44 44" aria-hidden="true"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + deep + '"/><stop offset="1" stop-color="' + light + '"/></linearGradient></defs>' +
@@ -1408,6 +1427,7 @@ function srcChip(docId, loc, warn) {
     if (open) $('askIn').focus();
   }
   fab.addEventListener('click', () => toggle(panel.hidden));
+  window.__openAsk = () => toggle(true);
   $('askX').addEventListener('click', () => toggle(false));
   // full screen: same conversation, bigger room
   function full(on) {
