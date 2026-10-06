@@ -964,7 +964,7 @@ REVIEW = dict(
       </div>
       <form class="own" id="ownForm">
         <input class="text" id="ownInput" placeholder="Add a question you get asked, e.g. Do you support Apple Pay?" aria-label="Add your own question">
-        <button class="btn btn--secondary">Add to queue</button>
+        <button class="btn btn--secondary">Add</button>
       </form>
     </div>
 

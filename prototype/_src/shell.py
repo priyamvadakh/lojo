@@ -351,6 +351,7 @@ CSS = r"""
 """
 
 ICONS = {
+  'loop': '<svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/></svg>',
   'overview': '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>',
   'documents': '<svg class="i" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>',
   'questions': '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg>',
@@ -371,6 +372,7 @@ NAV = [
 
 NAV_FLAT = [
   ('overview', 'dashboard.html', 'Dashboard', None, ''),
+  ('loop', 'onboarding.html', 'My loop', None, ''),
   ('documents', 'sources.html', 'Sources', None, '01'),
   ('questions', 'insights.html', 'Insights', 'navQuestions', ''),
   ('review', 'build.html', 'Build', 'navReview', ''),
