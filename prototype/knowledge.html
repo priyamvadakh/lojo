@@ -877,7 +877,7 @@
     <div class="kgrid">
       <section class="kbox"><h3><svg viewBox="0 0 24 24"><path d="M12 3 2 8l10 5 10-5z"/><path d="m2 13 10 5 10-5"/></svg>Knowledge spaces</h3><p>Access is decided per space. A space you can’t read is never listed here.</p><div id="kspaces"></div></section>
       <section class="kbox"><h3><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>Where it comes from</h3><div id="ktypes"></div><p class="sub2">Sensitivity</p><div id="ksens"></div></section>
-      <section class="kbox"><h3><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Recently updated</h3><div class="spark" id="kspark"></div><ul class="recent" id="krecent"></ul></section>
+      <section class="kbox"><h3><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Recently updated</h3><p>Newest first.</p><div id="kspark" hidden></div><ul class="recent" id="krecent"></ul></section>
     </div>
 
     <div class="kfil">
@@ -1671,7 +1671,7 @@ function render() {
   // recently updated: updates per day, then the newest five
   const ans = all.filter(e => e.kind === 'answer'), days = [...new Set(ans.map(e => e.at))].sort((a, b) => Date.parse(a) - Date.parse(b)), per = days.map(d => ans.filter(e => e.at === d).length), pm = Math.max(...per);
   $('kspark').innerHTML = days.map((d, i) => '<span class="sp__c" title="' + d + ': ' + per[i] + ' updated"><i style="height:' + Math.max(8, per[i] / pm * 100).toFixed(0) + '%"></i><em>' + d.replace(/, \d{4}$/, '').replace(/^(\w{3}) /, '$1 ') + '</em></span>').join('');
-  $('krecent').innerHTML = ans.sort((a, b) => Date.parse(b.at) - Date.parse(a.at)).slice(0, 4).map(e => '<li><button type="button" data-open="' + e.id + '">' + esc(e.title) + '</button><time>' + e.at.replace(/, \d{4}$/, '') + '</time></li>').join('');
+  $('krecent').innerHTML = ans.sort((a, b) => Date.parse(b.at) - Date.parse(a.at)).slice(0, 5).map(e => '<li><button type="button" data-open="' + e.id + '">' + esc(e.title) + '</button><time>' + e.at.replace(/, \d{4}$/, '') + '</time></li>').join('');
   opts('fSpace', 'All spaces', uniq(all.map(e => e.space))); opts('fState', 'Any state', ['Published', 'Needs review', 'Draft', 'Reference']);
   opts('fType', 'All source types', uniq(all.map(e => e.type))); opts('fConn', 'All connected sources', uniq(all.map(e => e.conn))); opts('fTopic', 'All topics', uniq(all.map(e => e.topic)));
   const list = filtered(all);
