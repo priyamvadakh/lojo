@@ -269,6 +269,12 @@ OVERVIEW = dict(
   .stack .card.qa .acts i{height:14px}
   .stack .card.qa.in{animation:qaIn .45s ease}
   @keyframes qaIn{from{opacity:0;transform:rotate(4deg) translateY(6px)}}
+  /* knowledge tiles: centred, with room for the tag */
+  .tile{align-items:center!important;text-align:center!important;padding-top:34px!important}
+  .tile--soft{display:flex!important;flex-direction:column;padding-top:22px!important}
+  .tile--soft .gauge{grid-row:auto}
+  .tile--soft .tile__lbl,.tile--soft .tile__sub{align-self:center}
+  .tile .tip::after{left:50%;transform:translate(-50%,4px)}
 """,
   body=r"""
     <div class="head">
