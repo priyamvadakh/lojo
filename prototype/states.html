@@ -279,9 +279,6 @@
   .askp__head img{width:30px;height:30px;border-radius:22%}
   .askp__head b{display:block;font-size:.92rem}
   .askp__head span{display:block;font-size:.74rem;color:var(--muted)}
-  .askp__newic{margin-left:auto;width:40px!important;height:40px!important;border-radius:12px!important;border:1px solid var(--line-2)!important;background:var(--panel)!important;color:var(--ink)!important}
-  .askp__newic svg{width:21px!important;height:21px!important}
-  .askp__newic:hover{background:var(--bg-soft)!important}
   .askp__body{flex:1;display:flex;min-height:0}
   .askp__main{flex:1;display:flex;flex-direction:column;min-width:0}
   .askp__hist{display:none}
@@ -418,7 +415,6 @@
   .hbtn{width:34px;height:34px;border-radius:10px;border:1px solid transparent;background:none;color:var(--muted);display:grid;place-items:center;cursor:pointer;flex:none;transition:background-color .15s ease,color .15s ease,border-color .15s ease}
   .hbtn:hover{background:var(--bg-soft);color:var(--ink)}
   .hbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-  #askNew{color:var(--ink)}
   .askp.show-hist #askHistBtn{background:var(--bg-soft);color:var(--ink)}
   .askp.is-full #askHistBtn{display:none}
   .askp__body{position:relative}
@@ -763,10 +759,10 @@
 <section class="askp" id="askp" hidden aria-label="Ask lojo">
   <div class="askp__head"><span class="agico" data-agent="Chat agent"></span><div class="askp__id"><b>Ask lojo</b><span><i class="live"></i><span id="askMeta">Approved answers</span></span></div><span class="spacer"></span>
     <button class="hbtn" id="askHistBtn" type="button" aria-label="Chats" title="Chats"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg></button>
-    <button class="hbtn" id="askNew" type="button" aria-label="New chat" title="New chat"><svg viewBox="0 0 24 24"><path d="M12 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6"/><path d="M18.4 2.6a2 2 0 0 1 2.9 2.9L12 14.8l-3.6.9.9-3.6z"/></svg></button>
+    <button class="hbtn" id="askNew" type="button" aria-label="New chat" title="New chat"><svg viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.4 2.6a2.1 2.1 0 0 1 3 3l-9 9a2 2 0 0 1-.9.5l-2.9.8.8-2.9a2 2 0 0 1 .5-.8z"/></svg></button>
     <button class="hbtn" id="askFull" type="button" aria-label="Full screen" title="Full screen"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button>
     <button class="hbtn" id="askX" type="button" aria-label="Close" title="Close (Esc)"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
-  <div class="askp__body"><aside class="askp__hist" aria-label="Chats"><button class="cl__new" id="askNew2" type="button"><svg viewBox="0 0 24 24"><path d="M12 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6"/><path d="M18.4 2.6a2 2 0 0 1 2.9 2.9L12 14.8l-3.6.9.9-3.6z"/></svg>New chat</button><div class="cl" id="askConvs"></div></aside><div class="askp__main">
+  <div class="askp__body"><aside class="askp__hist" aria-label="Chats"><button class="cl__new" id="askNew2" type="button"><svg viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.4 2.6a2.1 2.1 0 0 1 3 3l-9 9a2 2 0 0 1-.9.5l-2.9.8.8-2.9a2 2 0 0 1 .5-.8z"/></svg>New chat</button><div class="cl" id="askConvs"></div></aside><div class="askp__main">
   <div class="askp__log" id="askLog" aria-live="polite"></div>
   <div class="askp__foot"><div class="chips" id="askSugg"></div><form class="composer" id="askForm"><textarea id="askIn" rows="1" placeholder="Ask about Oslo…" aria-label="Ask lojo"></textarea><div class="composer__bar"><span class="composer__tools"></span><span class="spacer"></span><button class="send" type="submit" aria-label="Send" disabled><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button></div></form>
   <p class="askp__note"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>Answers come only from approved knowledge</p></div>
@@ -1133,7 +1129,7 @@ function convList(el, onPick) {
   });
   askHistory.on(draw); draw();
 }
-const NEWCHAT_ICON = '<svg viewBox="0 0 24 24"><path d="M12 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6"/><path d="M18.4 2.6a2 2 0 0 1 2.9 2.9L12 14.8l-3.6.9.9-3.6z"/></svg>';
+const NEWCHAT_ICON = '<svg viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.4 2.6a2.1 2.1 0 0 1 3 3l-9 9a2 2 0 0 1-.9.5l-2.9.8.8-2.9a2 2 0 0 1 .5-.8z"/></svg>';
 function chatDocs(zone, form, say, setSugg) {
   let doc = null;
   const clip = document.createElement('label'); clip.className = 'clip'; clip.title = 'Attach a document or image'; clip.setAttribute('aria-label', 'Attach a document or image');
