@@ -465,6 +465,8 @@ DOCUMENTS = dict(
   .sitem.is-sel{border-color:rgba(232,93,117,.4);background:linear-gradient(90deg,rgba(232,93,117,.06),transparent);box-shadow:inset 3px 0 0 var(--rose)}
   .sitem b{display:block;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .sitem span{display:block;font-size:.74rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sitem .sico{display:grid;place-items:center;white-space:normal;overflow:visible}
+  .sitem .sico svg{display:block}
   .sitem .dot{width:9px;height:9px;border-radius:50%;background:var(--success)}
   .sitem .dot.warn{background:#C9A24A}
   .sico{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--panel);border:1px solid var(--line)}
