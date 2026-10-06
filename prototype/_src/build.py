@@ -224,6 +224,32 @@ OVERVIEW = dict(
   .lp__center small{display:block;font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--rose)}
   .lp__center b{display:block;font-family:var(--display);font-weight:700;font-size:1.15rem;margin:4px 0 6px}
   .lp__center span{display:block;color:var(--muted);font-size:.74rem;line-height:1.4}
+  /* compact top: Up next and Your knowledge today */
+  .next__main{padding:22px 26px}
+  .next__main h2{font-size:1.3rem;margin:6px 0 4px}
+  .next__main .btn{margin-top:16px;height:38px}
+  .stack{width:150px;height:118px;right:28px}
+  .stack .card{padding:12px}
+  .stack .count{min-width:28px;height:28px;font-size:.82rem}
+  .next__side{padding:14px 18px}
+  .also{padding:7px 10px}
+  .also .ic{width:32px;height:32px}
+  .tiles{gap:12px}
+  .tile{min-height:0;align-items:flex-start;justify-content:flex-start;text-align:left;gap:3px;padding:14px 16px 16px;border-radius:12px}
+  .tile--soft{display:grid!important;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:14px;align-items:center}
+  .tile--soft .gauge{grid-row:1/span 2}
+  .tile--soft .tile__lbl{white-space:nowrap;align-self:end}
+  .tile--soft .tile__sub{align-self:start}
+  .tile__lbl{font-size:.66rem}
+  .tile__val{font-size:1.6rem}
+  .tile__sub{font-size:.78rem;line-height:1.35}
+  .tile__tag{top:10px;right:10px;height:20px;font-size:.62rem}
+  .tile__go{right:12px;bottom:10px}
+  .gauge{width:96px;height:58px;flex:none}
+  .gauge svg{width:96px;height:54px}
+  .gauge b{font-size:.92rem;bottom:-2px;text-align:center}
+  .checks{margin-top:12px;padding-top:10px;font-size:.8rem}
+  @media (max-width:1320px){.tile{min-height:0}}
 """,
   body=r"""
     <div class="head">
