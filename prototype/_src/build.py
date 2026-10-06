@@ -254,6 +254,12 @@ OVERVIEW = dict(
   .gauge b{font-size:.92rem;bottom:-2px;text-align:center}
   .checks{margin-top:12px;padding-top:10px;font-size:.8rem}
   @media (max-width:1320px){.tile{min-height:0}}
+  /* Your loop: the same peach-to-white as Up next */
+  .mini{background:radial-gradient(120% 160% at 0% 0%,#FFE3DA 0%,#FFF4EF 45%,#FFFFFF 85%);border-color:#F6D5CB}
+  .mini:hover{border-color:#F0BBAB;box-shadow:0 12px 26px -18px rgba(232,93,117,.6)}
+  .mini .sep{background:#F3DCD4}
+  .mini .m-track{stroke:rgba(232,93,117,.14)}
+  :root[data-theme="dark"] .mini{background:radial-gradient(120% 160% at 0% 0%,rgba(232,93,117,.18),var(--panel) 70%);border-color:var(--line-2)}
 """,
   body=r"""
     <div class="head">
