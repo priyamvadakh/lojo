@@ -497,7 +497,35 @@
   .scope .confirm{grid-column:2;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:4px}
   .scope .confirm label{display:flex;gap:8px;align-items:center;font-size:.86rem;font-weight:600;cursor:pointer}
   .scope .confirm input{width:17px;height:17px;accent-color:var(--rose)}
-  .listhead{display:flex;align-items:baseline;gap:10px;margin:26px 0 0}
+  .dcard{margin-top:26px;overflow:hidden}
+  .dcard .card__head{padding:20px 24px}
+  .dscroll{overflow-x:auto}
+  .dtable{width:100%;border-collapse:collapse;font-size:.92rem}
+  .dtable th{text-align:left;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:14px 20px;border-bottom:1px solid var(--line);white-space:nowrap}
+  .dtable td{padding:14px 20px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .dtable tbody tr:last-child td{border-bottom:0}
+  .dtable .num{text-align:right;font-variant-numeric:tabular-nums;width:110px}
+  .dtable .tacts{width:170px;text-align:right;white-space:nowrap}
+  .tacts .btn{height:30px;padding:0 10px;font-size:.76rem;margin-left:4px}
+  .dname{display:flex;align-items:center;gap:14px;font-weight:500}
+  .dname .ext{width:42px;height:42px;border-radius:10px;background:var(--bg-soft);display:grid;place-items:center;font-size:.62rem;font-weight:700;color:var(--muted);text-transform:uppercase;flex:none}
+  .dn{min-width:0}
+  .dn .nm{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .dst{display:inline-flex;align-items:center;gap:6px;font-size:.88rem;font-weight:500;white-space:nowrap}
+  .dst.ok{color:var(--success)} .dst.run{color:var(--info)} .dst.fail{color:var(--error)} .dst.wait,.dst.ret{color:var(--muted)}
+  tr.is-row{cursor:pointer}
+  tr.is-row:hover td,tr.is-open td{background:var(--bg-soft)}
+  tr.is-row .tacts .btn--ghost{opacity:0;transition:opacity .15s ease}
+  tr.is-row .tacts .dlbtn{opacity:1}
+  tr.is-row:hover .tacts .btn--ghost,tr.is-row .tacts .btn--ghost:focus-visible,tr.is-open .tacts .btn--ghost{opacity:1}
+  tr.is-failed td{background:rgba(198,69,69,.03)}
+  tr.is-retired .nm,tr.is-retired .ext{opacity:.55}
+  tr.is-retired .nm{text-decoration:line-through;text-decoration-color:rgba(36,26,20,.3)}
+  tr.ddetail td{background:var(--bg-soft);padding:0 20px 16px 76px}
+  tr.drow.is-pin td{background:rgba(255,177,153,.18)}
+  .acts .btn{height:30px;padding:0 10px;font-size:.76rem}
+  .sr-only{position:absolute;left:-9999px}
+  @media (max-width:760px){.dtable th:nth-child(2),.dtable td:nth-child(2),.dtable th:nth-child(4),.dtable td:nth-child(4){display:none}tr.ddetail td{padding-left:20px}}
   .listhead h2{font-family:var(--display);font-weight:700;font-size:1.05rem;margin:0}
   .file{cursor:default}
   .file.is-row{cursor:pointer}
@@ -659,8 +687,13 @@
         <input type="file" id="fileInput" multiple hidden>
         <span class="row"><span class="btn btn--secondary btn--sm">Browse files</span></span>
       </label>
-      <div class="listhead"><h2>Your documents</h2><span class="sub" id="docMeta"></span></div>
-      <ul class="files" id="docRows"></ul>
+      <section class="card dcard" aria-labelledby="docH">
+        <div class="card__head"><h2 id="docH">Your documents</h2><span class="sub" id="docMeta"></span></div>
+        <div class="dscroll"><table class="dtable">
+          <thead><tr><th>Document</th><th class="num">Pages</th><th class="num">Passages</th><th class="num">Questions</th><th>Status</th><th class="tacts"><span class="sr-only">Actions</span></th></tr></thead>
+          <tbody id="docRows"></tbody>
+        </table></div>
+      </section>
     </section>
 
     <section id="tabConnect" hidden>
@@ -1273,9 +1306,12 @@ function renderScope() {
     $('scopeSub').textContent = 'By ' + ST.scope.by + ' on ' + ST.scope.at + ' · personal details are not removed automatically';
   }
 }
-const fileRow = (o) => '<li class="file' + (o.cls || '') + '"' + (o.id ? ' data-id="' + o.id + '"' : '') + '><span class="ext">' + esc(o.ext) + '</span>' +
-  '<span style="min-width:0"><span class="name"><span style="overflow:hidden;text-overflow:ellipsis">' + esc(o.name) + '</span>' + (o.badge || '') + '</span><span class="meta">' + o.meta + '</span>' + (o.why || '') + '</span>' +
-  o.stage + '<span class="acts">' + (o.acts || '') + '</span>' + (o.detail || '') + '</li>';
+// one table row per document; failed, waiting and retired rows say why under the name
+const ST_TXT = { done: ['✓ Indexed', 'ok'], run: ['', 'run'], fail: ['✕ Couldn’t process', 'fail'], wait: ['Waiting', 'wait'], ret: ['Retired', 'ret'] };
+const docRow = (o) => '<tr class="drow' + (o.cls || '') + '"' + (o.id ? ' data-id="' + o.id + '"' : '') + '><td><span class="dname"><span class="ext">' + esc(o.ext) + '</span><span class="dn"><span class="nm">' + esc(o.name) + (o.badge || '') + '</span>' + (o.why || '') + '</span></span></td>' +
+  '<td class="num">' + (o.pages ?? '–') + '</td><td class="num">' + (o.passages ?? '–') + '</td><td class="num">' + (o.qs ? o.qs : '–') + '</td>' +
+  '<td><span class="dst ' + ST_TXT[o.st][1] + '">' + (o.st === 'run' ? '<span class="spin" style="width:10px;height:10px"></span> ' + esc(o.stage) : ST_TXT[o.st][0]) + '</span></td>' +
+  '<td class="tacts">' + (o.acts || '') + '</td></tr>' + (o.detail ? '<tr class="ddetail"><td colspan="6">' + o.detail + '</td></tr>' : '');
 function render() {
   const docx = ST.docx || [];
   const live = DOCS.filter(d => !ST.retired[d.id]).length + extra.length + docx.filter(d => d.status !== 'retired').length;
@@ -1287,15 +1323,14 @@ function render() {
   docx.forEach(d => {
     if (d.status === 'retired') return;
     const base = { ext: d.ext, name: d.name };
-    if (d.status === 'failed') rows.push(fileRow({ ...base, cls: ' is-failed', meta: 'Added ' + esc(d.added || 'today'), why: '<span class="why">' + esc(d.reason) + '</span>', stage: '<span class="pstage is-fail">Couldn’t process</span>',
+    if (d.status === 'failed') rows.push(docRow({ ...base, cls: ' is-failed', st: 'fail', why: '<span class="why">' + esc(d.reason) + '</span>',
       acts: '<button class="btn btn--secondary" data-retry="' + d.id + '">Try again</button><button class="btn btn--ghost" style="opacity:1" data-remove="' + d.id + '">Remove</button>' }));
-    else if (d.status === 'waiting') rows.push(fileRow({ ...base, meta: pendingScope() ? 'Waiting for you to confirm scope' : 'In the queue · processing starts in about 2 minutes', stage: '<span class="pstage is-wait">Waiting</span>',
+    else if (d.status === 'waiting') rows.push(docRow({ ...base, st: 'wait', why: '<span class="why mute">' + (pendingScope() ? 'Waiting for you to confirm scope.' : 'In the queue. Processing starts in about 2 minutes.') + '</span>',
       acts: '<button class="btn btn--ghost" style="opacity:1" data-remove="' + d.id + '">Cancel</button>' }));
-    else if (d.status === 'running') rows.push(fileRow({ ...base, meta: 'Processing', stage: '<span class="pstage is-run">' + esc(d.stage || 'Extracting text') + '</span>' }));
-    else rows.push(fileRow({ ...base, meta: (d.pages || 4) + ' pages · ' + Math.round((d.pages || 4) * 4.6) + ' passages', stage: '<span class="pstage is-done">Indexed</span>' }));
+    else if (d.status === 'running') rows.push(docRow({ ...base, st: 'run', stage: d.stage || 'Extracting text' }));
+    else rows.push(docRow({ ...base, st: 'done', pages: d.pages || 4, passages: Math.round((d.pages || 4) * 4.6) }));
   });
-  extra.forEach(f => rows.push(fileRow({ ext: f.ext, name: f.name, meta: f.done ? f.pages + ' pages · ' + f.passages + ' passages · just now' : 'Uploaded just now',
-    stage: '<span class="pstage ' + (f.done ? 'is-done">Indexed' : 'is-run">' + esc(f.stage)) + '</span>' })));
+  extra.forEach(f => rows.push(docRow({ ext: f.ext, name: f.name, st: f.done ? 'done' : 'run', stage: f.stage, pages: f.done ? f.pages : undefined, passages: f.done ? f.passages : undefined })));
   DOCS.forEach(d => {
     if (ST.retired[d.id]) return;
     const ext = d.name.split('.').pop(), n = Math.round(d.pages * 4.6), qs = qsFor(d.id);
@@ -1305,16 +1340,16 @@ function render() {
       const ps = hit.concat(all.filter(p => !hit.includes(p))).slice(0, 3);
       detail = '<div class="fdetail"><p class="sub" style="margin:6px 0 2px">Sample passages</p>' +
         (ps.length ? ps.map(p => '<div class="passage"><em>' + esc(p.loc) + '</em>' + esc(p.text) + '</div>').join('') : '<p class="sub">No passages sampled yet.</p>') +
-        (qs.length ? '<p class="sub" style="margin:10px 0 6px">Questions found here</p><div class="chips">' + qs.map(q => '<a class="chip" href="insights.html">' + esc(q.q) + '</a>').join('') + '</div>' : '') + '</div>';
+        (qs.length ? '<p class="sub" style="margin:10px 0 6px">Questions found here</p><div class="chips">' + qs.map(q => '<a class="chip" href="insights.html#questions">' + esc(q.q) + '</a>').join('') + '</div>' : '') + '</div>';
     }
-    rows.push(fileRow({ id: d.id, cls: ' is-row' + (open === d.id ? ' is-open' : ''), ext, name: d.name, badge: d.faq ? '<span class="badge badge--info">Your help pages</span>' : '',
-      meta: d.pages + ' pages · ' + n + ' passages · ' + qs.length + ' question' + (qs.length === 1 ? '' : 's') + ' · added ' + d.added,
-      stage: '<span class="pstage is-done">Indexed</span>', acts: '<button class="btn btn--secondary dlbtn" data-dl="' + d.id + '" title="Download" aria-label="Download ' + esc(d.name) + '">' + DL_ICON + '</button><button class="btn btn--ghost" data-retire="' + d.id + '">Retire</button>', detail }));
+    rows.push(docRow({ id: d.id, cls: ' is-row' + (open === d.id ? ' is-open' : ''), ext, name: d.name, badge: d.faq ? ' <span class="badge badge--info">Your help pages</span>' : '',
+      pages: d.pages, passages: n, qs: qs.length, st: 'done',
+      acts: '<button class="btn btn--ghost dlbtn" data-dl="' + d.id + '" title="Download" aria-label="Download ' + esc(d.name) + '">' + DL_ICON + '</button><button class="btn btn--ghost" data-retire="' + d.id + '">Retire</button>', detail }));
   });
   // G4: retired documents stay listed, greyed, and can be restored
-  DOCS.filter(d => ST.retired[d.id]).forEach(d => rows.push(fileRow({ cls: ' is-retired', ext: d.name.split('.').pop(), name: d.name, meta: 'Retired just now by Sara Lindqvist', stage: '<span class="pstage">Retired</span>',
+  DOCS.filter(d => ST.retired[d.id]).forEach(d => rows.push(docRow({ cls: ' is-retired', ext: d.name.split('.').pop(), name: d.name, st: 'ret', pages: d.pages, why: '<span class="why mute">Retired just now by Sara Lindqvist</span>',
     acts: '<button class="btn btn--secondary" data-restore="' + d.id + '" data-base="1">Restore</button>' })));
-  docx.filter(d => d.status === 'retired').forEach(d => rows.push(fileRow({ cls: ' is-retired', ext: d.ext, name: d.name, meta: esc(d.retiredNote), stage: '<span class="pstage">Retired</span>',
+  docx.filter(d => d.status === 'retired').forEach(d => rows.push(docRow({ cls: ' is-retired', ext: d.ext, name: d.name, st: 'ret', why: '<span class="why mute">' + esc(d.retiredNote) + '</span>',
     acts: '<button class="btn btn--secondary" data-restore="' + d.id + '">Restore</button>' })));
   $('docRows').innerHTML = rows.join('');
   renderApps();
@@ -1334,7 +1369,7 @@ $('apps').addEventListener('click', (e) => {
 $('synced').addEventListener('click', (e) => { const b = e.target.closest('[data-off]'); if (!b) return; delete ST.apps[b.dataset.off]; save(); render(); toast('Disconnected. Documents already indexed stay until you retire them.'); });
 $('docRows').addEventListener('click', (e) => {
   const b = e.target.closest('button');
-  if (!b) { const li = e.target.closest('.file.is-row'); if (li && !e.target.closest('a')) { open = open === li.dataset.id ? null : li.dataset.id; render(); } return; }
+  if (!b) { const li = e.target.closest('tr.is-row'); if (li && !e.target.closest('a')) { open = open === li.dataset.id ? null : li.dataset.id; render(); } return; }
   const docx = ST.docx || [];
   if (b.dataset.retry) {
     const d = docx.find(x => x.id === b.dataset.retry); d.status = 'running'; d.stage = 'Extracting text'; render();
@@ -1411,9 +1446,9 @@ renderScope();
 render();
 show(location.hash === '#connect' ? 'connect' : 'docs');
 if (pinDoc && docById(pinDoc)) {
-  const li = document.querySelector('.file[data-id="' + pinDoc + '"]');
+  const li = document.querySelector('tr.drow[data-id="' + pinDoc + '"]');
   if (li) { li.classList.add('is-pin'); li.scrollIntoView({ block: 'center' }); }
-  if (pinLoc) document.querySelectorAll('.file[data-id="' + pinDoc + '"] .passage').forEach(p => { if (p.querySelector('em').textContent === pinLoc) p.classList.add('is-hit'); });
+  if (pinLoc) document.querySelectorAll('tr.ddetail .passage').forEach(p => { if (p.querySelector('em').textContent === pinLoc) p.classList.add('is-hit'); });
 }
 if (new URLSearchParams(location.search).get('demo') === 'upload') demoUploadErrors();
 
