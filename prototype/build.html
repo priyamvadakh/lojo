@@ -516,10 +516,10 @@
   @media (max-width:900px){.askp.is-page .askp__hist{display:none}}
 
   /* Ask lojo as a push drawer: docks on the right and the page makes room */
-  .askp:not(.is-full):not(.is-page){top:12px;bottom:12px;right:12px;height:auto;width:420px;border-radius:20px;transform-origin:right center;animation:drawerIn .25s cubic-bezier(.2,.8,.2,1)}
+  .askp:not(.is-full):not(.is-page){top:0;bottom:0;right:0;height:auto;width:432px;border-radius:0;border-top:0;border-bottom:0;border-right:0;box-shadow:-16px 0 40px -30px rgba(36,26,20,.45);transform-origin:right center;animation:drawerIn .25s cubic-bezier(.2,.8,.2,1)}
   @keyframes drawerIn{from{opacity:0;transform:translateX(24px)}}
   .main{transition:margin .3s cubic-bezier(.2,.8,.2,1)}
-  body.ask-open .main{margin-right:444px}
+  body.ask-open .main{margin-right:432px}
   body.ask-open .fab{opacity:0;pointer-events:none;transform:scale(.8)}
   @media (max-width:1100px){body.ask-open .main{margin-right:0}.askp:not(.is-full):not(.is-page){width:min(420px,calc(100vw - 24px))}}
 
