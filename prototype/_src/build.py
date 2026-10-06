@@ -1883,7 +1883,7 @@ READOUT = dict(
       <div>
         <p class="label">Decide · Week 4</p>
         <h1>Knowledge</h1>
-        <p>What we found, what it cost to process, and what a full build would take.</p>
+        <p>What we found and what it cost to process.</p>
       </div>
       <span class="spacer"></span>
       <button class="btn btn--secondary no-print" onclick="window.print()">Print</button>
