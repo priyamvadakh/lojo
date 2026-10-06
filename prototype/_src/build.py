@@ -1673,6 +1673,43 @@ ACTIVITY = dict(
   .apill.run::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;animation:livePulse 1.4s ease-in-out infinite}
   @keyframes livePulse{50%{opacity:.3}}
   .arow.is-off h3,.arow.is-off .anums{opacity:.6}
+  .vtog{display:inline-flex;padding:3px;border-radius:12px;border:1px solid var(--line-2);background:var(--bg-soft);margin-right:8px}
+  .vtog button{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:0;border-radius:9px;background:none;font:inherit;font-size:.8rem;font-weight:600;color:var(--muted);cursor:pointer}
+  .vtog button svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .vtog button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:0 2px 6px -2px rgba(36,26,20,.25)}
+  .agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:10px}
+  .acardx{display:flex;flex-direction:column;gap:6px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--panel);transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease}
+  .acardx:hover{border-color:var(--line-2);box-shadow:0 16px 30px -24px rgba(36,26,20,.55);transform:translateY(-2px)}
+  .acardx.is-run{border-color:rgba(63,143,95,.35);background:linear-gradient(180deg,rgba(63,143,95,.05),var(--panel) 45%)}
+  .acardx.is-off{opacity:.65}
+  .acardx__top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px}
+  .acardx .apill{grid-column:auto;grid-row:auto}
+  .acardx h3{margin:0;font-family:var(--display);font-weight:700;font-size:1.05rem}
+  .acardx__stage{align-self:flex-start;font-size:.7rem;font-weight:600;color:var(--muted);border:1px solid var(--line-2);border-radius:999px;padding:2px 8px;text-decoration:none}
+  .acardx__stage:hover{color:var(--ink);text-decoration:none}
+  .acardx__d{margin:4px 0 0;color:var(--muted);font-size:.84rem;min-height:2.6em}
+  .acardx__nums{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .acardx__nums b{display:block;font-family:var(--display);font-size:1.1rem;font-weight:700}
+  .acardx__nums span{font-size:.7rem;color:var(--muted);line-height:1.25;display:block}
+  .acardx__nums .bad b{color:var(--error)}
+  .acardx__last{margin:6px 0 0;font-size:.76rem;color:var(--muted);display:flex;align-items:center;gap:6px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .acardx__last b{color:var(--success)}
+  .acardx__last .ld{width:7px;height:7px;border-radius:50%;background:var(--success);flex:none;animation:livePulse 1.4s ease-in-out infinite}
+  .llist{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:10px}
+  .lrow{display:grid;grid-template-columns:44px minmax(150px,200px) minmax(0,1fr) 150px 92px 80px 14px;gap:14px;align-items:center;padding:10px 16px;color:inherit;text-decoration:none;transition:background-color .15s ease}
+  .lrow + .lrow{border-top:1px solid var(--line)}
+  .lrow:hover{background:var(--bg-soft);text-decoration:none}
+  .lrow.is-off{opacity:.6}
+  .lrow .ava3d,.lrow .ava3d img,.lrow .ava3d > svg{width:36px;height:36px}
+  .lrow__n b{display:block;font-size:.9rem;font-weight:600}
+  .lrow__n span{font-size:.74rem;color:var(--muted)}
+  .lrow__w{font-size:.82rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lrow__k{font-size:.78rem;color:var(--muted);white-space:nowrap}
+  .lrow__k b{color:var(--ink);font-family:var(--display)}
+  .lrow .apill{justify-self:start;grid-column:auto;grid-row:auto;align-self:center}
+  .lrow time{font-size:.76rem;color:var(--muted);text-align:right;white-space:nowrap}
+  .lrow__go{color:var(--muted)}
+  @media (max-width:900px){.lrow{grid-template-columns:40px minmax(0,1fr) auto}.lrow__w,.lrow__k,.lrow time,.lrow__go{display:none}}
   @media (max-width:640px){.arow{grid-template-columns:44px minmax(0,1fr)}.apill{grid-column:2;grid-row:auto;justify-self:start}.anums{gap:20px}}
 """,
   body=r"""
@@ -1687,6 +1724,10 @@ ACTIVITY = dict(
       <div class="acard__h">
         <div><h2 id="allH">All agents</h2><p class="sub" id="upd"></p></div>
         <span class="spacer"></span>
+        <div class="vtog" role="group" aria-label="View">
+          <button type="button" data-view="cards" aria-pressed="true" title="Card view"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Cards</button>
+          <button type="button" data-view="list" aria-pressed="false" title="List view"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>List</button>
+        </div>
         <button class="refresh" id="refresh" type="button" aria-label="Refresh"><svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/></svg></button>
       </div>
       <div class="agf chips" id="agFilters" role="group" aria-label="Filter agents"></div>
@@ -1719,16 +1760,39 @@ function row([k, name, min, last, what], c) {
     '<p class="d">' + esc(what) + '</p><div class="anums">' + statsFor(name, c).map(([n, l, bad]) => '<div' + (bad ? ' class="bad"' : '') + '><b>' + (typeof n === 'number' ? n.toLocaleString('en-GB') : n) + '</b><span>' + l + '</span></div>').join('') + '</div>' +
     '<p class="alast">' + (min === null ? 'No activity yet' : (min === 0 ? '<b>Running now</b> · ' : 'Last activity ' + at(min) + ' · ') + esc(last)) + '</p></article>';
 }
+// card view: one card per agent; list view: one row per agent
+let view = 'cards';
+try { view = localStorage.getItem('lojo-agents-view') || 'cards'; } catch (e) {}
+function card([k, name, min, last, what], c) {
+  const s = AG_STAGES.find(x => x[0] === k);
+  const pill = min === 0 ? '<span class="apill run">Working</span>' : min === null ? '<span class="apill">Not yet</span>' : '<span class="apill">Idle</span>';
+  return '<article class="acardx' + (min === 0 ? ' is-run' : '') + (min === null ? ' is-off' : '') + '"><div class="acardx__top">' + ava3d(k, name, min) + pill + '</div>' +
+    '<h3>' + esc(name) + '</h3><a class="acardx__stage" href="' + s[2] + '">' + s[1] + '</a><p class="acardx__d">' + esc(what) + '</p>' +
+    '<div class="acardx__nums">' + statsFor(name, c).map(([n, l, bad]) => '<div' + (bad ? ' class="bad"' : '') + '><b>' + (typeof n === 'number' ? n.toLocaleString('en-GB') : n) + '</b><span>' + l + '</span></div>').join('') + '</div>' +
+    '<p class="acardx__last">' + (min === null ? 'No activity yet' : (min === 0 ? '<i class="ld"></i><b>Running now</b> · ' : agAgo(min) + ' · ') + esc(last)) + '</p></article>';
+}
+function line([k, name, min, last, what], c) {
+  const s = AG_STAGES.find(x => x[0] === k), n = statsFor(name, c)[0];
+  const pill = min === 0 ? '<span class="apill run">Working</span>' : min === null ? '<span class="apill">Not yet</span>' : '<span class="apill">Idle</span>';
+  return '<a class="lrow' + (min === null ? ' is-off' : '') + '" href="' + s[2] + '">' + ava3d(k, name, min) +
+    '<span class="lrow__n"><b>' + esc(name) + '</b><span>' + s[1] + '</span></span>' +
+    '<span class="lrow__w">' + (min === null ? 'No activity yet' : esc(last)) + '</span>' +
+    '<span class="lrow__k"><b>' + (typeof n[0] === 'number' ? n[0].toLocaleString('en-GB') : n[0]) + '</b> ' + n[1].toLowerCase() + '</span>' +
+    pill + '<time>' + (min === null ? '—' : agAgo(min)) + '</time><span class="lrow__go">→</span></a>';
+}
 function render() {
   const c = counts();
+  document.querySelectorAll('.vtog [data-view]').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === view));
   const chips = [['all', 'All', AGENTS.length]].concat(AG_STAGES.map(([k, label]) => [k, label.slice(3), AGENTS.filter(a => a[0] === k).length]));
   $('agFilters').innerHTML = chips.map(([k, label, n]) => '<button type="button" class="chip" data-agf="' + k + '" aria-pressed="' + (agFilter === k) + '">' + label + ' <em>' + n + '</em></button>').join('');
   const list = AGENTS.filter(a => agFilter === 'all' || a[0] === agFilter), run = list.filter(a => a[2] === 0), rest = list.filter(a => a[2] !== 0);
-  $('alist').innerHTML = '<div class="agrp run">Now running <b>' + run.length + '</b></div>' + (run.length ? run.map(a => row(a, c)).join('') : '<p class="anone">No agents are running right now.</p>') +
-    '<div class="agrp">Other agents <b>' + rest.length + '</b></div>' + rest.map(a => row(a, c)).join('');
+  const wrapG = (items) => view === 'cards' ? '<div class="agrid">' + items.map(a => card(a, c)).join('') + '</div>' : '<div class="llist">' + items.map(a => line(a, c)).join('') + '</div>';
+  $('alist').innerHTML = '<div class="agrp run">Now running <b>' + run.length + '</b></div>' + (run.length ? wrapG(run) : '<p class="anone">No agents are running right now.</p>') +
+    '<div class="agrp">Other agents <b>' + rest.length + '</b></div>' + wrapG(rest);
   $('upd').textContent = 'Updated ' + at(0);
 }
 $('agFilters').addEventListener('click', (e) => { const b = e.target.closest('[data-agf]'); if (!b) return; agFilter = b.dataset.agf; render(); });
+document.querySelector('.vtog').addEventListener('click', (e) => { const b = e.target.closest('[data-view]'); if (!b) return; view = b.dataset.view; try { localStorage.setItem('lojo-agents-view', view); } catch (err) {} render(); });
 $('refresh').addEventListener('click', () => { const b = $('refresh'); b.classList.add('is-spin'); setTimeout(() => { b.classList.remove('is-spin'); render(); toast('Up to date'); }, 700); });
 render();
 """)
