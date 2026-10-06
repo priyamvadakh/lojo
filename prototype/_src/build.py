@@ -890,7 +890,7 @@ QUESTIONS_PAGE = dict(
 """,
   js=r"""
 let filter = 'all';
-const ORIGIN = { found: ['Found in documents', 'badge--muted'], faq: ['From your help pages', 'badge--info'], you: ['From you', 'badge--rose'], gap: ['From a gap', 'badge--amber'] };
+const ORIGIN = { chat: ['From Ask lojo', 'badge--info'], found: ['Found in documents', 'badge--muted'], faq: ['From your help pages', 'badge--info'], you: ['From you', 'badge--rose'], gap: ['From a gap', 'badge--amber'] };
 ST.asks = ST.asks || {}; ST.notes = ST.notes || {}; ST.draftFailed = ST.draftFailed || {};
 let leaving = null, flashId = null;
 function statusOf(q) {
@@ -1737,99 +1737,20 @@ render();
 CHAT = dict(
   active='approved', title='Ask lojo',
   css=r"""
-  .chatwrap{display:grid;grid-template-columns:270px minmax(0,1fr);gap:18px;align-items:stretch}
-  .wrap:has(.chatwrap){max-width:none;padding-bottom:24px}
-  .chist{display:flex;flex-direction:column;gap:10px;padding:14px 10px;height:calc(100vh - 196px);min-height:460px;overflow:auto;background:var(--bg-soft)}
-  @media (max-width:900px){.chatwrap{grid-template-columns:1fr}.chist{height:auto;min-height:0;max-height:220px}}
-  .chat{display:flex;flex-direction:column;height:calc(100vh - 196px);min-height:460px}
-  .chat .log{padding:28px max(28px,calc(50% - 420px))}
-  .chat .foot{padding:14px max(20px,calc(50% - 430px)) 20px}
-  .log{flex:1;overflow:auto;padding:22px;display:grid;gap:14px;align-content:start}
-  .msg{max-width:78%;padding:12px 15px;border-radius:14px;font-size:.9rem}
-  .msg--me{justify-self:end;background:var(--ink);color:#fff;border-bottom-right-radius:4px}
-  .brow{display:flex;gap:10px;align-items:flex-end;justify-self:start;max-width:84%}
-  .brow .msg{max-width:none}
-  .msg--bot{justify-self:start;background:var(--bg-soft);border-bottom-left-radius:4px}
-  .msg--bot.miss{background:rgba(217,154,43,.1);border:1px solid rgba(217,154,43,.3)}
-  .msg--bot .from{display:block;margin-top:10px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-  .msg--bot .srcs{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-  .msg--bot .btn{margin-top:10px}
-  .foot{border-top:1px solid var(--line);padding:14px 16px;display:grid;gap:10px}
-  .foot form:not(.composer){display:flex;gap:8px}
 """,
   body=r"""
     <div class="head">
       <div>
         <p class="label">04 Distribute</p>
         <h1>Ask lojo</h1>
-        <p id="chatSub">It answers only from approved answers, shows where each answer came from, and says so when it doesn’t know.</p>
+        <p>Answers only from approved knowledge, with the source for every answer. If something isn’t approved yet, it says so.</p>
       </div>
       <span class="spacer"></span>
       <span class="badge badge--muted">Not published anywhere in this phase</span>
     </div>
-    <div class="chatwrap">
-    <aside class="card chist" aria-label="Chats"><button class="cl__new" id="newConv" type="button"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M12 9v6M9 12h6"/></svg>New chat</button><div class="cl" id="convs"></div></aside>
-    <section class="card chat">
-      <div class="log" id="log" aria-live="polite"></div>
-      <div class="foot">
-        <div class="chips" id="sugg"></div>
-        <form class="composer" id="form"><textarea id="ask" rows="1" placeholder="Ask lojo…" aria-label="Ask lojo"></textarea><div class="composer__bar"><span class="composer__tools"></span><span class="spacer"></span><button class="send" type="submit" aria-label="Ask" disabled><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button></div></form>
-      </div>
-    </section>
-    </div>
+    <div class="askhost" id="askHost"></div>
 """,
   js=r"""
-const store = () => DRAFTS.filter(r => decision(r).status === 'approved').map(r => ({ r, q: QUESTIONS.find(q => q.id === r.qid).q, a: answerOf(r) }));
-function bubble(cls, html, replay) {
-  if (!replay) askHistory.push(cls.startsWith('me') ? 'me' : /miss/.test(cls) ? 'miss' : 'bot', html);
-  const d = document.createElement('div'); d.className = 'msg msg--' + cls; d.innerHTML = html;
-  let row = d;
-  // the Chat agent's replies carry its avatar
-  if (cls.startsWith('bot')) { row = document.createElement('div'); row.className = 'brow'; row.innerHTML = '<span class="agico">' + agentIcon('Chat agent') + '</span>'; row.appendChild(d); }
-  $('log').appendChild(row); $('log').scrollTop = $('log').scrollHeight; return d;
-}
-function ask(q) {
-  bubble('me', esc(q));
-  const typing = bubble('bot', '<span class="spin"></span>');
-  setTimeout(() => {
-    typing.parentNode.remove();
-    if (SMALLTALK.test(q)) { bubble('bot', esc(smalltalkReply(q))); countChat('smalltalk'); return; }
-    const dq = aboutDoc(q, store); if (dq) { bubble('bot', dq); countChat('answered'); return; }
-    let best = null, bs = 0;
-    store().forEach(x => { const s = score(q, x.q + ' ' + x.a); if (s.c > 0 && s.s > bs) { best = x; bs = s.s; } });
-    if (best && bs >= 2) {
-      countChat('answered');
-      bubble('bot', answerHTML(q, best.a, best.q, best.r.src.map(([d, loc]) => srcChip(d, loc)).join('')));
-    } else {
-      countChat('declined');
-      const b = bubble('bot miss', 'I don’t know. Nothing approved covers this yet, so I won’t guess.<br><button class="btn btn--secondary btn--sm" type="button">Add it to your questions</button>');
-      b.querySelector('button').addEventListener('click', (e) => {
-        const v = q.endsWith('?') ? q : q + '?';
-        if (!allQuestions().some(x => x.q.toLowerCase() === v.toLowerCase())) { const id = 'x' + Date.now(); ST.extra.push({ id, q: v, origin: 'you', docs: [] }); ST.matters[id] = true; save(); }
-        e.target.disabled = true; e.target.textContent = 'Added to your questions'; toast('Added to Insights');
-      });
-    }
-  }, 600);
-}
-const n = store().length;
-$('chatSub').textContent = 'It answers only from the ' + n + ' approved answer' + (n === 1 ? '' : 's') + ', shows where each answer came from, and says so when it doesn’t know.';
-function greet() {
-  $('log').innerHTML = '';
-  bubble('bot', n ? 'Ask me about Nimbus Pay. I only use the ' + n + ' approved answers.' : 'Nothing is approved yet, so I can’t answer anything. <a href="build.html">Review the first batch</a> to fill the store.', true);
-}
-greet();
-// the same conversation as the Ask lojo panel
-function openConv() { greet(); askHistory.all().forEach(m => bubble(m.kind === 'me' ? 'me' : m.kind === 'miss' ? 'bot miss' : 'bot', m.html, true)); }
-openConv();
-$('newConv').addEventListener('click', () => { askHistory.newChat(); openConv(); $('ask').focus(); });
-convList($('convs'), openConv);
-const SUGG = ['What is the phone number for support?', 'How fast can we call the API?', 'What is the support email?', 'Is our data encrypted?', 'Hi'];
-$('sugg').innerHTML = SUGG.map(s => '<button type="button" class="chip">' + esc(s) + '</button>').join('');
-$('sugg').addEventListener('click', (e) => { const c = e.target.closest('.chip'); if (c) ask(c.textContent); });
-$('form').addEventListener('submit', (e) => { e.preventDefault(); const v = $('ask').value.trim(); if (!v) return; $('ask').value = ''; ask(v); });
-const SAY = new URLSearchParams(location.search).get('say'); if (SAY) SAY.split('|').forEach((q, i) => setTimeout(() => ask(q), i * 900));
-// drop a document anywhere on the chat, or attach it with the paperclip
-const aboutDoc = chatDocs(document.querySelector('.chat'), $('form'), bubble, (list) => { if (list) $('sugg').innerHTML = list.map(x => '<button class="chip" type="button">' + esc(x) + '</button>').join(''); else $('sugg').innerHTML = SUGG.map(x => '<button type="button" class="chip">' + esc(x) + '</button>').join(''); });
 """)
 
 # ============================================================ READOUT

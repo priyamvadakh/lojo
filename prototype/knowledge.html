@@ -406,6 +406,89 @@
   .askp__foot form:not(.composer){display:flex;gap:8px}
   .askp__foot .chips .chip{font-size:.74rem;padding:4px 10px}
 
+  /* ---------- Ask lojo, refined ---------- */
+  .fab::after{content:"Ask lojo  ⌘K"!important;white-space:pre}
+  .askp__head{gap:12px;padding:14px 14px 14px 16px}
+  .askp__head .agico{width:36px;height:36px}
+  .askp__id{min-width:0}
+  .askp__id b{display:block;font-family:var(--display);font-size:1rem;font-weight:700;letter-spacing:-.01em}
+  .askp__id > span{display:flex!important;align-items:center;gap:6px;font-size:.74rem;color:var(--muted);white-space:nowrap}
+  .askp__id .live{width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 0 3px rgba(63,143,95,.16)}
+  .askp__head .spacer{flex:1}
+  .hbtn{width:34px;height:34px;border-radius:10px;border:1px solid transparent;background:none;color:var(--muted);display:grid;place-items:center;cursor:pointer;flex:none;transition:background-color .15s ease,color .15s ease,border-color .15s ease}
+  .hbtn:hover{background:var(--bg-soft);color:var(--ink)}
+  .hbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  #askNew{border-color:var(--line-2);color:var(--ink)}
+  .askp.show-hist #askHistBtn{background:var(--bg-soft);color:var(--ink)}
+  .askp.is-full #askHistBtn{display:none}
+  .askp__body{position:relative}
+  .askp.show-hist:not(.is-full):not(.is-page) .askp__hist{display:flex;flex-direction:column;gap:10px;position:absolute;inset:0;z-index:4;padding:14px 12px;background:var(--panel);overflow:auto;animation:fadeIn .15s ease}
+  .askp__log{padding:18px 16px 8px;gap:18px}
+  /* messages: you in a bubble, lojo as plain text beside its avatar */
+  .am{font-size:.88rem;line-height:1.55}
+  .am--me{padding:10px 14px;border-radius:16px 16px 4px 16px;max-width:82%}
+  .arow2{align-items:flex-start;max-width:100%;gap:10px;width:100%}
+  .arow2 .agico{width:28px;height:28px;margin-top:1px}
+  .am--bot{background:none!important;padding:3px 0 0;border-radius:0;flex:1;min-width:0;max-width:100%}
+  .am--bot.am--miss{border:0}
+  .am--bot > .md:first-child p:first-child{margin-top:0}
+  .is-typing .am{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.82rem;padding-top:6px}
+  .dots{display:inline-flex;gap:4px}
+  .dots i{width:6px;height:6px;border-radius:50%;background:var(--rose);opacity:.35;animation:dot 1s ease-in-out infinite}
+  .dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+  @keyframes dot{40%{opacity:1;transform:translateY(-3px)}}
+  .miss{padding:14px 16px;border-radius:14px;border:1px solid rgba(217,154,43,.35);background:rgba(217,154,43,.07)}
+  .miss b{display:block;font-size:.9rem}
+  .miss p{margin:4px 0 0;color:var(--muted);font-size:.84rem}
+  .miss__acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .miss__acts .btn[disabled]{opacity:1;color:var(--success);border-color:rgba(63,143,95,.35)}
+  /* welcome */
+  .aw{display:grid;justify-items:center;text-align:center;gap:10px;padding:18px 6px 6px;max-width:520px;margin:0 auto;width:100%}
+  .aw__ava{width:52px;height:52px;display:block}
+  .aw__ava svg{width:100%;height:100%;border-radius:24%;box-shadow:0 12px 24px -14px rgba(15,165,147,.8)}
+  .aw h3{margin:6px 0 0;font-family:var(--display);font-weight:700;font-size:1.3rem;letter-spacing:-.01em}
+  .aw p{margin:0;color:var(--muted);font-size:.86rem;line-height:1.55}
+  .aw__list{display:grid;gap:8px;width:100%;margin-top:10px}
+  .aw__q{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;width:100%;text-align:left;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel);font:inherit;font-size:.86rem;color:var(--ink);cursor:pointer;transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease}
+  .aw__q:hover{border-color:rgba(232,93,117,.4);box-shadow:0 10px 20px -16px rgba(232,93,117,.8);transform:translateY(-1px)}
+  .aw__qi{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:rgba(232,93,117,.08);color:#C7385B;font-weight:800;font-size:.8rem}
+  .aw__q em{font-style:normal;color:var(--muted);transition:transform .15s ease}
+  .aw__q:hover em{transform:translateX(3px);color:#C7385B}
+  .aw__tip{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:.76rem;color:var(--muted)}
+  .aw__tip svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.9}
+  .aw__link{font-size:.76rem;font-weight:600;color:#B73C54}
+  /* answers */
+  .aacts{align-items:center;flex-wrap:wrap;margin-top:6px}
+  .aacts button.is-done{color:var(--success)}
+  .aacts .fb{font-size:.74rem;color:var(--muted);display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;margin-left:4px}
+  .aacts .fb .why{font-weight:600}
+  .aacts .whyb{height:24px!important;padding:0 9px!important;border-radius:999px!important;border:1px solid var(--line-2)!important;font-size:.72rem!important}
+  .aacts .whyb:hover{border-color:var(--rose)!important;color:#B73C54!important}
+  .related{display:grid;gap:6px;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line-2)}
+  .related small{font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .rel{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel);font:inherit;font-size:.8rem;color:var(--ink);cursor:pointer}
+  .rel span{color:var(--muted)}
+  .rel:hover{border-color:rgba(232,93,117,.4)}
+  .rel:hover span{color:#C7385B}
+  /* composer note */
+  .askp__foot{padding:10px 14px 12px}
+  .askp__foot .chips:empty{display:none}
+  .askp__note{display:flex;align-items:center;justify-content:center;gap:6px;margin:0;font-size:.7rem;color:var(--muted)}
+  .askp__note svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2}
+  /* full screen and the Ask lojo page share the roomy layout */
+  .askp.is-full .aw,.askp.is-page .aw{padding-top:3vh}
+  .askp.is-full .am,.askp.is-page .am{font-size:.95rem}
+  .askp.is-full .am--me,.askp.is-page .am--me{padding:12px 16px}
+  .askp.is-full .arow2 .agico,.askp.is-page .arow2 .agico{width:32px;height:32px}
+  .askhost{height:calc(100vh - 196px);min-height:480px}
+  .wrap:has(.askhost){max-width:none;padding-bottom:24px}
+  .askp.is-page{position:relative;inset:auto;top:auto;right:auto;bottom:auto;width:100%;height:100%;z-index:1;animation:none;border-radius:20px;box-shadow:0 16px 30px -28px rgba(36,26,20,.3)}
+  .askp.is-page .askp__head{display:none}
+  .askp.is-page .askp__hist{display:flex;flex-direction:column;gap:10px;width:260px;flex:none;padding:16px 12px;border-right:1px solid var(--line);background:var(--bg-soft);overflow:auto}
+  .askp.is-page .askp__log{padding:28px max(28px,calc(50% - 400px));gap:20px}
+  .askp.is-page .askp__foot{padding:14px max(28px,calc(50% - 410px)) 16px}
+  @media (max-width:900px){.askp.is-page .askp__hist{display:none}}
+
   /* ---------- phone: sidebar becomes a drawer ---------- */
   .mnav{display:none;position:fixed;top:14px;left:12px;z-index:35;width:40px;height:40px;border-radius:12px;border:1px solid var(--line-2);background:var(--panel);color:var(--ink);place-items:center;cursor:pointer;box-shadow:0 8px 20px -14px rgba(36,26,20,.5)}
   .mnav svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
@@ -716,10 +799,15 @@
 <button class="fab" id="fab" type="button" aria-label="Ask lojo" aria-expanded="false"><img src="assets/lojo-cloud.png" alt=""></button>
 <div class="askp-bg" id="askBg" hidden></div>
 <section class="askp" id="askp" hidden aria-label="Ask lojo">
-  <div class="askp__head"><span class="agico" data-agent="Chat agent"></span><div><b>Ask lojo</b><span>Chat agent · answers only from approved answers</span></div><button class="askp__ic askp__newic" id="askNew" type="button" aria-label="New chat" title="New chat"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M12 9v6M9 12h6"/></svg></button><button class="askp__ic" id="askFull" type="button" aria-label="Open full screen" title="Full screen"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><button class="askp__x" id="askX" type="button" aria-label="Close" title="Close">×</button></div>
+  <div class="askp__head"><span class="agico" data-agent="Chat agent"></span><div class="askp__id"><b>Ask lojo</b><span><i class="live"></i><span id="askMeta">Approved answers</span></span></div><span class="spacer"></span>
+    <button class="hbtn" id="askHistBtn" type="button" aria-label="Chats" title="Chats"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg></button>
+    <button class="hbtn" id="askNew" type="button" aria-label="New chat" title="New chat"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M12 9v6M9 12h6"/></svg></button>
+    <button class="hbtn" id="askFull" type="button" aria-label="Full screen" title="Full screen"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button>
+    <button class="hbtn" id="askX" type="button" aria-label="Close" title="Close (Esc)"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
   <div class="askp__body"><aside class="askp__hist" aria-label="Chats"><button class="cl__new" id="askNew2" type="button"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M12 9v6M9 12h6"/></svg>New chat</button><div class="cl" id="askConvs"></div></aside><div class="askp__main">
   <div class="askp__log" id="askLog" aria-live="polite"></div>
-  <div class="askp__foot"><div class="chips" id="askSugg"></div><form class="composer" id="askForm"><textarea id="askIn" rows="1" placeholder="Ask lojo…" aria-label="Ask lojo"></textarea><div class="composer__bar"><span class="composer__tools"></span><span class="spacer"></span><button class="send" type="submit" aria-label="Ask" disabled><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button></div></form></div>
+  <div class="askp__foot"><div class="chips" id="askSugg"></div><form class="composer" id="askForm"><textarea id="askIn" rows="1" placeholder="Ask about Nimbus Pay…" aria-label="Ask lojo"></textarea><div class="composer__bar"><span class="composer__tools"></span><span class="spacer"></span><button class="send" type="submit" aria-label="Send" disabled><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button></div></form>
+  <p class="askp__note"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>Answers come only from approved knowledge</p></div>
   </div></div>
 </section>
 <div class="toast" id="toast" role="status"></div>
@@ -978,7 +1066,8 @@ const ICO = {
 function linkify(html) { return html
   .replace(/([\w.+-]+@[\w-]+\.[\w.-]+\w)/g, '<a href="mailto:$1">$1</a>')
   .replace(/(^|[\s(])(\+\d[\d\s().-]{6,}\d)/g, (m, a, n) => a + '<a href="tel:' + n.replace(/[^\d+]/g, '') + '">' + n + '</a>')
-  .replace(/(^|[\s(])((?:https?:\/\/|www\.)[^\s<,)]+[^\s<.,)])/g, (m, a, u) => a + '<a href="' + (u.startsWith('http') ? u : 'https://' + u) + '" target="_blank" rel="noopener">' + u + '</a>'); }
+  .replace(/(^|[\s(])((?:https?:\/\/|www\.)[^\s<,)]+[^\s<.,)])/g, (m, a, u) => a + '<a href="' + (u.startsWith('http') ? u : 'https://' + u) + '" target="_blank" rel="noopener">' + u + '</a>')
+  .replace(/(^|[\s(])((?:[a-z0-9-]+\.)+(?:com|io|ai|org|net|pet|co|eu|fr|de|uk)(?:\/[^\s<,)]*[^\s<.,)])?)(?=[\s.,)<]|$)/gi, (m, a, u) => a + '<a href="https://' + u + '" target="_blank" rel="noopener">' + u + '</a>'); }
 function answerHTML(q, a, fromQ, srcs) {
   let f = null, hits = [];
   for (const x of FACTS) { if (!x.ask.test(q)) continue; const m = [...new Set((a.match(x.find) || []).map(s => s.trim()))]; if (m.length) { f = x; hits = m.slice(0, 3); break; } }
@@ -994,15 +1083,42 @@ function answerHTML(q, a, fromQ, srcs) {
   const wq = (s) => new Set(s.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(w => w.length > 3));
   const A = wq(q), B = wq(fromQ), same = [...A].filter(w => B.has(w)).length / Math.max(1, Math.min(A.size, B.size)) >= 0.6;
   h += '<div class="srcbox"><span class="srcbox__ic">' + ICO.check + '</span><span><small>Approved answer</small>' + (same ? '' : '<b>Answers: ' + esc(fromQ) + '</b>') + (srcs ? '<span class="srcs">' + srcs + '</span>' : '') + '</span></div>';
-  h += '<div class="aacts"><button type="button" data-copy="' + esc(a) + '">' + ICO.copy + 'Copy</button><button type="button" data-rate="up" aria-label="Helpful">' + ICO.up + '</button><button type="button" data-rate="down" aria-label="Not helpful" class="down">' + ICO.up + '</button></div>';
+  h += '<div class="aacts"><button type="button" data-copy="' + esc(a) + '" title="Copy answer">' + ICO.copy + '<span>Copy</span></button><button type="button" data-rate="up" aria-label="Helpful" title="Helpful">' + ICO.up + '</button><button type="button" data-rate="down" aria-label="Not helpful" title="Not helpful" class="down">' + ICO.up + '</button><span class="fb" role="status"></span></div>';
+  // two related approved questions to keep going
+  const ok = DRAFTS.filter(r => decision(r).status === 'approved').map(r => QUESTIONS.find(x => x.id === r.qid).q).filter(x => x !== fromQ);
+  const cq = conceptsOf(q + ' ' + fromQ), rel = ok.filter(x => conceptsOf(x).some(c => cq.includes(c))).concat(ok).filter((x, i, arr) => arr.indexOf(x) === i).slice(0, 2);
+  if (rel.length) h += '<div class="related"><small>Related</small>' + rel.map(x => '<button type="button" class="rel" data-ask="' + esc(x) + '">' + esc(x) + '<span>→</span></button>').join('') + '</div>';
   return h;
 }
-// copy and rate work in every chat
+// copy, rate, follow-ups and "not approved yet" actions work in every chat
+const FLAG_WHY = ['Wrong', 'Out of date', 'Incomplete', 'Unclear'];
 document.addEventListener('click', (e) => {
   const c = e.target.closest('[data-copy]');
-  if (c) { try { navigator.clipboard.writeText(c.dataset.copy); } catch (err) {} toast('Copied'); return; }
+  if (c) {
+    try { navigator.clipboard.writeText(c.dataset.copy); } catch (err) {}
+    const keep = c.innerHTML; c.classList.add('is-done'); c.innerHTML = ICO.check.replace('<svg', '<svg style="width:15px;height:15px"') + (c.querySelector('span') ? '<span>Copied</span>' : '');
+    setTimeout(() => { c.innerHTML = keep; c.classList.remove('is-done'); }, 1400); return;
+  }
   const r = e.target.closest('[data-rate]');
-  if (r) { r.parentNode.querySelectorAll('[data-rate]').forEach(x => x.classList.toggle('is-on', x === r)); toast(r.dataset.rate === 'up' ? 'Thanks. Glad it helped.' : 'Thanks. It’s flagged for review in Build.'); }
+  if (r) {
+    const row = r.closest('.aacts'), fb = row.querySelector('.fb');
+    row.querySelectorAll('[data-rate]').forEach(x => x.classList.toggle('is-on', x === r));
+    if (r.dataset.rate === 'up') { fb.textContent = 'Thanks for the feedback'; return; }
+    fb.innerHTML = '<span class="why">What was off?</span>' + FLAG_WHY.map(w => '<button type="button" class="whyb" data-why="' + w + '">' + w + '</button>').join('');
+    return;
+  }
+  const w = e.target.closest('[data-why]');
+  if (w) { ST.flags = (ST.flags || []).concat([{ why: w.dataset.why, at: Date.now() }]); save(); w.closest('.fb').textContent = 'Thanks. Flagged as “' + w.dataset.why.toLowerCase() + '” for review in Build.'; return; }
+  const f = e.target.closest('[data-ask]');
+  if (f && window.__askQ) { window.__askQ(f.dataset.ask); return; }
+  const s = e.target.closest('[data-sendq]');
+  if (s) {
+    let v = s.dataset.sendq.trim(); if (!v.endsWith('?')) v += '?';
+    if (!allQuestions().some(x => x.q.toLowerCase() === v.toLowerCase())) { const id = 'x' + Date.now(); ST.extra.push({ id, q: v, origin: 'chat', docs: [] }); ST.matters[id] = true; save(); }
+    s.disabled = true; s.innerHTML = ICO.check.replace('<svg', '<svg style="width:14px;height:14px"') + ' Sent to Insights'; return;
+  }
+  const rp = e.target.closest('[data-rephrase]');
+  if (rp) { const box = rp.closest('.askp').querySelector('textarea'); box.value = rp.dataset.rephrase; box.dispatchEvent(new Event('input')); box.focus(); }
 });
 // download a source document (the prototype hands back a stand-in copy with its passages)
 const DL_ICON = '<svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M4 18v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1"/></svg>';
@@ -1256,67 +1372,102 @@ function srcChip(docId, loc, warn) {
 
 (function askLojo() {
   const fab = $('fab'); if (!fab) return;
-  const panel = $('askp'), log = $('askLog');
+  const panel = $('askp'), log = $('askLog'), host = $('askHost'), isPage = !!host;
   const store = () => DRAFTS.filter(r => decision(r).status === 'approved').map(r => ({ r, q: QUESTIONS.find(q => q.id === r.qid).q, a: answerOf(r) }));
+  // on the Ask lojo page the same assistant sits in the page instead of floating
+  if (isPage) { host.appendChild(panel); panel.classList.add('is-page'); panel.hidden = false; fab.hidden = true; }
+  const scroll = () => { log.scrollTop = log.scrollHeight; };
   const say = (cls, html, replay) => {
     if (!replay) askHistory.push(cls.startsWith('me') ? 'me' : /miss/.test(cls) ? 'miss' : 'bot', html);
+    $('askWelcome') && $('askWelcome').remove();
     const d = document.createElement('div'); d.className = 'am am--' + cls; d.innerHTML = html;
     let row = d;
     if (cls.startsWith('bot')) { row = document.createElement('div'); row.className = 'arow2'; row.innerHTML = '<span class="agico">' + agentIcon('Chat agent') + '</span>'; row.appendChild(d); }
-    log.appendChild(row); log.scrollTop = log.scrollHeight; return d;
+    log.appendChild(row); scroll(); return d;
   };
-  function intro() {
+  const typing = () => {
+    const r = document.createElement('div'); r.className = 'arow2 is-typing';
+    r.innerHTML = '<span class="agico">' + agentIcon('Chat agent') + '</span><div class="am am--bot"><span class="dots"><i></i><i></i><i></i></span><span class="tt">Checking approved answers…</span></div>';
+    log.appendChild(r); scroll(); return r;
+  };
+  function meta() {
     const n = store().length;
-    log.innerHTML = '<div class="askp__intro"><small><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>Approved knowledge only</small>' +
-      '<b>Ask about what Nimbus Pay knows</b><p>lojo answers only from answers a person approved' + (n ? ' (' + n + ' so far)' : '') + ', and shows the sources behind every answer. When nothing approved covers a question, it says so instead of guessing.</p>' +
-      '<div class="askp__links"><a href="distribute.html">Open approved answers →</a><a href="sources.html">Open sources →</a></div></div>';
+    $('askMeta').textContent = n ? n + ' approved answer' + (n === 1 ? '' : 's') : 'Nothing approved yet';
+  }
+  function welcome() {
+    const s = store(), n = s.length, qs = s.map(x => x.q);
+    const firstQ = qs.find(x => /contact|support/i.test(x)); if (firstQ) qs.unshift(...qs.splice(qs.indexOf(firstQ), 1));
+    const w = document.createElement('div'); w.className = 'aw'; w.id = 'askWelcome';
+    w.innerHTML = '<span class="aw__ava">' + agentIcon('Chat agent') + '</span><h3>How can I help?</h3>' +
+      (n ? '<p>I answer from Nimbus Pay’s <b>' + n + ' approved answer' + (n === 1 ? '' : 's') + '</b> and show the source behind each one. If something isn’t approved yet, I’ll say so instead of guessing.</p>' +
+        '<div class="aw__list">' + qs.slice(0, 4).map(x => '<button type="button" class="aw__q" data-ask="' + esc(x) + '"><span class="aw__qi">?</span><span>' + esc(x) + '</span><em>→</em></button>').join('') + '</div>'
+        : '<p>Nothing is approved yet, so there’s nothing I can answer from. <a href="build.html">Review the first drafts</a> to fill the store.</p>') +
+      '<div class="aw__tip">' + CLIP + '<span>Drop a document or image to check it against what’s approved</span></div>' +
+      '<a class="aw__link" href="distribute.html">Browse approved answers</a>';
+    log.appendChild(w);
   }
   function ask(q) {
     say('me', esc(q));
-    const typing = say('bot', '<span class="spin"></span>');
+    const tp = typing();
     setTimeout(() => {
-      typing.parentNode.remove();
+      tp.remove();
       if (SMALLTALK.test(q)) { say('bot', esc(smalltalkReply(q))); countChat('smalltalk'); return; }
       const d = window.__askDoc && window.__askDoc(q, store); if (d) { say('bot', d); countChat('answered'); return; }
       let best = null, bs = 0;
       store().forEach(x => { const s = score(q, x.q + ' ' + x.a); if (s.c > 0 && s.s > bs) { best = x; bs = s.s; } });
       if (best && bs >= 2) { say('bot', answerHTML(q, best.a, best.q, best.r.src.map(([d, loc]) => srcChip(d, loc)).join(''))); countChat('answered'); }
-      else { say('bot am--miss', 'I don’t know. Nothing approved covers this yet, so I won’t guess.'); countChat('declined'); }
-    }, 500);
+      else {
+        say('bot am--miss', '<div class="miss"><b>Not in approved knowledge yet</b><p>Nothing approved answers this, so I won’t guess. Send it to Insights and it can be answered and approved.</p>' +
+          '<div class="miss__acts"><button type="button" class="btn btn--secondary btn--sm" data-sendq="' + esc(q) + '">Send to Insights</button><button type="button" class="btn btn--ghost btn--sm" data-rephrase="' + esc(q) + '">Rephrase</button></div></div>');
+        countChat('declined');
+      }
+    }, 750);
   }
+  window.__askQ = (q) => { if (panel.hidden) toggle(true); ask(q); };
   function load() {
-    log.innerHTML = ''; intro();
-    askHistory.all().forEach(m => say(m.kind === 'me' ? 'me' : m.kind === 'miss' ? 'bot am--miss' : 'bot', m.html, true));
-    $('askSugg').innerHTML = SUGG.map(t => '<button type="button" class="chip">' + t + '</button>').join('');
+    log.innerHTML = ''; meta(); $('askSugg').innerHTML = '';
+    const msgs = askHistory.all();
+    if (!msgs.length) welcome();
+    msgs.forEach(m => say(m.kind === 'me' ? 'me' : m.kind === 'miss' ? 'bot am--miss' : 'bot', m.html, true));
   }
   function toggle(open) {
+    if (isPage) return;
     panel.hidden = !open; fab.classList.toggle('is-open', open); fab.setAttribute('aria-expanded', open);
-    if (!open) full(false);
+    if (!open) { full(false); panel.classList.remove('show-hist'); }
     if (open && !log.children.length) load();
     if (open) $('askIn').focus();
   }
   fab.addEventListener('click', () => toggle(panel.hidden));
   window.__openAsk = () => toggle(true);
   $('askX').addEventListener('click', () => toggle(false));
-  // full screen: same conversation, bigger room
+  // full screen: same conversation, bigger room, chats on the left
   function full(on) {
-    panel.classList.toggle('is-full', on); $('askBg').hidden = !on;
-    $('askFull').setAttribute('aria-label', on ? 'Exit full screen' : 'Open full screen'); $('askFull').title = on ? 'Exit full screen' : 'Full screen';
+    if (isPage) return;
+    panel.classList.toggle('is-full', on); $('askBg').hidden = !on; panel.classList.remove('show-hist');
+    $('askFull').setAttribute('aria-label', on ? 'Exit full screen' : 'Full screen'); $('askFull').title = on ? 'Exit full screen' : 'Full screen';
     $('askFull').innerHTML = on ? '<svg viewBox="0 0 24 24"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg>' : '<svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>';
   }
   $('askFull').addEventListener('click', () => { full(!panel.classList.contains('is-full')); $('askIn').focus(); });
   $('askBg').addEventListener('click', () => toggle(false));
-  const fresh = () => { askHistory.newChat(); load(); $('askIn').focus(); };
+  $('askHistBtn').addEventListener('click', () => panel.classList.toggle('show-hist'));
+  const fresh = () => { askHistory.newChat(); panel.classList.remove('show-hist'); load(); $('askIn').focus(); };
   $('askNew').addEventListener('click', fresh); $('askNew2').addEventListener('click', fresh);
-  convList($('askConvs'), () => { load(); });
+  convList($('askConvs'), () => { panel.classList.remove('show-hist'); load(); });
   // say what the button is once per visit
-  try { if (!sessionStorage.getItem('lojo-ask-hint')) { sessionStorage.setItem('lojo-ask-hint', '1'); setTimeout(() => { fab.classList.add('is-hint'); setTimeout(() => fab.classList.remove('is-hint'), 3200); }, 900); } } catch (e) {}
+  try { if (!isPage && !sessionStorage.getItem('lojo-ask-hint')) { sessionStorage.setItem('lojo-ask-hint', '1'); setTimeout(() => { fab.classList.add('is-hint'); setTimeout(() => fab.classList.remove('is-hint'), 3200); }, 900); } } catch (e) {}
   $('askSugg').addEventListener('click', (e) => { const c = e.target.closest('.chip'); if (c) ask(c.textContent); });
-  const SUGG = ['What is the phone number for support?', 'How fast can we call the API?', 'What is the support email?'];
-  const aboutDoc = chatDocs(panel, $('askForm'), say, (list) => { $('askSugg').innerHTML = (list || SUGG).map(t => '<button type="button" class="chip">' + esc(t) + '</button>').join(''); });
+  const aboutDoc = chatDocs(panel, $('askForm'), say, (list) => { $('askSugg').innerHTML = (list || []).map(t => '<button type="button" class="chip">' + esc(t) + '</button>').join(''); });
   window.__askDoc = aboutDoc;
   $('askForm').addEventListener('submit', (e) => { e.preventDefault(); const v = $('askIn').value.trim(); if (!v) return; $('askIn').value = ''; ask(v); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !panel.hidden) toggle(false); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !panel.hidden && !isPage) { if (panel.classList.contains('show-hist')) panel.classList.remove('show-hist'); else toggle(false); }
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); if (isPage) $('askIn').focus(); else toggle(panel.hidden || document.activeElement !== $('askIn')); }
+  });
+  if (isPage) {
+    load();
+    const SAY = new URLSearchParams(location.search).get('say');
+    if (SAY) SAY.split('|').forEach((q, i) => setTimeout(() => ask(q), 200 + i * 1000)); else $('askIn').focus({ preventScroll: true });
+  }
 })();
 
 
