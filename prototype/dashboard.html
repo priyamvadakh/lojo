@@ -1337,9 +1337,9 @@ function render() {
   const also = [];
   const noSource = allQuestions().filter(q => (!q.docs || !q.docs.length) && matters(q) !== false).length;
   const human = c.final + noSource, failedDrafts = Object.keys(ST.draftFailed || {}).filter(k => ST.draftFailed[k] && ST.draftFailed[k] !== 'retrying').length;
-  if (human) also.push({ ic: 'hand', t: human + ' question' + (human === 1 ? ' needs' : 's need') + ' a human answer', s: 'No source, or rejected three times', href: 'insights.html' });
+  if (human) also.push({ ic: 'hand', t: human + ' question' + (human === 1 ? ' needs' : 's need') + ' a human answer', s: 'No source, or rejected three times', href: 'insights.html#questions' });
   if (failedDrafts) also.push({ ic: 'q', t: failedDrafts + ' draft' + (failedDrafts === 1 ? '' : 's') + ' could not be written', s: 'Try ' + (failedDrafts === 1 ? 'it' : 'them') + ' again from Insights', href: 'insights.html?demo=failed' });
-  if (c.needCall) also.push({ ic: 'q', t: 'Say whether ' + c.needCall + ' question' + (c.needCall > 1 ? 's matter' : ' matters'), s: 'Only those get drafted', href: 'insights.html' });
+  if (c.needCall) also.push({ ic: 'q', t: 'Say whether ' + c.needCall + ' question' + (c.needCall > 1 ? 's matter' : ' matters'), s: 'Only those get drafted', href: 'insights.html#questions' });
   if (c.gaps) also.push({ ic: 'gap', t: c.gaps + ' gaps need a source', s: 'Send a document or add them as questions', href: 'insights.html#gaps' });
   $('alsoMore').hidden = also.length <= 2; $('alsoMore').textContent = '+' + (also.length - 2) + ' more ↓';
   $('also').innerHTML = also.length ? also.map(i => '<a class="also" href="' + i.href + '"><span class="ic t-' + i.ic + '">' + ICON[i.ic] + '</span><div><b>' + esc(i.t) + '</b><span>' + esc(i.s) + '</span></div><em>→</em></a>').join('') : '<p class="sub">Nothing else right now.</p>';
@@ -1360,7 +1360,7 @@ function render() {
   $('today').innerHTML = [
     '<a class="tile tile--soft" href="build.html">' + gauge(decided / c.drafts, '#4F7A2F') + '<span class="tile__lbl">Review progress ' + tip('Drafts in the first batch that you have approved, edited or left for a human answer.') + '</span><span class="tile__sub">' + decided + ' of ' + c.drafts + ' decided · ' + c.approved + ' approved</span><span class="tile__go">→</span></a>',
     '<a class="tile tile--ok" href="sources.html"><span class="tile__tag">Indexed</span><span class="tile__lbl">Sources ' + tip('Documents you sent us. Their text is pulled out, split into passages and indexed by meaning.') + '</span><span class="tile__val">' + c.docs + '</span><span class="tile__sub">' + c.pages + ' pages · ' + c.passages + ' passages</span></a>',
-    '<a class="tile' + (c.needCall ? ' tile--warn' : '') + '" href="insights.html">' + (c.needCall ? '<span class="tile__tag">' + c.needCall + ' need your call</span>' : '') + '<span class="tile__lbl">Questions ' + tip('Questions your documents answer, found by the agent, plus the ones you added.') + '</span><span class="tile__val">' + c.questions + '</span><span class="tile__sub">' + (c.questions - yours) + ' found · ' + yours + ' from you</span></a>',
+    '<a class="tile' + (c.needCall ? ' tile--warn' : '') + '" href="insights.html#questions">' + (c.needCall ? '<span class="tile__tag">' + c.needCall + ' need your call</span>' : '') + '<span class="tile__lbl">Questions ' + tip('Questions your documents answer, found by the agent, plus the ones you added.') + '</span><span class="tile__val">' + c.questions + '</span><span class="tile__sub">' + (c.questions - yours) + ' found · ' + yours + ' from you</span></a>',
     '<a class="tile' + (c.gaps ? ' tile--warn' : ' tile--ok') + '" href="insights.html#gaps">' + (c.gaps ? '<span class="tile__tag">Needs input</span>' : '') + '<span class="tile__lbl">Gaps ' + tip('Things your documents refer to but never explain. Expected at this stage: send a document or answer them yourself.') + '</span><span class="tile__val">' + c.gaps + '</span><span class="tile__sub">Referred to, never explained</span></a>',
   ].join('');
 

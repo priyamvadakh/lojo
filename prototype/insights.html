@@ -442,6 +442,56 @@
   .side .theme-toggle{flex-direction:column;width:30px;height:58px;padding:7px 0}
   :root[data-theme="dark"] .side .theme-toggle::before{transform:translateY(28px)}
 
+  .icount{display:flex;align-items:baseline;gap:28px;flex-wrap:wrap;margin:4px 0 16px;color:var(--muted);font-size:1.02rem}
+  .icount b{font-family:var(--display);font-weight:800;font-size:1.3rem;color:var(--ink);margin-right:6px}
+  .icount .spacer{flex:1}
+  .ifilters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+  .ifilters select.text{width:auto;min-width:0;height:42px;padding-right:28px;flex:0 1 auto}
+  .isearch{flex:1 1 200px;min-width:180px;display:flex;align-items:center;gap:8px;height:42px;padding:0 13px;border-radius:11px;border:1px solid var(--line-2);background:var(--panel)}
+  .isearch:focus-within{border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,93,117,.16)}
+  .isearch svg{width:17px;height:17px;fill:none;stroke:var(--muted);stroke-width:1.8;flex:none}
+  .isearch input{border:0;outline:0;background:none;flex:1;font:inherit;font-size:.88rem;color:var(--ink)}
+  .idate{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--muted)}
+  .idate .text{width:138px;height:42px;padding:0 10px}
+  .ib{display:grid;grid-template-columns:380px minmax(0,1fr);gap:20px;align-items:start}
+  .ilist{position:sticky;top:96px;max-height:calc(100vh - 120px);overflow:auto;padding:6px}
+  .ilist ul{list-style:none;margin:0;padding:0}
+  .iitem{display:grid;grid-template-columns:40px minmax(0,1fr);gap:4px 12px;padding:14px;border-radius:14px;cursor:pointer}
+  .iitem:hover{background:var(--bg-soft)}
+  .iitem.is-sel{background:var(--bg-soft);box-shadow:inset 3px 0 0 var(--rose)}
+  .iitem + .iitem{margin-top:2px}
+  .iico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(232,93,117,.08);color:#D7607A}
+  .iico svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .iitem b{display:block;font-size:.9rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .iitem .m{display:block;font-size:.78rem;color:var(--muted)}
+  .iitem .ist{grid-column:2;justify-self:start;margin-top:8px}
+  .ist{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 11px;border-radius:999px;border:1px solid var(--line-2);font-size:.64rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+  .ist.ok{border-color:rgba(63,143,95,.35);background:rgba(63,143,95,.08);color:var(--success)}
+  .ist.done{border-color:rgba(62,111,166,.3);background:rgba(62,111,166,.07);color:var(--info)}
+  .ist.run{border-color:rgba(232,93,117,.35);background:rgba(232,93,117,.06);color:#C7385B}
+  .ist.run::before{content:"";width:10px;height:10px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:spin .7s linear infinite}
+  .ist.err{border-color:rgba(198,69,69,.35);background:rgba(198,69,69,.06);color:var(--error)}
+  .ist.wait{border-color:rgba(217,154,43,.4);background:rgba(217,154,43,.08);color:#94660F}
+  .idetail{display:grid;gap:14px}
+  .ifail{display:flex;align-items:center;gap:14px;padding:16px 20px;border-radius:16px;border:1px solid rgba(198,69,69,.3);background:rgba(198,69,69,.06);color:var(--error);font-weight:600}
+  .ifail svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;flex:none}
+  .icard{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:26px 28px;box-shadow:0 16px 30px -28px rgba(36,26,20,.3)}
+  .icard__top{display:flex;align-items:flex-start;gap:16px}
+  .icard__top > div{flex:1;min-width:0}
+  .icard .kind{font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--rose);margin:0}
+  .icard h2{font-family:var(--display);font-weight:700;font-size:1.9rem;letter-spacing:-.02em;margin:10px 0 6px;line-height:1.15;overflow-wrap:anywhere}
+  .icard .when{color:var(--muted);font-size:1rem;margin:0}
+  .iacts{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 4px}
+  .iacts .btn{height:46px;padding:0 20px}
+  .ifound{margin-top:20px;padding:16px 18px;border-radius:14px;background:rgba(62,111,166,.06);border:1px solid rgba(62,111,166,.18)}
+  .ifound h3{margin:0 0 10px;font-size:.74rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--info)}
+  .ifound .chips{gap:6px}
+  .itext{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+  .itext summary{cursor:pointer;font-family:var(--display);font-weight:700;font-size:1.1rem;list-style-position:inside}
+  .itext .body{margin-top:12px;font-size:.98rem;line-height:1.75;color:var(--ink);white-space:pre-line;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+  .itext.is-full .body{display:block}
+  .iempty{padding:22px;color:var(--muted);text-align:center;font-size:.9rem}
+  @media (max-width:1100px){.ib{grid-template-columns:1fr}.ilist{position:static;max-height:420px}}
   .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
   .bar .spacer{flex:1}
   .add{display:flex;gap:8px;flex:1;max-width:520px}
@@ -583,21 +633,36 @@
       <div>
         <p class="label">02 Insights</p>
         <h1>Insights</h1>
-        <p>What lojo found in your sources: the questions they answer, and the gaps they leave. Tell us which questions matter; only those get drafted.</p>
+        <p>Everything your sources send in: documents, pages, email and calls. Analyze each one to find the questions it answers and the gaps it leaves.</p>
       </div>
     </div>
-    <div class="stats">
-      <div class="stat"><b id="stPages">0</b><span>pages read</span></div>
-      <div class="stat"><b id="stPassages">0</b><span>passages created</span></div>
-      <div class="stat is-key"><b id="stIndexed">0%</b><span>indexed by meaning</span></div>
-    </div>
     <div class="ptabs" role="tablist" aria-label="Insights">
-      <button class="ptab" role="tab" data-tab="q" aria-selected="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg>Questions <span class="n" id="nQ">0</span></button>
+      <button class="ptab" role="tab" data-tab="in" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/></svg>Inbox <span class="n" id="nIn">0</span></button>
+      <button class="ptab" role="tab" data-tab="q" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg>Questions <span class="n" id="nQ">0</span></button>
       <button class="ptab" role="tab" data-tab="g" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Gaps <span class="n" id="nG">0</span></button>
-      <button class="ptab" role="tab" data-tab="ix" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>Reading <span class="n" id="nIx">0</span></button>
     </div>
 
-    <section id="tabQ">
+    <section id="tabIn">
+      <div class="icount">
+        <span><b id="cRec">0</b> received</span><span><b id="cReady">0</b> ready to analyze</span><span><b id="cDone">0</b> analyzed</span>
+        <span class="spacer"></span>
+        <button class="btn btn--secondary btn--sm" id="analyzeAll" type="button">Analyze all ready</button>
+      </div>
+      <div class="ifilters">
+        <label class="isearch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="fQ" placeholder="Search participants or subjects" aria-label="Search"></label>
+        <select class="text" id="fCh" aria-label="Channel"></select>
+        <select class="text" id="fInt" aria-label="Integration"></select>
+        <select class="text" id="fSt" aria-label="Status"></select>
+        <label class="idate">From <input class="text" type="date" id="fFrom"></label>
+        <label class="idate">To <input class="text" type="date" id="fTo"></label>
+      </div>
+      <div class="ib">
+        <section class="card ilist" aria-label="Received"><ul id="iList"></ul></section>
+        <section class="idetail" id="iDetail" aria-live="polite"></section>
+      </div>
+    </section>
+
+    <section id="tabQ" hidden>
       <div class="bar">
         <div class="chips" id="filters">
           <button class="chip" data-f="all" aria-pressed="true">All</button>
@@ -617,9 +682,6 @@
       <div class="gaps" id="gapList"></div>
     </section>
 
-    <section id="tabIx" hidden>
-      <div class="panel"><ul class="ix" id="ixList"></ul></div>
-    </section>
 
   </main>
 </div>
@@ -1165,31 +1227,140 @@ $('gapList').addEventListener('click', (e) => {
   save(); renderG(); renderQ();
 });
 
-// Reading: each source goes through the same three stages as in setup
-const IX_STAGES = ['Extract text', 'Split into passages', 'Index by meaning'];
-const ixDocs = DOCS.filter(d => !(ST.retired || {})[d.id]).map(d => ({ name: d.name, pages: d.pages, done: 3 }))
-  .concat((ST.docx || []).filter(d => d.status === 'waiting' || d.status === 'running').map(d => ({ name: d.name, pages: 6, done: 1, live: true })));
-function renderIx() {
-  const pages = ixDocs.reduce((a, d) => a + (d.done === 3 ? d.pages : 0), 0);
-  $('stPages').textContent = pages; $('stPassages').textContent = ixDocs.reduce((a, d) => a + (d.done === 3 ? Math.round(d.pages * 4.6) : 0), 0);
-  const pct = Math.round(ixDocs.reduce((a, d) => a + d.done, 0) / (ixDocs.length * 3) * 100);
-  $('stIndexed').textContent = pct + '%'; $('nIx').textContent = ixDocs.length;
-  $('ixList').innerHTML = ixDocs.map(d => '<li><span class="name">' + esc(d.name) + '</span><span class="stages">' +
-    IX_STAGES.map((s, i) => '<span class="pstage' + (i < d.done ? ' is-done' : i === d.done ? ' is-run' : '') + '">' + s + '</span>').join('') +
-    '</span><span class="pbar"><i style="width:' + Math.round(d.done / 3 * 100) + '%"></i></span></li>').join('');
+// ---------- Inbox: everything sources send in, analyzed into questions and gaps
+// Channels and integrations are data. A new connector is one entry in INTEGRATIONS (and a channel, if it brings a new kind of item).
+const SVG = (d) => '<svg viewBox="0 0 24 24">' + d + '</svg>';
+const CHANNELS = {
+  doc: { one: 'Document', many: 'Documents', body: 'Text', none: 'No text found', ic: SVG('<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>') },
+  page: { one: 'Web page', many: 'Web pages', body: 'Page text', none: 'No text found', ic: SVG('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/>') },
+  email: { one: 'Email', many: 'Email', body: 'Message', none: 'Empty message', ic: SVG('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>') },
+  call: { one: 'Call', many: 'Calls', body: 'Transcript', none: 'No transcript available', ic: SVG('<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>') },
+};
+const INTEGRATIONS = {
+  upload: { name: 'Upload', ch: 'doc' }, notion: { name: 'Notion', ch: 'doc' }, website: { name: 'Website', ch: 'page' },
+  gmail: { name: 'Gmail inbox', ch: 'email' }, aircall: { name: 'Aircall', ch: 'call' },
+};
+const STATUS = {
+  ready: ['Ready', 'ok'], analyzing: ['Analyzing', 'run'], analyzed: ['Analyzed', 'done'], attention: ['Needs attention', 'err'],
+  awaiting: ['Awaiting transcript', 'wait'], none: ['No transcript available', ''],
+};
+const T = (d, h, m, mo = 9) => new Date(2026, mo, d, h, m).toISOString();
+const INBOX = DOCS.map((d, i) => ({ id: 'i' + d.id, int: 'upload', title: d.name, at: T(9 + (i > 5 ? 1 : 0), 10 + i % 6, 12 * i % 60, 8), len: d.pages + ' pages', status: 'analyzed', doc: d.id }))
+  .concat([
+    { id: 'n1', int: 'notion', title: 'Pricing wiki', at: T(5, 16, 40), len: '6 pages', status: 'analyzed', text: 'Starter: 3 seats and 1,000 transactions a month. Growth: 15 seats, SAML SSO included. Scale: unlimited seats, a named onboarding manager.', found: ['q1', 'q3'] },
+    { id: 'n2', int: 'notion', title: 'Onboarding playbook', at: T(6, 9, 5), len: '11 pages', status: 'ready', text: 'Week 1: kickoff call and admin set-up. Week 2: import customers and connect your bank. Scale customers get two admin training sessions and a named onboarding manager.' },
+    { id: 'w1', int: 'website', title: 'nimbuspay.com/pricing', at: T(5, 8, 2), len: '1 page', status: 'analyzed', text: 'Compare plans. Starter from €29 a month. Growth from €99 a month, includes SAML single sign-on. Scale: talk to sales.', found: ['q1'] },
+    { id: 'w2', int: 'website', title: 'help.nimbuspay.com/sso', at: T(6, 7, 48), len: '1 page', status: 'ready', text: 'Single sign-on (SSO). SSO is an Enterprise-only feature. Contact sales to enable it.' },
+    { id: 'w3', int: 'website', title: 'nimbuspay.com/legal/refunds', at: T(6, 13, 2), len: '1 page', status: 'analyzing', text: 'Refunds. You can cancel within 30 days for a full refund. After that, refunds are prorated to the unused months.' },
+    { id: 'e1', int: 'gmail', title: 'SSO stopped working after we upgraded', who: 'Marta Ruiz · Brightline', at: T(6, 11, 30), len: '4 messages', status: 'attention', text: 'Hi, we moved to Growth yesterday and SSO now shows “not available on your plan”. Our help page says it is Enterprise only, but sales told us Growth includes it. Can you confirm?' },
+    { id: 'e2', int: 'gmail', title: 'Invoice for our annual plan', who: 'Lea Martin · Kontor', at: T(6, 10, 14), len: '2 messages', status: 'ready', text: 'Can we pay the annual Growth plan by invoice instead of card? Our finance team needs a PO number on it.' },
+    { id: 'e3', int: 'gmail', title: 'Apple Pay in Germany?', who: 'Jonas Weber', at: T(5, 15, 2), len: '1 message', status: 'analyzed', text: 'Do you support Apple Pay for customers in Germany? We could not find it in your docs.', found: ['q16'], gaps: 1 },
+    { id: 'c1', int: 'aircall', title: '+33 6 85 36 57 11', at: T(6, 13, 22), len: '7 min', status: 'ready', text: 'Hello, yes, good afternoon. I called last week but didn’t get time to call back. I wanted to ask again about the chargeback fee: your billing FAQ says there is one but not how much. We had two disputes this month and need to know what we will be charged, and whether late evidence can still be added once the bank has started its review.' },
+    { id: 'c2', int: 'aircall', title: '+33 7 57 91 26 97', at: T(5, 18, 45), len: '0 min', status: 'none' },
+    { id: 'c3', int: 'aircall', title: '+33 7 57 91 26 97', at: T(5, 18, 44), len: '0 min', status: 'none' },
+    { id: 'c4', int: 'aircall', title: '+44 20 7946 0958', at: T(6, 13, 50), len: '12 min', status: 'awaiting' },
+    { id: 'c5', int: 'aircall', title: '+49 30 901820', at: T(4, 11, 5), len: '9 min', status: 'analyzed', text: 'We are on Starter and want to know if we can move to Scale mid-cycle, and how the invoice handles the change.', found: ['q5'] },
+  ]).sort((a, b) => b.at.localeCompare(a.at));
+ST.inbox = ST.inbox || {};
+const stOf = (it) => (ST.inbox[it.id] || {}).status || it.status;
+const foundOf = (it) => (ST.inbox[it.id] || {}).found || it.found || (it.doc ? qsForDoc(it.doc) : []);
+const chOf = (it) => INTEGRATIONS[it.int].ch;
+const qsForDoc = (id) => allQuestions().filter(q => (q.docs || []).includes(id)).map(q => q.id);
+const textOf = (it) => it.text || (it.doc ? passagesOf(it.doc) : '');
+function passagesOf(id) {
+  const out = [];
+  DRAFTS.forEach(r => r.src.forEach(([d, loc, text]) => { if (d === id && !out.includes(text)) out.push(text); }));
+  GAPS.forEach(g => g.where.forEach(([d, loc, text]) => { if (d === id && !out.includes(text)) out.push(text); }));
+  return out.join('\n\n') || 'Indexed by meaning. Open Sources to see its passages.';
 }
-// the queued source works through its stages while you watch
-ixDocs.filter(d => d.live).forEach(d => {
-  setTimeout(() => { d.done = 2; renderIx(); }, 2200);
-  setTimeout(() => { d.done = 3; renderIx(); toast(d.name + ' indexed'); }, 4400);
+const when = (iso) => new Date(iso).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+const stLabel = (it) => { const s = stOf(it); return s === 'none' ? CHANNELS[chOf(it)].none : STATUS[s][0]; };
+const pill = (it) => '<span class="ist ' + STATUS[stOf(it)][1] + '">' + esc(stLabel(it)) + '</span>';
+let sel = null, fullText = false;
+function fillFilters() {
+  $('fCh').innerHTML = '<option value="">All channels</option>' + Object.entries(CHANNELS).map(([k, c]) => '<option value="' + k + '">' + c.many + '</option>').join('');
+  $('fSt').innerHTML = '<option value="">All statuses</option>' + Object.entries(STATUS).map(([k, s]) => '<option value="' + k + '">' + (k === 'none' ? 'No transcript or text' : s[0]) + '</option>').join('');
+  fillInt();
+}
+function fillInt() {
+  const ch = $('fCh').value, keep = $('fInt').value;
+  $('fInt').innerHTML = '<option value="">All integrations</option>' + Object.entries(INTEGRATIONS).filter(([, v]) => !ch || v.ch === ch).map(([k, v]) => '<option value="' + k + '">' + v.name + '</option>').join('');
+  if ([...$('fInt').options].some(o => o.value === keep)) $('fInt').value = keep;
+}
+function visible() {
+  const q = $('fQ').value.trim().toLowerCase(), ch = $('fCh').value, it = $('fInt').value, st = $('fSt').value, from = $('fFrom').value, to = $('fTo').value;
+  return INBOX.filter(x => (!q || (x.title + ' ' + (x.who || '')).toLowerCase().includes(q)) && (!ch || chOf(x) === ch) && (!it || x.int === it) && (!st || stOf(x) === st) &&
+    (!from || x.at.slice(0, 10) >= from) && (!to || x.at.slice(0, 10) <= to));
+}
+function renderIn() {
+  $('cRec').textContent = INBOX.length.toLocaleString('en-GB');
+  const ready = INBOX.filter(x => stOf(x) === 'ready').length;
+  $('cReady').textContent = ready; $('cDone').textContent = INBOX.filter(x => stOf(x) === 'analyzed').length;
+  $('nIn').textContent = ready; $('analyzeAll').disabled = !ready; $('analyzeAll').textContent = 'Analyze all ready (' + ready + ')';
+  const list = visible();
+  if (!list.some(x => x.id === sel)) sel = list.length ? list[0].id : null;
+  $('iList').innerHTML = list.length ? list.map(x => { const ch = CHANNELS[chOf(x)];
+    return '<li class="iitem' + (x.id === sel ? ' is-sel' : '') + '" data-id="' + x.id + '"><span class="iico">' + ch.ic + '</span><span style="min-width:0"><b>' + esc(x.title) + '</b>' +
+      '<span class="m">' + ch.one + ' · ' + INTEGRATIONS[x.int].name + (x.who ? ' · ' + esc(x.who) : '') + '</span><span class="m">' + when(x.at) + ' · ' + x.len + '</span></span>' + pill(x) + '</li>'; }).join('')
+    : '<li class="iempty">Nothing matches these filters.</li>';
+  renderDetail();
+}
+function renderDetail() {
+  const x = INBOX.find(i => i.id === sel);
+  if (!x) { $('iDetail').innerHTML = '<div class="icard iempty">Pick something on the left to see it here.</div>'; return; }
+  const ch = CHANNELS[chOf(x)], s = stOf(x), txt = textOf(x), f = foundOf(x);
+  let h = '';
+  if (s === 'attention') h += '<div class="ifail"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>Request failed (502) · we couldn’t analyze this ' + ch.one.toLowerCase() + '<button class="btn btn--secondary btn--sm" data-act="analyze" style="margin-left:auto">Try again</button></div>';
+  h += '<article class="icard"><div class="icard__top"><div><p class="kind">' + ch.one + ' · ' + INTEGRATIONS[x.int].name + '</p><h2>' + esc(x.title) + '</h2>' +
+    '<p class="when">' + (x.who ? esc(x.who) + ' · ' : '') + when(x.at) + ' · ' + x.len + '</p></div>' + pill(x) + '</div>';
+  const acts = [];
+  if (s === 'ready') acts.push('<button class="btn btn--grad" data-act="analyze">→ Analyze ' + ch.one.toLowerCase() + '</button>');
+  if (s === 'analyzed') acts.push('<button class="btn btn--secondary" data-act="analyze">Analyze again</button>');
+  if (s === 'awaiting') acts.push('<button class="btn btn--secondary" disabled>Waiting for the transcript from ' + INTEGRATIONS[x.int].name + '</button>');
+  if (txt) acts.push('<button class="btn btn--secondary" data-act="full">' + (fullText ? 'Show less' : 'Open full ' + ch.body.toLowerCase()) + '</button>');
+  if (acts.length) h += '<div class="iacts">' + acts.join('') + '</div>';
+  if (s === 'analyzed') {
+    const qs = f.map(id => allQuestions().find(q => q.id === id)).filter(Boolean);
+    h += '<div class="ifound"><h3>Found here · ' + qs.length + ' question' + (qs.length === 1 ? '' : 's') + (x.gaps ? ' · ' + x.gaps + ' gap' : '') + '</h3>' +
+      (qs.length ? '<div class="chips">' + qs.map(q => '<button class="chip" data-q="' + q.id + '">' + esc(q.q) + '</button>').join('') + '</div>' : '<p class="sub">No new questions in this one.</p>') + '</div>';
+  }
+  if (s === 'none') h += '<p class="sub" style="margin-top:18px">' + (x.len === '0 min' ? 'The call was too short to transcribe.' : 'There was no text to read.') + ' Nothing to analyze.</p>';
+  if (txt) h += '<details class="itext' + (fullText ? ' is-full' : '') + '" open><summary>' + ch.body + '</summary><div class="body">' + esc(txt) + '</div></details>';
+  $('iDetail').innerHTML = h + '</article>';
+}
+// analyzing takes a moment; then the item lists what it found
+function analyze(ids) {
+  ids.forEach(id => { ST.inbox[id] = { status: 'analyzing' }; });
+  save(); renderIn();
+  setTimeout(() => {
+    ids.forEach(id => { const x = INBOX.find(i => i.id === id); ST.inbox[id] = { status: 'analyzed', found: x.found || pick(x) }; });
+    save(); renderIn(); renderQ();
+    toast(ids.length === 1 ? 'Analyzed. Its questions are in Questions.' : ids.length + ' analyzed. New questions are in Questions.');
+  }, 1600);
+}
+const pick = (x) => { const words = (textOf(x) + ' ' + x.title).toLowerCase(); return allQuestions().filter(q => q.q.toLowerCase().split(/\W+/).filter(w => w.length > 4).some(w => words.includes(w))).slice(0, 3).map(q => q.id); };
+$('iList').addEventListener('click', (e) => { const li = e.target.closest('[data-id]'); if (!li) return; sel = li.dataset.id; fullText = false; renderIn(); });
+$('iDetail').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-act]');
+  if (b && b.dataset.act === 'analyze') analyze([sel]);
+  if (b && b.dataset.act === 'full') { fullText = !fullText; renderDetail(); }
+  const c = e.target.closest('[data-q]');
+  if (c) { show('q'); filter = 'all'; document.querySelectorAll('#filters .chip').forEach(x => x.setAttribute('aria-pressed', x.dataset.f === 'all')); flashId = c.dataset.q; renderQ(); const r = $('row-' + c.dataset.q); if (r) r.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
 });
+['fQ', 'fSt', 'fInt', 'fFrom', 'fTo'].forEach(id => $(id).addEventListener('input', renderIn));
+$('fCh').addEventListener('input', () => { fillInt(); renderIn(); });
+$('analyzeAll').addEventListener('click', () => analyze(INBOX.filter(x => stOf(x) === 'ready').map(x => x.id)));
+// the page being analyzed finishes while you watch
+INBOX.filter(x => stOf(x) === 'analyzing').forEach(x => setTimeout(() => { ST.inbox[x.id] = { status: 'analyzed', found: x.found || pick(x) }; renderIn(); }, 3500));
+
 function show(tab) {
   document.querySelectorAll('.ptab').forEach(t => t.setAttribute('aria-selected', t.dataset.tab === tab));
-  $('tabQ').hidden = tab !== 'q'; $('tabG').hidden = tab !== 'g'; $('tabIx').hidden = tab !== 'ix';
+  $('tabIn').hidden = tab !== 'in'; $('tabQ').hidden = tab !== 'q'; $('tabG').hidden = tab !== 'g';
 }
-document.querySelectorAll('.ptab').forEach(t => t.addEventListener('click', () => { show(t.dataset.tab); history.replaceState(null, '', location.search + ({ g: '#gaps', ix: '#reading' }[t.dataset.tab] || '')); }));
-renderQ(); renderG(); renderIx(); show({ '#gaps': 'g', '#reading': 'ix' }[location.hash] || 'q');
+document.querySelectorAll('.ptab').forEach(t => t.addEventListener('click', () => { show(t.dataset.tab); history.replaceState(null, '', location.search + ({ g: '#gaps', q: '#questions' }[t.dataset.tab] || '')); }));
 const QD = new URLSearchParams(location.search).get('demo');
+fillFilters(); renderIn(); renderQ(); renderG();
+show({ '#gaps': 'g', '#questions': 'q' }[location.hash] || (QD ? 'q' : 'in'));
 if (QD === 'dup') { $('addQ').value = 'What are the API rate limits'; $('addForm').requestSubmit(); }
 if (QD === 'leave') { leaving = 'q16'; renderQ(); $('row-q16').scrollIntoView({ block: 'center' }); $('leaveNote').focus(); }
 if (QD === 'failed') $('row-q17').scrollIntoView({ block: 'center' });
