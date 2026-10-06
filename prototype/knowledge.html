@@ -194,7 +194,7 @@
   @keyframes livePulse{50%{opacity:.3}}
   /* agent avatars */
   .ava3d{position:relative;width:44px;height:44px;display:block;border-radius:11px;box-shadow:0 8px 14px -8px rgba(36,26,20,.45)}
-  .ava3d svg{width:44px;height:44px;display:block;border-radius:11px}
+  .ava3d img{width:44px;height:44px;display:block;border-radius:11px;object-fit:cover}
   .ava3d::after{content:"";position:absolute;inset:0;border-radius:11px;background:linear-gradient(160deg,rgba(255,255,255,.35),rgba(255,255,255,0) 40%);pointer-events:none}
   .ava3d .eye{transform-box:fill-box;transform-origin:center}
   .ava3d.is-run{animation:bob 2.4s ease-in-out infinite}
@@ -803,49 +803,11 @@ const AGENTS = [
   ['dis', 'Publisher', null, 'Publishing to your help centre comes with the full build', 'Publishes approved answers to your help centre and Slack'],
 ];
 const agAgo = (m) => m === null ? '—' : m < 1 ? 'Now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' d ago';
-// agent avatars: AI teammates with human faces, one look per agent, background tinted by stage
-const AVA_BG = { src: ['#FFD2B3', '#F08A4B'], ins: ['#FFE7A8', '#E0A82E'], bld: ['#FFC2CF', '#E2557A'], dis: ['#BFF3EA', '#2FA497'] };
-const AVA_FACE = [
-  // [skin, shade, hair, hair style, eye glow]
-  ['#F4D3C0', '#D9A88E', '#2B1E1A', 'crop', '#5EE7FF'],
-  ['#C98E6B', '#A06A4C', '#1B1412', 'bun', '#7CFFB2'],
-  ['#EBC3A4', '#C99876', '#7A4A2A', 'bob', '#5EE7FF'],
-  ['#8D5B42', '#6B412E', '#141010', 'curly', '#FFD66B'],
-  ['#F2D6C9', '#D2AE9D', '#C9A27A', 'side', '#7CFFB2'],
-  ['#B47A5A', '#8E5A40', '#2A1C17', 'long', '#5EE7FF'],
-  ['#E6BB9C', '#C0906F', '#3A2A24', 'buzz', '#FF9EC4'],
-  ['#D9D4E6', '#B3ABC8', '#6C6380', 'none', '#B9A6FF'],
-];
-const AVA_HAIR = {
-  crop: (c) => '<path d="M12.5 19c-.6-6 3.6-9.6 9.5-9.6s10.1 3.6 9.5 9.6c-1.2-3.4-4-5.2-9.5-5.2S13.7 15.6 12.5 19z" fill="' + c + '"/>',
-  bun: (c) => '<circle cx="22" cy="7.6" r="3.6" fill="' + c + '"/><path d="M12.6 20.5c-.9-6.6 3.4-10.6 9.4-10.6s10.3 4 9.4 10.6c-.9-4.4-4.2-6.6-9.4-6.6s-8.5 2.2-9.4 6.6z" fill="' + c + '"/>',
-  bob: (c) => '<path d="M11.5 27c-1.6-10 2.6-16.8 10.5-16.8S34.1 17 32.5 27l-2.4-.4c.4-6.2-2.4-10.2-8.1-10.2s-8.5 4-8.1 10.2z" fill="' + c + '"/>',
-  curly: (c) => '<g fill="' + c + '"><circle cx="15" cy="13.5" r="3.6"/><circle cx="19.5" cy="10.6" r="3.8"/><circle cx="24.8" cy="10.6" r="3.8"/><circle cx="29.2" cy="13.6" r="3.6"/><circle cx="12.8" cy="17.6" r="2.8"/><circle cx="31.2" cy="17.6" r="2.8"/></g>',
-  side: (c) => '<path d="M12.6 20c-.4-6.4 3.8-10.2 9.8-10.2 5.4 0 9.4 3 9.2 8.6-3.2-.2-8.6-1.2-12.4-4.6-1.6 2.4-4 4.6-6.6 6.2z" fill="' + c + '"/>',
-  long: (c) => '<path d="M11 33c-1.8-14 1.6-23 11-23s12.8 9 11 23h-3.2c.8-8.4-.4-15.6-7.8-15.6S13.4 24.6 14.2 33z" fill="' + c + '"/>',
-  buzz: (c) => '<path d="M13 18.6c0-5.4 3.8-8.4 9-8.4s9 3 9 8.4c-1.8-2-5-3-9-3s-7.2 1-9 3z" fill="' + c + '" opacity=".85"/>',
-  none: () => '<path d="M15 14.5c2.2-1.8 4.6-2.6 7-2.6M27.5 13.2l2 1.6" stroke="#9BE7FF" stroke-width=".9" stroke-linecap="round" fill="none" opacity=".9"/><circle cx="29.8" cy="15.2" r=".9" fill="#9BE7FF"/>',
-};
+// agent avatars: AI teammate portraits (UI Faces), one per agent
+const AVA_IMG = ['sync', 'indexer', 'questions', 'gaps', 'drafting', 'rewrite', 'chat', 'publisher'];
 function ava3d(k, name, min) {
-  const i = Math.max(0, AGENTS.findIndex(a => a[1] === name)), [skin, shade, hair, style, glow] = AVA_FACE[i % AVA_FACE.length], [bl, bd] = AVA_BG[k];
-  const id = 'av' + i, st = min === 0 ? ' is-run' : min === null ? ' is-off' : '';
-  const front = style === 'long' || style === 'bob';
-  return '<span class="ava3d' + st + '" aria-hidden="true"><svg viewBox="0 0 44 44"><defs>' +
-    '<radialGradient id="' + id + 'b" cx=".3" cy=".2" r="1"><stop offset="0" stop-color="' + bl + '"/><stop offset="1" stop-color="' + bd + '"/></radialGradient>' +
-    '<radialGradient id="' + id + 's" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".35" stop-color="' + skin + '"/><stop offset="1" stop-color="' + shade + '"/></radialGradient>' +
-    '<clipPath id="' + id + 'c"><rect width="44" height="44" rx="11"/></clipPath></defs><g clip-path="url(#' + id + 'c)">' +
-    '<rect width="44" height="44" fill="url(#' + id + 'b)"/>' +
-    (front ? AVA_HAIR[style](hair) : '') +
-    '<path d="M7 46c1-8 7-12 15-12s14 4 15 12z" fill="' + shade + '"/><path d="M7 46c1-8 7-12 15-12s14 4 15 12z" fill="#15100D" opacity=".55"/>' +
-    '<path d="M18.6 30h6.8v5.4h-6.8z" fill="' + shade + '"/>' +
-    '<ellipse cx="22" cy="21.4" rx="8.8" ry="10.2" fill="url(#' + id + 's)"/>' +
-    (front ? '' : AVA_HAIR[style](hair)) +
-    '<ellipse class="eye" cx="18.6" cy="22" rx="1.5" ry="1.25" fill="' + glow + '"/><ellipse class="eye" cx="25.4" cy="22" rx="1.5" ry="1.25" fill="' + glow + '"/>' +
-    '<circle cx="18.6" cy="22" r="2.8" fill="' + glow + '" opacity=".22"/><circle cx="25.4" cy="22" r="2.8" fill="' + glow + '" opacity=".22"/>' +
-    '<path d="M19.6 26.8q2.4 ' + (min === 0 ? '1.6' : '.7') + ' 4.8 0" stroke="#7A4A3A" stroke-width="1" stroke-linecap="round" fill="none"/>' +
-    '<rect x="30" y="20.2" width="2.4" height="4.6" rx="1.2" fill="#2A1F1A"/><circle cx="31.2" cy="21.4" r=".6" fill="' + glow + '"/>' +
-    '<path d="M28.6 24.8l2.2 1.6v2.4" stroke="' + glow + '" stroke-width=".7" fill="none" opacity=".8"/>' +
-    '</g></svg></span>';
+  const i = Math.max(0, AGENTS.findIndex(a => a[1] === name)), st = min === 0 ? ' is-run' : min === null ? ' is-off' : '';
+  return '<span class="ava3d' + st + '" aria-hidden="true"><img src="assets/agents/' + AVA_IMG[i] + '.jpg" alt="" width="44" height="44" loading="lazy"></span>';
 }
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
