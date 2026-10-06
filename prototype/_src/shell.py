@@ -86,7 +86,7 @@ CSS = r"""
   .btn:hover{text-decoration:none}
   .btn--primary{background:var(--ink);color:#fff;border-color:var(--ink)}
   .btn--primary:hover{box-shadow:0 10px 22px -14px rgba(36,26,20,.8)}
-  .btn--grad{background:var(--brand-gradient);color:var(--ink);font-weight:700}
+  .btn--grad{background:linear-gradient(135deg,#C7385B,#DE5A70);color:#fff;font-weight:700}
   .btn--grad:hover{box-shadow:0 12px 26px -12px rgba(232,93,117,.7)}
   .btn--secondary{background:var(--panel);color:var(--ink);border-color:var(--line-2)}
   .btn--secondary:hover{border-color:rgba(36,26,20,.3);background:var(--bg-soft)}
@@ -273,7 +273,7 @@ CSS = r"""
   .askp__intro p{margin:0;color:var(--muted)}
   .askp__links{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
   .askp__links a{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-radius:10px;border:1px solid var(--line-2);font-size:.76rem;font-weight:700;color:var(--ink);text-decoration:none}
-  .askp__links a:first-child{background:var(--brand-gradient);border-color:transparent}
+  .askp__links a:first-child{background:linear-gradient(135deg,#C7385B,#DE5A70);border-color:transparent;color:#fff}
   .askp__links a:hover{box-shadow:0 8px 18px -12px rgba(232,93,117,.8)}
   .arow2{display:flex;gap:8px;align-items:flex-end;justify-self:start;max-width:92%}
   .arow2 .am{max-width:none}
