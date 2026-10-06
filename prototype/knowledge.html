@@ -765,6 +765,20 @@
   .sp__c{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative}
   .sp__c i{width:100%;max-width:22px;border-radius:4px 4px 2px 2px;background:linear-gradient(180deg,#FFB199,#E85D75)}
   .sp__c em{position:absolute;bottom:-14px;font-style:normal;font-size:.58rem;color:var(--muted);white-space:nowrap}
+  /* stat tiles: small squares, left aligned, details in the i tooltip */
+  .kstats{display:flex;flex-wrap:wrap;gap:10px;grid-template-columns:none}
+  .kstat{display:flex!important;flex-direction:column;align-items:flex-start;width:168px;padding:14px 16px;border-radius:14px}
+  .kstat i.bar{display:block;width:22px;height:3px;border-radius:3px;margin-bottom:10px;background:var(--line-2)}
+  .kstat.ok i.bar{background:var(--success)} .kstat.warn i.bar{background:#C9A24A} .kstat.ref i.bar{background:#8C817B} .kstat.all i.bar{background:var(--rose)}
+  .kstat small{display:flex;align-items:center;gap:6px;font-size:.62rem;white-space:nowrap}
+  .kstat b{font-size:1.9rem;margin:6px 0 0;line-height:1}
+  .tip{position:relative;width:16px;height:16px;border-radius:50%;background:#8E2F45;color:#fff;font-style:normal;font-size:.62rem;font-weight:800;display:grid;place-items:center;letter-spacing:0;cursor:help}
+  .tip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translate(-50%,4px);width:220px;padding:9px 11px;border-radius:10px;background:var(--ink);color:#fff;font-size:.74rem;font-weight:500;line-height:1.4;letter-spacing:0;text-transform:none;text-align:left;opacity:0;pointer-events:none;transition:opacity .15s ease,transform .15s ease;z-index:5}
+  .tip:hover::after,.tip:focus::after{opacity:1;transform:translate(-50%,0)}
+  .kstat i.tip{display:grid!important;width:15px!important;height:15px!important;margin:0!important;border-radius:50%!important;background:#8E2F45!important;color:#fff;font-size:.58rem;place-items:center;flex:none}
+  .kstat{position:relative}
+  .kstat .tip::after{white-space:normal;width:210px;.kstat .tip::after{left:0;transform:translate(0,4px);text-transform:none;letter-spacing:0;font-weight:500;font-size:.76rem;line-height:1.4;z-index:30}
+  .kstat .tip:hover::after,.kstat .tip:focus::after{transform:translate(0,0)}
 
   :root[data-theme="dark"]{
     --ink:#F2EBE5; --bg:#15100D; --bg-soft:#231B16; --panel:#1C1612;
@@ -1652,7 +1666,7 @@ function render() {
   const all = entries(), n = (s) => all.filter(e => e.state === s).length;
   $('kstats').innerHTML = [['all', 'Knowledge entries', all.length, 'Everything lojo holds for this workspace'], ['ok', 'Published', n('Published'), 'Approved by a person, then published as company truth.'],
     ['warn', 'Needs review', n('Needs review'), 'Conflicting or rejected. Not company truth until a person reviews it.'], ['ref', 'Reference', n('Reference'), 'Saved from an authorised source. Never published on its own.']]
-    .map(([c, l, v, s]) => '<div class="kstat ' + c + '"><i></i><small>' + l + '</small><b>' + v + '</b><span>' + s + '</span></div>').join('');
+    .map(([c, l, v, s]) => '<div class="kstat ' + c + '"><i class="bar"></i><small>' + l + ' <i class="tip" tabindex="0" data-tip="' + esc(s) + '">i</i></small><b>' + v + '</b></div>').join('');
   const count = (key) => uniq(all.map(e => e[key])).map(v => [v, all.filter(e => e[key] === v).length]);
   const pills = (key, sel) => count(key).map(([v, c]) => '<button type="button" class="kpill" data-pick="' + sel + '" data-v="' + esc(v) + '">' + esc(v) + ' <b>' + c + '</b></button>').join('');
   // spaces: a donut with a clickable legend
