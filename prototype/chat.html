@@ -445,7 +445,7 @@
   /* welcome */
   .aw{display:grid;justify-items:center;text-align:center;gap:10px;padding:18px 6px 6px;max-width:520px;margin:0 auto;width:100%}
   .aw__ava{width:52px;height:52px;display:block}
-  .aw__ava svg{width:100%;height:100%;border-radius:24%;box-shadow:0 12px 24px -14px rgba(15,165,147,.8)}
+  .aw__ava svg{width:100%;height:100%;border-radius:24%;box-shadow:0 12px 24px -14px rgba(232,93,117,.8)}
   .aw h3{margin:6px 0 0;font-family:var(--display);font-weight:700;font-size:1.3rem;letter-spacing:-.01em}
   .aw p{margin:0;color:var(--muted);font-size:.86rem;line-height:1.55}
   .aw__list{display:grid;gap:8px;width:100%;margin-top:10px}
@@ -976,9 +976,10 @@ const agAgo = (m) => m === null ? '—' : m < 1 ? 'Now' : m < 60 ? m + ' min ago
 // one colour per agent: [deep, light]
 const AVA_COL = {
   'Sync agent': ['#F2683C', '#FFC08F'], 'Indexer': ['#E39A12', '#FFD978'], 'Question finder': ['#7B5CF0', '#C4AEFF'], 'Gap finder': ['#2F74E8', '#9CC8FF'],
-  'Drafting agent': ['#E0486A', '#FFB199'], 'Rewrite agent': ['#B8357A', '#F6A3CB'], 'Chat agent': ['#0FA593', '#86EAD9'], 'Publisher': ['#5B6B82', '#BAC5D4'],
+  'Drafting agent': ['#2E9E5B', '#9BE3B4'], 'Rewrite agent': ['#B8357A', '#F6A3CB'], 'Chat agent': ['#E85D75', '#FFB199'], 'Publisher': ['#5B6B82', '#BAC5D4'],
 };
 // the white cloud cut from the lojo logo
+const CLOUD_BIG = '<image href="assets/lojo-cloud.png" x="6" y="6" width="32" height="32"/>';
 const CLOUD = '<image href="assets/lojo-cloud.png" x="9.5" y="9.5" width="25" height="25"/>';
 const AVA_JOB = {
   'Sync agent': '<path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/>',
@@ -1190,7 +1191,7 @@ function chatDocs(zone, form, say, setSugg) {
 function agentIcon(name) {
   const [deep, light] = AVA_COL[name] || ['#E0486A', '#FFB199'], id = 'ai' + name.replace(/\W/g, '') + Math.random().toString(36).slice(2, 6);
   return '<svg viewBox="0 0 44 44" aria-hidden="true"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + deep + '"/><stop offset="1" stop-color="' + light + '"/></linearGradient></defs>' +
-    '<rect width="44" height="44" rx="11" fill="url(#' + id + ')"/>' + CLOUD + '</svg>';
+    '<rect width="44" height="44" rx="11" fill="url(#' + id + ')"/>' + (name === 'Chat agent' ? CLOUD_BIG : CLOUD) + '</svg>';
 }
 document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('[data-agent]').forEach(el => { el.innerHTML = agentIcon(el.dataset.agent); }));
 const $ = (id) => document.getElementById(id);
