@@ -347,6 +347,8 @@
   .srcbox__ic{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:rgba(63,143,95,.14);color:var(--success);flex:none}
   .srcbox small{display:block;font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--success)}
   .srcbox b{display:block;font-size:.8rem;font-weight:600}
+  .srcbox .srcs{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+  .srcbox .src{font-size:.7rem;height:auto;padding:2px 7px}
   .aacts{display:flex;gap:4px;margin-top:8px}
   .aacts button{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 8px;border-radius:8px;border:0;background:none;color:var(--muted);font:inherit;font-size:.72rem;font-weight:600;cursor:pointer}
   .aacts button:hover{background:var(--panel);color:var(--ink)}
@@ -512,6 +514,8 @@
   .fdetail{grid-column:1/-1;padding:6px 0 4px 50px}
   .passage{border-left:3px solid var(--line-2);padding:6px 12px;margin:8px 0;font-size:.84rem;color:var(--ink);background:var(--panel);border-radius:0 8px 8px 0}
   .passage em{display:block;font-style:normal;color:var(--muted);font-size:.72rem;margin-bottom:2px}
+  .passage.is-hit{border-left-color:var(--rose);background:rgba(255,177,153,.22)}
+  .file.is-pin{border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,93,117,.14)}
   .folder{display:flex;gap:8px;margin-top:14px}
   .uperr{margin:0 0 16px;padding:14px 16px;border-radius:14px;border:1px solid rgba(198,69,69,.3);background:rgba(198,69,69,.05)}
   .uperr__h{display:flex;align-items:center;gap:10px;font-weight:700;font-size:.9rem;color:var(--error)}
@@ -940,10 +944,10 @@ const ICO = {
   copy: '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>',
   up: '<svg viewBox="0 0 24 24"><path d="M7 10v11H4V10zM7 10l4-7a2 2 0 0 1 2 2v4h5.5a2 2 0 0 1 2 2.3l-1.2 7A2 2 0 0 1 17.3 20H7"/></svg>',
 };
-const linkify = (html) => html
+function linkify(html) { return html
   .replace(/([\w.+-]+@[\w-]+\.[\w.-]+\w)/g, '<a href="mailto:$1">$1</a>')
   .replace(/(^|[\s(])(\+\d[\d\s().-]{6,}\d)/g, (m, a, n) => a + '<a href="tel:' + n.replace(/[^\d+]/g, '') + '">' + n + '</a>')
-  .replace(/(^|[\s(])((?:https?:\/\/|www\.)[^\s<,)]+[^\s<.,)])/g, (m, a, u) => a + '<a href="' + (u.startsWith('http') ? u : 'https://' + u) + '" target="_blank" rel="noopener">' + u + '</a>');
+  .replace(/(^|[\s(])((?:https?:\/\/|www\.)[^\s<,)]+[^\s<.,)])/g, (m, a, u) => a + '<a href="' + (u.startsWith('http') ? u : 'https://' + u) + '" target="_blank" rel="noopener">' + u + '</a>'); }
 function answerHTML(q, a, fromQ, srcs) {
   let f = null, hits = [];
   for (const x of FACTS) { if (!x.ask.test(q)) continue; const m = [...new Set((a.match(x.find) || []).map(s => s.trim()))]; if (m.length) { f = x; hits = m.slice(0, 3); break; } }
@@ -953,9 +957,12 @@ function answerHTML(q, a, fromQ, srcs) {
     h += '<div class="fact">' + hits.map(v => '<div class="fact__row"><span class="fact__ic">' + ICO[f.kind] + '</span><span class="fact__v"><small>' + f.label + '</small><b>' + esc(v) + '</b></span>' +
       (href(f.kind, v) ? '<a class="fact__go" href="' + href(f.kind, v) + '"' + (f.kind === 'url' ? ' target="_blank" rel="noopener"' : '') + '>' + { phone: 'Call', email: 'Write', url: 'Open' }[f.kind] + '</a>' : '') +
       '<button class="fact__cp" type="button" data-copy="' + esc(v) + '" aria-label="Copy">' + ICO.copy + '</button></div>').join('') + '</div>' +
-      '<details class="more"><summary>More from the approved answer</summary><div class="md">' + linkify(md(a)) + '</div></details>';
-  } else h += '<div class="md">' + linkify(md(a)) + '</div>';
-  h += '<div class="srcbox"><span class="srcbox__ic">' + ICO.check + '</span><span><small>From an approved answer</small><b>' + esc(fromQ) + '</b></span></div>' + (srcs ? '<div class="srcs">' + srcs + '</div>' : '');
+      '<details class="more"><summary>More from the approved answer</summary><div class="md">' + md(a) + '</div></details>';
+  } else h += '<div class="md">' + md(a) + '</div>';
+  // name the approved question only when it reads differently from what was asked
+  const wq = (s) => new Set(s.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(w => w.length > 3));
+  const A = wq(q), B = wq(fromQ), same = [...A].filter(w => B.has(w)).length / Math.max(1, Math.min(A.size, B.size)) >= 0.6;
+  h += '<div class="srcbox"><span class="srcbox__ic">' + ICO.check + '</span><span><small>Approved answer</small>' + (same ? '' : '<b>Answers: ' + esc(fromQ) + '</b>') + (srcs ? '<span class="srcs">' + srcs + '</span>' : '') + '</span></div>';
   h += '<div class="aacts"><button type="button" data-copy="' + esc(a) + '">' + ICO.copy + 'Copy</button><button type="button" data-rate="up" aria-label="Helpful">' + ICO.up + '</button><button type="button" data-rate="down" aria-label="Not helpful" class="down">' + ICO.up + '</button></div>';
   return h;
 }
@@ -1048,7 +1055,7 @@ function md(src) {
     else close();
   });
   close();
-  return '<div class="md">' + out.join('') + '</div>';
+  return '<div class="md">' + linkify(out.join('')) + '</div>';
 }
 // G29: greetings and thanks get a short reply with no sources
 const SMALLTALK = /^\s*(hi|hello|hey|hiya|good (morning|afternoon|evening)|thanks|thank you|thx|cheers|ok|okay|great|cool|bye|goodbye)\b[\s!.?]*$/i;
@@ -1175,7 +1182,7 @@ function srcChip(docId, loc, warn) {
       const d = window.__askDoc && window.__askDoc(q, store); if (d) { say('bot', d); countChat('answered'); return; }
       let best = null, bs = 0;
       store().forEach(x => { const s = score(q, x.q + ' ' + x.a); if (s.c > 0 && s.s > bs) { best = x; bs = s.s; } });
-      if (best && bs >= 2) { say('bot', answerHTML(q, best.a, best.q)); countChat('answered'); }
+      if (best && bs >= 2) { say('bot', answerHTML(q, best.a, best.q, best.r.src.map(([d, loc]) => srcChip(d, loc)).join(''))); countChat('answered'); }
       else { say('bot am--miss', 'I don’t know. Nothing approved covers this yet, so I won’t guess.'); countChat('declined'); }
     }, 500);
   }
@@ -1294,7 +1301,8 @@ function render() {
     const ext = d.name.split('.').pop(), n = Math.round(d.pages * 4.6), qs = qsFor(d.id);
     let detail = '';
     if (open === d.id) {
-      const ps = passagesFor(d.id).slice(0, 3);
+      const all = passagesFor(d.id), hit = typeof pinLoc === 'string' && d.id === pinDoc ? all.filter(p => p.loc === pinLoc) : [];
+      const ps = hit.concat(all.filter(p => !hit.includes(p))).slice(0, 3);
       detail = '<div class="fdetail"><p class="sub" style="margin:6px 0 2px">Sample passages</p>' +
         (ps.length ? ps.map(p => '<div class="passage"><em>' + esc(p.loc) + '</em>' + esc(p.text) + '</div>').join('') : '<p class="sub">No passages sampled yet.</p>') +
         (qs.length ? '<p class="sub" style="margin:10px 0 6px">Questions found here</p><div class="chips">' + qs.map(q => '<a class="chip" href="insights.html">' + esc(q.q) + '</a>').join('') + '</div>' : '') + '</div>';
@@ -1397,9 +1405,16 @@ function show(tab) {
   $('tabDocs').hidden = tab !== 'docs'; $('tabConnect').hidden = tab !== 'connect';
 }
 document.querySelectorAll('.ptab').forEach(t => t.addEventListener('click', () => { show(t.dataset.tab); history.replaceState(null, '', location.search + (t.dataset.tab === 'connect' ? '#connect' : '')); }));
+const SP = new URLSearchParams(location.search), pinDoc = SP.get('doc'), pinLoc = SP.get('loc');
+if (pinDoc && docById(pinDoc)) open = pinDoc;
 renderScope();
 render();
 show(location.hash === '#connect' ? 'connect' : 'docs');
+if (pinDoc && docById(pinDoc)) {
+  const li = document.querySelector('.file[data-id="' + pinDoc + '"]');
+  if (li) { li.classList.add('is-pin'); li.scrollIntoView({ block: 'center' }); }
+  if (pinLoc) document.querySelectorAll('.file[data-id="' + pinDoc + '"] .passage').forEach(p => { if (p.querySelector('em').textContent === pinLoc) p.classList.add('is-hit'); });
+}
 if (new URLSearchParams(location.search).get('demo') === 'upload') demoUploadErrors();
 
 </script>

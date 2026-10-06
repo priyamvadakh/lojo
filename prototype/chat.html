@@ -347,6 +347,8 @@
   .srcbox__ic{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:rgba(63,143,95,.14);color:var(--success);flex:none}
   .srcbox small{display:block;font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--success)}
   .srcbox b{display:block;font-size:.8rem;font-weight:600}
+  .srcbox .srcs{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+  .srcbox .src{font-size:.7rem;height:auto;padding:2px 7px}
   .aacts{display:flex;gap:4px;margin-top:8px}
   .aacts button{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 8px;border-radius:8px;border:0;background:none;color:var(--muted);font:inherit;font-size:.72rem;font-weight:600;cursor:pointer}
   .aacts button:hover{background:var(--panel);color:var(--ink)}
@@ -876,10 +878,10 @@ const ICO = {
   copy: '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>',
   up: '<svg viewBox="0 0 24 24"><path d="M7 10v11H4V10zM7 10l4-7a2 2 0 0 1 2 2v4h5.5a2 2 0 0 1 2 2.3l-1.2 7A2 2 0 0 1 17.3 20H7"/></svg>',
 };
-const linkify = (html) => html
+function linkify(html) { return html
   .replace(/([\w.+-]+@[\w-]+\.[\w.-]+\w)/g, '<a href="mailto:$1">$1</a>')
   .replace(/(^|[\s(])(\+\d[\d\s().-]{6,}\d)/g, (m, a, n) => a + '<a href="tel:' + n.replace(/[^\d+]/g, '') + '">' + n + '</a>')
-  .replace(/(^|[\s(])((?:https?:\/\/|www\.)[^\s<,)]+[^\s<.,)])/g, (m, a, u) => a + '<a href="' + (u.startsWith('http') ? u : 'https://' + u) + '" target="_blank" rel="noopener">' + u + '</a>');
+  .replace(/(^|[\s(])((?:https?:\/\/|www\.)[^\s<,)]+[^\s<.,)])/g, (m, a, u) => a + '<a href="' + (u.startsWith('http') ? u : 'https://' + u) + '" target="_blank" rel="noopener">' + u + '</a>'); }
 function answerHTML(q, a, fromQ, srcs) {
   let f = null, hits = [];
   for (const x of FACTS) { if (!x.ask.test(q)) continue; const m = [...new Set((a.match(x.find) || []).map(s => s.trim()))]; if (m.length) { f = x; hits = m.slice(0, 3); break; } }
@@ -889,9 +891,12 @@ function answerHTML(q, a, fromQ, srcs) {
     h += '<div class="fact">' + hits.map(v => '<div class="fact__row"><span class="fact__ic">' + ICO[f.kind] + '</span><span class="fact__v"><small>' + f.label + '</small><b>' + esc(v) + '</b></span>' +
       (href(f.kind, v) ? '<a class="fact__go" href="' + href(f.kind, v) + '"' + (f.kind === 'url' ? ' target="_blank" rel="noopener"' : '') + '>' + { phone: 'Call', email: 'Write', url: 'Open' }[f.kind] + '</a>' : '') +
       '<button class="fact__cp" type="button" data-copy="' + esc(v) + '" aria-label="Copy">' + ICO.copy + '</button></div>').join('') + '</div>' +
-      '<details class="more"><summary>More from the approved answer</summary><div class="md">' + linkify(md(a)) + '</div></details>';
-  } else h += '<div class="md">' + linkify(md(a)) + '</div>';
-  h += '<div class="srcbox"><span class="srcbox__ic">' + ICO.check + '</span><span><small>From an approved answer</small><b>' + esc(fromQ) + '</b></span></div>' + (srcs ? '<div class="srcs">' + srcs + '</div>' : '');
+      '<details class="more"><summary>More from the approved answer</summary><div class="md">' + md(a) + '</div></details>';
+  } else h += '<div class="md">' + md(a) + '</div>';
+  // name the approved question only when it reads differently from what was asked
+  const wq = (s) => new Set(s.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(w => w.length > 3));
+  const A = wq(q), B = wq(fromQ), same = [...A].filter(w => B.has(w)).length / Math.max(1, Math.min(A.size, B.size)) >= 0.6;
+  h += '<div class="srcbox"><span class="srcbox__ic">' + ICO.check + '</span><span><small>Approved answer</small>' + (same ? '' : '<b>Answers: ' + esc(fromQ) + '</b>') + (srcs ? '<span class="srcs">' + srcs + '</span>' : '') + '</span></div>';
   h += '<div class="aacts"><button type="button" data-copy="' + esc(a) + '">' + ICO.copy + 'Copy</button><button type="button" data-rate="up" aria-label="Helpful">' + ICO.up + '</button><button type="button" data-rate="down" aria-label="Not helpful" class="down">' + ICO.up + '</button></div>';
   return h;
 }
@@ -984,7 +989,7 @@ function md(src) {
     else close();
   });
   close();
-  return '<div class="md">' + out.join('') + '</div>';
+  return '<div class="md">' + linkify(out.join('')) + '</div>';
 }
 // G29: greetings and thanks get a short reply with no sources
 const SMALLTALK = /^\s*(hi|hello|hey|hiya|good (morning|afternoon|evening)|thanks|thank you|thx|cheers|ok|okay|great|cool|bye|goodbye)\b[\s!.?]*$/i;
@@ -1111,7 +1116,7 @@ function srcChip(docId, loc, warn) {
       const d = window.__askDoc && window.__askDoc(q, store); if (d) { say('bot', d); countChat('answered'); return; }
       let best = null, bs = 0;
       store().forEach(x => { const s = score(q, x.q + ' ' + x.a); if (s.c > 0 && s.s > bs) { best = x; bs = s.s; } });
-      if (best && bs >= 2) { say('bot', answerHTML(q, best.a, best.q)); countChat('answered'); }
+      if (best && bs >= 2) { say('bot', answerHTML(q, best.a, best.q, best.r.src.map(([d, loc]) => srcChip(d, loc)).join(''))); countChat('answered'); }
       else { say('bot am--miss', 'I don’t know. Nothing approved covers this yet, so I won’t guess.'); countChat('declined'); }
     }, 500);
   }

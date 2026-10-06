@@ -440,6 +440,8 @@ DOCUMENTS = dict(
   .fdetail{grid-column:1/-1;padding:6px 0 4px 50px}
   .passage{border-left:3px solid var(--line-2);padding:6px 12px;margin:8px 0;font-size:.84rem;color:var(--ink);background:var(--panel);border-radius:0 8px 8px 0}
   .passage em{display:block;font-style:normal;color:var(--muted);font-size:.72rem;margin-bottom:2px}
+  .passage.is-hit{border-left-color:var(--rose);background:rgba(255,177,153,.22)}
+  .file.is-pin{border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,93,117,.14)}
   .folder{display:flex;gap:8px;margin-top:14px}
   .uperr{margin:0 0 16px;padding:14px 16px;border-radius:14px;border:1px solid rgba(198,69,69,.3);background:rgba(198,69,69,.05)}
   .uperr__h{display:flex;align-items:center;gap:10px;font-weight:700;font-size:.9rem;color:var(--error)}
@@ -576,7 +578,8 @@ function render() {
     const ext = d.name.split('.').pop(), n = Math.round(d.pages * 4.6), qs = qsFor(d.id);
     let detail = '';
     if (open === d.id) {
-      const ps = passagesFor(d.id).slice(0, 3);
+      const all = passagesFor(d.id), hit = typeof pinLoc === 'string' && d.id === pinDoc ? all.filter(p => p.loc === pinLoc) : [];
+      const ps = hit.concat(all.filter(p => !hit.includes(p))).slice(0, 3);
       detail = '<div class="fdetail"><p class="sub" style="margin:6px 0 2px">Sample passages</p>' +
         (ps.length ? ps.map(p => '<div class="passage"><em>' + esc(p.loc) + '</em>' + esc(p.text) + '</div>').join('') : '<p class="sub">No passages sampled yet.</p>') +
         (qs.length ? '<p class="sub" style="margin:10px 0 6px">Questions found here</p><div class="chips">' + qs.map(q => '<a class="chip" href="insights.html">' + esc(q.q) + '</a>').join('') + '</div>' : '') + '</div>';
@@ -679,9 +682,16 @@ function show(tab) {
   $('tabDocs').hidden = tab !== 'docs'; $('tabConnect').hidden = tab !== 'connect';
 }
 document.querySelectorAll('.ptab').forEach(t => t.addEventListener('click', () => { show(t.dataset.tab); history.replaceState(null, '', location.search + (t.dataset.tab === 'connect' ? '#connect' : '')); }));
+const SP = new URLSearchParams(location.search), pinDoc = SP.get('doc'), pinLoc = SP.get('loc');
+if (pinDoc && docById(pinDoc)) open = pinDoc;
 renderScope();
 render();
 show(location.hash === '#connect' ? 'connect' : 'docs');
+if (pinDoc && docById(pinDoc)) {
+  const li = document.querySelector('.file[data-id="' + pinDoc + '"]');
+  if (li) { li.classList.add('is-pin'); li.scrollIntoView({ block: 'center' }); }
+  if (pinLoc) document.querySelectorAll('.file[data-id="' + pinDoc + '"] .passage').forEach(p => { if (p.querySelector('em').textContent === pinLoc) p.classList.add('is-hit'); });
+}
 if (new URLSearchParams(location.search).get('demo') === 'upload') demoUploadErrors();
 """)
 
@@ -744,7 +754,18 @@ QUESTIONS_PAGE = dict(
   .bar .spacer{flex:1}
   .add{display:flex;gap:8px;flex:1;max-width:520px}
   .qlist{list-style:none;margin:0;padding:0}
-  .qrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:18px;align-items:center;padding:14px 20px;border-top:1px solid var(--line)}
+  .qrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:18px;align-items:center;padding:16px 22px;border-top:1px solid var(--line)}
+  .qact{display:flex;gap:14px;align-items:center;justify-content:flex-end;min-width:150px}
+  .qact .link{border:0;background:none;padding:0;font:inherit;font-size:.84rem;font-weight:600;color:var(--ink);cursor:pointer;text-decoration:none;white-space:nowrap}
+  .qact .link:hover{color:#B73C54;text-decoration:underline;text-underline-offset:3px}
+  .qact .link.mute{color:var(--muted)}
+  .srclink{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 9px;border-radius:8px;border:1px solid var(--line-2);background:var(--panel);font-size:.76rem;font-weight:600;color:var(--ink);text-decoration:none;white-space:nowrap;transition:border-color .15s ease,box-shadow .15s ease}
+  .srclink svg{width:13px;height:13px;fill:none;stroke:var(--muted);stroke-width:1.9}
+  .srclink em{font-style:normal;color:var(--muted);font-weight:500}
+  .srclink .go{color:var(--muted);font-size:.72rem;opacity:0;transition:opacity .15s ease}
+  .srclink:hover{border-color:var(--rose);box-shadow:0 6px 14px -10px rgba(232,93,117,.8);text-decoration:none}
+  .srclink:hover .go{opacity:1;color:#B73C54}
+  .gwhy{display:block;margin:-2px 0 8px;color:var(--muted);font-size:.84rem}
   .qrow:first-child{border-top:0}
   .qrow:hover{background:#FCFBFA}
   .qrow b{display:block;font-size:.92rem;font-weight:600;margin-bottom:6px}
@@ -818,17 +839,16 @@ QUESTIONS_PAGE = dict(
       <div class="bar">
         <div class="chips" id="filters">
           <button class="chip" data-f="all" aria-pressed="true">All</button>
-          <button class="chip" data-f="call" aria-pressed="false">Needs your call</button>
-          <button class="chip" data-f="yes" aria-pressed="false">Matters</button>
-          <button class="chip" data-f="no" aria-pressed="false">Left out</button>
+          <button class="chip" data-f="need" aria-pressed="false">Needs you</button>
           <button class="chip" data-f="you" aria-pressed="false">From you</button>
+          <button class="chip" data-f="no" aria-pressed="false">Left out</button>
         </div>
       </div>
       <section class="card"><ul class="qlist" id="qlist"></ul></section>
     </section>
 
     <section id="tabG" hidden>
-      <div class="gaps" id="gapList"></div>
+      <section class="card"><ul class="qlist" id="gapList"></ul></section>
     </section>
 
 """,
@@ -852,19 +872,40 @@ function statusOf(q) {
   if (matters(q) === null) return ['Waiting for your call', 'st-rev'];
   return ['Queued for drafting', 'st-q'];
 }
+// a source chip opens Sources at that document with the quoted passage highlighted
+function srcLink(docId, loc) {
+  return '<a class="srclink" href="sources.html?doc=' + docId + (loc ? '&loc=' + encodeURIComponent(loc) : '') + '" title="Open the source">' +
+    '<svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>' + esc(docShort(docId)) + (loc ? ' <em>' + esc(loc) + '</em>' : '') + '<span class="go">↗</span></a>';
+}
+function sourcesOf(q) {
+  const r = draftByQ(q.id);
+  return (q.docs || []).map(d => { const hit = r && r.src.find(s => s[0] === d); return [d, hit ? hit[1] : '']; });
+}
+const needsYou = (q) => { const s = statusOf(q)[0]; return matters(q) === null || s === 'Draft failed' || s === 'No source yet' || s === 'Needs a human answer'; };
+function actionFor(q) {
+  const m = matters(q), [st] = statusOf(q), r = draftByQ(q.id), failed = ST.draftFailed[q.id];
+  if (m === false) return '<button class="link" data-q="' + q.id + '" data-v="1">Bring back</button>';
+  if (failed === 'retrying') return '';
+  if (failed) return '<button class="btn btn--secondary btn--sm" data-retry="' + q.id + '">Try again</button>';
+  if (st === 'Approved') return '<a class="link" href="build.html?sel=' + r.id + '">See the answer</a>';
+  if (st === 'Needs a human answer') return '<a class="link" href="build.html?sel=' + r.id + '">Write the answer</a>';
+  if (st === 'Draft in review') return '<a class="link" href="build.html?sel=' + r.id + '">Review the draft</a>';
+  if (st === 'No source yet') return '<a class="link" href="sources.html">Send a document</a>';
+  if (m === null) return '<span class="seg" role="group" aria-label="Does this matter?"><button class="yes" data-q="' + q.id + '" data-v="1">Matters</button><button class="no" data-q="' + q.id + '" data-v="0">Leave out</button></span>';
+  return '<button class="link mute" data-q="' + q.id + '" data-v="0">Leave out</button>';
+}
 function renderQ() {
-  const qs = allQuestions().filter(q => filter === 'all' || (filter === 'call' && matters(q) === null) || (filter === 'yes' && matters(q) === true) || (filter === 'no' && matters(q) === false) || (filter === 'you' && q.origin === 'you'));
+  const qs = allQuestions().filter(q => filter === 'all' || (filter === 'need' && needsYou(q) && matters(q) !== false) || (filter === 'no' && matters(q) === false) || (filter === 'you' && q.origin === 'you'));
   $('qlist').innerHTML = qs.length ? qs.map(q => {
     const m = matters(q), [st, cls] = statusOf(q), [ol, oc] = ORIGIN[q.origin];
     const asks = ST.asks[q.id] || 0, failed = ST.draftFailed[q.id];
     return '<li class="qrow' + (m === false ? ' is-out' : '') + (m === null ? ' is-call' : '') + (flashId === q.id ? ' is-flash' : '') + '" id="row-' + q.id + '"><div><b>' + esc(q.q) + '</b><div class="qmeta"><span class="badge ' + oc + '">' + ol + '</span>' +
       (asks >= 2 ? '<span class="badge badge--amber" title="Asked in Ask lojo or added by your team">Asked ' + asks + ' times</span>' : '') +
-      (q.docs || []).map(d => '<span class="src">' + esc(docShort(d)) + '</span>').join('') + '</div>' +
+      sourcesOf(q).map(([d, loc]) => srcLink(d, loc)).join('') + '</div>' +
       (m === false && ST.notes[q.id] ? '<span class="note">' + esc(ST.notes[q.id]) + '</span>' : '') +
       (failed && failed !== 'retrying' && m !== false ? '<span class="failnote">' + esc(failed) + '</span>' : '') + '</div>' +
-      '<span class="stcell"><span class="status ' + cls + '">' + (failed === 'retrying' ? '<span class="spin" style="width:10px;height:10px"></span> ' : '') + st + '</span>' +
-      (failed && failed !== 'retrying' && m !== false ? '<button class="btn btn--secondary" data-retry="' + q.id + '">Try again</button>' : '') + '</span>' +
-      '<span class="seg" role="group" aria-label="Does this matter?"><button class="yes" data-q="' + q.id + '" data-v="1" aria-pressed="' + (m === true) + '">Matters</button><button class="no" data-q="' + q.id + '" data-v="0" aria-pressed="' + (m === false) + '">' + (m === false ? 'Left out' : 'Leave out') + '</button></span>' +
+      '<span class="status ' + cls + '">' + (failed === 'retrying' ? '<span class="spin" style="width:10px;height:10px"></span> ' : '') + st + '</span>' +
+      '<span class="qact">' + actionFor(q) + '</span>' +
       (leaving === q.id ? '<div class="leave"><input class="text" id="leaveNote" placeholder="Why leave it out? (optional) e.g. we don’t offer this" aria-label="Note"><button class="btn btn--primary btn--sm" data-leave-go="' + q.id + '">Leave out</button><button class="btn btn--ghost btn--sm" data-leave-x="1">Cancel</button></div>' : '') + '</li>';
   }).join('') : '<li class="empty"><b>Nothing here</b>Try another filter.</li>';
   const c = counts();
@@ -890,12 +931,11 @@ $('filters').addEventListener('click', (e) => {
 function renderG() {
   $('gapList').innerHTML = GAPS.map(g => {
     const done = ST.gaps[g.id];
-    return '<article class="gap' + (done ? ' is-done' : '') + '"><div style="display:flex;gap:8px;align-items:center"><h3>' + esc(g.term) + '</h3>' +
-      (done ? '<span class="badge ' + (done === 'question' ? 'badge--info' : 'badge--muted') + '">' + (done === 'question' ? 'Added as a question' : 'Not needed') + '</span>' : '') + '</div>' +
-      '<p class="why">' + esc(g.why) + '</p>' +
-      g.where.map(([d, loc, text]) => '<blockquote><em>' + esc(docShort(d)) + ' · ' + esc(loc) + '</em>“' + esc(text) + '”</blockquote>').join('') +
-      '<div class="acts">' + (done ? '<button class="btn btn--ghost btn--sm" data-undo="' + g.id + '">Undo</button>' :
-        '<a class="btn btn--secondary btn--sm" href="sources.html">Send a document that explains it</a><button class="btn btn--secondary btn--sm" data-ask="' + g.id + '">Add as a question</button><button class="btn btn--ghost btn--sm" data-skip="' + g.id + '">Not needed</button>') + '</div></article>';
+    return '<li class="qrow' + (done ? ' is-out' : '') + '"><div><b>' + esc(g.term) + '</b><span class="gwhy">' + esc(g.why) + '</span><div class="qmeta"><span class="badge badge--amber">Referred to, never explained</span>' +
+      g.where.map(([d, loc]) => srcLink(d, loc)).join('') + '</div></div>' +
+      '<span class="status ' + (done === 'question' ? 'st-q' : done ? 'st-mute' : 'st-rev') + '">' + (done === 'question' ? 'Added as a question' : done ? 'Not needed' : 'Needs a source') + '</span>' +
+      '<span class="qact">' + (done ? '<button class="link mute" data-undo="' + g.id + '">Undo</button>' :
+        '<a class="link" href="sources.html">Send a document</a><button class="link" data-ask="' + g.id + '">Add as a question</button><button class="link mute" data-skip="' + g.id + '">Not needed</button>') + '</span></li>';
   }).join('');
 }
 $('gapList').addEventListener('click', (e) => {
@@ -1279,12 +1319,12 @@ function renderDetail() {
   let acts = '';
   if (d.status === 'redrafting') acts = '';
   else if (mode === 'edit' && d.status === 'final') acts = '<button class="btn btn--primary" data-a="save">Save &amp; approve</button><button class="btn btn--ghost" data-a="leave">Leave out</button><span class="spacer"></span><span class="sub">Your answer is approved as soon as you save it.</span>';
-  else if (mode === 'edit') acts = '<button class="btn btn--primary" data-a="save">Save &amp; approve</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
+  else if (mode === 'edit') acts = '<button class="btn btn--primary" data-a="save">' + (d.status === 'approved' ? 'Save changes' : 'Save &amp; approve') + '</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
   else if (mode === 'reject') acts = '<button class="btn btn--danger" data-a="confirm">' + (d.redrafted === 2 ? 'Reject' : 'Reject &amp; rewrite') + '</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
   else if (d.status === 'pending' && ST.others && ST.others[r.id]) acts = '';
   else if (d.status === 'pending') acts = '<button class="btn btn--primary" data-a="approve">Approve <kbd>A</kbd></button><button class="btn btn--secondary" data-a="edit">Edit &amp; approve <kbd>E</kbd></button><button class="btn btn--danger" data-a="reject">Reject <kbd>R</kbd></button><span class="spacer"></span><span class="sub"><kbd>J</kbd> <kbd>K</kbd> to move</span>';
   else if (d.status === 'final') acts = '<button class="btn btn--primary" data-a="edit">Write the answer</button><button class="btn btn--ghost" data-a="undo">Back to review</button>';
-  else acts = '<button class="btn btn--ghost" data-a="undo">Undo approval</button>';
+  else acts = '<button class="btn btn--primary" data-a="edit">Edit answer</button><button class="btn btn--ghost" data-a="undo">Undo approval</button><span class="spacer"></span><span class="sub">Edits go live in Ask lojo as soon as you save.</span>';
   if (acts) h += '<div class="acts">' + acts + '</div>';
   $('detail').innerHTML = h;
   if (mode === 'edit') { const t = $('editBox'); if (typed !== null) { t.value = typed; typed = null; } t.focus(); t.setSelectionRange(t.value.length, t.value.length); }
@@ -1411,7 +1451,8 @@ document.addEventListener('keydown', (e) => {
   if (k === 'escape' && mode !== 'view') act('cancel');
 });
 const RP = new URLSearchParams(location.search);
-if (RP.get('sel')) { sel = RP.get('sel'); if (RP.get('full')) { const r = DRAFTS.find(x => x.id === sel); if (r) openFull.add(r.src[0][0] + '|' + r.src[0][1]); } }
+if (RP.get('edit')) mode = 'edit';
+if (RP.get('sel')) { sel = RP.get('sel'); const sr = DRAFTS.find(x => x.id === sel); if (sr) { const s = decision(sr).status; tab = s === 'redrafting' ? 'pending' : (s === 'approved' || s === 'final') ? s : 'pending'; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === tab)); } if (RP.get('full')) { const r = DRAFTS.find(x => x.id === sel); if (r) openFull.add(r.src[0][0] + '|' + r.src[0][1]); } }
 render();
 """)
 
@@ -1431,8 +1472,26 @@ APPROVED = dict(
   .ch.is-off em{color:var(--muted)}
   .sech{font-size:.8rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8E2F45;margin:0 0 12px}
   @media (max-width:1000px){.chan{grid-template-columns:1fr 1fr}}
-  .bar{display:flex;gap:12px;align-items:center;margin-bottom:14px}
-  .bar .text{max-width:420px}
+  .bar{display:flex;gap:12px;align-items:center;margin:0 0 12px}
+  .smart{display:flex;align-items:center;gap:10px;padding:6px 6px 6px 14px;border-radius:14px;border:1.5px solid transparent;background:linear-gradient(var(--panel),var(--panel)) padding-box,var(--brand-gradient) border-box;box-shadow:0 14px 30px -24px rgba(232,93,117,.8)}
+  .smart:focus-within{box-shadow:0 0 0 4px rgba(232,93,117,.14),0 14px 30px -24px rgba(232,93,117,.8)}
+  .smart__ic{width:18px;height:18px;fill:none;stroke:#C7385B;stroke-width:1.8;stroke-linejoin:round;flex:none}
+  .smart input{flex:1;border:0;outline:0;background:none;font:inherit;font-size:.95rem;color:var(--ink);height:40px}
+  .smart__tips{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0 16px;font-size:.78rem;color:var(--muted)}
+  .smart__tips button{border:1px dashed var(--line-2);background:none;border-radius:999px;padding:4px 10px;font:inherit;font-size:.76rem;color:var(--ink);cursor:pointer}
+  .smart__tips button:hover{border-color:var(--rose);color:#B73C54}
+  .intent{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border-radius:14px;margin-bottom:14px;background:rgba(232,93,117,.06);border:1px solid rgba(232,93,117,.22);font-size:.88rem}
+  .intent.is-del{background:rgba(198,69,69,.06);border-color:rgba(198,69,69,.28)}
+  .intent b{font-weight:700}
+  .intent .spacer{flex:1}
+  .ans{display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 14px}
+  .ans > :not(.pick){grid-column:2}
+  .ans .pick{grid-row:1/span 3;margin-top:3px}
+  .ans.is-picked{border-color:rgba(232,93,117,.45);box-shadow:0 0 0 3px rgba(232,93,117,.08)}
+  .ans__acts{display:flex;gap:4px;margin-left:8px}
+  .ans__acts a,.ans__acts button{border:0;background:none;padding:4px 8px;border-radius:8px;font:inherit;font-size:.76rem;font-weight:600;color:var(--muted);cursor:pointer;text-decoration:none}
+  .ans__acts a:hover,.ans__acts button:hover{background:var(--bg-soft);color:var(--ink);text-decoration:none}
+  .ans__acts .del:hover{color:var(--error)}
   .alist{display:grid;gap:12px}
   .ans{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 20px}
   .ans h3{font-family:var(--display);font-weight:700;font-size:1rem;margin:0 0 6px}
@@ -1459,20 +1518,74 @@ APPROVED = dict(
       <div class="ch is-off"><span class="ch__ic"><svg class="i" viewBox="0 0 24 24"><path d="M5 9h14M5 15h14M10 4 8 20M16 4l-2 16"/></svg></span><span><b>Slack &amp; Teams</b><span>Answer where your team asks</span></span><em>Full build</em></div>
     </section>
     <h2 class="sech">Approved answers</h2>
-    <div class="bar"><input class="text" id="filter" placeholder="Filter approved answers" aria-label="Filter"><span class="sub" id="meta"></span></div>
+    <form class="smart" id="smartForm">
+      <svg class="smart__ic" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>
+      <input id="filter" placeholder="Search or ask: “find everything about refunds”, “remove answers about SSO”, “edit the API answer”" aria-label="Search or ask" autocomplete="off">
+      <button class="btn btn--primary btn--sm" type="submit">Go</button>
+    </form>
+    <div class="smart__tips" id="tips"><span>Try</span><button type="button">find everything about refunds</button><button type="button">edit the API rate limits answer</button><button type="button">remove answers about SSO</button></div>
+    <div class="intent" id="intent" hidden></div>
+    <div class="bar"><span class="sub" id="meta"></span></div>
     <div class="alist" id="alist"></div>
 """,
   js=r"""
 const approved = () => DRAFTS.filter(r => decision(r).status === 'approved').map(r => ({ r, q: QUESTIONS.find(q => q.id === r.qid).q, a: answerOf(r), d: decision(r) }));
-function render() {
-  const f = $('filter').value.trim().toLowerCase(), all = approved();
-  const list = all.filter(x => !f || (x.q + ' ' + x.a).toLowerCase().includes(f));
-  $('meta').textContent = all.length + ' approved of ' + DRAFTS.length + ' drafts';
-  $('alist').innerHTML = list.length ? list.map(x => '<article class="ans"><h3>' + esc(x.q) + '</h3><div class="ansbody">' + md(x.a) + '</div><div class="meta">' +
-    x.r.src.map(([d, loc]) => srcChip(d, loc)).join('') + (x.d.edited ? '<span class="badge badge--muted">Edited</span>' : '') + (x.d.redrafted ? '<span class="badge badge--info">Redrafted</span>' : '') +
-    '<span class="by">Approved' + (x.d.at ? ' · ' + esc(x.d.at) : '') + '</span></div></article>').join('')
-    : '<div class="card empty"><b>' + (all.length ? 'No matches' : 'Nothing approved yet') + '</b>' + (all.length ? 'Try another word.' : '<a href="build.html">Review the first batch</a> to fill the store.') + '</div>';
+// smart search: plain words search by meaning; "remove/delete…" and "edit/change…" select the matches to act on
+const picked = new Set();
+let ask = { verb: 'find', topic: '' };
+function parse(v) {
+  const s = v.trim().toLowerCase();
+  const verb = /^(remove|delete|retire|take out|unpublish)\b/.test(s) ? 'remove' : /^(edit|change|update|fix|rewrite|modify)\b/.test(s) ? 'edit' : 'find';
+  const topic = s.replace(/^(please\s+)?(find|show|search|list|get|remove|delete|retire|take out|unpublish|edit|change|update|fix|rewrite|modify)\b/, '')
+    .replace(/\b(me|all|every|everything|anything|answers?|the|about|on|for|related to|regarding|that mention|mentioning|with)\b/g, ' ').replace(/\s+/g, ' ').trim();
+  return { verb, topic };
 }
+function matches(x, topic) {
+  if (!topic) return true;
+  const txt = (x.q + ' ' + x.a).toLowerCase();
+  if (txt.includes(topic)) return true;
+  const sc = score(topic, x.q + ' ' + x.a);
+  return sc.c > 0 || topic.split(' ').filter(w => w.length > 3).some(w => txt.includes(w.replace(/s$/, '')));
+}
+function render() {
+  const all = approved(), list = all.filter(x => matches(x, ask.topic));
+  [...picked].forEach(id => { if (!list.some(x => x.r.id === id)) picked.delete(id); });
+  $('meta').textContent = (ask.topic ? list.length + ' of ' : '') + all.length + ' approved answers' + (ask.topic ? ' match “' + ask.topic + '”' : '');
+  const act = ask.verb !== 'find' && ask.topic;
+  $('intent').hidden = !act; $('intent').classList.toggle('is-del', ask.verb === 'remove');
+  if (act) $('intent').innerHTML = (ask.verb === 'remove'
+    ? '<span><b>Remove ' + picked.size + ' of ' + list.length + '</b> answers about “' + esc(ask.topic) + '” from the store. Ask lojo stops using them; you can bring them back in Build.</span><span class="spacer"></span><button class="btn btn--danger btn--sm" id="doRemove"' + (picked.size ? '' : ' disabled') + '>Remove ' + picked.size + '</button>'
+    : '<span><b>' + list.length + ' answer' + (list.length === 1 ? '' : 's') + '</b> about “' + esc(ask.topic) + '”. Pick one to edit it in Build.</span><span class="spacer"></span>') +
+    '<button class="btn btn--ghost btn--sm" id="clearAsk">Clear</button>';
+  $('alist').innerHTML = list.length ? list.map(x => '<article class="ans' + (picked.has(x.r.id) ? ' is-picked' : '') + '">' +
+    (act && ask.verb === 'remove' ? '<input type="checkbox" class="pick" data-pick="' + x.r.id + '"' + (picked.has(x.r.id) ? ' checked' : '') + ' aria-label="Select">' : '') +
+    '<h3>' + esc(x.q) + '</h3><div class="ansbody">' + md(x.a) + '</div><div class="meta">' +
+    x.r.src.map(([d, loc]) => srcChip(d, loc)).join('') + (x.d.edited ? '<span class="badge badge--muted">Edited</span>' : '') + (x.d.redrafted ? '<span class="badge badge--info">Redrafted</span>' : '') +
+    '<span class="by">Approved' + (x.d.at ? ' · ' + esc(x.d.at) : '') + '</span><span class="ans__acts"><a href="build.html?sel=' + x.r.id + '&edit=1">Edit</a><button class="del" data-del="' + x.r.id + '">Remove</button></span></div></article>').join('')
+    : '<div class="card empty"><b>' + (all.length ? 'Nothing matches “' + esc(ask.topic) + '”' : 'Nothing approved yet') + '</b>' + (all.length ? 'Try other words, or ask it differently.' : '<a href="build.html">Review the first batch</a> to fill the store.') + '</div>';
+}
+function removeIds(ids) {
+  const before = ids.map(id => [id, { ...(ST.decisions[id] || {}) }]);
+  ids.forEach(id => { ST.decisions[id] = { ...(ST.decisions[id] || {}), status: 'pending' }; });
+  save(); picked.clear(); render();
+  toastError(ids.length + ' answer' + (ids.length === 1 ? '' : 's') + ' removed from the store and sent back to Build.', () => { before.forEach(([id, d]) => { ST.decisions[id] = d; }); save(); render(); toast('Brought back'); });
+  const t = $('toast'); const b = t.querySelector('button'); if (b) b.textContent = 'Undo'; t.classList.remove('is-err');
+}
+function run(v) {
+  ask = parse(v); picked.clear();
+  if (ask.verb === 'remove') approved().filter(x => matches(x, ask.topic)).forEach(x => picked.add(x.r.id));
+  render();
+  if (ask.verb === 'edit') { const one = approved().filter(x => matches(x, ask.topic)); if (one.length === 1) location.href = 'build.html?sel=' + one[0].r.id + '&edit=1'; }
+}
+$('smartForm').addEventListener('submit', (e) => { e.preventDefault(); run($('filter').value); });
+$('filter').addEventListener('input', () => { const v = $('filter').value; if (!/^(remove|delete|retire|edit|change|update|fix|rewrite|modify)\b/i.test(v.trim())) run(v); });
+$('tips').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; $('filter').value = b.textContent; run(b.textContent); });
+$('intent').addEventListener('click', (e) => {
+  if (e.target.id === 'clearAsk') { $('filter').value = ''; run(''); }
+  if (e.target.id === 'doRemove') removeIds([...picked]);
+});
+$('alist').addEventListener('change', (e) => { const c = e.target.closest('[data-pick]'); if (!c) return; c.checked ? picked.add(c.dataset.pick) : picked.delete(c.dataset.pick); render(); });
+$('alist').addEventListener('click', (e) => { const d = e.target.closest('[data-del]'); if (d) removeIds([d.dataset.del]); });
 function download(name, text, type) {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([text], { type }));
@@ -1486,7 +1599,6 @@ $('csv').addEventListener('click', () => { if (!exportGuard(() => $('csv').click
   const csv = ['question,answer,sources,edited,approved'].concat(rows().map(r => [r.question, r.answer, r.sources.join('; '), r.edited, r.approved].map(q).join(','))).join('\n');
   download('nimbus-pay-approved-answers.csv', csv, 'text/csv'); toast('Exported ' + rows().length + ' answers');
 });
-$('filter').addEventListener('input', render);
 render();
 """)
 

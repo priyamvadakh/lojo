@@ -347,6 +347,8 @@
   .srcbox__ic{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:rgba(63,143,95,.14);color:var(--success);flex:none}
   .srcbox small{display:block;font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--success)}
   .srcbox b{display:block;font-size:.8rem;font-weight:600}
+  .srcbox .srcs{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+  .srcbox .src{font-size:.7rem;height:auto;padding:2px 7px}
   .aacts{display:flex;gap:4px;margin-top:8px}
   .aacts button{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 8px;border-radius:8px;border:0;background:none;color:var(--muted);font:inherit;font-size:.72rem;font-weight:600;cursor:pointer}
   .aacts button:hover{background:var(--panel);color:var(--ink)}
@@ -538,7 +540,18 @@
   .bar .spacer{flex:1}
   .add{display:flex;gap:8px;flex:1;max-width:520px}
   .qlist{list-style:none;margin:0;padding:0}
-  .qrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:18px;align-items:center;padding:14px 20px;border-top:1px solid var(--line)}
+  .qrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:18px;align-items:center;padding:16px 22px;border-top:1px solid var(--line)}
+  .qact{display:flex;gap:14px;align-items:center;justify-content:flex-end;min-width:150px}
+  .qact .link{border:0;background:none;padding:0;font:inherit;font-size:.84rem;font-weight:600;color:var(--ink);cursor:pointer;text-decoration:none;white-space:nowrap}
+  .qact .link:hover{color:#B73C54;text-decoration:underline;text-underline-offset:3px}
+  .qact .link.mute{color:var(--muted)}
+  .srclink{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 9px;border-radius:8px;border:1px solid var(--line-2);background:var(--panel);font-size:.76rem;font-weight:600;color:var(--ink);text-decoration:none;white-space:nowrap;transition:border-color .15s ease,box-shadow .15s ease}
+  .srclink svg{width:13px;height:13px;fill:none;stroke:var(--muted);stroke-width:1.9}
+  .srclink em{font-style:normal;color:var(--muted);font-weight:500}
+  .srclink .go{color:var(--muted);font-size:.72rem;opacity:0;transition:opacity .15s ease}
+  .srclink:hover{border-color:var(--rose);box-shadow:0 6px 14px -10px rgba(232,93,117,.8);text-decoration:none}
+  .srclink:hover .go{opacity:1;color:#B73C54}
+  .gwhy{display:block;margin:-2px 0 8px;color:var(--muted);font-size:.84rem}
   .qrow:first-child{border-top:0}
   .qrow:hover{background:#FCFBFA}
   .qrow b{display:block;font-size:.92rem;font-weight:600;margin-bottom:6px}
@@ -708,17 +721,16 @@
       <div class="bar">
         <div class="chips" id="filters">
           <button class="chip" data-f="all" aria-pressed="true">All</button>
-          <button class="chip" data-f="call" aria-pressed="false">Needs your call</button>
-          <button class="chip" data-f="yes" aria-pressed="false">Matters</button>
-          <button class="chip" data-f="no" aria-pressed="false">Left out</button>
+          <button class="chip" data-f="need" aria-pressed="false">Needs you</button>
           <button class="chip" data-f="you" aria-pressed="false">From you</button>
+          <button class="chip" data-f="no" aria-pressed="false">Left out</button>
         </div>
       </div>
       <section class="card"><ul class="qlist" id="qlist"></ul></section>
     </section>
 
     <section id="tabG" hidden>
-      <div class="gaps" id="gapList"></div>
+      <section class="card"><ul class="qlist" id="gapList"></ul></section>
     </section>
 
 
@@ -985,10 +997,10 @@ const ICO = {
   copy: '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>',
   up: '<svg viewBox="0 0 24 24"><path d="M7 10v11H4V10zM7 10l4-7a2 2 0 0 1 2 2v4h5.5a2 2 0 0 1 2 2.3l-1.2 7A2 2 0 0 1 17.3 20H7"/></svg>',
 };
-const linkify = (html) => html
+function linkify(html) { return html
   .replace(/([\w.+-]+@[\w-]+\.[\w.-]+\w)/g, '<a href="mailto:$1">$1</a>')
   .replace(/(^|[\s(])(\+\d[\d\s().-]{6,}\d)/g, (m, a, n) => a + '<a href="tel:' + n.replace(/[^\d+]/g, '') + '">' + n + '</a>')
-  .replace(/(^|[\s(])((?:https?:\/\/|www\.)[^\s<,)]+[^\s<.,)])/g, (m, a, u) => a + '<a href="' + (u.startsWith('http') ? u : 'https://' + u) + '" target="_blank" rel="noopener">' + u + '</a>');
+  .replace(/(^|[\s(])((?:https?:\/\/|www\.)[^\s<,)]+[^\s<.,)])/g, (m, a, u) => a + '<a href="' + (u.startsWith('http') ? u : 'https://' + u) + '" target="_blank" rel="noopener">' + u + '</a>'); }
 function answerHTML(q, a, fromQ, srcs) {
   let f = null, hits = [];
   for (const x of FACTS) { if (!x.ask.test(q)) continue; const m = [...new Set((a.match(x.find) || []).map(s => s.trim()))]; if (m.length) { f = x; hits = m.slice(0, 3); break; } }
@@ -998,9 +1010,12 @@ function answerHTML(q, a, fromQ, srcs) {
     h += '<div class="fact">' + hits.map(v => '<div class="fact__row"><span class="fact__ic">' + ICO[f.kind] + '</span><span class="fact__v"><small>' + f.label + '</small><b>' + esc(v) + '</b></span>' +
       (href(f.kind, v) ? '<a class="fact__go" href="' + href(f.kind, v) + '"' + (f.kind === 'url' ? ' target="_blank" rel="noopener"' : '') + '>' + { phone: 'Call', email: 'Write', url: 'Open' }[f.kind] + '</a>' : '') +
       '<button class="fact__cp" type="button" data-copy="' + esc(v) + '" aria-label="Copy">' + ICO.copy + '</button></div>').join('') + '</div>' +
-      '<details class="more"><summary>More from the approved answer</summary><div class="md">' + linkify(md(a)) + '</div></details>';
-  } else h += '<div class="md">' + linkify(md(a)) + '</div>';
-  h += '<div class="srcbox"><span class="srcbox__ic">' + ICO.check + '</span><span><small>From an approved answer</small><b>' + esc(fromQ) + '</b></span></div>' + (srcs ? '<div class="srcs">' + srcs + '</div>' : '');
+      '<details class="more"><summary>More from the approved answer</summary><div class="md">' + md(a) + '</div></details>';
+  } else h += '<div class="md">' + md(a) + '</div>';
+  // name the approved question only when it reads differently from what was asked
+  const wq = (s) => new Set(s.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(w => w.length > 3));
+  const A = wq(q), B = wq(fromQ), same = [...A].filter(w => B.has(w)).length / Math.max(1, Math.min(A.size, B.size)) >= 0.6;
+  h += '<div class="srcbox"><span class="srcbox__ic">' + ICO.check + '</span><span><small>Approved answer</small>' + (same ? '' : '<b>Answers: ' + esc(fromQ) + '</b>') + (srcs ? '<span class="srcs">' + srcs + '</span>' : '') + '</span></div>';
   h += '<div class="aacts"><button type="button" data-copy="' + esc(a) + '">' + ICO.copy + 'Copy</button><button type="button" data-rate="up" aria-label="Helpful">' + ICO.up + '</button><button type="button" data-rate="down" aria-label="Not helpful" class="down">' + ICO.up + '</button></div>';
   return h;
 }
@@ -1093,7 +1108,7 @@ function md(src) {
     else close();
   });
   close();
-  return '<div class="md">' + out.join('') + '</div>';
+  return '<div class="md">' + linkify(out.join('')) + '</div>';
 }
 // G29: greetings and thanks get a short reply with no sources
 const SMALLTALK = /^\s*(hi|hello|hey|hiya|good (morning|afternoon|evening)|thanks|thank you|thx|cheers|ok|okay|great|cool|bye|goodbye)\b[\s!.?]*$/i;
@@ -1220,7 +1235,7 @@ function srcChip(docId, loc, warn) {
       const d = window.__askDoc && window.__askDoc(q, store); if (d) { say('bot', d); countChat('answered'); return; }
       let best = null, bs = 0;
       store().forEach(x => { const s = score(q, x.q + ' ' + x.a); if (s.c > 0 && s.s > bs) { best = x; bs = s.s; } });
-      if (best && bs >= 2) { say('bot', answerHTML(q, best.a, best.q)); countChat('answered'); }
+      if (best && bs >= 2) { say('bot', answerHTML(q, best.a, best.q, best.r.src.map(([d, loc]) => srcChip(d, loc)).join(''))); countChat('answered'); }
       else { say('bot am--miss', 'I don’t know. Nothing approved covers this yet, so I won’t guess.'); countChat('declined'); }
     }, 500);
   }
@@ -1292,19 +1307,40 @@ function statusOf(q) {
   if (matters(q) === null) return ['Waiting for your call', 'st-rev'];
   return ['Queued for drafting', 'st-q'];
 }
+// a source chip opens Sources at that document with the quoted passage highlighted
+function srcLink(docId, loc) {
+  return '<a class="srclink" href="sources.html?doc=' + docId + (loc ? '&loc=' + encodeURIComponent(loc) : '') + '" title="Open the source">' +
+    '<svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>' + esc(docShort(docId)) + (loc ? ' <em>' + esc(loc) + '</em>' : '') + '<span class="go">↗</span></a>';
+}
+function sourcesOf(q) {
+  const r = draftByQ(q.id);
+  return (q.docs || []).map(d => { const hit = r && r.src.find(s => s[0] === d); return [d, hit ? hit[1] : '']; });
+}
+const needsYou = (q) => { const s = statusOf(q)[0]; return matters(q) === null || s === 'Draft failed' || s === 'No source yet' || s === 'Needs a human answer'; };
+function actionFor(q) {
+  const m = matters(q), [st] = statusOf(q), r = draftByQ(q.id), failed = ST.draftFailed[q.id];
+  if (m === false) return '<button class="link" data-q="' + q.id + '" data-v="1">Bring back</button>';
+  if (failed === 'retrying') return '';
+  if (failed) return '<button class="btn btn--secondary btn--sm" data-retry="' + q.id + '">Try again</button>';
+  if (st === 'Approved') return '<a class="link" href="build.html?sel=' + r.id + '">See the answer</a>';
+  if (st === 'Needs a human answer') return '<a class="link" href="build.html?sel=' + r.id + '">Write the answer</a>';
+  if (st === 'Draft in review') return '<a class="link" href="build.html?sel=' + r.id + '">Review the draft</a>';
+  if (st === 'No source yet') return '<a class="link" href="sources.html">Send a document</a>';
+  if (m === null) return '<span class="seg" role="group" aria-label="Does this matter?"><button class="yes" data-q="' + q.id + '" data-v="1">Matters</button><button class="no" data-q="' + q.id + '" data-v="0">Leave out</button></span>';
+  return '<button class="link mute" data-q="' + q.id + '" data-v="0">Leave out</button>';
+}
 function renderQ() {
-  const qs = allQuestions().filter(q => filter === 'all' || (filter === 'call' && matters(q) === null) || (filter === 'yes' && matters(q) === true) || (filter === 'no' && matters(q) === false) || (filter === 'you' && q.origin === 'you'));
+  const qs = allQuestions().filter(q => filter === 'all' || (filter === 'need' && needsYou(q) && matters(q) !== false) || (filter === 'no' && matters(q) === false) || (filter === 'you' && q.origin === 'you'));
   $('qlist').innerHTML = qs.length ? qs.map(q => {
     const m = matters(q), [st, cls] = statusOf(q), [ol, oc] = ORIGIN[q.origin];
     const asks = ST.asks[q.id] || 0, failed = ST.draftFailed[q.id];
     return '<li class="qrow' + (m === false ? ' is-out' : '') + (m === null ? ' is-call' : '') + (flashId === q.id ? ' is-flash' : '') + '" id="row-' + q.id + '"><div><b>' + esc(q.q) + '</b><div class="qmeta"><span class="badge ' + oc + '">' + ol + '</span>' +
       (asks >= 2 ? '<span class="badge badge--amber" title="Asked in Ask lojo or added by your team">Asked ' + asks + ' times</span>' : '') +
-      (q.docs || []).map(d => '<span class="src">' + esc(docShort(d)) + '</span>').join('') + '</div>' +
+      sourcesOf(q).map(([d, loc]) => srcLink(d, loc)).join('') + '</div>' +
       (m === false && ST.notes[q.id] ? '<span class="note">' + esc(ST.notes[q.id]) + '</span>' : '') +
       (failed && failed !== 'retrying' && m !== false ? '<span class="failnote">' + esc(failed) + '</span>' : '') + '</div>' +
-      '<span class="stcell"><span class="status ' + cls + '">' + (failed === 'retrying' ? '<span class="spin" style="width:10px;height:10px"></span> ' : '') + st + '</span>' +
-      (failed && failed !== 'retrying' && m !== false ? '<button class="btn btn--secondary" data-retry="' + q.id + '">Try again</button>' : '') + '</span>' +
-      '<span class="seg" role="group" aria-label="Does this matter?"><button class="yes" data-q="' + q.id + '" data-v="1" aria-pressed="' + (m === true) + '">Matters</button><button class="no" data-q="' + q.id + '" data-v="0" aria-pressed="' + (m === false) + '">' + (m === false ? 'Left out' : 'Leave out') + '</button></span>' +
+      '<span class="status ' + cls + '">' + (failed === 'retrying' ? '<span class="spin" style="width:10px;height:10px"></span> ' : '') + st + '</span>' +
+      '<span class="qact">' + actionFor(q) + '</span>' +
       (leaving === q.id ? '<div class="leave"><input class="text" id="leaveNote" placeholder="Why leave it out? (optional) e.g. we don’t offer this" aria-label="Note"><button class="btn btn--primary btn--sm" data-leave-go="' + q.id + '">Leave out</button><button class="btn btn--ghost btn--sm" data-leave-x="1">Cancel</button></div>' : '') + '</li>';
   }).join('') : '<li class="empty"><b>Nothing here</b>Try another filter.</li>';
   const c = counts();
@@ -1330,12 +1366,11 @@ $('filters').addEventListener('click', (e) => {
 function renderG() {
   $('gapList').innerHTML = GAPS.map(g => {
     const done = ST.gaps[g.id];
-    return '<article class="gap' + (done ? ' is-done' : '') + '"><div style="display:flex;gap:8px;align-items:center"><h3>' + esc(g.term) + '</h3>' +
-      (done ? '<span class="badge ' + (done === 'question' ? 'badge--info' : 'badge--muted') + '">' + (done === 'question' ? 'Added as a question' : 'Not needed') + '</span>' : '') + '</div>' +
-      '<p class="why">' + esc(g.why) + '</p>' +
-      g.where.map(([d, loc, text]) => '<blockquote><em>' + esc(docShort(d)) + ' · ' + esc(loc) + '</em>“' + esc(text) + '”</blockquote>').join('') +
-      '<div class="acts">' + (done ? '<button class="btn btn--ghost btn--sm" data-undo="' + g.id + '">Undo</button>' :
-        '<a class="btn btn--secondary btn--sm" href="sources.html">Send a document that explains it</a><button class="btn btn--secondary btn--sm" data-ask="' + g.id + '">Add as a question</button><button class="btn btn--ghost btn--sm" data-skip="' + g.id + '">Not needed</button>') + '</div></article>';
+    return '<li class="qrow' + (done ? ' is-out' : '') + '"><div><b>' + esc(g.term) + '</b><span class="gwhy">' + esc(g.why) + '</span><div class="qmeta"><span class="badge badge--amber">Referred to, never explained</span>' +
+      g.where.map(([d, loc]) => srcLink(d, loc)).join('') + '</div></div>' +
+      '<span class="status ' + (done === 'question' ? 'st-q' : done ? 'st-mute' : 'st-rev') + '">' + (done === 'question' ? 'Added as a question' : done ? 'Not needed' : 'Needs a source') + '</span>' +
+      '<span class="qact">' + (done ? '<button class="link mute" data-undo="' + g.id + '">Undo</button>' :
+        '<a class="link" href="sources.html">Send a document</a><button class="link" data-ask="' + g.id + '">Add as a question</button><button class="link mute" data-skip="' + g.id + '">Not needed</button>') + '</span></li>';
   }).join('');
 }
 $('gapList').addEventListener('click', (e) => {

@@ -413,7 +413,11 @@
   .q + .q{margin-top:12px}
   .q__head{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}
   .q__head h4{flex:1 1 320px;margin:0;font-family:var(--display);font-weight:700;font-size:.98rem;line-height:1.35}
-  .q__badges{display:flex;gap:6px;flex-wrap:wrap}
+  .q__badges{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .timer{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;background:var(--bg-soft);color:var(--muted);font-size:.7rem;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .timer.is-live{background:rgba(232,93,117,.1);color:#C7385B}
+  .timer .tdot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 1s ease-in-out infinite}
+  .clock,.agent .clock{display:inline;font-size:inherit;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:700}
   .q__body{margin-top:10px;font-size:.94rem}
   .q__body p{margin:0}
   .q__drafting{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.9rem;margin-top:10px}
@@ -1312,10 +1316,10 @@ $('toDraft').addEventListener('click', () => go(4));
 
 /* ---------------- 4 · draft ---------------- */
 function makeItem(seed, from) {
-  return { ...seed, from: from || 'agent', status: 'drafting', answer: '', redrafted: false, prevAnswer: '', reason: '' };
+  return { ...seed, from: from || 'agent', status: 'drafting', answer: '', redrafted: false, prevAnswer: '', reason: '', t0: Date.now() };
 }
 function runDrafting() {
-  S.seeded = true;
+  S.seeded = true; S.draftT0 = Date.now(); S.draftT1 = 0;
   const n = sourceDocs().length;
   $('agentTitle').textContent = 'Reading ' + n + ' document' + (n === 1 ? '' : 's') + '…';
   // only questions whose main source was synced; drop citations to unsynced docs
@@ -1377,11 +1381,21 @@ function badges(it) {
   if (it.redrafted) b += '<span class="badge badge--info">Redrafted</span>';
   return b;
 }
+// processing time: a live timer while a draft is written, then how long it took
+const secs = (ms) => ms < 60000 ? (ms / 1000).toFixed(1) + 's' : Math.floor(ms / 60000) + ':' + String(Math.floor(ms / 1000) % 60).padStart(2, '0');
+const timerPill = (it) => it.status === 'drafting'
+  ? '<span class="timer is-live" data-t0="' + it.t0 + '"><span class="tdot"></span>' + secs(Date.now() - it.t0) + '</span>'
+  : it.t0 ? '<span class="timer" title="Time to draft">⏱ ' + secs((it.t1 || Date.now()) - it.t0) + '</span>' : '';
+setInterval(() => {
+  document.querySelectorAll('.timer.is-live').forEach(el => { el.lastChild.textContent = secs(Date.now() - +el.dataset.t0); });
+  const el = document.getElementById('agentClock'); if (el && !S.draftT1) el.textContent = secs(Date.now() - S.draftT0);
+}, 100);
 function renderDrafts() {
+  S.queue.forEach(i => { if (i.status !== 'drafting' && i.t0 && !i.t1) i.t1 = Date.now(); });
   const drafting = S.queue.filter(i => i.status === 'drafting').length;
   const seedDone = S.queue.filter(i => i.from === 'agent').length === S.seedCount;
   $('draftList').innerHTML = S.queue.map(it =>
-    '<article class="q"><div class="q__head"><h4>' + esc(it.q) + '</h4><div class="q__badges">' + badges(it) + '</div></div>' +
+    '<article class="q"><div class="q__head"><h4>' + esc(it.q) + '</h4><div class="q__badges">' + badges(it) + timerPill(it) + '</div></div>' +
     (it.status === 'drafting'
       ? '<div class="q__drafting"><span class="spin"></span>Drafting with sources…</div>'
       : '<div class="q__body"><p>' + esc(it.answer || it.draft) + '</p></div>' + srcChips(it)) +
@@ -1389,9 +1403,10 @@ function renderDrafts() {
   const n = S.queue.length;
   if (seedDone && !drafting) {
     $('agentTitle').textContent = S.seedCount ? 'Found ' + S.seedCount + ' question' + (S.seedCount === 1 ? '' : 's') + ' your documents answer' : 'No questions found yet';
-    $('agentSub').textContent = n + ' drafts in the queue, each with its sources.';
+    if (!S.draftT1) S.draftT1 = Date.now();
+    $('agentSub').innerHTML = n + ' drafts in the queue, each with its sources · done in <b class="clock">' + secs(S.draftT1 - S.draftT0) + '</b>';
   } else {
-    $('agentSub').textContent = n ? n + ' drafted so far…' : 'Looking for questions your documents can answer.';
+    $('agentSub').innerHTML = (n ? n + ' drafted so far…' : 'Looking for questions your documents can answer.') + ' · <b class="clock" id="agentClock">' + secs(Date.now() - (S.draftT0 || Date.now())) + '</b>';
   }
   $('toReview').disabled = !(seedDone && !drafting);
   $('draftNote').textContent = seedDone && !drafting ? n + ' drafts ready' : '';
