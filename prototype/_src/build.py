@@ -11,6 +11,9 @@ OVERVIEW = dict(
   active='overview', title='Dashboard',
   desc='<!-- ASSUMPTION: a light home for the four weeks, not the analytics dashboards the proposal leaves out. Weekly review target (~20 drafts, due Friday) comes from the plan. check with Eric -->',
   css=r"""
+  .wave{display:inline-block;transform-origin:70% 70%;animation:wave 1.8s ease-in-out 1}
+  @keyframes wave{0%,60%,100%{transform:rotate(0)}10%,30%{transform:rotate(14deg)}20%{transform:rotate(-8deg)}40%{transform:rotate(-4deg)}50%{transform:rotate(10deg)}}
+  @media (prefers-reduced-motion:reduce){.wave{animation:none}}
   .hello{display:flex;align-items:center;gap:14px}
   .hello img{width:40px;height:40px;border-radius:22%}
   .hello h1{font-family:var(--display);font-weight:700;font-size:1.55rem;letter-spacing:-.02em;margin:0;color:#8E2F45}
@@ -226,7 +229,7 @@ OVERVIEW = dict(
     <div class="head">
       <div class="hello">
         <img src="assets/lojo-icon.png" alt="" width="40" height="40">
-        <div><h1 id="ovTitle">Good evening, Sara</h1><p id="ovDate"></p></div>
+        <div><h1 id="ovTitle">Good evening, Sara <span class="wave" aria-hidden="true">👋</span></h1><p id="ovDate"></p></div>
       </div>
       <span class="spacer"></span>
       <button class="mini" id="loopBtn" type="button" aria-label="Open the loop">
@@ -347,7 +350,7 @@ function render() {
   let first = 'Sara';
   try { const u = JSON.parse(sessionStorage.getItem('lojo-user')); if (u && u.name) first = u.name.trim().split(' ')[0]; } catch (e) {}
   const hr = new Date().getHours();
-  $('ovTitle').textContent = (hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening') + ', ' + first;
+  $('ovTitle').innerHTML = (hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening') + ', ' + esc(first) + ' <span class="wave" aria-hidden="true">👋</span>';
   $('ovDate').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' }) + ' · week ' + POC_WEEK + ' of 4';
   miniLoop(c);
 
