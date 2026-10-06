@@ -33,9 +33,9 @@ OVERVIEW = dict(
   .mini .k b{font-family:var(--display);font-size:1.15rem;color:var(--rose)}
   /* next step */
   .next{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:0;padding:0;overflow:hidden}
-  .next__main{position:relative;overflow:hidden;padding:30px 30px;background:radial-gradient(120% 140% at 0% 0%,#FFE3DA 0%,#FFF4EF 38%,#FFFDFB 70%);border-right:1px solid var(--line);isolation:isolate}
-  .next__main::before{content:"";position:absolute;inset:0;z-index:-1;background-image:radial-gradient(rgba(232,93,117,.16) 1px,transparent 1.2px);background-size:16px 16px;-webkit-mask-image:linear-gradient(90deg,transparent 30%,#000 75%);mask-image:linear-gradient(90deg,transparent 30%,#000 75%)}
-  .next__main::after{content:"";position:absolute;right:-60px;bottom:-80px;width:260px;height:260px;border-radius:50%;z-index:-1;background:radial-gradient(circle,rgba(255,177,153,.45),transparent 65%)}
+  .next__main{position:relative;overflow:hidden;padding:30px 30px;background:radial-gradient(120% 140% at 0% 0%,#FFF1EC 0%,#FFF9F6 40%,#FFFFFF 75%);border-right:1px solid var(--line);isolation:isolate}
+  .next__main::before{content:"";position:absolute;inset:0;z-index:-1;background-image:radial-gradient(rgba(232,93,117,.16) 1px,transparent 1.2px);background-size:16px 16px;opacity:.5;-webkit-mask-image:linear-gradient(90deg,transparent 30%,#000 75%);mask-image:linear-gradient(90deg,transparent 30%,#000 75%)}
+  .next__main::after{content:"";position:absolute;right:-60px;bottom:-80px;width:260px;height:260px;border-radius:50%;z-index:-1;background:radial-gradient(circle,rgba(255,177,153,.16),transparent 65%)}
   .next__main .label{display:inline-flex;align-items:center;gap:8px}
   .next__main .label::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--rose);box-shadow:0 0 0 0 rgba(232,93,117,.5);animation:nudge 2s ease-out infinite}
   @keyframes nudge{0%{box-shadow:0 0 0 0 rgba(232,93,117,.45)}100%{box-shadow:0 0 0 10px rgba(232,93,117,0)}}
@@ -228,7 +228,7 @@ OVERVIEW = dict(
   .next__main{padding:22px 26px}
   .next__main h2{font-size:1.3rem;margin:6px 0 4px}
   .next__main .btn{margin-top:16px;height:38px}
-  .stack{width:150px;height:118px;right:28px}
+  .stack{width:172px;height:142px;right:28px}
   .stack .card{padding:12px}
   .stack .count{min-width:28px;height:28px;font-size:.82rem}
   .next__side{padding:14px 18px}
@@ -260,6 +260,15 @@ OVERVIEW = dict(
   .mini .sep{background:#F3DCD4}
   .mini .m-track{stroke:rgba(232,93,117,.14)}
   :root[data-theme="dark"] .mini{background:radial-gradient(120% 160% at 0% 0%,rgba(232,93,117,.18),var(--panel) 70%);border-color:var(--line-2)}
+  .stack .card.qa{display:flex;flex-direction:column;gap:6px;padding:12px 13px}
+  .qa__src{display:inline-flex;align-items:center;gap:5px;align-self:flex-start;height:18px;padding:0 7px;border-radius:999px;background:var(--bg-soft);font-size:.58rem;font-weight:700;letter-spacing:.04em;color:var(--muted)}
+  .qa__src svg{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .qa__q{font-size:.68rem;line-height:1.3;flex:none;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .qa__a{margin:0;font-size:.6rem;line-height:1.35;color:var(--muted);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+  .stack .card.qa .acts{margin-top:auto}
+  .stack .card.qa .acts i{height:14px}
+  .stack .card.qa.in{animation:qaIn .45s ease}
+  @keyframes qaIn{from{opacity:0;transform:rotate(4deg) translateY(6px)}}
 """,
   body=r"""
     <div class="head">
@@ -287,7 +296,7 @@ OVERVIEW = dict(
         </div>
         <div class="stack" id="stack" aria-hidden="true">
           <div class="card"></div><div class="card"></div>
-          <div class="card"><div class="top"><span class="agico" data-agent="Drafting agent"></span><i class="ln"></i></div><i class="ln w8"></i><i class="ln w6"></i><i class="ln w4"></i><div class="acts"><i></i><i></i><i></i></div></div>
+          <div class="card qa" id="stackCard"></div>
           <span class="count" id="stackN">10</span>
         </div>
       </div>
@@ -380,6 +389,23 @@ function renderAgents(c) {
   }).join('') : '<li class="none">No agent is running right now.</li>';
 }
 $('agFilters').addEventListener('click', (e) => { const b = e.target.closest('[data-agf]'); if (!b) return; agFilter = b.dataset.agf; renderAgents(counts()); });
+// the front card shows a real waiting draft: its question, the start of the answer, and where it came from
+const SRCKIND = (docId) => /call/i.test(docById(docId).name) ? ['Call', '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>']
+  : docById(docId).faq ? ['Help page', '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/>']
+  : /\.md$/.test(docById(docId).name) ? ['Notion', '<path d="M5 4h11l3 3v13H5z"/><path d="M9 9v7M9 9l6 7V9"/>'] : ['Document', '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>'];
+let stackI = 0, stackT = null;
+function stackCycle() {
+  const pend = DRAFTS.filter(r => decision(r).status === 'pending');
+  if (!pend.length) return;
+  const show = () => {
+    const r = pend[stackI++ % pend.length], q = QUESTIONS.find(x => x.id === r.qid).q, [kind, ic] = SRCKIND(r.src[0][0]);
+    $('stackCard').innerHTML = '<span class="qa__src"><svg viewBox="0 0 24 24">' + ic + '</svg>' + kind + '</span><b class="qa__q">' + esc(q) + '</b>' +
+      '<p class="qa__a">' + esc(answerOf(r).replace(/[#*_>]/g, '').slice(0, 70)) + '…</p><div class="acts"><i></i><i></i><i></i></div>';
+    $('stackCard').classList.remove('in'); void $('stackCard').offsetWidth; $('stackCard').classList.add('in');
+  };
+  show(); clearInterval(stackT);
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) stackT = setInterval(show, 3200);
+}
 function render() {
   const c = counts();
   let first = 'Sara';
@@ -393,7 +419,7 @@ function render() {
   const decided = c.approved + c.final, mins = Math.max(1, Math.round(c.pending * 1.2));
   if (c.pending) {
     $('nextH').innerHTML = 'Review <span class="num">' + c.pending + '</span> draft' + (c.pending > 1 ? 's' : '');
-    $('stackN').textContent = c.pending; $('stack').hidden = false;
+    $('stackN').textContent = c.pending; $('stack').hidden = false; stackCycle();
     $('nextSub').textContent = 'Approve, edit, or reject with a reason; a rejected draft is written again up to twice.';
     $('nextCta').innerHTML = 'Start reviewing <span class="ar">→</span>'; $('nextCta').href = 'build.html';
   } else {
