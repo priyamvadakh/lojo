@@ -676,7 +676,7 @@ def sidebar(active):
             '  <div class="side__foot">',
             '    ' + SEG_HTML,
             '    <div class="side__rule"></div>',
-            '    <div class="product"><img src="assets/lojo-icon.png" alt="" width="44" height="44"><div><b>lojo</b><span id="pocWeek">Oslo · week 3 of 4</span><div class="poc__weeks" id="pocWeeks"><i></i><i></i><i></i><i></i></div></div></div>',
+            '    <div class="product"><img src="assets/lojo-icon.png" alt="" width="44" height="44"><div><b>lojo</b><span id="pocWeek">Oslo</span></div></div>',
             '  </div>',
             '</aside>']
     return '\n'.join(out)
@@ -1188,7 +1188,7 @@ function srcChip(docId, loc, warn) {
   $('meName').textContent = full;
   $('topAva').textContent = full.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
   $('meEmail').textContent = user.email;
-  $('pocWeek').textContent = 'Oslo · week ' + POC_WEEK + ' of 4';
+
   try { if (localStorage.getItem('lojo-side') === 'collapsed') document.body.classList.add('is-collapsed'); } catch (e) {}
   const col = $('collapse');
   const syncCol = () => { const c = document.body.classList.contains('is-collapsed'); col.setAttribute('aria-expanded', !c); col.setAttribute('aria-label', c ? 'Expand sidebar' : 'Collapse sidebar'); };
@@ -1197,7 +1197,7 @@ function srcChip(docId, loc, warn) {
     document.body.classList.toggle('is-collapsed'); syncCol();
     try { localStorage.setItem('lojo-side', document.body.classList.contains('is-collapsed') ? 'collapsed' : 'open'); } catch (e) {}
   });
-  [...$('pocWeeks').children].forEach((i, n) => i.className = n + 1 < POC_WEEK ? 'is-done' : n + 1 === POC_WEEK ? 'is-now' : '');
+
   const pop = $('mePop'), btn = $('meBtn');
   btn.addEventListener('click', (e) => { e.stopPropagation(); pop.hidden = !pop.hidden; btn.setAttribute('aria-expanded', !pop.hidden); });
   document.addEventListener('click', (e) => { if (!e.target.closest('.me')) { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); } });
