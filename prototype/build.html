@@ -279,7 +279,27 @@
   .askp__head img{width:30px;height:30px;border-radius:22%}
   .askp__head b{display:block;font-size:.92rem}
   .askp__head span{display:block;font-size:.74rem;color:var(--muted)}
-  .askp__new{margin-left:auto;display:none}
+  .askp__newic{margin-left:auto;width:40px!important;height:40px!important;border-radius:12px!important;border:1px solid var(--line-2)!important;background:var(--panel)!important;color:var(--ink)!important}
+  .askp__newic svg{width:21px!important;height:21px!important}
+  .askp__newic:hover{background:var(--bg-soft)!important}
+  .askp__body{flex:1;display:flex;min-height:0}
+  .askp__main{flex:1;display:flex;flex-direction:column;min-width:0}
+  .askp__hist{display:none}
+  .askp.is-full .askp__hist{display:flex;flex-direction:column;gap:10px;width:250px;flex:none;padding:16px 12px;border-right:1px solid var(--line);background:var(--bg-soft);overflow:auto}
+  .cl__new{display:flex;align-items:center;gap:10px;height:44px;padding:0 14px;font-size:.9rem!important;border-radius:10px;border:1px solid var(--line-2);background:var(--panel);font:inherit;font-size:.84rem;font-weight:600;color:var(--ink);cursor:pointer}
+  .cl__new:hover{border-color:rgba(36,26,20,.3)}
+  .cl__new svg{width:20px;height:20px;}
+  .cl__new svg,.askp__newic svg{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .cl{display:grid;gap:2px}
+  .cl__g{margin:10px 8px 4px;font-size:.64rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .cl__i{display:flex;align-items:center;border-radius:9px}
+  .cl__i:hover{background:var(--panel)}
+  .cl__i.is-on{background:var(--panel);box-shadow:inset 3px 0 0 var(--rose)}
+  .cl__t{flex:1;min-width:0;text-align:left;border:0;background:none;padding:8px 10px;font:inherit;font-size:.82rem;color:var(--ink);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cl__x{border:0;background:none;width:24px;height:24px;margin-right:4px;border-radius:6px;color:var(--muted);cursor:pointer;opacity:0;font-size:.95rem}
+  .cl__i:hover .cl__x{opacity:1}
+  .cl__x:hover{background:var(--bg-soft);color:var(--error)}
+  .cl__empty{margin:8px;font-size:.8rem;color:var(--muted)}
   .askp__ic{margin-left:auto;width:30px;height:30px;border-radius:50%;border:0;background:none;color:var(--muted);cursor:pointer;display:grid;place-items:center}
   .askp__ic:hover{background:var(--bg-soft);color:var(--ink)}
   .askp__ic svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -710,9 +730,11 @@
 <button class="fab" id="fab" type="button" aria-label="Ask lojo" aria-expanded="false"><img src="assets/lojo-cloud.png" alt=""></button>
 <div class="askp-bg" id="askBg" hidden></div>
 <section class="askp" id="askp" hidden aria-label="Ask lojo">
-  <div class="askp__head"><span class="agico" data-agent="Chat agent"></span><div><b>Ask lojo</b><span>Chat agent · answers only from approved answers</span></div><button class="btn btn--secondary btn--sm askp__new" id="askNew" type="button">New conversation</button><button class="askp__ic" id="askFull" type="button" aria-label="Open full screen" title="Full screen"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><button class="askp__x" id="askX" type="button" aria-label="Close" title="Close">×</button></div>
+  <div class="askp__head"><span class="agico" data-agent="Chat agent"></span><div><b>Ask lojo</b><span>Chat agent · answers only from approved answers</span></div><button class="askp__ic askp__newic" id="askNew" type="button" aria-label="New chat" title="New chat"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M12 9v6M9 12h6"/></svg></button><button class="askp__ic" id="askFull" type="button" aria-label="Open full screen" title="Full screen"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><button class="askp__x" id="askX" type="button" aria-label="Close" title="Close">×</button></div>
+  <div class="askp__body"><aside class="askp__hist" aria-label="Chats"><button class="cl__new" id="askNew2" type="button"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M12 9v6M9 12h6"/></svg>New chat</button><div class="cl" id="askConvs"></div></aside><div class="askp__main">
   <div class="askp__log" id="askLog" aria-live="polite"></div>
   <div class="askp__foot"><div class="chips" id="askSugg"></div><form class="composer" id="askForm"><textarea id="askIn" rows="1" placeholder="Ask lojo…" aria-label="Ask lojo"></textarea><div class="composer__bar"><span class="composer__tools"></span><span class="spacer"></span><button class="send" type="submit" aria-label="Ask" disabled><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button></div></form></div>
+  </div></div>
 </section>
 <div class="toast" id="toast" role="status"></div>
 
@@ -1004,11 +1026,49 @@ function downloadDoc(name, text) {
   document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
   toast('Downloading ' + name);
 }
+// Ask lojo conversations: every chat is kept, titled by its first question, newest first
 const askHistory = {
-  all: () => ST.askLog || [],
-  push: (kind, html) => { if (/class="spin"/.test(html)) return; ST.askLog = (ST.askLog || []).concat([{ kind, html }]).slice(-60); save(); },
-  clear: () => { ST.askLog = []; save(); },
+  subs: [],
+  convs() {
+    if (!ST.convs) { ST.convs = []; if (ST.askLog && ST.askLog.length) { ST.convs.push({ id: 'c0', title: '', at: Date.now(), msgs: ST.askLog }); ST.convId = 'c0'; } delete ST.askLog; }
+    return ST.convs;
+  },
+  cur() { return this.convs().find(c => c.id === ST.convId) || null; },
+  all() { const c = this.cur(); return c ? c.msgs : []; },
+  push(kind, html) {
+    if (/class="spin"/.test(html)) return;
+    let c = this.cur();
+    if (!c) { c = { id: 'c' + Date.now(), title: '', at: Date.now(), msgs: [] }; this.convs().unshift(c); ST.convId = c.id; }
+    c.msgs.push({ kind, html }); c.msgs = c.msgs.slice(-80); c.at = Date.now();
+    if (!c.title) { const plain = html.replace(/<[^>]+>/g, '').trim(); if (kind === 'me') c.title = plain.slice(0, 70); else if (/I’ve read/.test(plain)) c.title = 'About ' + plain.replace(/^I’ve read (the text in )?/, '').split('.')[0]; }
+    ST.convs = [c].concat(ST.convs.filter(x => x !== c)).slice(0, 40);
+    save(); this.emit();
+  },
+  newChat() { ST.convId = null; save(); this.emit(); },
+  open(id) { ST.convId = id; save(); this.emit(); },
+  remove(id) { ST.convs = this.convs().filter(c => c.id !== id); if (ST.convId === id) ST.convId = null; save(); this.emit(); },
+  clear() { this.newChat(); },
+  on(fn) { this.subs.push(fn); },
+  emit() { this.subs.forEach(fn => fn()); },
 };
+// the history list, shared by the Ask lojo page and full screen
+function convList(el, onPick) {
+  const draw = () => {
+    const cs = askHistory.convs().filter(c => c.msgs.some(m => m.kind === 'me') || c.title);
+    const day = (ts) => { const d = new Date(ts), n = new Date(); const y = new Date(n); y.setDate(n.getDate() - 1);
+      return d.toDateString() === n.toDateString() ? 'Today' : d.toDateString() === y.toDateString() ? 'Yesterday' : 'Earlier'; };
+    let last = '', h = '';
+    cs.forEach(c => { const g = day(c.at); if (g !== last) { h += '<p class="cl__g">' + g + '</p>'; last = g; }
+      h += '<div class="cl__i' + (c.id === ST.convId ? ' is-on' : '') + '"><button type="button" class="cl__t" data-conv="' + c.id + '">' + esc(c.title || 'New chat') + '</button><button type="button" class="cl__x" data-delconv="' + c.id + '" aria-label="Delete chat" title="Delete">×</button></div>'; });
+    el.innerHTML = h || '<p class="cl__empty">Your chats will show up here.</p>';
+  };
+  el.addEventListener('click', (e) => {
+    const x = e.target.closest('[data-delconv]'); if (x) { askHistory.remove(x.dataset.delconv); onPick(); return; }
+    const b = e.target.closest('[data-conv]'); if (b) { askHistory.open(b.dataset.conv); onPick(); }
+  });
+  askHistory.on(draw); draw();
+}
+const NEWCHAT_ICON = '<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M12 9v6M9 12h6"/></svg>';
 function chatDocs(zone, form, say, setSugg) {
   let doc = null;
   const clip = document.createElement('label'); clip.className = 'clip'; clip.title = 'Attach a document or image'; clip.setAttribute('aria-label', 'Attach a document or image');
@@ -1238,14 +1298,15 @@ function srcChip(docId, loc, warn) {
       else { say('bot am--miss', 'I don’t know. Nothing approved covers this yet, so I won’t guess.'); countChat('declined'); }
     }, 500);
   }
+  function load() {
+    log.innerHTML = ''; intro();
+    askHistory.all().forEach(m => say(m.kind === 'me' ? 'me' : m.kind === 'miss' ? 'bot am--miss' : 'bot', m.html, true));
+    $('askSugg').innerHTML = SUGG.map(t => '<button type="button" class="chip">' + t + '</button>').join('');
+  }
   function toggle(open) {
     panel.hidden = !open; fab.classList.toggle('is-open', open); fab.setAttribute('aria-expanded', open);
     if (!open) full(false);
-    if (open && !log.children.length) {
-      intro();
-      askHistory.all().forEach(m => say(m.kind === 'me' ? 'me' : m.kind === 'miss' ? 'bot am--miss' : 'bot', m.html, true));
-      $('askSugg').innerHTML = SUGG.map(t => '<button type="button" class="chip">' + t + '</button>').join('');
-    }
+    if (open && !log.children.length) load();
     if (open) $('askIn').focus();
   }
   fab.addEventListener('click', () => toggle(panel.hidden));
@@ -1259,7 +1320,9 @@ function srcChip(docId, loc, warn) {
   }
   $('askFull').addEventListener('click', () => { full(!panel.classList.contains('is-full')); $('askIn').focus(); });
   $('askBg').addEventListener('click', () => toggle(false));
-  $('askNew').addEventListener('click', () => { askHistory.clear(); intro(); $('askIn').focus(); });
+  const fresh = () => { askHistory.newChat(); load(); $('askIn').focus(); };
+  $('askNew').addEventListener('click', fresh); $('askNew2').addEventListener('click', fresh);
+  convList($('askConvs'), () => { load(); });
   // say what the button is once per visit
   try { if (!sessionStorage.getItem('lojo-ask-hint')) { sessionStorage.setItem('lojo-ask-hint', '1'); setTimeout(() => { fab.classList.add('is-hint'); setTimeout(() => fab.classList.remove('is-hint'), 3200); }, 900); } } catch (e) {}
   $('askSugg').addEventListener('click', (e) => { const c = e.target.closest('.chip'); if (c) ask(c.textContent); });

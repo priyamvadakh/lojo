@@ -1737,7 +1737,13 @@ render();
 CHAT = dict(
   active='approved', title='Ask lojo',
   css=r"""
-  .chat{display:flex;flex-direction:column;height:calc(100vh - 230px);min-height:460px;max-width:860px}
+  .chatwrap{display:grid;grid-template-columns:270px minmax(0,1fr);gap:18px;align-items:stretch}
+  .wrap:has(.chatwrap){max-width:none;padding-bottom:24px}
+  .chist{display:flex;flex-direction:column;gap:10px;padding:14px 10px;height:calc(100vh - 196px);min-height:460px;overflow:auto;background:var(--bg-soft)}
+  @media (max-width:900px){.chatwrap{grid-template-columns:1fr}.chist{height:auto;min-height:0;max-height:220px}}
+  .chat{display:flex;flex-direction:column;height:calc(100vh - 196px);min-height:460px}
+  .chat .log{padding:28px max(28px,calc(50% - 420px))}
+  .chat .foot{padding:14px max(20px,calc(50% - 430px)) 20px}
   .log{flex:1;overflow:auto;padding:22px;display:grid;gap:14px;align-content:start}
   .msg{max-width:78%;padding:12px 15px;border-radius:14px;font-size:.9rem}
   .msg--me{justify-self:end;background:var(--ink);color:#fff;border-bottom-right-radius:4px}
@@ -1760,8 +1766,9 @@ CHAT = dict(
       </div>
       <span class="spacer"></span>
       <span class="badge badge--muted">Not published anywhere in this phase</span>
-      <button class="btn btn--secondary btn--sm" id="newConv" type="button">New conversation</button>
     </div>
+    <div class="chatwrap">
+    <aside class="card chist" aria-label="Chats"><button class="cl__new" id="newConv" type="button"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M12 9v6M9 12h6"/></svg>New chat</button><div class="cl" id="convs"></div></aside>
     <section class="card chat">
       <div class="log" id="log" aria-live="polite"></div>
       <div class="foot">
@@ -1769,6 +1776,7 @@ CHAT = dict(
         <form class="composer" id="form"><textarea id="ask" rows="1" placeholder="Ask lojo…" aria-label="Ask lojo"></textarea><div class="composer__bar"><span class="composer__tools"></span><span class="spacer"></span><button class="send" type="submit" aria-label="Ask" disabled><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button></div></form>
       </div>
     </section>
+    </div>
 """,
   js=r"""
 const store = () => DRAFTS.filter(r => decision(r).status === 'approved').map(r => ({ r, q: QUESTIONS.find(q => q.id === r.qid).q, a: answerOf(r) }));
@@ -1811,8 +1819,10 @@ function greet() {
 }
 greet();
 // the same conversation as the Ask lojo panel
-askHistory.all().forEach(m => bubble(m.kind === 'me' ? 'me' : m.kind === 'miss' ? 'bot miss' : 'bot', m.html, true));
-$('newConv').addEventListener('click', () => { askHistory.clear(); greet(); $('ask').focus(); });
+function openConv() { greet(); askHistory.all().forEach(m => bubble(m.kind === 'me' ? 'me' : m.kind === 'miss' ? 'bot miss' : 'bot', m.html, true)); }
+openConv();
+$('newConv').addEventListener('click', () => { askHistory.newChat(); openConv(); $('ask').focus(); });
+convList($('convs'), openConv);
 const SUGG = ['What is the phone number for support?', 'How fast can we call the API?', 'What is the support email?', 'Is our data encrypted?', 'Hi'];
 $('sugg').innerHTML = SUGG.map(s => '<button type="button" class="chip">' + esc(s) + '</button>').join('');
 $('sugg').addEventListener('click', (e) => { const c = e.target.closest('.chip'); if (c) ask(c.textContent); });
