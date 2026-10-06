@@ -448,6 +448,77 @@ render();
 DOCUMENTS = dict(
   active='documents', title='Sources',
   css=r"""
+  .srcsum{margin:-8px 0 16px;font-size:.86rem;color:var(--muted)}
+  .srcsum b{color:var(--ink)}
+  .srcwrap{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}
+  .srclist{position:sticky;top:96px;display:flex;flex-direction:column;max-height:calc(100vh - 116px);overflow:hidden}
+  .srclist__h{padding:16px 16px 12px;border-bottom:1px solid var(--line)}
+  .srclist__h h2{margin:0 0 10px;font-family:var(--display);font-weight:700;font-size:1.05rem}
+  .srcq{display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;border-radius:10px;border:1px solid var(--line-2);background:var(--panel)}
+  .srcq:focus-within{border-color:var(--rose)}
+  .srcq svg{width:16px;height:16px;fill:none;stroke:var(--muted);stroke-width:1.8}
+  .srcq input{border:0;outline:0;background:none;flex:1;font:inherit;font-size:.86rem}
+  .srclist__b{overflow:auto;padding:6px 8px}
+  .sgrp{display:flex;justify-content:space-between;margin:12px 8px 6px;font-size:.64rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .sitem{display:grid;grid-template-columns:38px minmax(0,1fr) 10px;gap:12px;align-items:center;width:100%;padding:10px;border:1px solid transparent;border-radius:12px;background:none;text-align:left;font:inherit;color:inherit;cursor:pointer}
+  .sitem:hover{background:var(--bg-soft)}
+  .sitem.is-sel{border-color:rgba(232,93,117,.4);background:linear-gradient(90deg,rgba(232,93,117,.06),transparent);box-shadow:inset 3px 0 0 var(--rose)}
+  .sitem b{display:block;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sitem span{display:block;font-size:.74rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sitem .dot{width:9px;height:9px;border-radius:50%;background:var(--success)}
+  .sitem .dot.warn{background:#C9A24A}
+  .sico{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--panel);border:1px solid var(--line)}
+  .sico svg{width:19px;height:19px}
+  .sico.doc{background:rgba(232,93,117,.08);color:#C7385B;border-color:transparent}
+  .sico.doc svg{fill:none;stroke:currentColor;stroke-width:1.8}
+  .srclist__f{padding:12px;border-top:1px solid var(--line)}
+  .srcdet{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;min-width:0}
+  .srcdet > *{min-width:0}
+  .srcwrap > *{min-width:0}
+  .sh__top{flex-wrap:wrap}
+  .dtable .dname .dn{min-width:140px}
+  #uploadBody .dtable th:nth-child(2),#uploadBody .dtable td:nth-child(2){display:none}
+  #uploadBody .dtable td,#uploadBody .dtable th{padding-left:14px;padding-right:14px}
+  #uploadBody .dtable .num{width:84px}
+  .srchead{padding:20px 22px;background:radial-gradient(120% 140% at 100% 0%,#FFF1EC,var(--panel) 60%)}
+  .sh__top{display:flex;align-items:flex-start;gap:14px}
+  .sh__top .sico{width:52px;height:52px;border-radius:14px}
+  .sh__top .sico svg{width:24px;height:24px}
+  .sh__top h2{margin:0;font-family:var(--display);font-weight:700;font-size:1.5rem;letter-spacing:-.01em}
+  .sh__top p{margin:2px 0 0;color:var(--muted);font-size:.86rem}
+  .sh__top .spacer{flex:1}
+  .sh__top .btn{height:36px}
+  .owner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0 12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);font-size:.84rem}
+  .owner .ava3d,.owner .ava3d > svg{width:28px;height:28px}
+  .owner a{font-weight:700;color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+  .owner em{font-style:normal;color:var(--muted)}
+  .health{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .hcard{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+  .hcard small{display:flex;justify-content:space-between;align-items:center;font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .hcard small i{width:8px;height:8px;border-radius:50%;background:var(--success)}
+  .hcard small i.warn{background:#C9A24A}
+  .hcard b{display:block;margin:4px 0 2px;font-size:.98rem}
+  .hcard span{font-size:.78rem;color:var(--muted)}
+  .supply{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:12px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+  .supply h4{margin:0 0 4px;font-size:.88rem}
+  .supply p{margin:0;font-size:.82rem;color:var(--muted)}
+  .supply .note{grid-column:1/-1;padding-top:10px;border-top:1px solid var(--line);font-size:.78rem;color:var(--muted)}
+  #uploadBody .scope{margin-bottom:14px}
+  #uploadBody .dcard{margin-top:0}
+  .dcard .card__head .spacer{flex:1}
+  .srcitems{padding:18px 20px}
+  .srcitems h3{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-family:var(--display);font-size:1.05rem}
+  .srcitems h3 .spacer{flex:1}
+  .sirow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:10px 0;border-top:1px solid var(--line);font-size:.86rem}
+  .sirow:first-of-type{border-top:0}
+  .sirow em{font-style:normal;color:var(--muted);font-size:.78rem}
+  .addsrc{border:0;padding:0;border-radius:20px;width:min(760px,calc(100vw - 32px));max-height:calc(100vh - 40px);box-shadow:0 40px 90px -30px rgba(36,26,20,.5);color:var(--ink);background:var(--panel)}
+  .addsrc::backdrop{background:rgba(36,26,20,.35);backdrop-filter:blur(2px)}
+  .addsrc[open]{display:block;padding:22px 24px 24px;animation:fadeIn .2s ease}
+  .addsrc__h{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
+  .addsrc__h > div{flex:1}
+  .addsrc__h h2{margin:0;font-family:var(--display);font-weight:700;font-size:1.3rem}
+  @media (max-width:1100px){.srcwrap{grid-template-columns:1fr}.srclist{position:static;max-height:none}.health,.supply{grid-template-columns:1fr}}
   .scope{display:grid;grid-template-columns:36px 1fr auto;gap:14px;align-items:center;padding:14px 18px;border-radius:14px;background:rgba(63,143,95,.06);border:1px solid rgba(63,143,95,.22);margin-bottom:20px}
   .scope .ok{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:rgba(63,143,95,.14);color:var(--success);font-weight:700}
   .scope b{display:block;font-size:.9rem}
@@ -521,64 +592,74 @@ DOCUMENTS = dict(
   body=r"""
     <div class="head">
       <div>
-        <p class="label">01 Source</p>
+        <p class="label">01 Source · Connect and monitor</p>
         <h1>Sources</h1>
-        <p>Upload documents or connect an app. We pull the text out, split it into passages and index each one by meaning, so a question finds the right passage even when the words differ.</p>
+        <p>Select a source to see its health, what it gives lojo, and the one thing to do next.</p>
       </div>
+      <span class="spacer"></span>
+      <button class="btn btn--grad" id="addSrc" type="button"><svg class="i" viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round"><path d="M12 5v14M5 12h14"/></svg>Add source</button>
     </div>
+    <p class="srcsum" id="srcSum"></p>
 
-    <section class="scope" id="scope">
-      <span class="ok">✓</span>
-      <div><b id="scopeTitle">Data in scope, signed off</b><span class="sub" id="scopeSub"></span></div>
-      <button class="btn btn--ghost btn--sm" id="scopeToggle" aria-expanded="false">What’s in scope</button>
-      <div class="scope-detail" id="scopeDetail" hidden>
-        <div><h4>In scope</h4><ul><li>The documents on this page</li><li>Your current help pages</li><li>Questions you add</li></ul></div>
-        <div><h4>Out of scope</h4><ul><li>Customer records and tickets</li><li>Mail and call recordings</li><li>Anything not listed here</li></ul></div>
-        <!-- ASSUMPTION: scope wording mirrors the week-1 agreement; final text comes from that sign-off. check with Eric -->
-        <div><h4>Good to know</h4><ul><li>Personal details are not removed automatically</li><li>Everyone who signs in can see everything</li><li>Data sits on one lojo-run server</li></ul></div>
-      </div>
-    </section>
+    <div class="srcwrap">
+      <aside class="card srclist">
+        <div class="srclist__h"><h2>Connected sources</h2>
+          <label class="srcq"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="srcQ" placeholder="Search sources…" aria-label="Search sources"></label></div>
+        <div class="srclist__b" id="srcList"></div>
+        <div class="srclist__f"><button class="btn btn--secondary" id="browseConn" type="button" style="width:100%"><svg class="i" viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round"><path d="M12 5v14M5 12h14"/></svg>Browse connectors</button></div>
+      </aside>
 
-    <div class="ptabs" role="tablist" aria-label="Source type">
-      <button class="ptab" role="tab" data-tab="docs" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>Documents <span class="n" id="nDocs">0</span></button>
-      <button class="ptab" role="tab" data-tab="connect" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M9 7V3M15 7V3M7 7h10v4a5 5 0 0 1-10 0zM12 16v5"/></svg>Connect <span class="n" id="nConn">0</span></button>
-    </div>
-
-    <section id="tabDocs">
-      <section class="uperr" id="upErr" hidden role="alert"></section>
-      <label class="drop" id="drop">
-        <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg></span>
-        <strong>Drop files here, or browse</strong>
-        <p class="hint">PDF, DOCX, Markdown or TXT · up to 25 MB each</p>
-        <input type="file" id="fileInput" multiple hidden>
-        <span class="row"><span class="btn btn--secondary btn--sm">Browse files</span></span>
-      </label>
-      <section class="card dcard" aria-labelledby="docH">
-        <div class="card__head"><h2 id="docH">Your documents</h2><span class="sub" id="docMeta"></span></div>
-        <div class="dscroll"><table class="dtable">
-          <thead><tr><th>Document</th><th class="num">Pages</th><th class="num">Passages</th><th class="num">Questions</th><th>Status</th><th class="tacts"><span class="sr-only">Actions</span></th></tr></thead>
-          <tbody id="docRows"></tbody>
-        </table></div>
-      </section>
-    </section>
-
-    <section id="tabConnect" hidden>
-      <!-- ASSUMPTION: connector list is illustrative; sign-in is simulated. check with Eric -->
-      <div class="panel">
-        <h3>Connect an app</h3>
-        <p class="sub" style="margin-bottom:14px">You sign in with that app and pick what lojo can read. lojo only reads; it never edits your files.</p>
-        <div class="apps" id="apps"></div>
-        <div class="synced" id="synced"></div>
-      </div>
-      <div class="panel">
-        <h3>Send us a folder</h3>
-        <p class="sub">Share a Google Drive, SharePoint or Dropbox folder. Give view access to ingest@lojo.ai, then paste the link.</p>
-        <div class="folder">
-          <input class="text" id="folderLink" placeholder="https://drive.google.com/drive/folders/…" aria-label="Shared folder link">
-          <button class="btn btn--primary" id="folderSend">Send</button>
+      <section class="srcdet" id="srcDet" aria-live="polite">
+        <div class="card srchead" id="srcHead"></div>
+        <div id="uploadBody">
+          <section class="scope" id="scope">
+            <span class="ok">✓</span>
+            <div><b id="scopeTitle">Data in scope, signed off</b><span class="sub" id="scopeSub"></span></div>
+            <button class="btn btn--ghost btn--sm" id="scopeToggle" aria-expanded="false">What’s in scope</button>
+            <div class="scope-detail" id="scopeDetail" hidden>
+              <div><h4>In scope</h4><ul><li>The documents on this page</li><li>Your current help pages</li><li>Questions you add</li></ul></div>
+              <div><h4>Out of scope</h4><ul><li>Customer records and tickets</li><li>Mail and call recordings</li><li>Anything not listed here</li></ul></div>
+              <div><h4>Good to know</h4><ul><li>Personal details are not removed automatically</li><li>Everyone who signs in can see everything</li><li>Data sits on one lojo-run server</li></ul></div>
+            </div>
+          </section>
+          <section class="card dcard" aria-labelledby="docH">
+            <div class="card__head"><h2 id="docH">Your documents</h2><span class="sub" id="docMeta"></span><span class="spacer"></span><button class="btn btn--secondary btn--sm" id="addDocs" type="button">Upload documents</button></div>
+            <div class="dscroll"><table class="dtable">
+              <thead><tr><th>Document</th><th class="num">Pages</th><th class="num">Passages</th><th class="num">Questions</th><th>Status</th><th class="tacts"><span class="sr-only">Actions</span></th></tr></thead>
+              <tbody id="docRows"></tbody>
+            </table></div>
+          </section>
         </div>
+        <div class="card srcitems" id="appBody" hidden></div>
+      </section>
+    </div>
+
+    <dialog class="addsrc" id="addDlg" aria-labelledby="addH">
+      <div class="addsrc__h"><div><h2 id="addH">Add a source</h2><p class="sub">Upload documents or connect an app. lojo only reads; it never edits your files.</p></div><button class="hbtn" id="addX" type="button" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+      <div class="ptabs" role="tablist" aria-label="Source type">
+        <button class="ptab" role="tab" data-tab="docs" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>Documents <span class="n" id="nDocs">0</span></button>
+        <button class="ptab" role="tab" data-tab="connect" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M9 7V3M15 7V3M7 7h10v4a5 5 0 0 1-10 0zM12 16v5"/></svg>Connect <span class="n" id="nConn">0</span></button>
       </div>
-    </section>
+      <section id="tabDocs">
+        <section class="uperr" id="upErr" hidden role="alert"></section>
+        <label class="drop" id="drop">
+          <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg></span>
+          <strong>Drop files here, or browse</strong>
+          <p class="hint">PDF, DOCX, Markdown or TXT · up to 25 MB each</p>
+          <input type="file" id="fileInput" multiple hidden>
+          <span class="row"><span class="btn btn--secondary btn--sm">Browse files</span></span>
+        </label>
+        <div class="panel" style="margin-top:14px">
+          <h3>Send us a folder</h3>
+          <p class="sub">Share a Google Drive, SharePoint or Dropbox folder. Give view access to ingest@lojo.ai, then paste the link.</p>
+          <div class="folder"><input class="text" id="folderLink" placeholder="https://drive.google.com/drive/folders/…" aria-label="Shared folder link"><button class="btn btn--primary" id="folderSend">Send</button></div>
+        </div>
+      </section>
+      <section id="tabConnect" hidden>
+        <div class="apps" id="apps"></div>
+        <div class="synced" id="synced" hidden></div>
+      </section>
+    </dialog>
 """,
   js=r"""
 let open = null;
@@ -752,13 +833,84 @@ function show(tab) {
   document.querySelectorAll('.ptab').forEach(t => t.setAttribute('aria-selected', t.dataset.tab === tab));
   $('tabDocs').hidden = tab !== 'docs'; $('tabConnect').hidden = tab !== 'connect';
 }
-document.querySelectorAll('.ptab').forEach(t => t.addEventListener('click', () => { show(t.dataset.tab); history.replaceState(null, '', location.search + (t.dataset.tab === 'connect' ? '#connect' : '')); }));
+document.querySelectorAll('.ptab').forEach(t => t.addEventListener('click', () => show(t.dataset.tab)));
+// connected sources: uploaded documents plus every connected app, each with its health
+if (!ST.apps || !ST.__appsSeeded) { ST.apps = Object.assign({ notion: true, website: true, gmail: true, aircall: true }, ST.apps || {}); ST.__appsSeeded = true; save(); }
+const DOCICO = '<svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>';
+const APPINFO = {
+  notion: { what: 'Oslo wiki', items: [['Pricing wiki', '6 pages'], ['Onboarding playbook', '11 pages'], ['Security docs', '4 pages'], ['Policies', '5 pages'], ['Help centre drafts', '3 pages']], state: 'ok', fresh: 'Synced 6 min ago', supplies: 'Pages and wikis from the teamspaces you chose, split into passages for drafting answers.' },
+  website: { what: 'help.oslo.com · oslo.com/pricing', items: [['help.oslo.com/sso', 'changed since last sync'], ['oslo.com/pricing', 'synced'], ['oslo.com/legal/refunds', 'synced']], state: 'warn', fresh: '1 page changed since the last sync', next: 'Sync now to pick up the changed page. Drafts that cite it will be checked again.', supplies: 'Public pages from your website and help centre, read the same way as documents.' },
+  gmail: { what: 'support@oslo.com', items: [['SSO stopped working after we upgraded', 'couldn’t be analysed'], ['Invoice for our annual plan', 'ready'], ['Apple Pay in Germany?', 'analysed']], state: 'warn', fresh: '1 email couldn’t be analysed', next: 'Open it in Insights and try the analysis again.', nextHref: 'insights.html#inbox', supplies: 'Incoming email threads, participants and message text, analysed in Insights for new questions.' },
+  aircall: { what: 'Support line · Sales line', items: [['+44 20 7946 0958', 'awaiting transcript'], ['+33 6 85 36 57 11', 'ready'], ['+33 7 57 91 26 97', 'too short to transcribe']], state: 'warn', fresh: 'Waiting for 1 transcript', next: 'Nothing to do: the transcript arrives from Aircall, then the call can be analysed.', supplies: 'Call recordings and transcripts, analysed in Insights for the questions customers ask.' },
+};
+const DEF = { what: 'Connected just now', items: [['First sync', 'running']], state: 'ok', fresh: 'First sync in progress', supplies: 'Files and pages from this app, read like documents.' };
+let srcSel = SP0().get('src') || ST.srcSel || 'upload';
+function SP0() { return new URLSearchParams(location.search); }
+function sources() {
+  const docx = ST.docx || [], failed = docx.filter(d => d.status === 'failed').length, live = DOCS.filter(d => !ST.retired[d.id]).length + extra.length + docx.filter(d => d.status !== 'retired').length;
+  const c = counts();
+  const list = [{ id: 'upload', name: 'Uploaded documents', sub: 'Upload · PDF, DOCX, Markdown, TXT', icon: '<span class="sico doc">' + DOCICO + '</span>', state: failed ? 'warn' : 'ok',
+    line: (failed ? failed + ' couldn’t be processed · ' : '') + live + ' documents', conn: 'Connected', connS: 'Files you upload are read straight away.', fresh: failed ? failed + ' document couldn’t be processed' : 'Indexed today',
+    freshS: failed ? 'Remove the password and upload it again.' : 'Every document is indexed by meaning.', contrib: c.passages.toLocaleString('en-GB') + ' passages', contribS: c.questions + ' questions found in them.',
+    supplies: 'Documents you upload: their text is pulled out, split into passages and indexed by meaning.', next: failed ? 'Fix the document that couldn’t be processed, below.' : 'Nothing to do. Upload more when you have them.' }];
+  APPS.filter(a => ST.apps[a.id]).forEach(a => {
+    const i = APPINFO[a.id] || DEF;
+    list.push({ id: a.id, name: a.name, sub: a.name + ' · ' + i.what, icon: '<span class="sico" style="color:' + a.color + '"><svg viewBox="0 0 24 24" fill="currentColor">' + LOGO[a.id] + '</svg></span>', state: i.state,
+      line: (i.state === 'warn' ? 'Needs attention · ' : '') + i.fresh, conn: 'Connected', connS: 'Signed in as sara@oslo.com. lojo only reads.', fresh: i.fresh, freshS: i.state === 'warn' ? 'See what happens next below.' : 'Checked for changes every hour.',
+      contrib: i.items.length + ' item' + (i.items.length === 1 ? '' : 's'), contribS: 'Imported knowledge can be reviewed in Insights and Knowledge.', supplies: i.supplies, next: i.next || 'Nothing to do. lojo keeps it in sync.', nextHref: i.nextHref, items: i.items });
+  });
+  return list;
+}
+function renderSources() {
+  const all = sources(), q = $('srcQ').value.trim().toLowerCase(), list = all.filter(s => !q || (s.name + ' ' + s.sub).toLowerCase().includes(q));
+  if (!all.some(s => s.id === srcSel)) srcSel = 'upload';
+  const warn = all.filter(s => s.state === 'warn');
+  $('srcSum').innerHTML = '<b>' + all.length + ' connected sources</b> · ' + warn.length + ' need' + (warn.length === 1 ? 's' : '') + ' attention · ' + counts().passages.toLocaleString('en-GB') + ' passages';
+  const row = (s) => '<button type="button" class="sitem' + (s.id === srcSel ? ' is-sel' : '') + '" data-src="' + s.id + '">' + s.icon + '<span><b>' + esc(s.name) + '</b><span>' + esc(s.line) + '</span></span><i class="dot' + (s.state === 'warn' ? ' warn' : '') + '"></i></button>';
+  const w = list.filter(s => s.state === 'warn'), ok = list.filter(s => s.state !== 'warn');
+  $('srcList').innerHTML = (w.length ? '<p class="sgrp">Needs attention <span>' + w.length + '</span></p>' + w.map(row).join('') : '') + (ok.length ? '<p class="sgrp">Healthy <span>' + ok.length + '</span></p>' + ok.map(row).join('') : '') || '<p class="sub" style="padding:14px">No source matches.</p>';
+  const s = all.find(x => x.id === srcSel);
+  $('srcHead').innerHTML = '<div class="sh__top">' + s.icon + '<div><h2>' + esc(s.name) + '</h2><p>' + esc(s.sub) + '</p></div><span class="spacer"></span>' +
+    '<button class="btn btn--secondary" type="button" data-settings>Source settings</button><button class="btn btn--grad" type="button" data-sync>Sync now</button></div>' +
+    '<div class="owner">' + ava3d('src', 'Sync agent', s.state === 'warn' ? 6 : 0) + '<em>Import owner</em><a href="activity.html?stage=src">Sync agent</a><em>· ' + (s.state === 'warn' ? 'paused until this is fixed' : 'importing') + '</em></div>' +
+    '<div class="health"><div class="hcard"><small>Connection<i></i></small><b>' + s.conn + '</b><span>' + esc(s.connS) + '</span></div>' +
+    '<div class="hcard"><small>Freshness<i class="' + (s.state === 'warn' ? 'warn' : '') + '"></i></small><b>' + esc(s.fresh) + '</b><span>' + esc(s.freshS) + '</span></div>' +
+    '<div class="hcard"><small>Contribution<i></i></small><b>' + esc(s.contrib) + '</b><span>' + esc(s.contribS) + '</span></div></div>' +
+    '<div class="supply"><div><h4>What this source supplies</h4><p>' + esc(s.supplies) + '</p></div><div><h4>What happens next</h4><p>' + esc(s.next) + (s.nextHref ? ' <a href="' + s.nextHref + '">Open →</a>' : '') + '</p></div><p class="note">Importing a source never approves or publishes knowledge on its own.</p></div>';
+  $('uploadBody').hidden = s.id !== 'upload'; $('appBody').hidden = s.id === 'upload';
+  if (s.id !== 'upload') $('appBody').innerHTML = '<h3>What’s synced<span class="spacer"></span><button class="btn btn--ghost btn--sm" type="button" data-off="' + s.id + '">Disconnect</button></h3>' +
+    s.items.map(([n, st]) => '<div class="sirow"><span>' + esc(n) + '</span><em>' + esc(st) + '</em><span class="pstage ' + (/couldn|changed/.test(st) ? 'is-fail' : /awaiting|running|ready/.test(st) ? 'is-wait' : 'is-done') + '">' + (/couldn|changed/.test(st) ? 'Needs attention' : /awaiting|running/.test(st) ? 'Waiting' : /ready/.test(st) ? 'Ready' : 'Synced') + '</span></div>').join('');
+}
+$('srcList').addEventListener('click', (e) => { const b = e.target.closest('[data-src]'); if (!b) return; srcSel = b.dataset.src; ST.srcSel = srcSel; save(); renderSources(); });
+$('srcQ').addEventListener('input', renderSources);
+$('srcDet').addEventListener('click', (e) => {
+  const sy = e.target.closest('[data-sync]');
+  if (sy) { sy.disabled = true; sy.innerHTML = '<span class="spin" style="width:12px;height:12px"></span> Syncing…'; setTimeout(() => { if (APPINFO[srcSel]) { APPINFO[srcSel].state = 'ok'; APPINFO[srcSel].fresh = 'Synced just now'; APPINFO[srcSel].items = APPINFO[srcSel].items.map(([n, st]) => [n, /changed/.test(st) ? 'synced' : st]); delete APPINFO[srcSel].next; } renderSources(); toast('Synced'); }, 1400); }
+  if (e.target.closest('[data-settings]')) toast('Choose what lojo reads from this source. Settings come with the full build.');
+  const off = e.target.closest('[data-off]'); if (off) { delete ST.apps[off.dataset.off]; save(); srcSel = 'upload'; render(); renderSources(); toast('Disconnected. Knowledge already imported stays until you retire it.'); }
+});
+// Add source: the same Documents / Connect choice as setup, in a popup
+const dlg = $('addDlg');
+const openAdd = (tab) => { show(tab); dlg.showModal(); };
+$('addSrc').addEventListener('click', () => openAdd('docs'));
+$('addDocs').addEventListener('click', () => openAdd('docs'));
+$('browseConn').addEventListener('click', () => openAdd('connect'));
+$('addX').addEventListener('click', () => dlg.close());
+dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+// close the popup once something is added, and show where it went
+$('fileInput').addEventListener('change', () => { if (!$('upErr').hidden && !extra.length) return; setTimeout(() => { if ($('upErr').hidden) { dlg.close(); srcSel = 'upload'; renderSources(); } }, 50); });
+$('drop').addEventListener('drop', () => setTimeout(() => { if ($('upErr').hidden) { dlg.close(); srcSel = 'upload'; renderSources(); } }, 50));
+$('folderSend').addEventListener('click', () => setTimeout(() => { if (!$('folderLink').value) { dlg.close(); srcSel = 'upload'; renderSources(); } }, 50));
+$('apps').addEventListener('click', (e) => { const b = e.target.closest('[data-app]'); if (!b) return; const id = b.dataset.app; const wasOn = ST.apps[id];
+  setTimeout(() => { if (ST.apps[id] && !wasOn) { dlg.close(); srcSel = id; ST.srcSel = id; save(); renderSources(); } else if (wasOn) { dlg.close(); srcSel = id; renderSources(); } }, wasOn ? 0 : 1000); });
+const _render = render; render = function () { _render(); if ($('srcList')) renderSources(); };
 const SP = new URLSearchParams(location.search), pinDoc = SP.get('doc'), pinLoc = SP.get('loc');
 if (pinDoc && docById(pinDoc)) open = pinDoc;
 renderScope();
 render();
-show(location.hash === '#connect' ? 'connect' : 'docs');
-if (pinDoc && docById(pinDoc)) {
+show('docs');
+if (location.hash === '#connect') openAdd('connect');
+if (pinDoc && docById(pinDoc)) { srcSel = 'upload'; renderSources();
   const li = document.querySelector('tr.drow[data-id="' + pinDoc + '"]');
   if (li) { li.classList.add('is-pin'); li.scrollIntoView({ block: 'center' }); }
   if (pinLoc) document.querySelectorAll('tr.ddetail .passage').forEach(p => { if (p.querySelector('em').textContent === pinLoc) p.classList.add('is-hit'); });
