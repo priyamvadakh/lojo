@@ -372,7 +372,7 @@ NAV = [
 
 NAV_FLAT = [
   ('overview', 'dashboard.html', 'Dashboard', None, ''),
-  ('loop', 'onboarding.html', 'My loop', None, ''),
+  ('loop', 'onboarding.html?inside=1', 'My loop', None, ''),
   ('documents', 'sources.html', 'Sources', None, '01'),
   ('questions', 'insights.html', 'Insights', 'navQuestions', ''),
   ('review', 'build.html', 'Build', 'navReview', ''),
@@ -652,6 +652,10 @@ function refreshNav() {
   set('navReview', c.pending, true);
   set('navQuestions', c.needCall + c.gaps);
   set('navApproved', c.approved);
+  // My loop opens the loop where it stands, with today's numbers
+  const loopUrl = 'onboarding.html?inside=1&c=' + [c.docs, c.questions, c.gaps, c.drafts, c.pending, c.approved].join('.');
+  document.querySelectorAll('a[href^="onboarding.html?inside"]').forEach(a => { a.href = loopUrl; });
+  window.LOOP_URL = loopUrl;
 }
 function srcChip(docId, loc, warn) {
   return '<span class="src' + (warn ? ' src--warn' : '') + '">' + esc(docShort(docId)) + ' <em>' + esc(loc) + '</em>' + (warn ? ' <em>· conflicts</em>' : '') + '</span>';

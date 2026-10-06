@@ -209,23 +209,6 @@ OVERVIEW = dict(
       </button>
     </div>
 
-    <dialog class="loopdlg" id="loopDlg" aria-labelledby="loopDlgH">
-      <div class="loopdlg__head">
-        <div><p class="label">Your loop</p><h2 id="loopDlgH">Where you are in the loop</h2></div>
-        <button class="loopdlg__x" id="loopX" type="button" aria-label="Close">×</button>
-      </div>
-      <div class="lp" id="lp">
-        <svg viewBox="0 0 560 470" aria-hidden="true">
-          <defs><linearGradient id="lpGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E85D75"/><stop offset="1" stop-color="#FFB199"/></linearGradient></defs>
-          <circle cx="280" cy="235" r="128" fill="#FBF1F2"/>
-          <circle class="lp__track" cx="280" cy="235" r="150"/>
-          <circle class="lp__prog" id="lpProg" cx="280" cy="235" r="150" transform="rotate(-90 280 235)"/>
-          <g id="lpTris"></g>
-        </svg>
-        <ol class="lp__nodes" id="lpNodes"></ol>
-        <div class="lp__center"><small id="lpWeek">Week 3 of 4</small><b id="lpNow">Validation</b><span>The loop keeps running: new drafts land in review as your documents change.</span></div>
-      </div>
-    </dialog>
 
     <section class="sec next" aria-labelledby="nextH">
       <div class="next__main">
@@ -280,34 +263,7 @@ OVERVIEW = dict(
     </div>
 """,
   js=r"""
-const LOOP_ICON = {
-  src: '<svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>',
-  ins: '<svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>',
-  bld: '<svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>',
-  val: '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
-  dis: '<svg viewBox="0 0 24 24"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/></svg>',
-};
-function renderLoop() {
-  const c = counts(), CX = 280, CY = 235, R = 150, rad = (d) => d * Math.PI / 180;
-  const valNow = c.pending > 0;
-  const stages = [
-    { a: -90, side: 'top', ic: 'src', t: '01 Source', s: c.docs + ' documents · ' + c.passages + ' passages', href: 'sources.html', st: 'is-done' },
-    { a: 0, side: 'right', ic: 'ins', t: '02 Insights', s: c.questions + ' questions · ' + c.gaps + ' gaps', href: 'insights.html', st: 'is-done' },
-    { a: 90, side: 'bottom', ic: 'bld', t: '03 Build', s: c.drafts + ' drafts with sources', href: 'build.html', st: 'is-done' },
-    { a: 135, side: 'left', ic: 'val', t: 'Validation', s: valNow ? c.pending + ' drafts waiting on you' : 'First batch reviewed', href: 'build.html', st: valNow ? 'is-now' : 'is-done', gate: 1 },
-    { a: 180, side: 'left', ic: 'dis', t: '04 Distribute', s: c.approved + ' approved · chat to try', href: 'chat.html', st: valNow ? '' : 'is-now' },
-  ];
-  $('lpNodes').innerHTML = stages.map(s => '<li class="' + s.st + (s.gate ? ' gate' : '') + '" data-side="' + s.side + '" style="left:' + (CX + R * Math.cos(rad(s.a))).toFixed(1) + 'px;top:' + (CY + R * Math.sin(rad(s.a))).toFixed(1) + 'px">' +
-    '<a href="' + s.href + '"><span class="lp__n">' + LOOP_ICON[s.ic] + '</span><span class="lp__t"><small>You’re here</small><b>' + s.t + '</b><span>' + esc(s.s) + '</span></span></a></li>').join('');
-  $('lpTris').innerHTML = [-45, 45, 160, 225].map(a => '<path class="lp__tri" d="M-5 -5 L5 0 L-5 5 Z" transform="translate(' + (CX + R * Math.cos(rad(a))).toFixed(1) + ' ' + (CY + R * Math.sin(rad(a))).toFixed(1) + ') rotate(' + (a + 90) + ')"/>').join('');
-  const now = stages.find(s => s.st === 'is-now'), C = 2 * Math.PI * R, frac = (now.a + 90) / 360;
-  const prog = $('lpProg'); prog.setAttribute('stroke-dasharray', C.toFixed(1)); prog.setAttribute('stroke-dashoffset', (C * (1 - frac)).toFixed(1));
-  $('lpWeek').textContent = 'Week ' + POC_WEEK + ' of 4';
-  $('lpNow').textContent = now.t;
-}
-$('loopBtn').addEventListener('click', () => { renderLoop(); $('loopDlg').showModal(); });
-$('loopX').addEventListener('click', () => $('loopDlg').close());
-$('loopDlg').addEventListener('click', (e) => { if (e.target === $('loopDlg')) $('loopDlg').close(); });
+$('loopBtn').addEventListener('click', () => { location.href = window.LOOP_URL || 'onboarding.html?inside=1'; });
 function gauge(pct, color) {
   const L = Math.PI * 50, v = Math.max(0, Math.min(1, pct));
   return '<div class="gauge"><svg viewBox="0 0 128 72" aria-hidden="true"><path class="g-bg" d="M14 66 A50 50 0 0 1 114 66"/>' +

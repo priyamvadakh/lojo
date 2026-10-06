@@ -236,6 +236,20 @@
   .panel h3{font-family:var(--display);font-weight:700;font-size:1rem;margin:0 0 4px}
   .panel .sub{color:var(--muted);font-size:.9rem;margin:0}
 
+  .ilist{list-style:none;margin:28px 0 0;padding:0;display:grid;gap:10px}
+  .ilist a{display:grid;grid-template-columns:40px minmax(0,1fr) auto 16px;gap:14px;align-items:center;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:inherit;text-decoration:none;transition:border-color .15s ease,box-shadow .15s ease}
+  .ilist a:hover{border-color:var(--line-2);box-shadow:0 10px 24px -18px rgba(36,26,20,.5)}
+  .ilist .n{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--bg-soft);color:var(--muted)}
+  .ilist .n svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .ilist li.is-done .n{background:var(--rose);color:#fff}
+  .ilist li.is-now a{border-color:rgba(201,162,74,.6);box-shadow:0 0 0 3px rgba(201,162,74,.14)}
+  .ilist li.is-now .n{background:#C9A24A;color:#fff}
+  .ilist b{display:block;font-size:.95rem}
+  .ilist span.s{display:block;color:var(--muted);font-size:.84rem}
+  .ilist em{font-style:normal;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .ilist li.is-done em{color:var(--success)}
+  .ilist li.is-now em{color:#8A6212}
+  .ilist .go{color:var(--muted)}
   .actions{display:flex;align-items:center;gap:12px;margin-top:32px;padding-top:28px;border-top:1px solid var(--line)}
   .actions .spacer{flex:1}
   .actions .note{color:var(--muted);font-size:.86rem}
@@ -674,6 +688,14 @@
   </section>
 
   <main id="panel">
+    <!-- inside the app: where the loop is now, with links back into each stage -->
+    <section class="step" data-step="inside" aria-labelledby="hIn">
+      <p class="label" id="inLabel">Step 4 of 5 · Validation</p>
+      <h1 id="hIn">10 drafts are waiting for you</h1>
+      <p class="lead" id="inLead">Approve, edit, or reject with a reason. The loop keeps running: new drafts land here as your sources change.</p>
+      <div class="actions" style="margin-top:20px;padding-top:0;border-top:0"><a class="btn btn--primary" id="inCta" href="build.html">Start reviewing →</a><a class="btn btn--secondary" href="dashboard.html">Back to dashboard</a></div>
+      <ol class="ilist" id="inList"></ol>
+    </section>
     <!-- 2 · source -->
     <section class="step" data-step="2" aria-labelledby="h2">
       <p class="label">Step 1 of 5 · Source</p>
@@ -1089,7 +1111,7 @@ function renderLoop() {
       '<div><b>' + (/^\d/.test(li.dataset.stage) ? '<i>' + li.dataset.stage.slice(0, 2) + '</i>' + esc(li.dataset.stage.slice(3)) : '<i>&nbsp;</i>' + esc(li.dataset.stage)) + '</b><span>' + esc(sub) + '</span></div></li>';
   }).join('');
 
-  $('progressTxt').textContent = doneN + ' of 5';
+  if ($('progressTxt')) $('progressTxt').textContent = doneN + ' of 5';
   spinTo(focus ? S.step : (S.ws ? S.reached : 2), focus ? 150 : 178);
 }
 $('setupList').addEventListener('click', (e) => {
@@ -1615,10 +1637,52 @@ $('finish').addEventListener('click', () => {
   location.href = 'dashboard.html';
 });
 
+// opened from the app (My loop, or the loop widget): no setup, just the loop where it stands
+const INSIDE = new URLSearchParams(location.search);
+if (INSIDE.has('inside')) {
+  const [docs, questions, gaps, drafts, pending, approved] = (INSIDE.get('c') || '10.23.5.16.10.6').split('.').map(Number);
+  $('wsName').textContent = 'Nimbus Pay'; $('wsInput').value = 'Nimbus Pay';
+  S.ws = true; S.indexed = true; S.seeded = true;
+  const atVal = pending > 0, k = atVal ? 5 : 6;
+  S.reached = k; S.step = k;
+  document.querySelectorAll('.step').forEach(s => s.classList.toggle('is-active', s.dataset.step === 'inside'));
+  // the app's sidebar, with My loop selected
+  const IC = (d) => '<svg viewBox="0 0 24 24">' + d + '</svg>';
+  const NAV = [['dashboard.html', 'Dashboard', '<rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/>'],
+    [null, 'My loop', '<path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/>'],
+    ['sources.html', 'Sources', '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>'],
+    ['insights.html', 'Insights', '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/>'],
+    ['build.html', 'Build', '<path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/>'],
+    ['distribute.html', 'Distribute', '<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>'],
+    ['knowledge.html', 'Knowledge', '<path d="M4 20h16M7 16V9M12 16V5M17 16v-4"/>']];
+  document.querySelector('.side nav').innerHTML = NAV.map(([href, l, d]) => href
+    ? '<a class="nav-item" href="' + href + '">' + IC(d) + '<span class="lbl">' + l + '</span></a>'
+    : '<span class="nav-item is-active" aria-current="page">' + IC(d) + '<span class="lbl">' + l + '</span></span>').join('');
+  const note = document.querySelector('.side__note'); if (note) note.remove();
+  $('wsPill').innerHTML = '<i></i><span id="wsName">Nimbus Pay</span> · week 3 of 4';
+  // right panel: where you are, and every stage with a link into the app
+  const ST = [['01 Source', docs + ' documents indexed', 'sources.html', '<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>'],
+    ['02 Insights', questions + ' questions · ' + gaps + ' gaps', 'insights.html', '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>'],
+    ['03 Build', drafts + ' drafts with sources', 'build.html', '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>'],
+    ['Validation', atVal ? pending + ' drafts waiting for you' : 'First batch reviewed', 'build.html', '<path d="M5 12.5l4.5 4.5L19 7.5"/>'],
+    ['04 Distribute', approved + ' approved answers in the chat', 'distribute.html', '<path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/>']];
+  const nowI = atVal ? 3 : 4;
+  $('inList').innerHTML = ST.map(([t, s, href, d], i) => '<li class="' + (i < nowI ? 'is-done' : i === nowI ? 'is-now' : '') + '"><a href="' + href + '"><span class="n"><svg viewBox="0 0 24 24">' + d + '</svg></span><span><b>' + t + '</b><span class="s">' + s + '</span></span><em>' + (i < nowI ? 'Done' : i === nowI ? 'You’re here' : 'Next') + '</em><span class="go">→</span></a></li>').join('');
+  if (atVal) { $('hIn').textContent = pending + ' draft' + (pending === 1 ? ' is' : 's are') + ' waiting for you'; }
+  else { $('inLabel').textContent = 'Step 5 of 5 · Distribute'; $('hIn').textContent = 'Your approved answers are live'; $('inLead').textContent = 'The chat reads only approved answers. The loop keeps running as your sources change.'; $('inCta').textContent = 'Open the chat →'; $('inCta').href = 'chat.html'; }
+  // a loop stage opens its page in the app, not a setup step
+  const PAGE = { 2: 'sources.html', 3: 'insights.html', 4: 'build.html', 5: 'build.html', 6: 'distribute.html' };
+  ['stepper', 'setupList'].forEach(id => $(id).addEventListener('click', (e) => {
+    const b = e.target.closest('[data-go]'); if (!b) return;
+    e.stopImmediatePropagation();
+    location.href = PAGE[b.dataset.go];
+  }, true));
+  setView('focus');
+}
 renderLoop();
 document.body.classList.add('intro');
 setTimeout(() => document.body.classList.remove('intro'), 1800);
-$('wsInput').focus({ preventScroll: true });
+if (!INSIDE.has('inside')) $('wsInput').focus({ preventScroll: true });
 </script>
 <script>
 (function themeToggle() {
