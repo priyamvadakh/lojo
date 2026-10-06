@@ -234,13 +234,17 @@ OVERVIEW = dict(
   .next__side{padding:14px 18px}
   .also{padding:7px 10px}
   .also .ic{width:32px;height:32px}
-  .tiles{gap:12px}
-  .tile{min-height:0;align-items:flex-start;justify-content:flex-start;text-align:left;gap:3px;padding:14px 16px 16px;border-radius:12px}
-  .tile--soft{display:grid!important;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:14px;align-items:center}
+  .tiles{gap:14px}
+  .tile{min-height:0;align-items:flex-start;justify-content:flex-start;text-align:left;gap:4px;padding:18px 20px 20px;border-radius:12px}
+  .tile--soft{display:grid!important;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:12px;align-items:center;padding-right:16px}
   .tile--soft .gauge{grid-row:1/span 2}
-  .tile--soft .tile__lbl{white-space:nowrap;align-self:end}
+  .tile--soft .tile__lbl{align-self:end;white-space:nowrap;letter-spacing:.06em;margin-bottom:2px}
+  .tile--soft .gauge{width:76px;height:46px}
+  .tile--soft .gauge svg{width:76px;height:43px}
+  .tile--soft .gauge b{font-size:.82rem}
   .tile--soft .tile__sub{align-self:start}
-  .tile__lbl{font-size:.66rem}
+  .tile__lbl{font-size:.72rem;font-weight:800;margin-bottom:6px}
+  .tile__val{margin-bottom:4px}
   .tile__val{font-size:1.6rem}
   .tile__sub{font-size:.78rem;line-height:1.35}
   .tile__tag{top:10px;right:10px;height:20px;font-size:.62rem}
