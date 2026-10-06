@@ -273,7 +273,7 @@
   .fab::after{content:"Ask lojo";position:absolute;right:calc(100% + 12px);top:50%;transform:translate(6px,-50%);white-space:nowrap;padding:8px 12px;border-radius:10px;background:var(--ink);color:#fff;font-size:.82rem;font-weight:600;opacity:0;pointer-events:none;transition:opacity .15s ease,transform .15s ease}
   .fab:hover::after,.fab:focus-visible::after{opacity:1;transform:translate(0,-50%)}
   .fab.is-open::after{display:none}
-  .askp{position:fixed;right:24px;bottom:94px;z-index:50;width:min(380px,calc(100vw - 32px));height:min(520px,calc(100vh - 130px));display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 30px 70px -30px rgba(36,26,20,.55);overflow:hidden;transform-origin:bottom right;animation:askIn .22s cubic-bezier(.2,.8,.2,1)}
+  .askp{position:fixed;right:24px;bottom:94px;z-index:50;width:min(420px,calc(100vw - 32px));height:calc(100vh - 118px);top:16px;display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 30px 70px -30px rgba(36,26,20,.55);overflow:hidden;transform-origin:bottom right;animation:askIn .22s cubic-bezier(.2,.8,.2,1)}
   @keyframes askIn{from{opacity:0;transform:translateY(10px) scale(.97)}}
   .askp__head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
   .askp__head img{width:30px;height:30px;border-radius:22%}
