@@ -162,6 +162,30 @@ CSS = r"""
   .mono{width:36px;height:36px;border-radius:10px;flex:none;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.02em}
   .mono.logo{background:var(--panel);border:1px solid var(--line)}
   .mono.logo svg{width:20px;height:20px;fill:currentColor}
+  /* agent filter chips */
+  .agf{display:flex;gap:8px;flex-wrap:wrap;margin:-4px 0 14px}
+  .agf{gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .agf::-webkit-scrollbar{display:none}
+  .agf .chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px;font-size:.76rem;flex:none;font-weight:600;color:var(--ink)}
+  .agf .chip[aria-pressed="true"]{color:#fff}
+  .agf .chip em{font-style:normal;font-size:.7rem;font-weight:700;color:var(--muted)}
+  .agf .chip[aria-pressed="true"] em{color:inherit;opacity:.7}
+  .agf .chip .w{width:7px;height:7px;border-radius:50%;background:var(--amber)}
+  .agf .live{width:7px;height:7px;border-radius:50%;background:var(--success);animation:livePulse 1.4s ease-in-out infinite}
+  @keyframes livePulse{50%{opacity:.3}}
+  /* agent avatars */
+  .ava3d{position:relative;width:44px;height:44px;display:block;border-radius:24%;box-shadow:0 8px 14px -8px rgba(36,26,20,.45),inset 0 -3px 6px rgba(0,0,0,.12)}
+  .ava3d img{width:44px;height:44px;border-radius:24%;display:block}
+  .ava3d::after{content:"";position:absolute;inset:0;border-radius:24%;background:linear-gradient(160deg,rgba(255,255,255,.45),rgba(255,255,255,0) 45%);pointer-events:none}
+  .ava3d svg{position:absolute;inset:0;width:44px;height:44px}
+  .ava3d .eye{fill:#2A1F1A;transform-box:fill-box;transform-origin:center}
+  .ava3d.is-run{animation:bob 2.4s ease-in-out infinite}
+  .ava3d.is-run .eye{animation:blink 3.2s infinite}
+  .ava3d.is-run::before{content:"";position:absolute;right:-3px;bottom:-3px;width:12px;height:12px;border-radius:50%;background:var(--success);border:2px solid var(--panel);z-index:1}
+  .ava3d.is-off{filter:grayscale(1);opacity:.5}
+  @keyframes bob{50%{transform:translateY(-2px)}}
+  @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+  @media (prefers-reduced-motion:reduce){.ava3d.is-run,.ava3d.is-run .eye{animation:none}}
   .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
   .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
   .stat b{display:block;font-family:var(--display);font-weight:800;font-size:1.6rem;letter-spacing:-.02em;line-height:1.1}
@@ -351,6 +375,7 @@ CSS = r"""
 """
 
 ICONS = {
+  'activity': '<svg class="i" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>',
   'loop': '<svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/></svg>',
   'overview': '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>',
   'documents': '<svg class="i" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>',
@@ -378,6 +403,7 @@ NAV_FLAT = [
   ('review', 'build.html', 'Build', 'navReview', ''),
   ('approved', 'distribute.html', 'Distribute', 'navApproved', ''),
   ('readout', 'knowledge.html', 'Knowledge', None, ''),
+  ('activity', 'activity.html', 'Activity', None, ''),
 ]
 LOOP_STAGE = {'documents': '01 Source', 'questions': '02 Insights', 'review': '03 Build · Validation', 'approved': '04 Distribute', 'chat': '04 Distribute', 'readout': 'Decide'}
 
@@ -605,6 +631,28 @@ function counts() {
 """
 
 HELPERS_JS = r"""
+// agents, shared by the dashboard widget and the Activity page
+const AG_STAGES = [['src', '01 Source', 'sources.html'], ['ins', '02 Insights', 'insights.html'], ['bld', '03 Build', 'build.html'], ['dis', '04 Distribute', 'distribute.html']];
+// [stage, name, minutes since last activity (0 = running, null = not yet), last action, what it does]
+const AGENTS = [
+  ['src', 'Sync agent', 0, 'Reading Partner terms.docx', 'Keeps your uploads and connected apps current'],
+  ['src', 'Indexer', 6, 'Indexed Security overview · 51 passages', 'Splits documents into passages and indexes them by meaning'],
+  ['ins', 'Question finder', 42, 'Found 4 new questions', 'Finds the questions your sources answer'],
+  ['ins', 'Gap finder', 180, 'Flagged 1 contradiction', 'Detects gaps and contradictions between sources'],
+  ['bld', 'Drafting agent', 75, 'Drafted 3 answers with sources', 'Drafts each answer with its sources for review'],
+  ['bld', 'Rewrite agent', 600, 'Rewrote 2 rejected drafts using your reasons', 'Writes a rejected draft again using your reason'],
+  ['dis', 'Chat agent', 11, 'Answered “How fast can we call the API?”', 'Answers questions from approved answers only'],
+  ['dis', 'Publisher', null, 'Publishing to your help centre comes with the full build', 'Publishes approved answers to your help centre and Slack'],
+];
+const agAgo = (m) => m === null ? '—' : m < 1 ? 'Now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' d ago';
+// agent avatars: the lojo mark, tinted by stage, with eyes on the cloud
+const AVA_TINT = { src: 'hue-rotate(30deg) saturate(1.25)', ins: 'hue-rotate(48deg) saturate(1.3) brightness(1.04)', bld: 'none', dis: 'hue-rotate(165deg) saturate(.9)' };
+function ava3d(k, name, min) {
+  const st = min === 0 ? ' is-run' : min === null ? ' is-off' : '';
+  return '<span class="ava3d' + st + '" aria-hidden="true"><img src="assets/lojo-icon.png" alt="" style="filter:' + AVA_TINT[k] + '">' +
+    '<svg viewBox="0 0 44 44"><ellipse class="eye" cx="18.5" cy="20.5" rx="2" ry="2.6"/><ellipse class="eye" cx="25.5" cy="20.5" rx="2" ry="2.6"/>' +
+    (min === 0 ? '<path d="M19.5 25.5q2.5 2 5 0" fill="none" stroke="#2A1F1A" stroke-width="1.4" stroke-linecap="round"/>' : '') + '</svg></span>';
+}
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 function toast(msg) {

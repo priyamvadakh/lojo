@@ -68,34 +68,12 @@ OVERVIEW = dict(
   .vs blockquote em{display:block;font-style:normal;font-size:.7rem;font-weight:700;color:var(--muted);margin-bottom:3px}
   .vs .x{align-self:center;font-size:.7rem;font-weight:800;color:var(--muted)}
   /* agents at work: one list, filtered by stage or status */
-  .agf{display:flex;gap:8px;flex-wrap:wrap;margin:-4px 0 14px}
-  .agf{gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
-  .agf::-webkit-scrollbar{display:none}
-  .agf .chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px;font-size:.76rem;flex:none;font-weight:600;color:var(--ink)}
-  .agf .chip[aria-pressed="true"]{color:#fff}
-  .agf .chip em{font-style:normal;font-size:.7rem;font-weight:700;color:var(--muted)}
-  .agf .chip[aria-pressed="true"] em{color:inherit;opacity:.7}
-  .agf .chip .w{width:7px;height:7px;border-radius:50%;background:var(--amber)}
-  .agf .live{width:7px;height:7px;border-radius:50%;background:var(--success);animation:livePulse 1.4s ease-in-out infinite}
-  @keyframes livePulse{50%{opacity:.3}}
   .agl{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:14px;overflow:hidden}
   .agl li + li{border-top:1px solid var(--line)}
   .agl{max-height:330px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
   .agl a{display:grid;gap:14px;align-items:center;padding:12px 16px;color:inherit;text-decoration:none;transition:background-color .15s ease}
   .agl a:hover{background:var(--bg-soft)}
   .agl a{grid-template-columns:44px minmax(0,1fr) auto 64px 14px}
-  .ava3d{position:relative;width:44px;height:44px;display:block;border-radius:24%;box-shadow:0 8px 14px -8px rgba(36,26,20,.45),inset 0 -3px 6px rgba(0,0,0,.12)}
-  .ava3d img{width:44px;height:44px;border-radius:24%;display:block}
-  .ava3d::after{content:"";position:absolute;inset:0;border-radius:24%;background:linear-gradient(160deg,rgba(255,255,255,.45),rgba(255,255,255,0) 45%);pointer-events:none}
-  .ava3d svg{position:absolute;inset:0;width:44px;height:44px}
-  .ava3d .eye{fill:#2A1F1A;transform-box:fill-box;transform-origin:center}
-  .ava3d.is-run{animation:bob 2.4s ease-in-out infinite}
-  .ava3d.is-run .eye{animation:blink 3.2s infinite}
-  .ava3d.is-run::before{content:"";position:absolute;right:-3px;bottom:-3px;width:12px;height:12px;border-radius:50%;background:var(--success);border:2px solid var(--panel);z-index:1}
-  .ava3d.is-off{filter:grayscale(1);opacity:.5}
-  @keyframes bob{50%{transform:translateY(-2px)}}
-  @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
-  @media (prefers-reduced-motion:reduce){.ava3d.is-run,.ava3d.is-run .eye{animation:none}}
   .agl b{display:block;font-size:.88rem;font-weight:600}
   .agl .what{display:block;font-size:.8rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .agl .stg{font-size:.76rem;font-weight:600;color:var(--muted)}
@@ -237,7 +215,7 @@ OVERVIEW = dict(
 
     <div class="duo">
     <section class="sec" aria-labelledby="agH">
-      <div class="sec__head"><h2 id="agH">Agents at work</h2><span>· What each agent in your loop did last</span></div>
+      <div class="sec__head"><h2 id="agH">Agents at work</h2><span>· What each agent in your loop did last</span><a href="activity.html">View all agents →</a></div>
       <div class="agf chips" id="agFilters" role="group" aria-label="Filter agents"></div>
       <ul class="agl" id="agents"></ul>
     </section>
@@ -300,26 +278,7 @@ function miniLoop(c) {
 }
 // agents at work: one list, filtered by stage or by who's running now
 let agFilter = 'all';
-const AG_IC = { src: '<svg class="i" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>',
-  ins: '<svg class="i" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>',
-  bld: '<svg class="i" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>',
-  dis: '<svg class="i" viewBox="0 0 24 24"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/></svg>' };
-const AG_STAGES = [['src', '01 Source', 'sources.html'], ['ins', '02 Insights', 'insights.html'], ['bld', '03 Build', 'build.html'], ['dis', '04 Distribute', 'distribute.html']];
-const AGENTS = [
-  ['src', 'Sync agent', 0, 'Reading Partner terms.docx'], ['src', 'Indexer', 6, 'Indexed Security overview · 51 passages'],
-  ['ins', 'Question finder', 42, 'Found 4 new questions'], ['ins', 'Gap finder', 180, 'Flagged 1 contradiction'],
-  ['bld', 'Drafting agent', 75, 'Drafted 3 answers with sources'], ['bld', 'Rewrite agent', 600, 'Rewrote 2 rejected drafts using your reasons'],
-  ['dis', 'Chat agent', 11, 'Answered “How fast can we call the API?”'], ['dis', 'Publisher', null, 'Publishing to your help centre comes with the full build'],
-];
-const agAgo = (m) => m === null ? '—' : m < 1 ? 'Now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' d ago';
-// agent avatars: the lojo mark, tinted by stage, with eyes on the cloud
-const AVA_TINT = { src: 'hue-rotate(30deg) saturate(1.25)', ins: 'hue-rotate(48deg) saturate(1.3) brightness(1.04)', bld: 'none', dis: 'hue-rotate(165deg) saturate(.9)' };
-function ava3d(k, name, min) {
-  const st = min === 0 ? ' is-run' : min === null ? ' is-off' : '';
-  return '<span class="ava3d' + st + '" aria-hidden="true"><img src="assets/lojo-icon.png" alt="" style="filter:' + AVA_TINT[k] + '">' +
-    '<svg viewBox="0 0 44 44"><ellipse class="eye" cx="18.5" cy="20.5" rx="2" ry="2.6"/><ellipse class="eye" cx="25.5" cy="20.5" rx="2" ry="2.6"/>' +
-    (min === 0 ? '<path d="M19.5 25.5q2.5 2 5 0" fill="none" stroke="#2A1F1A" stroke-width="1.4" stroke-linecap="round"/>' : '') + '</svg></span>';
-}
+
 function renderAgents(c) {
   const waits = { ins: c.needCall, bld: c.pending };
   const n = (f) => AGENTS.filter(f).length;
@@ -1239,6 +1198,101 @@ $('filter').addEventListener('input', render);
 render();
 """)
 
+
+# ============================================================ ACTIVITY
+ACTIVITY = dict(
+  active='activity', title='Activity',
+  css=r"""
+  .acard{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px 26px;box-shadow:0 16px 30px -28px rgba(36,26,20,.3)}
+  .acard__h{display:flex;align-items:flex-start;gap:14px;margin-bottom:18px}
+  .acard__h h2{font-family:var(--display);font-weight:700;font-size:1.3rem;margin:0}
+  .acard__h .sub{margin-top:2px}
+  .acard__h .spacer{flex:1}
+  .refresh{width:40px;height:40px;border-radius:12px;border:1px solid var(--line-2);background:var(--panel);display:grid;place-items:center;cursor:pointer;color:var(--ink)}
+  .refresh:hover{background:var(--bg-soft)}
+  .refresh svg{width:18px;height:18px}
+  .refresh.is-spin svg{animation:spin .8s linear infinite}
+  .agrp{display:flex;align-items:center;gap:10px;margin:22px 0 4px;font-size:.78rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .agrp.run{color:#8E2F45}
+  .agrp b{min-width:24px;height:24px;padding:0 7px;border-radius:7px;border:1px solid var(--line-2);display:grid;place-items:center;font-size:.76rem;letter-spacing:0;color:var(--ink)}
+  .anone{color:var(--muted);font-size:.9rem;margin:8px 0 0}
+  .arow{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:6px 16px;padding:18px 0;border-top:1px solid var(--line)}
+  .agrp + .arow{border-top:0}
+  .arow h3{margin:0;font-family:var(--display);font-weight:700;font-size:1.05rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .arow h3 a{font-family:var(--body);font-size:.72rem;font-weight:600;color:var(--muted);border:1px solid var(--line-2);border-radius:999px;padding:2px 8px;text-decoration:none}
+  .arow h3 a:hover{color:var(--ink);border-color:rgba(36,26,20,.3)}
+  .arow .d{grid-column:2;margin:2px 0 0;color:var(--muted);font-size:.88rem}
+  .anums{grid-column:2;display:flex;gap:36px;flex-wrap:wrap;margin-top:12px}
+  .anums div b{display:block;font-family:var(--display);font-weight:700;font-size:1.25rem;line-height:1.2}
+  .anums div span{font-size:.76rem;color:var(--muted)}
+  .anums div.bad b{color:var(--error)}
+  .alast{grid-column:2;margin-top:10px;font-size:.78rem;color:var(--muted)}
+  .alast b{color:var(--ink);font-weight:600}
+  .apill{grid-column:3;grid-row:1;align-self:start;height:26px;padding:0 10px;border-radius:8px;border:1px solid var(--line-2);font-size:.72rem;font-weight:700;display:inline-flex;align-items:center;gap:6px;color:var(--muted);white-space:nowrap}
+  .apill.run{border-color:rgba(63,143,95,.35);background:rgba(63,143,95,.08);color:var(--success)}
+  .apill.run::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;animation:livePulse 1.4s ease-in-out infinite}
+  @keyframes livePulse{50%{opacity:.3}}
+  .arow.is-off h3,.arow.is-off .anums{opacity:.6}
+  @media (max-width:640px){.arow{grid-template-columns:44px minmax(0,1fr)}.apill{grid-column:2;grid-row:auto;justify-self:start}.anums{gap:20px}}
+""",
+  body=r"""
+    <div class="head">
+      <div>
+        <p class="label">Activity</p>
+        <h1>Agents at work</h1>
+        <p>See who is working, what needs your attention, and each agent’s results.</p>
+      </div>
+    </div>
+    <section class="acard" aria-labelledby="allH">
+      <div class="acard__h">
+        <div><h2 id="allH">All agents</h2><p class="sub" id="upd"></p></div>
+        <span class="spacer"></span>
+        <button class="refresh" id="refresh" type="button" aria-label="Refresh"><svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/></svg></button>
+      </div>
+      <div class="agf chips" id="agFilters" role="group" aria-label="Filter agents"></div>
+      <div id="alist"></div>
+    </section>
+""",
+  js=r"""
+let agFilter = new URLSearchParams(location.search).get('stage') || 'all';
+// what each agent has done so far, from the same counts the rest of the app uses
+function statsFor(name, c) {
+  const failed = Object.keys(ST.draftFailed || {}).filter(k => ST.draftFailed[k] && ST.draftFailed[k] !== 'retrying').length;
+  const docFail = (ST.docx || []).filter(d => d.status === 'failed').length;
+  const ch = ST.chat || {}, rewritten = DRAFTS.filter(r => decision(r).redrafted).length;
+  return {
+    'Sync agent': [[c.docs + (ST.docx || []).length, 'Documents synced'], [Object.keys(ST.apps || {}).length, 'Apps connected'], [docFail, 'Failed syncs', docFail]],
+    'Indexer': [[c.pages, 'Pages read'], [c.passages, 'Passages indexed'], [0, 'Failed runs']],
+    'Question finder': [[c.questions, 'Questions found'], [4, 'New since yesterday'], [0, 'Failed runs']],
+    'Gap finder': [[c.gaps, 'Open gaps'], [1, 'Contradictions'], [0, 'Failed runs']],
+    'Drafting agent': [[c.drafts, 'Drafts written'], [c.pending, 'Waiting for review'], [failed, 'Failed drafts', failed]],
+    'Rewrite agent': [[rewritten, 'Drafts rewritten'], [DRAFTS.filter(r => decision(r).redrafted === 2).length, 'Rewritten twice'], [c.final, 'Left for a human']],
+    'Chat agent': [[(ch.asked || 0) + 14, 'Questions asked'], [(ch.answered || 0) + 11, 'Answered'], [(ch.declined || 0) + 3, 'Declined']],
+    'Publisher': [[0, 'Published'], [0, 'Channels'], ['—', 'Full build']],
+  }[name];
+}
+const at = (min) => { const d = new Date(Date.now() - min * 60000); return (d.toDateString() === new Date().toDateString() ? 'Today' : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })) + ', ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); };
+function row([k, name, min, last, what], c) {
+  const s = AG_STAGES.find(x => x[0] === k);
+  const pill = min === 0 ? '<span class="apill run">Working</span>' : min === null ? '<span class="apill">Not yet</span>' : '<span class="apill">Idle</span>';
+  return '<article class="arow' + (min === null ? ' is-off' : '') + '">' + ava3d(k, name, min) + '<h3>' + esc(name) + ' <a href="' + s[2] + '">' + s[1] + '</a></h3>' + pill +
+    '<p class="d">' + esc(what) + '</p><div class="anums">' + statsFor(name, c).map(([n, l, bad]) => '<div' + (bad ? ' class="bad"' : '') + '><b>' + (typeof n === 'number' ? n.toLocaleString('en-GB') : n) + '</b><span>' + l + '</span></div>').join('') + '</div>' +
+    '<p class="alast">' + (min === null ? 'No activity yet' : (min === 0 ? '<b>Running now</b> · ' : 'Last activity ' + at(min) + ' · ') + esc(last)) + '</p></article>';
+}
+function render() {
+  const c = counts();
+  const chips = [['all', 'All', AGENTS.length]].concat(AG_STAGES.map(([k, label]) => [k, label.slice(3), AGENTS.filter(a => a[0] === k).length]));
+  $('agFilters').innerHTML = chips.map(([k, label, n]) => '<button type="button" class="chip" data-agf="' + k + '" aria-pressed="' + (agFilter === k) + '">' + label + ' <em>' + n + '</em></button>').join('');
+  const list = AGENTS.filter(a => agFilter === 'all' || a[0] === agFilter), run = list.filter(a => a[2] === 0), rest = list.filter(a => a[2] !== 0);
+  $('alist').innerHTML = '<div class="agrp run">Now running <b>' + run.length + '</b></div>' + (run.length ? run.map(a => row(a, c)).join('') : '<p class="anone">No agents are running right now.</p>') +
+    '<div class="agrp">Other agents <b>' + rest.length + '</b></div>' + rest.map(a => row(a, c)).join('');
+  $('upd').textContent = 'Updated ' + at(0);
+}
+$('agFilters').addEventListener('click', (e) => { const b = e.target.closest('[data-agf]'); if (!b) return; agFilter = b.dataset.agf; render(); });
+$('refresh').addEventListener('click', () => { const b = $('refresh'); b.classList.add('is-spin'); setTimeout(() => { b.classList.remove('is-spin'); render(); toast('Up to date'); }, 700); });
+render();
+""")
+
 # ============================================================ CHAT
 CHAT = dict(
   active='approved', title='Chat',
@@ -1514,7 +1568,7 @@ $('groups').innerHTML = GROUPS.map(([g, items]) => '<section class="grp"><h2>' +
 $('groups').addEventListener('click', (e) => { const b = e.target.closest('[data-act]'); if (b) { e.stopPropagation(); acts[+b.dataset.act](); } });
 """)
 
-PAGES = {'states': STATES, 'dashboard': OVERVIEW, 'sources': DOCUMENTS, 'insights': QUESTIONS_PAGE, 'build': REVIEW, 'distribute': APPROVED, 'chat': CHAT, 'knowledge': READOUT}
+PAGES = {'states': STATES, 'dashboard': OVERVIEW, 'sources': DOCUMENTS, 'insights': QUESTIONS_PAGE, 'build': REVIEW, 'distribute': APPROVED, 'chat': CHAT, 'knowledge': READOUT, 'activity': ACTIVITY}
 for name, p in PAGES.items():
     html = page(p['active'], p['title'], p['css'], p['body'], p['js'], p.get('desc', ''))
     with open(os.path.join(OUT, name + '.html'), 'w') as f:

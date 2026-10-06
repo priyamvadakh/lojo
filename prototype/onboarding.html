@@ -1654,7 +1654,8 @@ if (INSIDE.has('inside')) {
     ['insights.html', 'Insights', '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/>'],
     ['build.html', 'Build', '<path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/>'],
     ['distribute.html', 'Distribute', '<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>'],
-    ['knowledge.html', 'Knowledge', '<path d="M4 20h16M7 16V9M12 16V5M17 16v-4"/>']];
+    ['knowledge.html', 'Knowledge', '<path d="M4 20h16M7 16V9M12 16V5M17 16v-4"/>'],
+    ['activity.html', 'Activity', '<path d="M3 12h4l3-8 4 16 3-8h4"/>']];
   document.querySelector('.side nav').innerHTML = NAV.map(([href, l, d]) => href
     ? '<a class="nav-item" href="' + href + '">' + IC(d) + '<span class="lbl">' + l + '</span></a>'
     : '<span class="nav-item is-active" aria-current="page">' + IC(d) + '<span class="lbl">' + l + '</span></span>').join('');
