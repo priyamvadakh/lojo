@@ -1825,7 +1825,7 @@ function render() {
   try { const u = JSON.parse(sessionStorage.getItem('lojo-user')); if (u && u.name) first = u.name.trim().split(' ')[0]; } catch (e) {}
   const hr = new Date().getHours();
   $('ovTitle').innerHTML = (hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening') + ', ' + esc(first) + ' <span class="wave" aria-hidden="true">👋</span>';
-  $('ovDate').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' }) + ' · week ' + POC_WEEK + ' of 4';
+  $('ovDate').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
   miniLoop(c);
 
   // up next + weekly target
