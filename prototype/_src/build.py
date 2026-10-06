@@ -1928,22 +1928,6 @@ READOUT = dict(
           <tr class="total"><td>Total processing cost</td><td>$18.40 <span class="sub">· $1.84 per document</span></td></tr>
         </table>
       </div></section>
-
-      <section class="card"><div class="card__head"><h2>What a full build would take</h2></div><div class="card__body build">
-        <div class="wk">12<small>more weeks</small></div>
-        <ul class="adds">
-          <li>Roles and permissions</li>
-          <li>Live sources such as mail and calls</li>
-          <li>Publishing to your own pages</li>
-          <li>Personal details removed automatically</li>
-          <li>Usage tracking</li>
-          <li>Quality measured against a test set</li>
-        </ul>
-      </div></section>
-
-      <section class="card no-print"><div class="card__head"><h2>Your decision</h2></div><div class="card__body">
-        <div id="decision"></div>
-      </div></section>
     </div>
 """,
   js=r"""
@@ -1959,7 +1943,7 @@ function render() {
   $('chNote').textContent = 'Greetings and thanks (' + (ch.smalltalk || 0) + ') aren’t counted. Declined questions are added to Insights so they can be answered next.';
   $('cDocs').textContent = c.docs; $('cPages').textContent = c.pages; $('cPass').textContent = c.passages;
   const d = ST.decision;
-  $('decision').innerHTML = d ? '<div class="decided ' + (d === 'go' ? 'go' : 'stop') + '">' + (d === 'go' ? '✓ You chose to go on to the full build. We’ll send a plan for the twelve weeks.' : 'You chose not to go on for now. You keep the approved answers as an export.') +
+  if ($('decision')) $('decision').innerHTML = d ? '<div class="decided ' + (d === 'go' ? 'go' : 'stop') + '">' + (d === 'go' ? '✓ You chose to go on to the full build. We’ll send a plan for the twelve weeks.' : 'You chose not to go on for now. You keep the approved answers as an export.') +
     ' <button class="btn btn--ghost btn--sm" id="undoD">Change</button></div>'
     : '<p class="sub" style="margin-bottom:14px">After trying Ask lojo, decide whether to go on. Either way, you keep the approved answers.</p><div class="decide"><button class="btn btn--grad" id="go">Go on to the full build</button><button class="btn btn--secondary" id="stop">Not now</button></div>';
   if ($('go')) { $('go').onclick = () => { ST.decision = 'go'; save(); render(); }; $('stop').onclick = () => { ST.decision = 'stop'; save(); render(); }; }
