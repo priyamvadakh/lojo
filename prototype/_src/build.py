@@ -2165,7 +2165,7 @@ READOUT = dict(
   .sp__c em{position:absolute;bottom:-14px;font-style:normal;font-size:.58rem;color:var(--muted);white-space:nowrap}
   /* stat tiles: small squares, left aligned, details in the i tooltip */
   .kstats{display:flex;flex-wrap:wrap;gap:10px;grid-template-columns:none}
-  .kstat{display:flex!important;flex-direction:column;align-items:flex-start;width:168px;padding:14px 16px;border-radius:14px}
+  .kstat{display:flex!important;flex-direction:column;align-items:center;text-align:center;width:168px;padding:14px 16px;border-radius:14px}
   .kstat i.bar{display:block;width:22px;height:3px;border-radius:3px;margin-bottom:10px;background:var(--line-2)}
   .kstat.ok i.bar{background:var(--success)} .kstat.warn i.bar{background:#C9A24A} .kstat.ref i.bar{background:#8C817B} .kstat.all i.bar{background:var(--rose)}
   .kstat small{display:flex;align-items:center;gap:6px;font-size:.62rem;white-space:nowrap}
@@ -2175,8 +2175,8 @@ READOUT = dict(
   .tip:hover::after,.tip:focus::after{opacity:1;transform:translate(-50%,0)}
   .kstat i.tip{display:grid!important;width:15px!important;height:15px!important;margin:0!important;border-radius:50%!important;background:#8E2F45!important;color:#fff;font-size:.58rem;place-items:center;flex:none}
   .kstat{position:relative}
-  .kstat .tip::after{white-space:normal;width:210px;.kstat .tip::after{left:0;transform:translate(0,4px);text-transform:none;letter-spacing:0;font-weight:500;font-size:.76rem;line-height:1.4;z-index:30}
-  .kstat .tip:hover::after,.kstat .tip:focus::after{transform:translate(0,0)}
+  .kstat .tip::after{white-space:normal;width:210px;left:50%;transform:translate(-50%,4px);text-transform:none;letter-spacing:0;font-weight:500;font-size:.76rem;line-height:1.4;z-index:30}
+  .kstat .tip:hover::after,.kstat .tip:focus::after{transform:translate(-50%,0)}
 """,
   body=r"""
     <div class="head">
