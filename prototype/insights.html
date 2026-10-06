@@ -692,12 +692,12 @@
       </div>
     </div>
     <div class="ptabs" role="tablist" aria-label="Insights">
-      <button class="ptab" role="tab" data-tab="in" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/></svg>Inbox <span class="n" id="nIn">0</span></button>
-      <button class="ptab" role="tab" data-tab="q" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg>Questions <span class="n" id="nQ">0</span></button>
+      <button class="ptab" role="tab" data-tab="q" aria-selected="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg>Questions <span class="n" id="nQ">0</span></button>
       <button class="ptab" role="tab" data-tab="g" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Gaps <span class="n" id="nG">0</span></button>
+      <button class="ptab" role="tab" data-tab="in" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/></svg>Inbox <span class="n" id="nIn">0</span></button>
     </div>
 
-    <section id="tabIn">
+    <section id="tabIn" hidden>
       <div class="icount">
         <span><b id="cRec">0</b> received</span><span><b id="cReady">0</b> ready to analyze</span><span><b id="cDone">0</b> analyzed</span>
         <span class="spacer"></span>
@@ -717,7 +717,7 @@
       </div>
     </section>
 
-    <section id="tabQ" hidden>
+    <section id="tabQ">
       <div class="bar">
         <div class="chips" id="filters">
           <button class="chip" data-f="all" aria-pressed="true">All</button>
@@ -1517,10 +1517,10 @@ function show(tab) {
   document.querySelectorAll('.ptab').forEach(t => t.setAttribute('aria-selected', t.dataset.tab === tab));
   $('tabIn').hidden = tab !== 'in'; $('tabQ').hidden = tab !== 'q'; $('tabG').hidden = tab !== 'g';
 }
-document.querySelectorAll('.ptab').forEach(t => t.addEventListener('click', () => { show(t.dataset.tab); history.replaceState(null, '', location.search + ({ g: '#gaps', q: '#questions' }[t.dataset.tab] || '')); }));
+document.querySelectorAll('.ptab').forEach(t => t.addEventListener('click', () => { show(t.dataset.tab); history.replaceState(null, '', location.search + ({ g: '#gaps', in: '#inbox' }[t.dataset.tab] || '')); }));
 const QD = new URLSearchParams(location.search).get('demo');
 fillFilters(); renderIn(); renderQ(); renderG();
-show({ '#gaps': 'g', '#questions': 'q' }[location.hash] || (QD ? 'q' : 'in'));
+show({ '#gaps': 'g', '#inbox': 'in' }[location.hash] || 'q');
 if (QD === 'leave') { leaving = 'q16'; renderQ(); $('row-q16').scrollIntoView({ block: 'center' }); $('leaveNote').focus(); }
 if (QD === 'failed') $('row-q17').scrollIntoView({ block: 'center' });
 
