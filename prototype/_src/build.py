@@ -1749,7 +1749,7 @@ CHAT = dict(
   .msg--bot .srcs{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
   .msg--bot .btn{margin-top:10px}
   .foot{border-top:1px solid var(--line);padding:14px 16px;display:grid;gap:10px}
-  .foot form{display:flex;gap:8px}
+  .foot form:not(.composer){display:flex;gap:8px}
 """,
   body=r"""
     <div class="head">
@@ -1766,7 +1766,7 @@ CHAT = dict(
       <div class="log" id="log" aria-live="polite"></div>
       <div class="foot">
         <div class="chips" id="sugg"></div>
-        <form id="form"><input class="text" id="ask" placeholder="Ask a question, or drop a document to ask about it…" aria-label="Ask a question"><button class="btn btn--primary">Ask</button></form>
+        <form class="composer" id="form"><textarea id="ask" rows="1" placeholder="Ask lojo…" aria-label="Ask lojo"></textarea><div class="composer__bar"><span class="composer__tools"></span><span class="spacer"></span><button class="send" type="submit" aria-label="Ask" disabled><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button></div></form>
       </div>
     </section>
 """,
