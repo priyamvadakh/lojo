@@ -185,6 +185,7 @@ CSS = r"""
   @keyframes breathe{50%{transform:translateY(-1.5px)}}
   @keyframes ring{0%{opacity:.9;transform:scale(.96)}100%{opacity:0;transform:scale(1.18)}}
   @media (prefers-reduced-motion:reduce){.ava3d.is-run,.ava3d.is-run::before{animation:none}}
+  .lbl-sub{font-style:normal;color:var(--muted);font-weight:500}
   .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
   .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
   .stat b{display:block;font-family:var(--display);font-weight:800;font-size:1.6rem;letter-spacing:-.02em;line-height:1.1}
@@ -439,7 +440,7 @@ NAV_FLAT = [
   ('loop', 'onboarding.html?inside=1', 'My loop', None, ''),
   ('documents', 'sources.html', 'Sources', None, '01'),
   ('questions', 'insights.html', 'Insights', 'navQuestions', ''),
-  ('review', 'build.html', 'Build', 'navReview', ''),
+  ('review', 'build.html', 'Build <em class="lbl-sub">(Validate)</em>', 'navReview', ''),
   ('approved', 'distribute.html', 'Distribute', 'navApproved', ''),
   ('readout', 'knowledge.html', 'Knowledge', None, ''),
   ('activity', 'activity.html', 'Activity', None, ''),
