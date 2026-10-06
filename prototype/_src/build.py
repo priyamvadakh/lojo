@@ -893,7 +893,7 @@ REVIEW = dict(
 
     <div class="panel">
       <div class="agent">
-        <span class="ava-agent" aria-hidden="true"></span>
+        <span class="agico" data-agent="Drafting agent" style="width:40px;height:40px"></span>
         <div><b id="agentTitle"></b><span id="agentSub"></span></div>
       </div>
       <form class="own" id="ownForm">
@@ -1301,6 +1301,8 @@ CHAT = dict(
   .log{flex:1;overflow:auto;padding:22px;display:grid;gap:14px;align-content:start}
   .msg{max-width:78%;padding:12px 15px;border-radius:14px;font-size:.9rem}
   .msg--me{justify-self:end;background:var(--ink);color:#fff;border-bottom-right-radius:4px}
+  .brow{display:flex;gap:10px;align-items:flex-end;justify-self:start;max-width:84%}
+  .brow .msg{max-width:none}
   .msg--bot{justify-self:start;background:var(--bg-soft);border-bottom-left-radius:4px}
   .msg--bot.miss{background:rgba(217,154,43,.1);border:1px solid rgba(217,154,43,.3)}
   .msg--bot .from{display:block;margin-top:10px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
@@ -1330,13 +1332,17 @@ CHAT = dict(
   js=r"""
 const store = () => DRAFTS.filter(r => decision(r).status === 'approved').map(r => ({ r, q: QUESTIONS.find(q => q.id === r.qid).q, a: answerOf(r) }));
 function bubble(cls, html) {
-  const d = document.createElement('div'); d.className = 'msg msg--' + cls; d.innerHTML = html; $('log').appendChild(d); $('log').scrollTop = $('log').scrollHeight; return d;
+  const d = document.createElement('div'); d.className = 'msg msg--' + cls; d.innerHTML = html;
+  let row = d;
+  // the Chat agent's replies carry its avatar
+  if (cls.startsWith('bot')) { row = document.createElement('div'); row.className = 'brow'; row.innerHTML = '<span class="agico">' + agentIcon('Chat agent') + '</span>'; row.appendChild(d); }
+  $('log').appendChild(row); $('log').scrollTop = $('log').scrollHeight; return d;
 }
 function ask(q) {
   bubble('me', esc(q));
   const typing = bubble('bot', '<span class="spin"></span>');
   setTimeout(() => {
-    typing.remove();
+    typing.parentNode.remove();
     if (SMALLTALK.test(q)) { bubble('bot', esc(smalltalkReply(q))); countChat('smalltalk'); return; }
     let best = null, bs = 0;
     store().forEach(x => { const s = score(q, x.q + ' ' + x.a); if (s.c > 0 && s.s > bs) { best = x; bs = s.s; } });

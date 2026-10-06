@@ -225,6 +225,8 @@
   .pbar i{display:block;height:100%;width:0;background:var(--brand-gradient);transition:width .4s ease}
   .agent{display:flex;align-items:center;gap:12px;margin-bottom:16px}
   .ava-agent{width:40px;height:40px;border-radius:22%;background:url(assets/lojo-icon.png) center/104% no-repeat;flex:none}
+  .agico{display:block;flex:none;width:30px;height:30px}
+  .agico svg{width:100%;height:100%;display:block;border-radius:24%;box-shadow:0 4px 10px -6px rgba(36,26,20,.5)}
   .agent b{display:block;font-size:.95rem}
   .agent span{color:var(--muted);font-size:.86rem}
   .own{display:flex;gap:10px;margin-top:6px}
@@ -274,7 +276,45 @@
   .askp__head img{width:30px;height:30px;border-radius:22%}
   .askp__head b{display:block;font-size:.92rem}
   .askp__head span{display:block;font-size:.74rem;color:var(--muted)}
-  .askp__head a{margin-left:auto;font-size:.76rem}
+  .askp__new{margin-left:auto;display:none}
+  .askp__ic{margin-left:auto;width:30px;height:30px;border-radius:50%;border:0;background:none;color:var(--muted);cursor:pointer;display:grid;place-items:center}
+  .askp__ic:hover{background:var(--bg-soft);color:var(--ink)}
+  .askp__ic svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .askp-bg{position:fixed;inset:0;z-index:49;background:rgba(36,26,20,.32);backdrop-filter:blur(3px);animation:fadeIn .2s ease}
+  @keyframes fadeIn{from{opacity:0}}
+  .askp__intro{justify-self:center;width:100%;max-width:640px;padding:18px 20px;border:1px solid rgba(232,93,117,.28);border-radius:16px;background:linear-gradient(180deg,rgba(232,93,117,.06),transparent);font-size:.84rem}
+  .askp__intro small{display:flex;align-items:center;gap:6px;font-size:.66rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--rose)}
+  .askp__intro small svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}
+  .askp__intro b{display:block;font-family:var(--display);font-size:1rem;margin:8px 0 6px}
+  .askp__intro p{margin:0;color:var(--muted)}
+  .askp__links{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .askp__links a{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-radius:10px;border:1px solid var(--line-2);font-size:.76rem;font-weight:700;color:var(--ink);text-decoration:none}
+  .askp__links a:first-child{background:var(--brand-gradient);border-color:transparent}
+  .askp__links a:hover{box-shadow:0 8px 18px -12px rgba(232,93,117,.8)}
+  .arow2{display:flex;gap:8px;align-items:flex-end;justify-self:start;max-width:92%}
+  .arow2 .am{max-width:none}
+  .arow2 .agico{width:24px;height:24px}
+  /* full screen */
+  .askp.is-full{inset:28px 28px 28px calc(var(--side) + 40px);width:auto;height:auto;border-radius:24px;transform-origin:center;animation:askFull .25s cubic-bezier(.2,.8,.2,1)}
+  @keyframes askFull{from{opacity:0;transform:scale(.97)}}
+  .askp.is-full .askp__head{padding:22px 28px;gap:14px}
+  .askp.is-full .askp__head .agico{width:46px;height:46px}
+  .askp.is-full .askp__head b{font-family:var(--display);font-size:1.6rem;letter-spacing:-.02em}
+  .askp.is-full .askp__head span{font-size:.88rem}
+  .askp.is-full .askp__new{display:inline-flex}
+  .askp.is-full .askp__ic{margin-left:0}
+  .askp.is-full .askp__x{width:40px;height:40px;border:1px solid var(--line-2);font-size:1.3rem}
+  .askp.is-full .askp__log{padding:28px max(28px,calc(50% - 420px));gap:14px}
+  .askp.is-full .am{font-size:.94rem;padding:12px 15px}
+  .askp.is-full .arow2 .agico{width:32px;height:32px}
+  .askp.is-full .askp__intro{padding:24px 28px;font-size:.92rem}
+  .askp.is-full .askp__intro b{font-size:1.2rem}
+  .askp.is-full .askp__foot{padding:16px max(28px,calc(50% - 420px)) 22px}
+  .askp.is-full .askp__foot .text{height:52px;font-size:.95rem}
+  .askp.is-full .askp__foot .btn{height:52px!important;padding:0 22px}
+  .askp.is-full .askp__foot .chips .chip{font-size:.8rem;padding:6px 12px}
+  @media (max-width:760px){.askp.is-full{inset:10px}}
+  .fab.is-hint::after{opacity:1;transform:translate(0,-50%)}
   .askp__x{width:30px;height:30px;border-radius:50%;border:0;background:none;color:var(--muted);font-size:1.1rem;cursor:pointer}
   .askp__x:hover{background:var(--bg-soft);color:var(--ink)}
   .askp__log{flex:1;overflow:auto;padding:14px 16px;display:grid;gap:10px;align-content:start}
@@ -552,8 +592,9 @@
 </div>
 
 <button class="fab" id="fab" type="button" aria-label="Ask lojo" aria-expanded="false"><img src="assets/lojo-icon.png" alt=""></button>
+<div class="askp-bg" id="askBg" hidden></div>
 <section class="askp" id="askp" hidden aria-label="Ask lojo">
-  <div class="askp__head"><img src="assets/lojo-icon.png" alt=""><div><b>Ask lojo</b><span>Answers only from approved answers</span></div><a href="chat.html">Full chat</a><button class="askp__x" id="askX" type="button" aria-label="Close">×</button></div>
+  <div class="askp__head"><span class="agico" data-agent="Chat agent"></span><div><b>Ask lojo</b><span>Chat agent · answers only from approved answers</span></div><button class="btn btn--secondary btn--sm askp__new" id="askNew" type="button">New conversation</button><button class="askp__ic" id="askFull" type="button" aria-label="Open full screen" title="Full screen"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button><button class="askp__x" id="askX" type="button" aria-label="Close" title="Close">×</button></div>
   <div class="askp__log" id="askLog" aria-live="polite"></div>
   <div class="askp__foot"><div class="chips" id="askSugg"></div><form id="askForm"><input class="text" id="askIn" placeholder="Ask a question…" aria-label="Ask lojo"><button class="btn btn--primary btn--sm" style="height:40px">Ask</button></form></div>
 </section>
@@ -784,6 +825,12 @@ function ava3d(k, name, min) {
     '<rect width="44" height="44" rx="11" fill="url(#' + id + ')"/><g transform="translate(22 22) scale(.78) translate(-22 -22)">' + CLOUD + '</g></svg>' +
     '<i class="ava3d__job" style="color:' + deep + '"><svg viewBox="0 0 24 24">' + (AVA_JOB[name] || '') + '</svg></i></span>';
 }
+function agentIcon(name) {
+  const [deep, light] = AVA_COL[name] || ['#E0486A', '#FFB199'], id = 'ai' + name.replace(/\W/g, '') + Math.random().toString(36).slice(2, 6);
+  return '<svg viewBox="0 0 44 44" aria-hidden="true"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + deep + '"/><stop offset="1" stop-color="' + light + '"/></linearGradient></defs>' +
+    '<rect width="44" height="44" rx="11" fill="url(#' + id + ')"/><g transform="translate(22 22) scale(.78) translate(-22 -22)">' + CLOUD + '</g></svg>';
+}
+document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('[data-agent]').forEach(el => { el.innerHTML = agentIcon(el.dataset.agent); }));
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 function toast(msg) {
@@ -919,12 +966,23 @@ function srcChip(docId, loc, warn) {
   const fab = $('fab'); if (!fab) return;
   const panel = $('askp'), log = $('askLog');
   const store = () => DRAFTS.filter(r => decision(r).status === 'approved').map(r => ({ r, q: QUESTIONS.find(q => q.id === r.qid).q, a: answerOf(r) }));
-  const say = (cls, html) => { const d = document.createElement('div'); d.className = 'am am--' + cls; d.innerHTML = html; log.appendChild(d); log.scrollTop = log.scrollHeight; return d; };
+  const say = (cls, html) => {
+    const d = document.createElement('div'); d.className = 'am am--' + cls; d.innerHTML = html;
+    let row = d;
+    if (cls.startsWith('bot')) { row = document.createElement('div'); row.className = 'arow2'; row.innerHTML = '<span class="agico">' + agentIcon('Chat agent') + '</span>'; row.appendChild(d); }
+    log.appendChild(row); log.scrollTop = log.scrollHeight; return d;
+  };
+  function intro() {
+    const n = store().length;
+    log.innerHTML = '<div class="askp__intro"><small><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>Approved knowledge only</small>' +
+      '<b>Ask about what Nimbus Pay knows</b><p>lojo answers only from answers a person approved' + (n ? ' (' + n + ' so far)' : '') + ', and shows the sources behind every answer. When nothing approved covers a question, it says so instead of guessing.</p>' +
+      '<div class="askp__links"><a href="distribute.html">Open approved answers →</a><a href="sources.html">Open sources →</a></div></div>';
+  }
   function ask(q) {
     say('me', esc(q));
     const typing = say('bot', '<span class="spin"></span>');
     setTimeout(() => {
-      typing.remove();
+      typing.parentNode.remove();
       if (SMALLTALK.test(q)) { say('bot', esc(smalltalkReply(q))); countChat('smalltalk'); return; }
       let best = null, bs = 0;
       store().forEach(x => { const s = score(q, x.q + ' ' + x.a); if (s.c > 0 && s.s > bs) { best = x; bs = s.s; } });
@@ -934,15 +992,26 @@ function srcChip(docId, loc, warn) {
   }
   function toggle(open) {
     panel.hidden = !open; fab.classList.toggle('is-open', open); fab.setAttribute('aria-expanded', open);
+    if (!open) full(false);
     if (open && !log.children.length) {
-      const n = store().length;
-      say('bot', n ? 'Ask me about Nimbus Pay. I only use the ' + n + ' approved answers.' : 'Nothing is approved yet, so I can’t answer anything.');
+      intro();
       $('askSugg').innerHTML = ['How fast can we call the API?', 'Is our data encrypted?', 'Do you offer a free trial?'].map(t => '<button type="button" class="chip">' + t + '</button>').join('');
     }
     if (open) $('askIn').focus();
   }
   fab.addEventListener('click', () => toggle(panel.hidden));
   $('askX').addEventListener('click', () => toggle(false));
+  // full screen: same conversation, bigger room
+  function full(on) {
+    panel.classList.toggle('is-full', on); $('askBg').hidden = !on;
+    $('askFull').setAttribute('aria-label', on ? 'Exit full screen' : 'Open full screen'); $('askFull').title = on ? 'Exit full screen' : 'Full screen';
+    $('askFull').innerHTML = on ? '<svg viewBox="0 0 24 24"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg>' : '<svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>';
+  }
+  $('askFull').addEventListener('click', () => { full(!panel.classList.contains('is-full')); $('askIn').focus(); });
+  $('askBg').addEventListener('click', () => toggle(false));
+  $('askNew').addEventListener('click', () => { intro(); $('askIn').focus(); });
+  // say what the button is once per visit
+  try { if (!sessionStorage.getItem('lojo-ask-hint')) { sessionStorage.setItem('lojo-ask-hint', '1'); setTimeout(() => { fab.classList.add('is-hint'); setTimeout(() => fab.classList.remove('is-hint'), 3200); }, 900); } } catch (e) {}
   $('askSugg').addEventListener('click', (e) => { const c = e.target.closest('.chip'); if (c) ask(c.textContent); });
   $('askForm').addEventListener('submit', (e) => { e.preventDefault(); const v = $('askIn').value.trim(); if (!v) return; $('askIn').value = ''; ask(v); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !panel.hidden) toggle(false); });
