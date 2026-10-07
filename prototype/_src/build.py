@@ -2216,6 +2216,9 @@ READOUT = dict(
   .kt__sub{font-size:.78rem;color:var(--muted)}
   .kt{padding-top:34px}
   .kt{align-items:center;text-align:center}
+  .kt{min-width:0;overflow:visible}
+  .kt small{white-space:normal!important;flex-wrap:wrap;justify-content:center;letter-spacing:.06em;line-height:1.3;max-width:100%}
+  .ksec .kstats{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))!important}
   .kt .tip::after{left:50%;transform:translate(-50%,4px)}
   .kt .tip:hover::after,.kt .tip:focus::after{transform:translate(-50%,0)}
   .kt__tag{position:absolute;top:10px;right:10px;height:20px;padding:0 9px;border-radius:999px;font-size:.62rem;font-weight:700;display:inline-flex;align-items:center;color:#fff}
