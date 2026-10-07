@@ -381,9 +381,34 @@ CSS = r"""
   .cdoc__f em{font-style:normal;color:var(--muted);white-space:nowrap}
   .cdoc button{border:0;background:none;width:26px;height:26px;border-radius:8px;color:var(--muted);cursor:pointer;font-size:1rem}
   .cdoc button:hover{background:var(--panel);color:var(--ink)}
-  .is-drop{position:relative}
-  .is-drop::after{content:"Drop a document or image to ask about it";position:absolute;inset:8px;z-index:5;border:2px dashed var(--rose);border-radius:16px;background:rgba(255,246,242,.92);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:1.05rem;color:#B73C54;pointer-events:none}
-  :root[data-theme="dark"] .is-drop::after{background:rgba(30,22,18,.92)}
+  .is-drop:not(.askp){position:relative}
+  .is-drop::before{content:"";position:absolute;inset:0;z-index:6;border-radius:inherit;background:rgba(255,241,236,.82);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);pointer-events:none;animation:fadeIn .15s ease}
+  .is-drop::after{content:"Drop to ask about it";white-space:pre;position:absolute;inset:14px;z-index:7;border:2px dashed rgba(232,93,117,.7);border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:70px;text-align:center;font-family:var(--display);font-weight:700;font-size:1.05rem;line-height:1.8;color:#B73C54;pointer-events:none;
+    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23E85D75' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 16V4M7 9l5-5 5 5'/%3E%3Cpath d='M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3'/%3E%3C/svg%3E") center calc(50% - 34px)/44px 44px no-repeat;animation:dropPulse 1.4s ease-in-out infinite}
+  @keyframes dropPulse{50%{border-color:rgba(232,93,117,.35)}}
+  .is-drop::before{background:rgba(255,241,236,.9)}
+  .is-drop .askp__foot::after{content:"Images, PDF, DOCX, Markdown or TXT";position:absolute;left:0;right:0;top:calc(50% + 12px);z-index:8;text-align:center;font-size:.8rem;font-weight:500;color:var(--muted);pointer-events:none}
+  :root[data-theme="dark"] .is-drop::before{background:rgba(30,22,18,.85)}
+  /* attachment card above the box */
+  .cdoc--img{align-items:center;gap:12px;padding:8px 12px 8px 8px}
+  .cdoc__shot{position:relative;flex:none;width:64px;height:64px;border-radius:10px;overflow:visible;background:var(--bg-soft);border:1px solid var(--line)}
+  .cdoc__shot img{width:100%;height:100%;object-fit:cover;border-radius:10px;display:block}
+  .cdoc__ph{display:grid;place-items:center;width:100%;height:100%}
+  .cdoc__ph svg{width:20px;height:20px;fill:none;stroke:var(--muted);stroke-width:1.8}
+  .cdoc--img .cdoc__x{position:absolute;top:-8px;right:-8px;width:22px!important;height:22px!important;border-radius:50%!important;background:var(--ink)!important;color:#fff!important;font-size:.85rem!important;line-height:1;display:grid;place-items:center;box-shadow:0 4px 10px -4px rgba(36,26,20,.6)}
+  .cdoc--img .cdoc__x:hover{background:#B73C54!important}
+  .cdoc__meta{display:flex;flex-direction:column;min-width:0;font-size:.82rem}
+  .cdoc__meta b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cdoc__meta em{font-style:normal;color:var(--muted);font-size:.74rem}
+  .cdoc:not(.cdoc--img) .cdoc__x{width:26px;height:26px;border-radius:8px}
+  /* what you shared, in the conversation */
+  .shot{margin:0;display:grid;gap:6px}
+  .shot img{display:block;max-width:220px;max-height:160px;border-radius:10px;object-fit:cover;border:1px solid rgba(255,255,255,.2)}
+  .shot figcaption{font-size:.74rem;opacity:.75}
+  .am--me:has(.shot),.msg--me:has(.shot){padding:6px}
+  .am--me:has(.shot) figcaption,.msg--me:has(.shot) figcaption{padding:0 6px 4px}
+  .filemsg{display:inline-flex;align-items:center;gap:8px}
+  .filemsg svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.9}
   .askp__foot form:not(.composer){display:flex;gap:8px}
   .askp__foot .chips .chip{font-size:.74rem;padding:4px 10px}
 
@@ -1063,12 +1088,18 @@ function chatDocs(zone, form, say, setSugg) {
     const ext = (f.name.split('.').pop() || '').toLowerCase(), img = /^image\//.test(f.type) || ['png', 'jpg', 'jpeg', 'gif', 'webp', 'heic'].includes(ext);
     if (!img && !['pdf', 'docx', 'doc', 'md', 'txt'].includes(ext)) { toast('Use an image, PDF, DOCX, Markdown or TXT file'); return; }
     doc = { name: f.name, img, pages: Math.max(1, Math.round((f.size || 120000) / 40000)) };
-    const thumb = img && f instanceof Blob ? '<img src="' + URL.createObjectURL(f) + '" alt="">' : CLIP;
-    bar.innerHTML = '<span class="cdoc__f">' + thumb + '<b>' + esc(doc.name) + '</b><em>' + (img ? 'image' : doc.pages + ' page' + (doc.pages === 1 ? '' : 's')) + ' · only for this chat</em></span><button type="button" aria-label="Remove">×</button>';
-    bar.hidden = false; bar.querySelector('button').onclick = () => { doc = null; bar.hidden = true; setSugg(null); };
+    const url = img && f instanceof Blob ? URL.createObjectURL(f) : '';
+    // the attachment sits above the box as a card with a close button; images show their preview
+    bar.className = 'cdoc' + (img ? ' cdoc--img' : '');
+    bar.innerHTML = (img
+      ? '<span class="cdoc__shot">' + (url ? '<img src="' + url + '" alt="">' : '<span class="cdoc__ph">' + CLIP + '</span>') + '<button type="button" class="cdoc__x" aria-label="Remove ' + esc(doc.name) + '" title="Remove">×</button></span><span class="cdoc__meta"><b>' + esc(doc.name) + '</b><em>Image · only for this chat</em></span>'
+      : '<span class="cdoc__f">' + CLIP + '<b>' + esc(doc.name) + '</b><em>' + doc.pages + ' page' + (doc.pages === 1 ? '' : 's') + ' · only for this chat</em></span><button type="button" class="cdoc__x" aria-label="Remove ' + esc(doc.name) + '" title="Remove">×</button>');
+    bar.hidden = false; bar.querySelector('.cdoc__x').onclick = () => { doc = null; bar.hidden = true; bar.innerHTML = ''; setSugg(null); };
+    // what you shared also appears in the conversation
+    say('me', img ? '<figure class="shot">' + (url ? '<img src="' + url + '" alt="' + esc(doc.name) + '">' : '') + '<figcaption>' + esc(doc.name) + '</figcaption></figure>' : '<span class="filemsg">' + CLIP + esc(doc.name) + '</span>');
     if (window.OSLO_PACK && OSLO_PACK.match(doc.name)) {
       doc.pages = OSLO_PACK.doc.pages;
-      bar.querySelector('em').textContent = OSLO_PACK.doc.pages + ' pages · only for this chat';
+      const em = bar.querySelector('em'); if (em) em.textContent = OSLO_PACK.doc.pages + ' pages · only for this chat';
       say('bot', 'I’ve read <b>' + esc(doc.name) + '</b>: Oslo Pet Insurance’s policy summary, 4 pages in English and Arabic. It covers the three plans, what they pay for, waiting periods, exclusions, cancelling, claims and how to get in touch. Ask me anything about it.');
       setSugg(['What plans does Oslo offer?', 'Are pre-existing conditions covered?', 'How do I make a claim?', 'What is the phone number for support?']);
       return;
