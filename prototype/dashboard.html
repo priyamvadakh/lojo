@@ -1028,7 +1028,7 @@
       <ul class="ws-list" id="wsList"></ul>
       <div class="pop__sep"></div>
       <a class="pop__row" href="states.html">Design states</a>
-      <a class="pop__row" href="dashboard.html?tour=1" id="tourAgain">Take the tour</a>
+      <a class="pop__row" href="dashboard.html?tour=1" id="tourAgain"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;margin-right:8px;vertical-align:-3px"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg>Take the tour</a>
       <button class="pop__row" id="resetDemo" type="button">Reset demo data</button>
       <a class="pop__row" href="login.html" id="signOut">Sign out</a>
     </div>
@@ -2040,6 +2040,8 @@ const TOUR = [
 const startTour = () => runTour(TOUR, (done) => { try { sessionStorage.setItem('lojo-toured', '1'); } catch (e) {} if (done) location.href = 'build.html'; });
 let toured = null; try { toured = sessionStorage.getItem('lojo-toured'); } catch (e) {}
 if (new URLSearchParams(location.search).get('tour') || !toured) setTimeout(startTour, 700);
+// already here: start it in place
+document.addEventListener('click', (e) => { const a = e.target.closest('#tourAgain'); if (!a) return; e.preventDefault(); const p = $('mePop'); if (p) p.hidden = true; startTour(); });
 render();
 
 </script>

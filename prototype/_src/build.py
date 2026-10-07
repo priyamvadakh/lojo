@@ -493,6 +493,8 @@ const TOUR = [
 const startTour = () => runTour(TOUR, (done) => { try { sessionStorage.setItem('lojo-toured', '1'); } catch (e) {} if (done) location.href = 'build.html'; });
 let toured = null; try { toured = sessionStorage.getItem('lojo-toured'); } catch (e) {}
 if (new URLSearchParams(location.search).get('tour') || !toured) setTimeout(startTour, 700);
+// already here: start it in place
+document.addEventListener('click', (e) => { const a = e.target.closest('#tourAgain'); if (!a) return; e.preventDefault(); const p = $('mePop'); if (p) p.hidden = true; startTour(); });
 render();
 """)
 
