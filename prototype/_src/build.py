@@ -489,8 +489,9 @@ const TOUR = [
   { el: 'section[aria-labelledby="agH"]', kicker: 'Agents', title: 'The agents doing the work', body: 'Each stage has agents that read, find questions, draft and answer. They never publish on their own: everything waits for a person.' },
   { el: '#fab', side: 'left', pad: 6, radius: 999, kicker: 'Ask lojo', title: 'Ask anything, any time', body: 'Ask lojo answers only from approved answers and shows where each one came from. Open it with <b>⌘K</b>, or drop a document on any page to check it.', cta: 'Start reviewing' },
 ];
-const startTour = () => runTour(TOUR, (done) => { try { localStorage.setItem('lojo-toured', '1'); } catch (e) {} if (done) location.href = 'build.html'; });
-let toured = '1'; try { toured = localStorage.getItem('lojo-toured'); } catch (e) {}
+// shown when you land on the dashboard: once per visit (sign-in session), and whenever ?tour=1
+const startTour = () => runTour(TOUR, (done) => { try { sessionStorage.setItem('lojo-toured', '1'); } catch (e) {} if (done) location.href = 'build.html'; });
+let toured = null; try { toured = sessionStorage.getItem('lojo-toured'); } catch (e) {}
 if (new URLSearchParams(location.search).get('tour') || !toured) setTimeout(startTour, 700);
 render();
 """)
