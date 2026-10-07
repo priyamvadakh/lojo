@@ -486,6 +486,12 @@ render();
 DOCUMENTS = dict(
   active='documents', title='Sources',
   css=r"""
+  .about{position:relative;display:inline-flex}
+  .aboutpop{position:absolute;top:calc(100% + 8px);right:0;z-index:30;width:300px;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:var(--panel);box-shadow:0 24px 50px -24px rgba(36,26,20,.45);opacity:0;pointer-events:none;transform:translateY(4px);transition:opacity .15s ease,transform .15s ease}
+  .about.is-open .aboutpop,.about:hover .aboutpop{opacity:1;pointer-events:auto;transform:none}
+  .aboutpop dl{margin:0;display:grid;gap:10px}
+  .aboutpop dt{font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .aboutpop dd{margin:2px 0 0;font-size:.84rem;color:var(--ink)}
   .srcsum{margin:-8px 0 16px;font-size:.86rem;color:var(--muted)}
   .srcsum b{color:var(--ink)}
   .srcwrap{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}
@@ -901,6 +907,14 @@ function sources() {
   });
   return list;
 }
+// what a source is and how lojo reads it
+const ABOUT = (s) => {
+  const app = { upload: ['Uploaded documents', 'Files you upload here', 'When you upload'], notion: ['Notion', 'Teamspaces: Pricing wiki, Onboarding playbook, Security docs, Policies', 'Automatic · every hour'],
+    website: ['Website', 'help.oslo.com and oslo.com/pricing, oslo.com/legal', 'Automatic · daily'], gmail: ['Gmail', 'support@oslo.com inbox', 'Automatic · as emails arrive'],
+    aircall: ['Aircall', 'Support line and Sales line, with transcripts', 'Automatic · after each call'] }[s.id] || [s.name, 'Everything the account can read', 'Automatic · every hour'];
+  return [['Source type', app[0]], ['Configured scope', app[1]], ['Sync mode', app[2]], ['Connected by', s.id === 'upload' ? 'Anyone who uploads' : 'Sara Lindqvist · sara@oslo.com'], ['Access', 'Read only. lojo never edits your files.']];
+};
+document.addEventListener('click', (e) => { if (!e.target.closest('.about')) document.querySelectorAll('.about.is-open').forEach(w => { w.classList.remove('is-open'); w.querySelector('[data-about]').setAttribute('aria-expanded', 'false'); }); });
 function renderSources() {
   const all = sources(), q = $('srcQ').value.trim().toLowerCase(), list = all.filter(s => !q || (s.name + ' ' + s.sub).toLowerCase().includes(q));
   if (!all.some(s => s.id === srcSel)) srcSel = 'upload';
@@ -911,7 +925,9 @@ function renderSources() {
   $('srcList').innerHTML = (w.length ? '<p class="sgrp">Needs attention <span>' + w.length + '</span></p>' + w.map(row).join('') : '') + (ok.length ? '<p class="sgrp">Healthy <span>' + ok.length + '</span></p>' + ok.map(row).join('') : '') || '<p class="sub" style="padding:14px">No source matches.</p>';
   const s = all.find(x => x.id === srcSel);
   $('srcHead').innerHTML = '<div class="sh__top">' + s.icon + '<div><h2>' + esc(s.name) + '</h2><p>' + esc(s.sub) + '</p></div><span class="spacer"></span>' +
-    '<button class="btn btn--secondary" type="button" data-settings>Source settings</button><button class="btn btn--grad" type="button" data-sync>Sync now</button></div>' +
+    '<span class="about"><button class="btn btn--secondary" type="button" data-about aria-expanded="false"><svg class="i" viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>About this source</button>' +
+    '<span class="aboutpop" role="dialog" aria-label="About this source"><dl>' + ABOUT(s).map(([k, v]) => '<div><dt>' + k + '</dt><dd>' + esc(v) + '</dd></div>').join('') + '</dl></span></span>' +
+    '<button class="btn btn--grad" type="button" data-sync>Sync now</button></div>' +
     '<div class="owner">' + ava3d('src', 'Sync agent', s.state === 'warn' ? 6 : 0) + '<em>Import owner</em><a href="activity.html?stage=src">Sync agent</a><em>· ' + (s.state === 'warn' ? 'paused until this is fixed' : 'importing') + '</em></div>' +
     '<div class="health"><div class="hcard"><small>Connection<i></i></small><b>' + s.conn + '</b><span>' + esc(s.connS) + '</span></div>' +
     '<div class="hcard"><small>Freshness<i class="' + (s.state === 'warn' ? 'warn' : '') + '"></i></small><b>' + esc(s.fresh) + '</b><span>' + esc(s.freshS) + '</span></div>' +
@@ -926,7 +942,7 @@ $('srcQ').addEventListener('input', renderSources);
 $('srcDet').addEventListener('click', (e) => {
   const sy = e.target.closest('[data-sync]');
   if (sy) { sy.disabled = true; sy.innerHTML = '<span class="spin" style="width:12px;height:12px"></span> Syncing…'; setTimeout(() => { if (APPINFO[srcSel]) { APPINFO[srcSel].state = 'ok'; APPINFO[srcSel].fresh = 'Synced just now'; APPINFO[srcSel].items = APPINFO[srcSel].items.map(([n, st]) => [n, /changed/.test(st) ? 'synced' : st]); delete APPINFO[srcSel].next; } renderSources(); toast('Synced'); }, 1400); }
-  if (e.target.closest('[data-settings]')) toast('Choose what lojo reads from this source. Settings come with the full build.');
+  const ab = e.target.closest('[data-about]'); if (ab) { const w = ab.parentNode; w.classList.toggle('is-open'); ab.setAttribute('aria-expanded', w.classList.contains('is-open')); }
   const off = e.target.closest('[data-off]'); if (off) { delete ST.apps[off.dataset.off]; save(); srcSel = 'upload'; render(); renderSources(); toast('Disconnected. Knowledge already imported stays until you retire it.'); }
 });
 // Add source: the same Documents / Connect choice as setup, in a popup
