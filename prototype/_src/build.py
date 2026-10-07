@@ -2232,36 +2232,89 @@ READOUT = dict(
   .kt--sp .kpop{left:50%}
   :root[data-theme="dark"] .kt--ok,:root[data-theme="dark"] .kt--warn,:root[data-theme="dark"] .kt--sp{background:var(--bg-soft);border-color:var(--line-2)}
   @media (max-width:1200px){.ksec .kstats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  /* structure: summary · library (tabs, filters, list + detail) · overview */
+  .klib{margin-top:6px}
+  .klib__h{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:0 0 12px}
+  .klib__h h2,.kover__h{margin:0;font-size:.8rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8E2F45}
+  .ktabs{display:flex;gap:4px;flex-wrap:wrap;padding:3px;border-radius:12px;background:var(--bg-soft);border:1px solid var(--line)}
+  .ktab{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 12px;border:0;border-radius:9px;background:none;font:inherit;font-size:.8rem;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap}
+  .ktab span{min-width:20px;height:18px;padding:0 6px;border-radius:999px;background:rgba(36,26,20,.07);font-size:.68rem;display:grid;place-items:center;color:var(--ink)}
+  .ktab.warn span{background:var(--amber-soft);color:#8A6212}
+  .ktab:hover{color:var(--ink)}
+  .ktab[aria-selected="true"]{background:var(--panel);color:var(--ink);box-shadow:0 2px 6px -2px rgba(36,26,20,.25)}
+  .kfil{display:flex!important;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+  .kfil select.text{width:auto;min-width:0;height:38px;font-size:.84rem;flex:0 1 auto}
+  .kfil label.kq{display:flex!important;flex-direction:row;font-size:inherit}
+  .kq{flex:1 1 260px;display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;border-radius:11px;border:1px solid var(--line-2);background:var(--panel)}
+  .kq:focus-within{border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,93,117,.14)}
+  .kq svg{width:16px;height:16px;fill:none;stroke:var(--muted);stroke-width:1.8}
+  .kq input{border:0;outline:0;background:none;flex:1;font:inherit;font-size:.86rem;height:auto!important;padding:0;color:var(--ink)}
+  .kd__top{display:flex;align-items:center;gap:6px}
+  .kd__top .spacer{flex:1}
+  .kdet h2{margin:12px 0 12px}
+  .kstatus{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg-soft);margin-bottom:16px}
+  .kstatus > div{flex:1;min-width:0}
+  .kstatus b{display:block;font-size:.88rem}
+  .kstatus span{font-size:.8rem;color:var(--muted)}
+  .kstatus__dot{width:10px;height:10px;border-radius:50%;background:#8C817B;flex:none}
+  .kstatus.ok{background:#F2F7EC;border-color:#DCE8CE}.kstatus.ok .kstatus__dot{background:var(--success)}
+  .kstatus.drf{background:rgba(62,111,166,.06);border-color:rgba(62,111,166,.2)}.kstatus.drf .kstatus__dot{background:var(--info)}
+  .kstatus.rev{background:#FBF1E4;border-color:#F0DCC0}.kstatus.rev .kstatus__dot{background:#C98A2E}
+  .kd__lbl{margin:0 0 6px;font-size:.66rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .kdet__body{margin-bottom:18px}
+  .ksrcs{display:grid;gap:6px;margin-bottom:18px}
+  .ksrc2{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:10px;align-items:start;padding:10px 12px;border:1px solid var(--line);border-radius:10px;color:inherit;text-decoration:none}
+  .ksrc2:hover{border-color:rgba(232,93,117,.4);text-decoration:none}
+  .ksrc2.is-warn{border-color:rgba(217,154,43,.5);background:rgba(217,154,43,.06)}
+  .ksrc2 svg{width:16px;height:16px;fill:none;stroke:var(--muted);stroke-width:1.8;margin-top:2px}
+  .ksrc2 b{font-size:.84rem;margin-right:6px}
+  .ksrc2 em{font-style:normal;font-size:.76rem;color:var(--muted)}
+  .ksrc2 q{display:block;margin-top:3px;font-size:.8rem;color:var(--ink);quotes:"“" "”"}
+  .ksrc2 .go{color:var(--muted)}
+  .khist{list-style:none;margin:0 0 16px;padding:0 0 0 14px;border-left:2px solid var(--line);display:grid;gap:10px}
+  .khist li{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;font-size:.82rem}
+  .khist li::before{content:"";position:absolute;left:-20px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--panel);border:2px solid var(--rose)}
+  .khist span{grid-column:1;color:var(--muted);font-size:.76rem}
+  .khist time{grid-row:1;grid-column:2;color:var(--muted);font-size:.74rem}
+  .kd__note{display:flex;align-items:center;gap:8px;margin:0;padding-top:12px;border-top:1px solid var(--line);font-size:.76rem;color:var(--muted)}
+  .kd__note svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.9}
+  .kover{margin-top:24px}
+  .kover__h{margin-bottom:10px}
 """,
   body=r"""
     <div class="head">
       <div>
         <p class="label">Company knowledge</p>
         <h1>Knowledge</h1>
-        <p>Published answers and the evidence behind them.</p>
+        <p>Every answer lojo knows, with where it came from and who approved it.</p>
       </div>
       <span class="spacer"></span>
-      <button class="btn btn--primary" id="exp" type="button"><svg class="i" viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M4 18v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1"/></svg>Export sources</button>
+      <button class="btn btn--primary" id="exp" type="button"><svg class="i" viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M4 18v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1"/></svg>Export</button>
     </div>
 
     <section class="ksec" aria-labelledby="kH"><div class="ksec__h"><h2 id="kH">Your knowledge</h2><span>· What Oslo has in lojo right now</span></div><div class="kstats" id="kstats"></div></section>
-    <div class="kgrid">
-      <section class="kbox"><h3><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>Where it comes from</h3><div id="ktypes"></div><p class="sub2">Sensitivity</p><div id="ksens"></div></section>
-      <section class="kbox"><h3><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Recently updated</h3><p>Newest first.</p><div id="kspark" hidden></div><ul class="recent" id="krecent"></ul></section>
-    </div>
 
+    <section class="klib" aria-labelledby="libH">
+    <div class="klib__h"><h2 id="libH">Library</h2><div class="ktabs" id="ktabs" role="tablist" aria-label="State"></div></div>
     <div class="kfil">
-      <label>Search<input class="text" id="kq" placeholder="Search questions and answers"></label>
-      <label>Knowledge space<select class="text" id="fSpace"></select></label>
-      <label>State<select class="text" id="fState"></select></label>
-      <label>Source type<select class="text" id="fType"></select></label>
-      <label>Connected source<select class="text" id="fConn"></select></label>
-      <label>Topic<select class="text" id="fTopic"></select></label>
+      <label class="kq"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="kq" placeholder="Search questions and answers" aria-label="Search"></label>
+      <select class="text" id="fSpace" aria-label="Knowledge space"></select>
+      <select class="text" id="fType" aria-label="Source type"></select>
+      <select class="text" id="fTopic" aria-label="Topic"></select>
+      <select id="fState" hidden></select><select id="fConn" hidden></select>
     </div>
     <div class="kb">
       <section class="card klist"><div class="klist__h" id="kcount"></div><ul id="klist"></ul></section>
       <section class="card kdet" id="kdet" aria-live="polite"></section>
     </div>
+    </section>
+
+    <section class="kover" aria-labelledby="ovH"><h2 id="ovH" class="kover__h">Overview</h2>
+    <div class="kgrid">
+      <section class="kbox"><h3><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>Where it comes from</h3><div id="ktypes"></div><p class="sub2">Sensitivity</p><div id="ksens"></div></section>
+      <section class="kbox"><h3><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Recently updated</h3><p>Newest first.</p><div id="kspark" hidden></div><ul class="recent" id="krecent"></ul></section>
+    </div>
+    </section>
 """,
   js=r"""
 // every piece of company knowledge: drafts with their state, plus reference passages saved from sources
@@ -2293,25 +2346,28 @@ function entries() {
   }));
   return out.filter(e => !ST.archived[e.id]);
 }
-const stateChip = (s) => '<span class="kc ' + ({ Published: 'pub', 'Needs review': 'rev', Draft: 'drf' }[s] || '') + '">' + s + '</span>';
-let sel = null;
+const stateChip = (s) => '<span class="kc ' + STATE_UI[s][1] + '">' + STATE_UI[s][0] + '</span>';
+let sel = null, ktab = new URLSearchParams(location.search).get('state') || 'answers';
+// plain-language states
+const STATE_UI = { Published: ['Live in Ask lojo', 'pub'], Draft: ['Waiting for approval', 'drf'], 'Needs review': ['Needs review', 'rev'], Reference: ['Reference', ''] };
+const TABS = [['answers', 'All answers'], ['Published', 'Live in Ask lojo'], ['Draft', 'Waiting for approval'], ['Needs review', 'Needs review'], ['Reference', 'Reference passages']];
 const uniq = (arr) => [...new Set(arr)];
 function opts(id, label, vals) { const keep = $(id).value; $(id).innerHTML = '<option value="">' + label + '</option>' + vals.map(v => '<option value="' + esc(v) + '">' + esc(id === 'fTopic' ? TOPICS[v] || v : v) + '</option>').join(''); $(id).value = vals.includes(keep) ? keep : ''; }
 function filtered(all) {
   const q = $('kq').value.trim().toLowerCase();
-  return all.filter(e => (!q || (e.title + ' ' + e.body).toLowerCase().includes(q)) && (!$('fSpace').value || e.space === $('fSpace').value) && (!$('fState').value || e.state === $('fState').value) &&
+  return all.filter(e => (!q || (e.title + ' ' + e.body).toLowerCase().includes(q)) && (!$('fSpace').value || e.space === $('fSpace').value) && (ktab === 'answers' ? e.kind === 'answer' : e.state === ktab) &&
     (!$('fType').value || e.type === $('fType').value) && (!$('fConn').value || e.conn === $('fConn').value) && (!$('fTopic').value || e.topic === $('fTopic').value));
 }
 function render() {
   const all = entries(), n = (s) => all.filter(e => e.state === s).length;
   const pubPct = all.filter(e => e.kind === 'answer').length ? Math.round(n('Published') / all.filter(e => e.kind === 'answer').length * 100) : 0;
-  const tile = (c, l, tipT, v, sub, tag, href) => '<a class="kt kt--' + c + '"' + (href ? ' href="' + href + '"' : '') + '>' + (tag ? '<span class="kt__tag">' + tag + '</span>' : '') +
+  const tile = (c, l, tipT, v, sub, tag, tab) => '<a class="kt kt--' + c + '"' + (tab ? ' href="#libH" data-tab="' + tab + '"' : '') + '>' + (tag ? '<span class="kt__tag">' + tag + '</span>' : '') +
     '<small>' + l + ' <i class="tip" tabindex="0" data-tip="' + esc(tipT) + '">i</i></small><b>' + v + '</b><span class="kt__sub">' + sub + '</span></a>';
   $('kstats').innerHTML =
     tile('all', 'Knowledge entries', 'Everything lojo holds for this workspace: answers and the reference passages behind them.', all.length, all.filter(e => e.kind === 'answer').length + ' answers · ' + n('Reference') + ' reference') +
-    tile('ok', 'Published', 'Approved by a person, then published as company truth. Ask lojo answers from these.', n('Published'), pubPct + '% of answers', 'Live') +
-    tile('warn', 'Needs review', 'Conflicting or rejected. Not company truth until a person reviews it.', n('Needs review'), n('Draft') + ' more drafts waiting', n('Needs review') ? 'Needs you' : '', 'build.html') +
-    tile('ref', 'Reference', 'Saved from an authorised source. Never published on its own.', n('Reference'), 'Passages kept as evidence') +
+    tile('ok', 'Published', 'Approved by a person, then published as company truth. Ask lojo answers from these.', n('Published'), pubPct + '% of answers', 'Live', 'Published') +
+    tile('warn', 'Needs review', 'Conflicting or rejected. Not company truth until a person reviews it.', n('Needs review'), n('Draft') + ' more drafts waiting', n('Needs review') ? 'Needs you' : '', 'Needs review') +
+    tile('ref', 'Reference', 'Saved from an authorised source. Never published on its own.', n('Reference'), 'Passages kept as evidence', '', 'Reference') +
     '<div class="kt kt--sp" tabindex="0"><small>Knowledge spaces <i class="tip" tabindex="0" data-tip="Access is decided per space. A space you can’t read is never listed here.">i</i></small><b id="kspN"></b><span class="kt__sub">Hover to see all</span><div class="kpop" id="kspaces"></div></div>';
   const count = (key) => uniq(all.map(e => e[key])).map(v => [v, all.filter(e => e[key] === v).length]);
   const pills = (key, sel) => count(key).map(([v, c]) => '<button type="button" class="kpill" data-pick="' + sel + '" data-v="' + esc(v) + '">' + esc(v) + ' <b>' + c + '</b></button>').join('');
@@ -2335,35 +2391,52 @@ function render() {
   $('krecent').innerHTML = ans.sort((a, b) => Date.parse(b.at) - Date.parse(a.at)).slice(0, 5).map(e => '<li><button type="button" data-open="' + e.id + '">' + esc(e.title) + '</button><time>' + e.at.replace(/, \d{4}$/, '') + '</time></li>').join('');
   opts('fSpace', 'All spaces', uniq(all.map(e => e.space))); opts('fState', 'Any state', ['Published', 'Needs review', 'Draft', 'Reference']);
   opts('fType', 'All source types', uniq(all.map(e => e.type))); opts('fConn', 'All connected sources', uniq(all.map(e => e.conn))); opts('fTopic', 'All topics', uniq(all.map(e => e.topic)));
+  $('ktabs').innerHTML = TABS.map(([k, l]) => { const c = k === 'answers' ? all.filter(e => e.kind === 'answer').length : n(k);
+    return '<button type="button" role="tab" class="ktab' + (k === 'Needs review' && c ? ' warn' : '') + '" data-tab="' + k + '" aria-selected="' + (ktab === k) + '">' + l + ' <span>' + c + '</span></button>'; }).join('');
   const list = filtered(all);
   if (!list.some(e => e.id === sel)) sel = list.length ? list[0].id : null;
-  $('kcount').textContent = list.length + ' matching entr' + (list.length === 1 ? 'y' : 'ies');
+  $('kcount').textContent = list.length + (ktab === 'Reference' ? ' passage' : ' answer') + (list.length === 1 ? '' : 's') + (TABS.find(x => x[0] === ktab) && ktab !== 'answers' ? ' · ' + TABS.find(x => x[0] === ktab)[1].toLowerCase() : '');
   $('klist').innerHTML = list.length ? list.map(e => '<li class="kitem' + (e.id === sel ? ' is-sel' : '') + '" data-id="' + e.id + '"><div class="chipsrow">' + stateChip(e.state) + '<span class="kc sp">' + IC.layers + esc(e.space) + '</span><span class="kc">' + IC.shield + e.sens + '</span></div>' +
     '<b>' + esc(e.title) + '</b><span class="ex">' + esc(e.body.replace(/[#*_>-]/g, '')) + '</span><span class="ksrc">' + IC.doc + esc(e.type) + ' · ' + esc(docShort(e.src[0][0])) + '</span><span class="ft">' + e.src.length + ' source' + (e.src.length === 1 ? '' : 's') + ' · Updated ' + e.at + '</span></li>').join('')
     : '<li class="kempty">Nothing matches these filters.</li>';
   detail(all.find(e => e.id === sel));
 }
 function detail(e) {
-  if (!e) { $('kdet').innerHTML = '<div class="kempty">Pick an entry to see it here.</div>'; return; }
-  const gov = { Published: 'Approved by ' + (e.by || 'a person') + ' and published. Ask lojo answers from it.', 'Needs review': 'Its sources disagree or it was rejected. It isn’t company truth until a person reviews it.', Draft: 'Drafted by lojo with sources. Waiting for a person to approve it.', Reference: 'Saved as reference from its source. It has never been published.' }[e.state];
-  $('kdet').innerHTML = '<div class="chipsrow">' + stateChip(e.state) + '<span class="kc sp">' + IC.layers + esc(e.space) + '</span><span class="kc">' + IC.shield + e.sens + '</span><span class="kc">' + esc(TOPICS[e.topic] || e.topic) + '</span></div>' +
-    '<div class="kdet__acts">' + (e.kind === 'answer' ? '<a class="btn btn--secondary btn--sm" href="build.html?sel=' + e.id + '&edit=1"><svg class="i" viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Edit</a>' : '') +
-    '<button class="btn btn--secondary btn--sm arch" data-arch="' + e.id + '" type="button"><svg class="i" viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4"/></svg>Archive</button></div>' +
-    '<h2>' + esc(e.title) + '</h2>' + (e.kind === 'answer' ? '<button class="ask" type="button" data-askq="' + esc(e.title) + '"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L3 21l1.9-5.6A8.5 8.5 0 1 1 21 11.5z"/></svg>Ask lojo</button>' : '') +
-    '<div class="kdet__body">' + md(e.body) + '</div>' +
-    '<div class="kpanel"><h4>' + IC.doc + 'Provenance</h4><div class="chipsrow">' + e.src.map(([d, loc]) => srcChip(d, loc)).join('') + '</div><a class="open" href="sources.html?doc=' + e.src[0][0] + '&loc=' + encodeURIComponent(e.src[0][1]) + '">Open original <svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a></div>' +
-    '<div class="kpanel gov"><h4>' + IC.shield + 'Governance</h4><p>lojo proposes. A person approves. Only then does an answer become company truth.</p><div class="row">' + stateChip(e.state) + '</div><p style="margin-top:10px">' + gov + '</p><div class="row"><span class="kc">Review due ' + (e.state === 'Published' ? 'Mar 29, 2027' : 'now') + '</span><span class="kc">Updated ' + e.at + '</span></div></div>';
+  if (!e) { $('kdet').innerHTML = '<div class="kempty">Nothing here yet. Try another tab or filter.</div>'; return; }
+  const S = {
+    Published: ['ok', 'Live in Ask lojo', 'Approved by ' + (e.by || 'a person') + '. Ask lojo answers from it.', '<a class="btn btn--secondary btn--sm" href="build.html?sel=' + e.id + '&edit=1">Edit answer</a>'],
+    Draft: ['drf', 'Waiting for approval', 'lojo drafted it with sources. It isn’t used anywhere until a person approves it.', '<a class="btn btn--primary btn--sm" href="build.html?sel=' + e.id + '">Review in Build</a>'],
+    'Needs review': ['rev', 'Needs review', 'Its sources disagree, or it was rejected. It isn’t company truth until a person resolves it.', '<a class="btn btn--primary btn--sm" href="build.html?sel=' + e.id + '">Resolve in Build</a>'],
+    Reference: ['ref', 'Reference passage', 'A passage saved from a source. It backs up answers and is never shown on its own.', ''],
+  }[e.state];
+  const hist = e.kind === 'answer' ? [['Drafted by lojo', 'from ' + e.src.length + ' source' + (e.src.length === 1 ? '' : 's'), DAY[0]]]
+    .concat(e.state === 'Needs review' ? [['Flagged for review', 'sources disagree', e.at]] : [])
+    .concat(e.state === 'Published' ? [['Approved by ' + (e.by || 'Sara Lindqvist'), 'now live in Ask lojo', e.at]] : [])
+    .concat(e.state === 'Draft' ? [['Waiting for a person', 'in Build', 'now']] : []) : [['Saved from ' + docShort(e.src[0][0]), e.src[0][1], e.at]];
+  $('kdet').innerHTML =
+    '<div class="kd__top"><div class="chipsrow"><span class="kc sp">' + IC.layers + esc(e.space) + '</span><span class="kc">' + IC.shield + e.sens + '</span><span class="kc">' + esc(TOPICS[e.topic] || e.topic) + '</span></div>' +
+      '<span class="spacer"></span>' + (e.kind === 'answer' ? '<button class="hbtn" type="button" data-askq="' + esc(e.title) + '" title="Ask lojo" aria-label="Ask lojo"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L3 21l1.9-5.6A8.5 8.5 0 1 1 21 11.5z"/></svg></button>' : '') +
+      '<button class="hbtn" type="button" data-arch="' + e.id + '" title="Archive" aria-label="Archive"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4"/></svg></button></div>' +
+    '<h2>' + esc(e.title) + '</h2>' +
+    '<div class="kstatus ' + S[0] + '"><span class="kstatus__dot"></span><div><b>' + S[1] + '</b><span>' + S[2] + '</span></div>' + S[3] + '</div>' +
+    '<p class="kd__lbl">' + (e.kind === 'answer' ? 'Answer' : 'Passage') + '</p><div class="kdet__body">' + md(e.body) + '</div>' +
+    '<p class="kd__lbl">Where it came from</p><div class="ksrcs">' + e.src.map(([d, loc, text]) => '<a class="ksrc2' + (e.state === 'Needs review' && /months? old/.test(loc) ? ' is-warn' : '') + '" href="sources.html?doc=' + d + '&loc=' + encodeURIComponent(loc) + '">' + IC.doc +
+      '<span><b>' + esc(docShort(d)) + '</b><em>' + esc(loc) + '</em>' + (text ? '<q>' + esc(text) + '</q>' : '') + '</span><span class="go">↗</span></a>').join('') + '</div>' +
+    '<p class="kd__lbl">History</p><ol class="khist">' + hist.map(([a, b, c]) => '<li><b>' + esc(a) + '</b><span>' + esc(b) + '</span><time>' + esc(c) + '</time></li>').join('') + '</ol>' +
+    '<p class="kd__note">' + IC.shield + 'lojo proposes. A person approves. Only then does an answer become company truth.</p>';
 }
+$('kstats').addEventListener('click', (ev) => { const a = ev.target.closest('a.kt[data-tab]'); if (!a || ev.target.closest('.tip')) return; ev.preventDefault(); ktab = a.dataset.tab; sel = null; render(); document.querySelector('.klib').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
 $('klist').addEventListener('click', (ev) => { const li = ev.target.closest('[data-id]'); if (li) { sel = li.dataset.id; render(); } });
 document.querySelector('.kgrid').addEventListener('click', (ev) => {
   const p = ev.target.closest('[data-pick]'); if (p) { $(p.dataset.pick).value = $(p.dataset.pick).value === p.dataset.v ? '' : p.dataset.v; render(); document.querySelector('.kfil').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-  const o = ev.target.closest('[data-open]'); if (o) { ['kq', 'fSpace', 'fState', 'fType', 'fConn', 'fTopic'].forEach(id => { $(id).value = ''; }); sel = o.dataset.open; render(); document.querySelector('.kb').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  const o = ev.target.closest('[data-open]'); if (o) { ['kq', 'fSpace', 'fType', 'fTopic'].forEach(id => { $(id).value = ''; }); ktab = 'answers'; sel = o.dataset.open; render(); document.querySelector('.kb').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 });
 $('kdet').addEventListener('click', (ev) => {
   const a = ev.target.closest('[data-arch]'); if (a) { ST.archived[a.dataset.arch] = true; save(); sel = null; render(); toast('Archived. It no longer appears in Knowledge.'); }
   const q = ev.target.closest('[data-askq]'); if (q && window.__askQ) window.__askQ(q.dataset.askq);
 });
-['kq', 'fSpace', 'fState', 'fType', 'fConn', 'fTopic'].forEach(id => $(id).addEventListener('input', render));
+['kq', 'fSpace', 'fType', 'fTopic'].forEach(id => $(id).addEventListener('input', render));
+$('ktabs').addEventListener('click', (ev) => { const b = ev.target.closest('[data-tab]'); if (!b) return; ktab = b.dataset.tab; sel = null; render(); });
 $('exp').addEventListener('click', () => {
   const rows = entries().map(e => [e.state, e.title, e.body.replace(/\n/g, ' '), e.src.map(([d, l]) => docById(d).name + ' (' + l + ')').join('; '), e.space, e.at]);
   const csv = ['state,title,content,sources,space,updated'].concat(rows.map(r => r.map(x => '"' + String(x).replace(/"/g, '""') + '"').join(','))).join('\n');
