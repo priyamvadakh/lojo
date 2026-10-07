@@ -479,6 +479,19 @@ $('scopeToggle').addEventListener('click', () => {
   $('scopeToggle').setAttribute('aria-expanded', !m.hidden); $('scopeToggle').textContent = m.hidden ? 'Details' : 'Hide';
 });
 $('alsoMore').addEventListener('click', () => $('also').scrollBy({ top: 62, behavior: 'smooth' }));
+// first visit: explain the loop with a short tour of this page
+const TOUR = [
+  { kicker: 'Welcome to lojo', title: 'Your company’s answers, kept true', body: 'lojo reads what your company already knows, drafts the answers people keep asking for, and only shares an answer once <b>a person has approved it</b>.<div class="tour-loop"><span>Sources</span><em>→</em><span>Insights</span><em>→</em><span class="you">You approve</span><em>→</em><span>Ask lojo</span></div>', cta: 'Show me around' },
+  { el: '.side nav', side: 'right', kicker: 'The loop', title: 'Four stages, top to bottom', body: '<b>Sources</b>: documents and apps lojo reads. <b>Insights</b>: questions and gaps it finds. <b>Build</b>: drafts you approve, edit or reject. <b>Distribute</b>: where approved answers go. <b>Knowledge</b> keeps them all with their evidence.' },
+  { el: '#loopBtn', kicker: 'Where you are', title: 'Your loop at a glance', body: 'This shows which stage needs you now and how many answers are approved. Click it to see the whole loop.' },
+  { el: '.next', kicker: 'Start here', title: 'The one thing to do next', body: 'Right now that’s reviewing drafts. Each draft shows its sources. Approve it, fix it, or reject it with a reason and lojo writes it again.' },
+  { el: '#today', kicker: 'Your knowledge', title: 'What lojo knows today', body: 'Your sources, the questions found in them, gaps nobody has explained yet, and how far the review has got. Hover the <b>i</b> for what each means.' },
+  { el: 'section[aria-labelledby="agH"]', kicker: 'Agents', title: 'The agents doing the work', body: 'Each stage has agents that read, find questions, draft and answer. They never publish on their own: everything waits for a person.' },
+  { el: '#fab', side: 'left', pad: 6, radius: 999, kicker: 'Ask lojo', title: 'Ask anything, any time', body: 'Ask lojo answers only from approved answers and shows where each one came from. Open it with <b>⌘K</b>, or drop a document on any page to check it.', cta: 'Start reviewing' },
+];
+const startTour = () => runTour(TOUR, (done) => { try { localStorage.setItem('lojo-toured', '1'); } catch (e) {} if (done) location.href = 'build.html'; });
+let toured = '1'; try { toured = localStorage.getItem('lojo-toured'); } catch (e) {}
+if (new URLSearchParams(location.search).get('tour') || !toured) setTimeout(startTour, 700);
 render();
 """)
 

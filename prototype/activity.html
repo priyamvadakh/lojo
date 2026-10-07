@@ -554,6 +554,31 @@
   body.ask-open .fab{opacity:0;pointer-events:none;transform:scale(.8)}
   @media (max-width:1100px){body.ask-open .main{margin-right:0}.askp:not(.is-full):not(.is-page){width:min(420px,calc(100vw - 24px))}}
 
+  /* guided tour */
+  .tour-veil{position:fixed;inset:0;z-index:90}
+  body.touring .fab::after{display:none!important}
+  .tour-veil.is-dim{background:rgba(36,26,20,.45)}
+  .tour-spot{position:fixed;z-index:91;pointer-events:none;box-shadow:0 0 0 9999px rgba(36,26,20,.45),0 0 0 3px rgba(255,255,255,.9),0 0 0 7px rgba(232,93,117,.55);transition:left .3s ease,top .3s ease,width .3s ease,height .3s ease,opacity .2s ease}
+  .tour-card{position:fixed;z-index:92;width:min(340px,calc(100vw - 24px));padding:18px 18px 14px;border-radius:16px;background:var(--panel);box-shadow:0 30px 70px -24px rgba(36,26,20,.55);color:var(--ink);transition:left .3s ease,top .3s ease;animation:fadeIn .2s ease}
+  .tour-card.is-center{left:50%!important;top:50%!important;transform:translate(-50%,-50%);width:min(440px,calc(100vw - 24px));padding:24px 24px 16px}
+  .tour-card__top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .tour-k{font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--rose)}
+  .tour-n{margin-left:auto;font-size:.7rem;color:var(--muted)}
+  .tour-card h3{margin:0 0 6px;font-family:var(--display);font-weight:700;font-size:1.1rem;letter-spacing:-.01em}
+  .tour-card.is-center h3{font-size:1.35rem}
+  .tour-card p{margin:0;font-size:.86rem;line-height:1.55;color:var(--muted)}
+  .tour-card p b{color:var(--ink)}
+  .tour-loop{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .tour-loop span{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;background:var(--bg-soft);font-size:.74rem;font-weight:600;color:var(--ink)}
+  .tour-loop span.you{background:rgba(232,93,117,.1);color:#B73C54}
+  .tour-loop em{font-style:normal;color:var(--muted);font-size:.8rem}
+  .tour-dots{display:flex;gap:5px;margin:14px 0 12px}
+  .tour-dots i{width:6px;height:6px;border-radius:50%;background:var(--line-2)}
+  .tour-dots i.on{width:18px;border-radius:4px;background:var(--rose)}
+  .tour-acts{display:flex;align-items:center;gap:6px}
+  .tour-acts .spacer{flex:1}
+  @media (prefers-reduced-motion:reduce){.tour-spot,.tour-card{transition:none}}
+
   /* ---------- phone: sidebar becomes a drawer ---------- */
   .mnav{display:none;position:fixed;top:14px;left:12px;z-index:35;width:40px;height:40px;border-radius:12px;border:1px solid var(--line-2);background:var(--panel);color:var(--ink);place-items:center;cursor:pointer;box-shadow:0 8px 20px -14px rgba(36,26,20,.5)}
   .mnav svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
@@ -807,6 +832,7 @@
       <ul class="ws-list" id="wsList"></ul>
       <div class="pop__sep"></div>
       <a class="pop__row" href="states.html">Design states</a>
+      <a class="pop__row" href="dashboard.html?tour=1" id="tourAgain">Take the tour</a>
       <button class="pop__row" id="resetDemo" type="button">Reset demo data</button>
       <a class="pop__row" href="login.html" id="signOut">Sign out</a>
     </div>
@@ -1194,6 +1220,51 @@ function downloadDoc(name, text) {
   toast('Downloading ' + name);
 }
 // Ask lojo conversations: every chat is kept, titled by its first question, newest first
+// guided tour: a spotlight on one part of the page at a time, with a short explanation
+function runTour(steps, onDone) {
+  steps = steps.filter(s => !s.el || document.querySelector(s.el));
+  let i = 0;
+  const veil = document.createElement('div'); veil.className = 'tour-veil';
+  const spot = document.createElement('div'); spot.className = 'tour-spot';
+  const card = document.createElement('div'); card.className = 'tour-card'; card.setAttribute('role', 'dialog'); card.setAttribute('aria-live', 'polite');
+  document.body.append(veil, spot, card); document.body.classList.add('touring');
+  const end = (done) => { [veil, spot, card].forEach(x => x.remove()); document.body.classList.remove('touring'); window.removeEventListener('resize', place); document.removeEventListener('keydown', key); onDone && onDone(done); };
+  function place() {
+    const s = steps[i], el = s.el && document.querySelector(s.el);
+    if (!el) { spot.style.opacity = 0; veil.classList.add('is-dim'); card.className = 'tour-card is-center'; card.style.left = card.style.top = ''; return; }
+    veil.classList.remove('is-dim'); spot.style.opacity = 1; card.className = 'tour-card';
+    const r = el.getBoundingClientRect(), pad = s.pad ?? 8;
+    Object.assign(spot.style, { left: (r.left - pad) + 'px', top: (r.top - pad) + 'px', width: (r.width + pad * 2) + 'px', height: (r.height + pad * 2) + 'px', borderRadius: (s.radius || 16) + 'px' });
+    const cw = card.offsetWidth, ch = card.offsetHeight, vw = innerWidth, vh = innerHeight, gap = 16;
+    let x, y;
+    if (s.side === 'right' || (r.right + gap + cw < vw && r.width < vw * .4)) { x = r.right + pad + gap; y = r.top; }
+    else if (r.bottom + gap + ch < vh) { x = r.left; y = r.bottom + pad + gap; }
+    else { x = r.left; y = r.top - pad - gap - ch; }
+    if (s.side === 'left') { x = r.left - pad - gap - cw; y = r.top; }
+    card.style.left = Math.max(12, Math.min(x, vw - cw - 12)) + 'px'; card.style.top = Math.max(12, Math.min(y, vh - ch - 12)) + 'px';
+  }
+  function show() {
+    const s = steps[i], el = s.el && document.querySelector(s.el);
+    card.innerHTML = '<div class="tour-card__top">' + (s.kicker ? '<span class="tour-k">' + s.kicker + '</span>' : '') + '<span class="tour-n">' + (i + 1) + ' of ' + steps.length + '</span></div>' +
+      '<h3>' + s.title + '</h3><p>' + s.body + '</p><div class="tour-dots">' + steps.map((_, k) => '<i' + (k === i ? ' class="on"' : '') + '></i>').join('') + '</div>' +
+      '<div class="tour-acts"><button type="button" class="btn btn--ghost btn--sm" data-t="skip">' + (i === steps.length - 1 ? 'Close' : 'Skip tour') + '</button><span class="spacer"></span>' +
+      (i ? '<button type="button" class="btn btn--secondary btn--sm" data-t="back">Back</button>' : '') +
+      '<button type="button" class="btn btn--primary btn--sm" data-t="next">' + (s.cta || (i === steps.length - 1 ? 'Finish' : 'Next')) + '</button></div>';
+    if (el) { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); setTimeout(place, 320); } else place();
+    card.querySelector('[data-t="next"]').focus({ preventScroll: true });
+  }
+  card.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-t]'); if (!b) return;
+    if (b.dataset.t === 'skip') return end(false);
+    if (b.dataset.t === 'back') { i--; return show(); }
+    if (i === steps.length - 1) return end(true);
+    i++; show();
+  });
+  veil.addEventListener('click', () => end(false));
+  const key = (e) => { if (e.key === 'Escape') end(false); if (e.key === 'ArrowRight') card.querySelector('[data-t="next"]').click(); if (e.key === 'ArrowLeft' && i) { i--; show(); } };
+  window.addEventListener('resize', place); document.addEventListener('keydown', key);
+  show();
+}
 const askHistory = {
   subs: [],
   convs() {
