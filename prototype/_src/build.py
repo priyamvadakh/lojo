@@ -301,6 +301,14 @@ OVERVIEW = dict(
   .rsteps i.bad{background:var(--error)}
   .rtime{font-size:.78rem;color:var(--muted);white-space:nowrap}
   @media (max-width:1100px){.rrow{grid-template-columns:76px 120px minmax(0,1fr) 120px}.rrow > :nth-child(5),.rrow > :nth-child(6){display:none}}
+  .rfail{display:flex;align-items:center;gap:12px;margin:-4px 16px 12px 116px;padding:10px 12px;border-radius:10px;border:1px solid rgba(198,69,69,.25);background:rgba(198,69,69,.05);font-size:.8rem;color:var(--ink)}
+  .rfail svg{width:18px;height:18px;flex:none;fill:none;stroke:var(--error);stroke-width:1.9;stroke-linecap:round}
+  .rfail > div{flex:1;min-width:0}
+  .rfail b{color:var(--error)}
+  .rfail span{color:var(--muted)}
+  .rfail code{margin-left:8px;padding:1px 6px;border-radius:5px;background:var(--panel);border:1px solid var(--line);font-size:.68rem;color:var(--muted)}
+  .rfail .btn{flex:none}
+  @media (max-width:1100px){.rfail{margin-left:16px;flex-wrap:wrap}}
 """,
   body=r"""
     <div class="head">
@@ -450,7 +458,8 @@ const RUNS = [
   { id: 'L-0013', status: 'queue', trigger: 'Website change: help.oslo.com/sso', started: null, stage: 0, stats: 'Starts when L-0012 finishes' },
   { id: 'L-0011', status: 'wait', trigger: 'Gmail: 3 new emails', started: -320, ended: -305, stage: 3, stats: '2 questions · 10 drafts waiting for review' },
   { id: 'L-0010', status: 'done', trigger: 'Notion sync', started: -1460, ended: -1442, stage: 5, stats: '5 pages · 3 answers approved' },
-  { id: 'L-0009', status: 'fail', trigger: 'Holiday policy 2025.pdf uploaded', started: -2900, ended: -2899, stage: 0, stats: 'Password-protected PDF couldn’t be read' },
+  { id: 'L-0009', status: 'fail', trigger: 'Holiday policy 2025.pdf uploaded', started: -2900, ended: -2899, stage: 0, stats: 'Stopped before any questions were found',
+    reason: 'The PDF is password-protected, so lojo couldn’t read its text.', fix: 'Remove the password in your PDF app, then upload it again.', code: 'ERR_PDF_ENCRYPTED' },
   { id: 'L-0008', status: 'done', trigger: 'Initial setup · 10 documents', started: -40320, ended: -40290, stage: 5, stats: '680 passages · 17 drafts · 7 approved' },
 ];
 const RUN_ST = { run: ['Running', 'run'], queue: ['Queued', 'queue'], wait: ['Waiting for you', 'wait'], done: ['Completed', 'done'], fail: ['Failed', 'fail'] };
@@ -465,9 +474,17 @@ function renderRuns() {
     return '<a class="rrow" href="' + (r.status === 'wait' ? 'build.html' : r.status === 'fail' ? 'sources.html' : 'activity.html') + '"><span class="rid">#' + r.id + '</span>' +
       '<span><em class="rst ' + cls + '">' + lbl + '</em></span><span class="rtr"><b>' + esc(r.trigger) + '</b><small>' + esc(r.stats) + '</small></span>' +
       '<span class="rprog"><span class="rsteps">' + steps + '</span><small>' + (r.status === 'queue' ? 'Not started' : r.status === 'done' ? 'All 5 stages' : r.status === 'fail' ? 'Stopped at Source' : 'At ' + RUN_STAGES[r.stage]) + '</small></span>' +
-      '<span class="rtime">' + (r.started === null ? '—' : whenRun(r.started)) + '</span><span class="rtime"' + (r.status === 'run' ? ' data-live="' + r.started + '"' : '') + '>' + (mins === null ? '—' : dur(mins)) + '</span></a>';
+      '<span class="rtime">' + (r.started === null ? '—' : whenRun(r.started)) + '</span><span class="rtime"' + (r.status === 'run' ? ' data-live="' + r.started + '"' : '') + '>' + (mins === null ? '—' : dur(mins)) + '</span></a>' +
+      (r.reason ? '<div class="rfail"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><div><b>Why it failed:</b> ' + esc(r.reason) + ' <span>' + esc(r.fix) + '</span><code>' + r.code + '</code></div>' +
+        '<button type="button" class="btn btn--secondary btn--sm" data-retry-run="' + r.id + '">Retry run</button><a class="btn btn--ghost btn--sm" href="sources.html">Open in Sources</a></div>' : '');
   }).join('');
 }
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-retry-run]'); if (!b) return;
+  const r = RUNS.find(x => x.id === b.dataset.retryRun);
+  b.disabled = true; b.innerHTML = '<span class="spin" style="width:11px;height:11px"></span> Retrying…';
+  setTimeout(() => { r.status = 'fail'; r.started = -0.2; r.ended = 0; r.stats = 'Retried just now · still couldn’t read it'; renderRuns(); toastError('L-' + r.id.slice(2) + ' failed again: the PDF is still password-protected.'); }, 1400);
+});
 setInterval(() => document.querySelectorAll('[data-live]').forEach(el => { el.textContent = dur((Date.now() - T0) / 60000 - +el.dataset.live); }), 15000);
 function render() {
   const c = counts();
