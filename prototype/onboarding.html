@@ -180,31 +180,11 @@
   .stepper li.is-done button:hover .n,.stepper li.is-next button:hover .n{transform:scale(1.06)}
   @keyframes nodePulse{0%{box-shadow:0 0 0 0 rgba(201,162,74,.5)}100%{box-shadow:0 0 0 16px rgba(201,162,74,0)}}
 
-  /* ---------- your setup (focus only) ---------- */
-  .setup{width:100%;max-width:440px;margin-top:0;border:1px solid var(--line);border-radius:16px;background:var(--panel);padding:20px 22px 18px}
-  body.is-overview .setup{display:none}
-  .setup__head{display:flex;justify-content:space-between;align-items:baseline}
-  .setup__head b{font-weight:700;font-size:.9rem}
-  .setup__head span{color:var(--muted);font-size:.84rem}
-  .setup__bar{height:4px;border-radius:4px;background:#FBE3E7;margin:10px 0 2px;overflow:hidden}
-  .setup__bar i{display:block;height:100%;width:0;background:var(--brand-gradient);transition:width .6s ease}
-  .setup ol{list-style:none;margin:22px 0 0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));column-gap:6px}
-  .setup li{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px}
-  .setup li::before{content:"";position:absolute;top:12px;right:calc(50% + 3px);width:calc(100% + 6px);height:2px;background:var(--line-2)}
-  .setup li:first-child::before{display:none}
-  .setup li.is-done::before,.setup li.is-now::before{background:var(--brand-gradient)}
-  .setup li.is-link{cursor:pointer}
-  .setup li.is-link:hover b{color:#B73C54}
-  .setup .mk{position:relative;z-index:1;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:700;color:var(--muted);background:var(--panel);border:1.5px solid var(--line-2)}
-  .setup li.is-now .mk{background:#C9A24A;border-color:#C9A24A;box-shadow:0 0 0 5px #F2E6CB}
-  .setup li.is-now .mk::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--panel)}
-  .setup li.is-done .mk{background:var(--rose);border-color:var(--rose);color:#fff}
-  .setup li b{display:block;font-weight:600;font-size:.78rem;line-height:1.25}
-  .setup li b i{display:block;font-style:normal;font-size:.62rem;font-weight:700;letter-spacing:.1em;color:var(--muted);margin-bottom:2px}
-  .setup li span{display:block;color:var(--muted);font-size:.68rem;line-height:1.3;margin-top:4px}
-  .setup li.is-todo b{color:var(--muted)}
-  .setup li.is-now span{color:#8A6212;font-weight:600}
-  .setup li.is-done span{color:var(--success);font-weight:600}
+  /* ---------- your setup: title on top, loop centred below ---------- */
+  .orbit__title{margin:0;justify-self:start;font-family:var(--display);font-weight:700;font-size:1.1rem;letter-spacing:-.01em;color:var(--ink)}
+  body.is-overview .orbit__title{display:none}
+  body.is-focus .orbit{min-height:100vh;grid-template-rows:auto 1fr}
+  body.is-focus .orbit > .loopnav{align-self:center}
 
   .loopcenter{position:absolute;left:220px;top:250px;transform:translate(-50%,-50%);width:200px;text-align:center}
   .loopcenter small{display:block;font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--rose)}
@@ -305,7 +285,8 @@
   .privacy ul{margin:10px 0 0;padding-left:18px;color:var(--muted);font-size:.9rem;display:grid;gap:4px}
 
   /* step 2 */
-  .choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+  .choices{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+  .choices .choice{flex:0 1 280px;min-width:220px}
   .choice{
     display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;text-align:left;
     padding:18px;border-radius:14px;border:1px solid var(--line-2);background:var(--panel);cursor:pointer;
@@ -318,6 +299,7 @@
   .scopeok{display:flex;gap:12px;align-items:flex-start;margin-top:16px;padding:14px 16px;border-radius:12px;background:var(--bg-soft);font-size:.86rem;cursor:pointer}
   .scopeok input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--rose);flex:none}
   .scopeok span{color:var(--muted);display:block;font-size:.8rem;margin-top:2px}
+  .scopeok small{display:block;margin-bottom:3px;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
   .choice[aria-checked="true"]{border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,93,117,.14)}
   .choice .dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--line-2);margin-top:2px;display:grid;place-items:center}
   .choice[aria-checked="true"] .dot{border-color:var(--rose)}
@@ -360,6 +342,10 @@
   .tile{width:36px;height:36px;border-radius:10px;flex:none;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.02em}
   .tile.logo{background:var(--panel);border:1px solid var(--line);color:inherit}
   .tile.logo svg{width:20px;height:20px;fill:currentColor;stroke:none}
+  .soon{cursor:not-allowed!important;opacity:.55;background:var(--bg-soft)!important;box-shadow:none!important;transform:none!important}
+  .soon:hover{border-color:var(--line-2)!important}
+  .soon .logo,.soon .tile,.soon .mono{filter:grayscale(1)}
+  .soon__tag{display:inline-block;margin-left:0;font-style:normal;height:18px;padding:0 7px;border-radius:999px;background:rgba(36,26,20,.07);color:var(--muted);font-size:.58rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;vertical-align:1px;line-height:18px}
   .conn-head{display:flex;align-items:center;gap:12px;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid var(--line)}
   .conn-head .tile{width:44px;height:44px;border-radius:12px;font-size:.9rem}
   .conn-head b{display:block;font-size:1rem}
@@ -535,8 +521,6 @@
     .stepper .t b{font-size:1.05rem}
     .loopcenter{transform:translate(-50%,-50%) scale(1.1)!important}
     .loopcenter{width:230px}
-    .setup{max-width:none}
-    .setup li b{font-size:.7rem}
     #panel{border-left:0;padding:24px 4px 40px;margin:0;background:none;min-height:0}
     .step h1{font-size:1.4rem}
     .choices,.final,.stats{grid-template-columns:1fr!important}
@@ -549,6 +533,7 @@
   @media (max-width:1000px){
     .shell{grid-template-columns:1fr;gap:12px;padding:0 16px 64px}
     .orbit{position:static;padding:20px 0}
+    body.is-focus .orbit{min-height:0}
     #panel{border-left:0;padding:0}
     body.is-overview .loopnav{transform:scale(.95);margin:10px 0 0}
     .final,.choices,.stats{grid-template-columns:1fr}
@@ -597,10 +582,7 @@
   :root[data-theme="dark"] .lc-title{color:#F2A08B}
   :root[data-theme="dark"] .lc-form input{background:var(--bg-soft);color:var(--ink)}
   :root[data-theme="dark"] .lc-btn{background:var(--ink);color:#15100D}
-  :root[data-theme="dark"] .setup__bar,:root[data-theme="dark"] .bar{background:rgba(255,236,222,.08)}
-  :root[data-theme="dark"] .setup .mk{background:var(--panel)}
-  :root[data-theme="dark"] .setup li.is-done .mk{background:var(--rose)}
-  :root[data-theme="dark"] .setup li.is-now .mk{background:#C9A24A;box-shadow:0 0 0 5px #3B2F1A}
+  :root[data-theme="dark"] .bar{background:rgba(255,236,222,.08)}
   :root[data-theme="dark"] .choice[aria-disabled="true"],:root[data-theme="dark"] .scopeok,:root[data-theme="dark"] .reject,:root[data-theme="dark"] .msg--bot{background:var(--bg-soft)}
   :root[data-theme="dark"] .drop,:root[data-theme="dark"] .file,:root[data-theme="dark"] .ix li,:root[data-theme="dark"] .conn{background:var(--panel)}
   :root[data-theme="dark"] .msg--me,:root[data-theme="dark"] .btn--primary{color:#15100D}
@@ -643,7 +625,8 @@
 </aside>
 
 <div class="shell">
-  <section class="orbit" id="orbit" aria-label="Setup loop">
+  <section class="orbit" id="orbit" aria-labelledby="setupH">
+    <h2 class="orbit__title" id="setupH">Your setup</h2>
     <div class="loopnav" id="loopnav">
       <svg viewBox="0 0 440 500" aria-hidden="true">
         <defs>
@@ -660,7 +643,7 @@
         </g>
       </svg>
       <ol class="stepper" id="stepper">
-        <li data-k="2" data-side="top" data-title="Connect a source" data-desc="Documents or a folder" data-stage="01 Source"><button type="button" data-go="2" aria-label="01 Source: Connect a source"><span class="n"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg><b class="cnt"></b></span><span class="t"><small>Up next</small><b>01 Source</b><i>Documents or a folder</i><em class="res"></em></span></button></li>
+        <li data-k="2" data-side="top" data-title="Connect a source" data-desc="Documents or an app" data-stage="01 Source"><button type="button" data-go="2" aria-label="01 Source: Connect a source"><span class="n"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg><b class="cnt"></b></span><span class="t"><small>Up next</small><b>01 Source</b><i>Documents or a folder</i><em class="res"></em></span></button></li>
         <li data-k="3" data-side="right" data-title="Index by meaning" data-desc="Text pulled out, split and indexed" data-stage="02 Insights"><button type="button" data-go="3" aria-label="02 Insights: Index by meaning"><span class="n"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg><b class="cnt"></b></span><span class="t"><small>Up next</small><b>02 Insights</b><i>Text pulled out, split and indexed</i><em class="res"></em></span></button></li>
         <li data-k="4" data-side="bottom" data-title="Draft answers" data-desc="The agent drafts answers with sources" data-stage="03 Build"><button type="button" data-go="4" aria-label="03 Build: Draft answers"><span class="n"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg><b class="cnt"></b></span><span class="t"><small>Up next</small><b>03 Build</b><i>The agent drafts answers with sources</i><em class="res"></em></span></button></li>
         <li data-k="5" data-side="gate" data-title="Review" data-desc="Approve, edit or reject" data-stage="Validation"><button type="button" data-go="5" aria-label="Validation: Review"><span class="n"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><b class="cnt"></b></span><span class="t"><small>Up next</small><b>Waiting for validation</b><i>Approve, edit or reject</i><em class="res"></em></span></button></li>
@@ -685,14 +668,10 @@
         <div id="lcInfo" hidden>
           <small id="lcStep">Step 2 of 6</small>
           <b id="lcTitle">Connect a source</b>
-          <span id="lcDesc">Docs, a folder or an app</span>
+          <span id="lcDesc">Docs or an app</span>
         </div>
       </div>
     </div>
-    <section class="setup" aria-labelledby="setupH">
-      <div class="setup__head"><b id="setupH">Your setup</b><span id="setupCount">0 of 5 done</span></div>
-      <ol id="setupList"></ol>
-    </section>
     <p class="loopnote"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/></svg>After setup, the loop keeps running on its own.</p>
   </section>
 
@@ -709,11 +688,10 @@
     <section class="step" data-step="2" aria-labelledby="h2">
       <p class="label">Step 1 of 5 · Source</p>
       <h1 id="h2">Connect one source</h1>
-      <p class="lead">Connect an app like Notion or your website, upload documents, or send us a folder. Ten documents is enough to start.</p>
+      <p class="lead">Upload documents or connect an app like Notion or your website. Ten documents is enough to start.</p>
       <div class="choices" role="radiogroup" aria-label="Source type">
-        <button class="choice" role="radio" aria-checked="false" data-mode="connect"><span class="dot"></span><span><strong>Connect an app</strong><span>Notion, your website, Drive and more</span></span></button>
-        <button class="choice" role="radio" aria-checked="false" data-mode="upload"><span class="dot"></span><span><strong>Upload documents</strong><span>PDF, DOCX, Markdown or TXT</span></span></button>
-        <button class="choice" role="radio" aria-checked="false" data-mode="folder"><span class="dot"></span><span><strong>Send us a folder</strong><span>Share a Google Drive, SharePoint or Dropbox link</span></span></button>
+        <button class="choice" role="radio" aria-checked="true" data-mode="upload"><span class="dot"></span><span><strong>Upload documents</strong><span>PDF, DOCX, Markdown or TXT</span></span></button>
+        <button class="choice" role="radio" aria-checked="false" data-mode="connect"><span class="dot"></span><span><strong>Connect an app</strong><span>Website, Notion or Gmail</span></span></button>
       </div>
 
       <div class="panel" id="connectPane" hidden>
@@ -725,7 +703,7 @@
         </div>
       </div>
 
-      <div class="panel" id="uploadPane" hidden>
+      <div class="panel" id="uploadPane">
         <label class="drop" id="drop">
           <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg></span>
           <strong>Drop files here, or browse</strong>
@@ -739,18 +717,8 @@
         <ul class="files" id="fileList"></ul>
       </div>
 
-      <div class="panel" id="folderPane" hidden>
-        <!-- ASSUMPTION: "a folder you send us" means a shared folder link. check with Eric -->
-        <div class="field">
-          <label for="folderLink">Shared folder link</label>
-          <input class="text" id="folderLink" placeholder="https://drive.google.com/drive/folders/…">
-          <span class="hint" id="folderHint">Give view access to ingest@lojo.ai, then paste the link.</span>
-        </div>
-        <ul class="files" id="folderList"></ul>
-      </div>
-
       <!-- ASSUMPTION: the week-1 scope sign-off is captured here as one confirmation. check with Eric -->
-      <label class="scopeok"><input type="checkbox" id="scopeOk"><div>These documents are in scope.<span>Personal details are not removed automatically in this phase, so only send what we agreed on.</span></div></label>
+      <label class="scopeok"><input type="checkbox" id="scopeOk"><div>I confirm these documents are in the agreed scope and that I’m allowed to share them with lojo.<span>I understand personal details are not removed automatically in this phase, so I’ll only share what we agreed on.</span></div></label>
 
       <div class="actions">
         <button class="btn btn--secondary" data-back>Back</button>
@@ -872,21 +840,21 @@ let SAMPLE = [
 ];
 
 const CONNECTORS = [
-  { id: 'notion', name: 'Notion', kind: 'Pages & wikis', mono: 'N', color: 'var(--ink)', unit: 'Teamspace',
-    scopes: [['Pricing wiki', [0]], ['Help Center', [1]], ['Security docs', [2]], ['Policies', [3]], ['Onboarding playbook', [5]]] },
   { id: 'website', name: 'Website', kind: 'Web parsing', mono: 'W', color: '#3E6FA6', unit: 'Section',
     scopes: [['oslo.com/pricing', [0]], ['help.oslo.com', [1, 2]], ['oslo.com/legal', [3]]] },
-  { id: 'gdrive', name: 'Google Drive', kind: 'Docs & files', mono: 'GD', color: '#1A73E8', unit: 'Folder',
-    scopes: [['Sales / Pricing', [0, 4]], ['Support / Help Center', [1]], ['Security', [2]], ['Policies', [3]], ['Customer success', [5]]] },
-  { id: 'sharepoint', name: 'SharePoint', kind: 'Sites & libraries', mono: 'SP', color: '#036C70', unit: 'Site',
-    scopes: [['Revenue', [0, 4]], ['Support', [1, 3]], ['IT & Security', [2]], ['Onboarding', [5]]] },
-  { id: 'confluence', name: 'Confluence', kind: 'Spaces', mono: 'C', color: '#0C66E4', unit: 'Space',
-    scopes: [['Go-to-market', [0, 4]], ['Support KB', [1, 3]], ['Security', [2]], ['Onboarding', [5]]] },
+  { id: 'notion', name: 'Notion', kind: 'Pages & wikis', mono: 'N', color: 'var(--ink)', unit: 'Teamspace',
+    scopes: [['Pricing wiki', [0]], ['Help Center', [1]], ['Security docs', [2]], ['Policies', [3]], ['Onboarding playbook', [5]]] },
   { id: 'gmail', name: 'Gmail', kind: 'Email', mono: 'M', color: '#D93025', unit: 'Label',
     scopes: [['support@oslo.com', [1, 3]], ['sales@oslo.com', [0, 4]], ['security@oslo.com', [2]]] },
-  { id: 'aircall', name: 'Aircall', kind: 'Calls', mono: 'A', color: '#00B388', unit: 'Line',
+  { id: 'gdrive', soon: true, name: 'Google Drive', kind: 'Docs & files', mono: 'GD', color: '#1A73E8', unit: 'Folder',
+    scopes: [['Sales / Pricing', [0, 4]], ['Support / Help Center', [1]], ['Security', [2]], ['Policies', [3]], ['Customer success', [5]]] },
+  { id: 'sharepoint', soon: true, name: 'SharePoint', kind: 'Sites & libraries', mono: 'SP', color: '#036C70', unit: 'Site',
+    scopes: [['Revenue', [0, 4]], ['Support', [1, 3]], ['IT & Security', [2]], ['Onboarding', [5]]] },
+  { id: 'confluence', soon: true, name: 'Confluence', kind: 'Spaces', mono: 'C', color: '#0C66E4', unit: 'Space',
+    scopes: [['Go-to-market', [0, 4]], ['Support KB', [1, 3]], ['Security', [2]], ['Onboarding', [5]]] },
+  { id: 'aircall', soon: true, name: 'Aircall', kind: 'Calls', mono: 'A', color: '#00B388', unit: 'Line',
     scopes: [['Sales line', [4, 0]], ['Support line', [1, 3]]] },
-  { id: 'gsheets', name: 'Google Sheets', kind: 'Spreadsheets', mono: 'GS', color: '#188038', unit: 'Sheet',
+  { id: 'gsheets', soon: true, name: 'Google Sheets', kind: 'Spreadsheets', mono: 'GS', color: '#188038', unit: 'Sheet',
     scopes: [['Pricing matrix', [0]], ['Onboarding tracker', [5]]] },
 ];
 
@@ -945,7 +913,7 @@ function useOsloPack() {
 const hasOslo = () => S.mode === 'upload' && S.files.some(f => window.OSLO_PACK && OSLO_PACK.match(f.name));
 
 /* ---------------- state ---------------- */
-const S = { picked: new Set(), step: 1, reached: 1, mode: null, conn: null, scopes: [], files: [], folder: '', queue: [], seeded: false, indexed: false, finished: false };
+const S = { picked: new Set(), step: 1, reached: 1, mode: 'upload', conn: null, scopes: [], files: [], queue: [], seeded: false, indexed: false, finished: false };
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const P = (id) => PASSAGES.find(p => p.id === id);
@@ -1117,24 +1085,10 @@ function renderLoop() {
     $('lcDesc').textContent = '';
   }
 
-  // your setup checklist
   const doneN = !S.ws ? 0 : S.finished ? 5 : S.reached - 2;
-  $('setupCount').textContent = doneN + ' of 5 done';
-  $('setupList').innerHTML = NODES.map((li, i) => {
-    const k = +li.dataset.k, isNow = focus && k === S.step, isDone = li.classList.contains('is-done') || (k < S.reached && !isNow);
-    const cls = isNow ? 'is-now' : isDone ? 'is-done' : 'is-todo';
-    const sub = isNow ? 'In progress' : isDone ? 'Done' : 'Not set yet';
-    return '<li class="' + cls + (isDone || isNow || k === S.reached ? ' is-link' : '') + '" data-go="' + k + '" title="' + esc(isDone ? res[k]() : li.dataset.title) + '"><span class="mk">' + (isDone ? '✓' : isNow ? '' : i + 1) + '</span>' +
-      '<div><b>' + (/^\d/.test(li.dataset.stage) ? '<i>' + li.dataset.stage.slice(0, 2) + '</i>' + esc(li.dataset.stage.slice(3)) : '<i>&nbsp;</i>' + esc(li.dataset.stage)) + '</b><span>' + esc(sub) + '</span></div></li>';
-  }).join('');
-
   if ($('progressTxt')) $('progressTxt').textContent = doneN + ' of 5';
   spinTo(focus ? S.step : (S.ws ? S.reached : 2), focus ? 150 : 178);
 }
-$('setupList').addEventListener('click', (e) => {
-  const li = e.target.closest('li.is-link');
-  if (li) go(+li.dataset.go);
-});
 
 function go(n) {
   if (n < 2) { showOverview(); return; }
@@ -1184,12 +1138,11 @@ $('createWs').addEventListener('click', () => {
 
 /* ---------------- 2 · source ---------------- */
 document.querySelectorAll('.choice').forEach(c => c.addEventListener('click', () => {
-  if (c.getAttribute('aria-disabled') === 'true') { toast('Live sources come with the full build. Upload documents or send a folder for now.'); return; }
+  if (c.getAttribute('aria-disabled') === 'true') { toast('Live sources come with the full build. Upload documents for now.'); return; }
   S.mode = c.dataset.mode;
   document.querySelectorAll('.choice').forEach(x => x.setAttribute('aria-checked', x === c));
   $('connectPane').hidden = S.mode !== 'connect';
   $('uploadPane').hidden = S.mode !== 'upload';
-  $('folderPane').hidden = S.mode !== 'folder';
   checkSource();
 }));
 
@@ -1223,22 +1176,15 @@ const drop = $('drop');
 ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove('is-over'); }));
 drop.addEventListener('drop', (e) => addFiles(e.dataTransfer.files));
 
-$('folderLink').addEventListener('input', () => {
-  S.folder = $('folderLink').value.trim();
-  const ok = /^https?:\/\/\S+\.\S+/.test(S.folder);
-  $('folderList').innerHTML = ok ? SAMPLE.map((f, i) => fileRow(f, i, false)).join('') : '';
-  $('folderHint').textContent = ok ? 'Found ' + SAMPLE.length + ' documents in this folder.' : 'Give view access to ingest@lojo.ai, then paste the link.';
-  checkSource();
-});
-
 const LOGO = {"notion": "<path d=\"M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.139c-.093-.514.28-.887.747-.933zM1.936 1.035l13.31-.98c1.634-.14 2.055-.047 3.082.7l4.249 2.986c.7.513.934.653.934 1.213v16.378c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.047-1.448-.093-1.962-.747l-3.129-4.06c-.56-.747-.793-1.306-.793-1.96V2.667c0-.839.374-1.54 1.447-1.632z\"/>", "gdrive": "<path d=\"M12.01 1.485c-2.082 0-3.754.02-3.743.047.01.02 1.708 3.001 3.774 6.62l3.76 6.574h3.76c2.081 0 3.753-.02 3.742-.047-.005-.02-1.708-3.001-3.775-6.62l-3.76-6.574zm-4.76 1.73a789.828 789.861 0 0 0-3.63 6.319L0 15.868l1.89 3.298 1.885 3.297 3.62-6.335 3.618-6.33-1.88-3.287C8.1 4.704 7.255 3.22 7.25 3.214zm2.259 12.653-.203.348c-.114.198-.96 1.672-1.88 3.287a423.93 423.948 0 0 1-1.698 2.97c-.01.026 3.24.042 7.222.042h7.244l1.796-3.157c.992-1.734 1.85-3.23 1.906-3.323l.104-.167h-7.249z\"/>", "gsheets": "<path d=\"M11.318 12.545H7.91v-1.909h3.41v1.91zM14.728 0v6h6l-6-6zm1.363 10.636h-3.41v1.91h3.41v-1.91zm0 3.273h-3.41v1.91h3.41v-1.91zM20.727 6.5v15.864c0 .904-.732 1.636-1.636 1.636H4.909a1.636 1.636 0 0 1-1.636-1.636V1.636C3.273.732 4.005 0 4.909 0h9.318v6.5h6.5zm-3.273 2.773H6.545v7.909h10.91v-7.91zm-6.136 4.636H7.91v1.91h3.41v-1.91z\"/>", "gmail": "<path d=\"M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z\"/>", "confluence": "<path d=\"M.87 18.257c-.248.382-.53.875-.763 1.245a.764.764 0 0 0 .255 1.04l4.965 3.054a.764.764 0 0 0 1.058-.26c.199-.332.454-.763.733-1.221 1.967-3.247 3.945-2.853 7.508-1.146l4.957 2.337a.764.764 0 0 0 1.028-.382l2.364-5.346a.764.764 0 0 0-.382-1 599.851 599.851 0 0 1-4.965-2.361C10.911 10.97 5.224 11.185.87 18.257zM23.131 5.743c.249-.405.531-.875.764-1.25a.764.764 0 0 0-.256-1.034L18.675.404a.764.764 0 0 0-1.058.26c-.195.335-.451.763-.734 1.225-1.966 3.246-3.945 2.85-7.508 1.146L4.437.694a.764.764 0 0 0-1.027.382L1.046 6.422a.764.764 0 0 0 .382 1c1.039.49 3.105 1.467 4.965 2.361 6.698 3.246 12.392 3.029 16.738-4.04z\"/>", "aircall": "<path d=\"M23.451 5.906a6.978 6.978 0 0 0-5.375-5.39C16.727.204 14.508 0 12 0S7.273.204 5.924.516a6.978 6.978 0 0 0-5.375 5.39C.237 7.26.034 9.485.034 12s.203 4.74.515 6.094a6.978 6.978 0 0 0 5.375 5.39C7.273 23.796 9.492 24 12 24s4.727-.204 6.076-.516a6.978 6.978 0 0 0 5.375-5.39c.311-1.354.515-3.578.515-6.094 0-2.515-.203-4.74-.515-6.094zm-5.873 12.396l-.003.001c-.428.152-1.165.283-2.102.377l-.147.014a.444.444 0 0 1-.45-.271 1.816 1.816 0 0 0-1.296-1.074c-.351-.081-.928-.134-1.58-.134s-1.229.053-1.58.134a1.817 1.817 0 0 0-1.291 1.062.466.466 0 0 1-.471.281 8 8 0 0 0-.129-.012c-.938-.094-1.676-.224-2.105-.377l-.003-.001a.76.76 0 0 1-.492-.713c0-.032.003-.066.005-.098.073-.979.666-3.272 1.552-5.89C8.5 8.609 9.559 6.187 10.037 5.714a1.029 1.029 0 0 1 .404-.26l.004-.002c.314-.106.892-.178 1.554-.178.663 0 1.241.071 1.554.178l.005.002a1.025 1.025 0 0 1 .405.26c.478.472 1.537 2.895 2.549 5.887.886 2.617 1.479 4.91 1.552 5.89.002.032.005.066.005.098a.76.76 0 0 1-.491.713z\"/>", "sharepoint": "<path d=\"M24 13.5q0 1.242-.475 2.332-.474 1.09-1.289 1.904-.814.815-1.904 1.29-1.09.474-2.332.474-.762 0-1.523-.2-.106.997-.557 1.858-.451.862-1.154 1.494-.704.633-1.606.99-.902.358-1.91.358-1.09 0-2.045-.416-.955-.416-1.664-1.125-.709-.709-1.125-1.664Q6 19.84 6 18.75q0-.188.018-.375.017-.188.04-.375H.997q-.41 0-.703-.293T0 17.004V6.996q0-.41.293-.703T.996 6h3.54q.14-1.277.726-2.373.586-1.096 1.488-1.904Q7.652.914 8.807.457 9.96 0 11.25 0q1.395 0 2.625.533T16.02 1.98q.914.915 1.447 2.145T18 6.75q0 .188-.012.375-.011.188-.035.375 1.242 0 2.344.469 1.101.468 1.928 1.277.826.809 1.3 1.904Q24 12.246 24 13.5zm-12.75-12q-.973 0-1.857.34-.885.34-1.577.943-.691.604-1.154 1.43Q6.2 5.039 6.06 6h4.945q.41 0 .703.293t.293.703v4.945l.21-.035q.212-.75.61-1.424.399-.673.944-1.218.545-.545 1.213-.944.668-.398 1.43-.61.093-.503.093-.96 0-1.09-.416-2.045-.416-.955-1.125-1.664-.709-.709-1.664-1.125Q12.34 1.5 11.25 1.5zM6.117 15.902q.54 0 1.06-.111.522-.111.932-.37.41-.257.662-.679.252-.422.252-1.055 0-.632-.263-1.054-.264-.422-.662-.703-.399-.282-.856-.463l-.855-.34q-.399-.158-.662-.334-.264-.176-.264-.445 0-.2.14-.323.141-.123.335-.193.193-.07.404-.094.21-.023.351-.023.598 0 1.055.152.457.153.95.457V8.543q-.282-.082-.522-.14-.24-.06-.475-.1-.234-.041-.486-.059-.252-.017-.557-.017-.515 0-1.054.117-.54.117-.979.375-.44.258-.715.68-.275.421-.275 1.03 0 .598.263.997.264.398.663.68.398.28.855.474l.856.363q.398.17.662.358.263.187.263.457 0 .222-.123.351-.123.13-.31.2-.188.07-.393.087-.205.018-.369.018-.703 0-1.248-.234-.545-.235-1.107-.621v1.875q1.195.468 2.472.468zM11.25 22.5q.773 0 1.453-.293t1.19-.803q.51-.51.808-1.195.299-.686.299-1.459 0-.668-.223-1.277-.222-.61-.62-1.096-.4-.486-.95-.826-.55-.34-1.207-.48v1.933q0 .41-.293.703t-.703.293H7.57q-.07.375-.07.75 0 .773.293 1.459t.803 1.195q.51.51 1.195.803.686.293 1.459.293zM18 18q.926 0 1.746-.352.82-.351 1.436-.966.615-.616.966-1.43.352-.815.352-1.752 0-.926-.352-1.746-.351-.82-.966-1.436-.616-.615-1.436-.966Q18.926 9 18 9t-1.74.357q-.815.358-1.43.973t-.973 1.43q-.357.814-.357 1.74 0 .129.006.258t.017.258q.551.27 1.02.65t.838.855q.369.475.627 1.026.258.55.387 1.148Q17.18 18 18 18Z\"/>", "website": "<circle cx=\"12\" cy=\"12\" r=\"9\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/><path d=\"M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/>"};
 $('connGrid').innerHTML = CONNECTORS.map(c =>
-  '<button type="button" class="conn" data-conn="' + c.id + '"><span class="tile logo" style="color:' + c.color + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + LOGO[c.id] + '</svg></span>' +
-  '<span><b>' + esc(c.name) + '</b><span class="k">' + esc(c.kind) + '</span></span></button>').join('');
+  '<button type="button" class="conn' + (c.soon ? ' soon' : '') + '" data-conn="' + c.id + '"' + (c.soon ? ' aria-disabled="true" title="Coming soon"' : '') + '><span class="tile logo" style="color:' + c.color + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + LOGO[c.id] + '</svg></span>' +
+  '<span><b>' + esc(c.name) + '</b><span class="k">' + (c.soon ? '<em class="soon__tag">Coming soon</em>' : esc(c.kind)) + '</span></span></button>').join('');
 $('connGrid').addEventListener('click', (e) => {
   const b = e.target.closest('[data-conn]');
   if (!b || b.classList.contains('is-selected')) return;
   const c = CONNECTORS.find(x => x.id === b.dataset.conn);
+  if (c.soon) { toast(c.name + ' is coming soon. Connect Website, Notion or Gmail for now.'); return; }
   $('connGrid').querySelectorAll('.conn').forEach(x => { x.disabled = true; x.classList.remove('is-selected'); });
   S.conn = null;
   checkSource();
@@ -1251,6 +1197,7 @@ $('connGrid').addEventListener('click', (e) => {
     $('connGrid').querySelectorAll('.conn').forEach(x => {
       x.disabled = false;
       x.classList.remove('is-busy');
+      if (x.classList.contains('soon')) return;
       x.querySelector('.k').textContent = CONNECTORS.find(y => y.id === x.dataset.conn).kind;
     });
     b.classList.add('is-selected');
@@ -1260,7 +1207,6 @@ $('connGrid').addEventListener('click', (e) => {
 });
 
 function sourceDocs() {
-  if (S.mode === 'folder') return SAMPLE;
   if (S.mode === 'upload') return S.files;
   if (!S.conn) return [];
   const idx = new Set(S.scopes.flatMap(i => S.conn.scopes[i][1]));
@@ -1268,14 +1214,14 @@ function sourceDocs() {
 }
 function checkSource() {
   const ok = S.mode === 'upload' ? S.files.length > 0
-    : S.mode === 'folder' ? /^https?:\/\/\S+\.\S+/.test(S.folder)
     : S.mode === 'connect' ? !!S.conn && S.scopes.length > 0 : false;
   $('toIndex').disabled = !ok || !$('scopeOk').checked;
   const n = sourceDocs().length;
-  const need = { upload: 'Add at least one document.', folder: 'Paste a folder link.', connect: 'Choose an app to connect.' };
+  const need = { upload: 'Add at least one document.', connect: 'Choose an app to connect.' };
   $('srcNote').textContent = ok ? (S.mode === 'connect' ? S.conn.name + ' · ' : '') + n + ' document' + (n === 1 ? '' : 's') + ' ready' : (need[S.mode] || 'Choose a source to connect.');
 }
 $('scopeOk').addEventListener('change', checkSource);
+checkSource();   // Upload documents is preselected
 checkSource();
 $('toIndex').addEventListener('click', () => { S.indexed = false; S.seeded = false; S.queue = []; if (hasOslo()) useOsloPack(); go(3); });
 
@@ -1643,7 +1589,7 @@ $('chatChips').addEventListener('click', (e) => { const c = e.target.closest('.c
 function sourceLabel() {
   if (S.mode === 'connect' && S.conn) { const n = S.scopes.length; return S.conn.name + ' · ' + n + ' ' + S.conn.unit.toLowerCase() + (n === 1 ? '' : 's'); }
   if (S.mode === 'upload') return S.files.length + ' uploaded document' + (S.files.length === 1 ? '' : 's');
-  return 'Shared folder';
+  return 'Connected app';
 }
 $('finish').addEventListener('click', () => {
   const handoff = {
@@ -1695,7 +1641,7 @@ if (INSIDE.has('inside')) {
   else { $('inLabel').textContent = 'Step 5 of 5 · Distribute'; $('hIn').textContent = 'Your approved answers are live'; $('inLead').textContent = 'Ask lojo reads only approved answers. The loop keeps running as your sources change.'; $('inCta').textContent = 'Open Ask lojo →'; $('inCta').href = 'chat.html'; }
   // a loop stage opens its page in the app, not a setup step
   const PAGE = { 2: 'sources.html', 3: 'insights.html', 4: 'build.html', 5: 'build.html', 6: 'distribute.html' };
-  ['stepper', 'setupList'].forEach(id => $(id).addEventListener('click', (e) => {
+  ['stepper'].forEach(id => $(id).addEventListener('click', (e) => {
     const b = e.target.closest('[data-go]'); if (!b) return;
     e.stopImmediatePropagation();
     location.href = PAGE[b.dataset.go];

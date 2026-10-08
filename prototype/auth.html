@@ -108,6 +108,9 @@
   .spin{width:16px;height:16px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:spin .7s linear infinite;display:none}
   .btn.is-loading .spin{display:inline-block}
   .btn.is-loading .ico{display:none}
+  .is-bare{background:none!important;border-color:transparent!important;box-shadow:none!important}
+  .loader{width:44px;height:44px;margin:28px auto;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--rose);animation:spin .8s linear infinite}
+  @media (prefers-reduced-motion:reduce){.loader{animation-duration:2.4s}}
   @keyframes spin{to{transform:rotate(360deg)}}
 
   #form:not([hidden]){animation:formIn .25s ease}
@@ -235,12 +238,6 @@
   .region span{display:block;color:var(--muted);font-size:.8rem;margin-top:2px}
   .check{display:flex;gap:8px;align-items:center;font-size:.84rem;color:var(--muted);cursor:pointer}
   .check input{accent-color:var(--rose)}
-  .steps{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:8px;font-size:.88rem}
-  .steps li{display:flex;gap:10px;align-items:center;color:var(--muted)}
-  .steps li i{width:18px;height:18px;border-radius:50%;border:2px solid var(--line-2);flex:none;font-style:normal;font-size:.64rem;display:grid;place-items:center}
-  .steps li.done{color:var(--ink)}
-  .steps li.done i{background:var(--success);border-color:var(--success);color:#fff}
-  .steps li.now i{border-color:var(--rose);border-right-color:transparent;animation:spin .8s linear infinite}
   .ref{display:block;text-align:center;margin-top:14px;font-size:.74rem;color:var(--muted);font-family:ui-monospace,Menlo,monospace}
   .code404{font-family:var(--display);font-weight:800;font-size:3.2rem;line-height:1;text-align:center;background:var(--brand-gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
   .card h2,.card .lead{text-align:center}
@@ -341,11 +338,8 @@
     noaccess: () => ({ title: 'No access', html: icon('lock', 'is-err') + '<h2>No access in this region</h2><p class="lead">' + esc(email) + ' isn’t a member of any workspace in Asia Pacific · Singapore. Ask a workspace Owner to invite you, or choose another region.</p>' +
       '<div class="row-btns"><a class="btn btn--primary" href="auth.html?s=region">Choose another region</a></div>' + back }),
     // G16
-    loading: () => ({ title: 'Signing in…', html: '<div class="ico-c is-logo"><img src="assets/lojo-icon.png" alt=""></div><h2>Signing you in…</h2><p class="lead">This takes a few seconds.</p>' +
-      '<ul class="steps" id="st"><li>Checking your account</li><li>Opening your workspace</li><li>Loading your loop</li></ul>',
-      init: () => { const li = [...document.querySelectorAll('#st li')]; li.forEach(l => l.insertAdjacentHTML('afterbegin', '<i></i>'));
-        let i = 0; const tick = () => { li.forEach((l, n) => { l.className = n < i ? 'done' : n === i ? 'now' : ''; if (n < i) l.querySelector('i').textContent = '✓'; });
-          if (i++ < li.length) setTimeout(tick, 650); else setTimeout(() => location.href = P.get('next') || 'onboarding.html', 400); }; tick(); } }),
+    loading: () => ({ title: 'Signing in…', html: '<div class="loader" role="status" aria-label="Signing in"></div>',
+      init: () => { $('card').classList.add('is-bare'); setTimeout(() => location.href = P.get('next') || 'onboarding.html', 1200); } }),
     failed: () => ({ title: 'lojo couldn’t start', html: icon('alert', 'is-err') + '<h2>lojo couldn’t start</h2><p class="lead">The app didn’t finish loading. This is often a blocked script or a dropped connection. Reload the page; if it keeps happening, try another browser.</p>' +
       '<div class="row-btns"><button class="btn btn--primary" type="button" onclick="location.href=\'auth.html?s=loading\'">Reload</button><a class="btn btn--secondary" href="login.html">Back to sign in</a></div><span class="ref">Error APP_START_TIMEOUT · ' + ref() + '</span>' }),
     // G12

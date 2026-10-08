@@ -958,6 +958,32 @@
   .tile--soft .gauge{grid-row:auto}
   .tile--soft .tile__lbl,.tile--soft .tile__sub{align-self:center}
   .tile .tip::after{left:50%;transform:translate(-50%,4px)}
+  /* loop runs */
+  .runs{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .rrow{display:grid;grid-template-columns:86px 140px minmax(0,1fr) 170px 120px 90px;gap:14px;align-items:center;padding:11px 16px;color:inherit;text-decoration:none;transition:background-color .15s ease}
+  .rrow + .rrow{border-top:1px solid var(--line)}
+  a.rrow:hover{background:var(--bg-soft);text-decoration:none}
+  .rhead{padding:8px 16px;background:var(--bg-soft);font-size:.64rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .rid{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.8rem;font-weight:600;color:var(--ink)}
+  .rst{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;font-style:normal;font-size:.72rem;font-weight:700;white-space:nowrap}
+  .rst::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+  .rst.run{background:rgba(62,111,166,.1);color:var(--info)}
+  .rst.run::before{animation:livePulse 1.2s ease-in-out infinite}
+  .rst.queue{background:var(--bg-soft);color:var(--muted)}
+  .rst.wait{background:var(--amber-soft);color:#8A6212}
+  .rst.done{background:rgba(63,143,95,.12);color:var(--success)}
+  .rst.fail{background:rgba(198,69,69,.1);color:var(--error)}
+  .rtr{min-width:0}
+  .rtr b{display:block;font-size:.86rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rtr small,.rprog small{display:block;font-size:.74rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rsteps{display:flex;gap:3px;margin-bottom:4px}
+  .rsteps i{flex:1;height:6px;border-radius:3px;background:var(--line-2)}
+  .rsteps i.ok{background:var(--success)}
+  .rsteps i.now{background:var(--info);animation:livePulse 1.2s ease-in-out infinite}
+  .rsteps i.hold{background:#C9A24A}
+  .rsteps i.bad{background:var(--error)}
+  .rtime{font-size:.78rem;color:var(--muted);white-space:nowrap}
+  @media (max-width:1100px){.rrow{grid-template-columns:76px 120px minmax(0,1fr) 120px}.rrow > :nth-child(5),.rrow > :nth-child(6){display:none}}
 
   :root[data-theme="dark"]{
     --ink:#F2EBE5; --bg:#15100D; --bg-soft:#231B16; --panel:#1C1612;
@@ -1097,6 +1123,11 @@
       <div class="sec__head"><h2 id="s1">Your knowledge today</h2><span>· What Oslo has in lojo right now</span></div>
       <div class="tiles" id="today"></div>
       <div class="checks" id="checks"></div>
+    </section>
+
+    <section class="sec" aria-labelledby="runH">
+      <div class="sec__head"><h2 id="runH">Loop runs</h2><span>· Every time the loop runs, from new sources to approved answers</span><a href="activity.html">All activity →</a></div>
+      <div class="runs" id="runs"></div>
     </section>
 
     <div class="duo">
@@ -1959,6 +1990,32 @@ function stackCycle() {
   show(); clearInterval(stackT);
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches) stackT = setInterval(show, 3200);
 }
+// loop runs: each pass of the loop gets an id and a status; the newest is still running
+const RUN_STAGES = ['Source', 'Insights', 'Build', 'Validate', 'Distribute'];
+const RUNS = [
+  { id: 'L-0012', status: 'run', trigger: 'Partner terms.docx uploaded', started: -14, stage: 2, stats: '1 document · 4 questions so far' },
+  { id: 'L-0013', status: 'queue', trigger: 'Website change: help.oslo.com/sso', started: null, stage: 0, stats: 'Starts when L-0012 finishes' },
+  { id: 'L-0011', status: 'wait', trigger: 'Gmail: 3 new emails', started: -320, ended: -305, stage: 3, stats: '2 questions · 10 drafts waiting for review' },
+  { id: 'L-0010', status: 'done', trigger: 'Notion sync', started: -1460, ended: -1442, stage: 5, stats: '5 pages · 3 answers approved' },
+  { id: 'L-0009', status: 'fail', trigger: 'Holiday policy 2025.pdf uploaded', started: -2900, ended: -2899, stage: 0, stats: 'Password-protected PDF couldn’t be read' },
+  { id: 'L-0008', status: 'done', trigger: 'Initial setup · 10 documents', started: -40320, ended: -40290, stage: 5, stats: '680 passages · 17 drafts · 7 approved' },
+];
+const RUN_ST = { run: ['Running', 'run'], queue: ['Queued', 'queue'], wait: ['Waiting for you', 'wait'], done: ['Completed', 'done'], fail: ['Failed', 'fail'] };
+const T0 = Date.now();
+const whenRun = (m) => { const d = new Date(T0 + m * 60000), today = new Date().toDateString() === d.toDateString(); return (today ? 'Today ' : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ', ') + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); };
+const dur = (mins) => mins < 1 ? '<1 min' : mins < 60 ? Math.round(mins) + ' min' : Math.floor(mins / 60) + ' h ' + Math.round(mins % 60) + ' min';
+function renderRuns() {
+  $('runs').innerHTML = '<div class="rrow rhead"><span>Run</span><span>Status</span><span>Trigger</span><span>Progress</span><span>Started</span><span>Duration</span></div>' + RUNS.map(r => {
+    const [lbl, cls] = RUN_ST[r.status], done = r.status === 'done' ? 5 : r.stage;
+    const steps = RUN_STAGES.map((s, i) => '<i class="' + (i < done ? 'ok' : i === done && (r.status === 'run' || r.status === 'wait') ? (r.status === 'run' ? 'now' : 'hold') : r.status === 'fail' && i === 0 ? 'bad' : '') + '" title="' + s + '"></i>').join('');
+    const mins = r.started === null ? null : ((r.ended ?? (Date.now() - T0) / 60000) - r.started);
+    return '<a class="rrow" href="' + (r.status === 'wait' ? 'build.html' : r.status === 'fail' ? 'sources.html' : 'activity.html') + '"><span class="rid">#' + r.id + '</span>' +
+      '<span><em class="rst ' + cls + '">' + lbl + '</em></span><span class="rtr"><b>' + esc(r.trigger) + '</b><small>' + esc(r.stats) + '</small></span>' +
+      '<span class="rprog"><span class="rsteps">' + steps + '</span><small>' + (r.status === 'queue' ? 'Not started' : r.status === 'done' ? 'All 5 stages' : r.status === 'fail' ? 'Stopped at Source' : 'At ' + RUN_STAGES[r.stage]) + '</small></span>' +
+      '<span class="rtime">' + (r.started === null ? '—' : whenRun(r.started)) + '</span><span class="rtime"' + (r.status === 'run' ? ' data-live="' + r.started + '"' : '') + '>' + (mins === null ? '—' : dur(mins)) + '</span></a>';
+  }).join('');
+}
+setInterval(() => document.querySelectorAll('[data-live]').forEach(el => { el.textContent = dur((Date.now() - T0) / 60000 - +el.dataset.live); }), 15000);
 function render() {
   const c = counts();
   let first = 'Sara';
@@ -1966,7 +2023,7 @@ function render() {
   const hr = new Date().getHours();
   $('ovTitle').innerHTML = (hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening') + ', ' + esc(first) + ' <span class="wave" aria-hidden="true">👋</span>';
   $('ovDate').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
-  miniLoop(c);
+  miniLoop(c); renderRuns();
 
   // up next + weekly target
   const decided = c.approved + c.final, mins = Math.max(1, Math.round(c.pending * 1.2));
