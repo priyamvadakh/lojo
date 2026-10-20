@@ -79,14 +79,20 @@
   .side nav{display:grid;gap:4px}
   .nav-item{display:flex;align-items:center;gap:12px;height:42px;padding:0 12px;border-radius:12px;color:var(--ink);font-weight:500;font-size:.9rem;text-decoration:none;white-space:nowrap}
   .nav-item svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;color:var(--muted)}
-  .nav-item.is-active{background:rgba(232,93,117,.1);color:#B73C54;font-weight:700}
-  .nav-item.is-active svg{color:#B73C54}
+  .nav-item.is-active{background:#FFF0E8;color:#8A4B2F;font-weight:700}
+  .nav-item.is-active svg{color:#8A4B2F}
   .nav-item.is-locked{color:var(--muted);opacity:.6;cursor:not-allowed}
   .nav-item .count{margin-left:auto;font-size:.7rem;font-weight:700;color:#B73C54}
   .nav-item .lock{margin-left:auto;width:14px;height:14px}
   .side__note{margin:10px 12px 0;font-size:.74rem;color:var(--muted);line-height:1.45}
   .side__foot{margin-top:auto}
   .side__foot .theme-toggle{margin:0 0 12px 10px}
+  .loopclose{position:fixed;top:18px;right:22px;z-index:60;width:44px;height:44px;border-radius:50%;border:1px solid var(--line-2);background:var(--panel);color:var(--ink);display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 24px -16px rgba(36,26,20,.5);transition:border-color .15s ease,transform .15s ease}
+  .skipsetup{position:fixed;top:18px;right:22px;z-index:60;height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--line-2);background:var(--panel);font:inherit;font-size:.86rem;font-weight:600;color:var(--muted);cursor:pointer;box-shadow:0 10px 24px -18px rgba(36,26,20,.5)}
+  .skipsetup:hover{border-color:#FFB199;color:var(--ink)}
+  .skipsetup[hidden]{display:none}
+  .loopclose:hover{border-color:#FFB199;transform:rotate(90deg)}
+  .loopclose svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
   body.is-collapsed .side__foot .theme-toggle{margin:0 auto 12px;display:flex}
   .ws{display:flex;align-items:center;gap:10px;padding:4px}
   .ws img{width:40px;height:40px;border-radius:22%}
@@ -104,7 +110,7 @@
   .orbit{position:sticky;top:0;display:grid;justify-items:center;padding:24px 32px 20px 0;min-width:0}
   body.is-focus .orbit > *{width:100%;max-width:500px}
   body.is-focus .orbit > .loopnav{width:440px;max-width:none}
-  body.is-overview .orbit{position:static;padding:0}
+  body.is-overview .orbit{position:static;padding:56px 0 0}
   .ov-cap{margin:0;color:var(--muted);font-size:.88rem;text-align:center}
   body.is-focus .ov-cap{display:none}
 
@@ -148,19 +154,21 @@
   .stepper .t{position:absolute;width:170px;color:var(--muted);transition:opacity .25s ease}
   .loopnav.is-spinning .stepper .t{opacity:0!important}
   .stepper .t b{display:block;font-family:var(--display);font-weight:700;font-size:1rem;line-height:1.2;color:var(--ink);white-space:nowrap}
-  .stepper .t i,.stepper .t .res{display:block;font-style:normal;font-size:.76rem;line-height:1.25;margin-top:1px}
+  .stepper .t .res{display:block;font-style:normal;font-size:.76rem;line-height:1.25;margin-top:1px}
+  .stepper .t i{display:block;font-style:normal;font-size:.76rem;line-height:1.35;margin-top:3px;color:var(--muted)}
+  .stepper li.gate .t{width:200px}
+  .stepper li.gate .t b{white-space:normal}
   .stepper .t .res:empty{display:none}
   .stepper .t small{display:none;width:max-content;margin-bottom:5px;padding:3px 9px;border-radius:999px;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:rgba(212,160,67,.16);color:#8A6212}
   .stepper [data-side="top"] .t{left:50%;bottom:calc(100% + 12px);transform:translateX(-50%);text-align:center}
   .stepper [data-side="bottom"] .t{left:50%;top:calc(100% + 12px);transform:translateX(-50%);text-align:center}
   .stepper [data-side="top"] .t small,.stepper [data-side="bottom"] .t small{margin-inline:auto}
-  .stepper [data-side="right"] .t{left:calc(100% + 14px);top:50%;transform:translateY(-50%);text-align:center}
-  .stepper [data-side="right"] .t small{margin-inline:auto}
-  .stepper [data-side="left"] .t{right:calc(100% + 14px);top:50%;transform:translateY(-50%);text-align:center}
-  .stepper [data-side="left"] .t small{margin-inline:auto}
-  body.is-focus .stepper .t{width:auto}
+  .stepper [data-side="right"] .t{left:calc(100% + 14px);top:50%;transform:translateY(-50%);text-align:left}
+  .stepper [data-side="left"] .t{right:calc(100% + 14px);top:50%;transform:translateY(-50%);text-align:right}
+  .stepper [data-side="left"] .t small{margin-left:auto}
+  body.is-focus .stepper .t{width:150px}
   body.is-focus .stepper .t b{font-family:var(--body);font-weight:600;font-size:.95rem}
-  body.is-focus .stepper .t i,body.is-focus .stepper .t .res{display:none!important}
+  body.is-focus .stepper .t .res{display:none!important}
 
   /* upcoming: quiet */
   .stepper li.is-upcoming .n{opacity:.8}
@@ -168,14 +176,12 @@
   body.is-focus .stepper li.is-upcoming .t{opacity:.75}
   /* done: rose, shows what it produced */
   .stepper li.is-done .n{background:var(--rose);border-color:var(--rose);color:#fff;box-shadow:0 12px 26px -14px rgba(232,93,117,.8)}
-  .stepper li.is-done .t i{display:none}
   .stepper li.is-done .t .res::before{content:"✓ ";color:var(--success);font-weight:700}
   /* next / current: amber */
   .stepper li.is-next .n,.stepper li.is-active .n{background:#C9A24A;border-color:#C9A24A;color:#fff}
   .stepper li.is-next .n{animation:nodePulse 1.8s ease-out infinite}
   .stepper li.is-active .n{box-shadow:0 0 0 8px #F2E6CB}
   .stepper li.is-next .t small,.stepper li.is-active .t small{display:block}
-  .stepper li.is-next .t i{color:var(--ink)}
   .stepper li.is-done button,.stepper li.is-active button,.stepper li.is-next button{cursor:pointer}
   .stepper li.is-done button:hover .n,.stepper li.is-next button:hover .n{transform:scale(1.06)}
   @keyframes nodePulse{0%{box-shadow:0 0 0 0 rgba(201,162,74,.5)}100%{box-shadow:0 0 0 16px rgba(201,162,74,0)}}
@@ -364,6 +370,20 @@
   .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
   .stat b{display:block;font-family:var(--display);font-weight:800;font-size:1.6rem;letter-spacing:-.02em;line-height:1.1}
   .stat span{color:var(--muted);font-size:.85rem}
+  .itabs{display:flex;gap:8px;margin:0 0 16px;overflow-x:auto;scrollbar-width:none}
+  .itab{flex:none;height:36px;padding:0 16px;border:1px solid var(--line-2);border-radius:999px;background:var(--panel);font:inherit;font-size:.9rem;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap}
+  .itab:hover{border-color:#FFB199;color:var(--ink)}
+  .itab[aria-selected="true"]{background:#FFF0E8;border-color:#FFB199;color:#8A4B2F}
+  :root[data-theme="dark"] .itab[aria-selected="true"]{background:rgba(255,177,153,.14);border-color:rgba(255,177,153,.45);color:#FFC7B2}
+  .ilines{list-style:none;margin:10px 0 0;padding:0;display:grid}
+  .ilines li{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:14px;padding:12px 0;border-top:1px solid var(--line);font-size:.9rem}
+  .ilines li:first-child{border-top:0}
+  .ilines li b{display:block;font-weight:600}
+  .ilines li span{display:block;color:var(--muted);font-size:.8rem;margin-top:2px}
+  .ilines li.is-bar{grid-template-columns:minmax(0,180px) 1fr auto}
+  .ilines .tbar{height:8px;border-radius:999px;background:var(--bg-soft);overflow:hidden;margin:0}
+  .ilines .tbar i{display:block;height:100%;border-radius:inherit;background:var(--brand-gradient)}
+  .ilines li em{font-style:normal;color:var(--muted);font-size:.8rem;white-space:nowrap}
   .stat.is-key b{color:var(--rose)}
   .ix{list-style:none;margin:0;padding:0;display:grid}
   .ix li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}
@@ -512,7 +532,6 @@
     .side__collapse{display:none}
     .shell,body.is-collapsed .shell{padding:64px 12px 64px!important;grid-template-columns:1fr}
     .orbit{position:static;padding:0;overflow:hidden}
-    .stepper .t i{display:none!important}
     .orbit > .loopnav,body.is-focus .orbit > .loopnav{justify-self:start;width:440px;max-width:none;margin-left:calc(50% - 220px)!important}
     body.is-overview .loopnav{transform:scale(.8)!important;margin-top:10px!important;margin-bottom:-60px!important}
     body.is-focus .loopnav{transform:scale(.72)!important;margin-top:0!important;margin-bottom:-110px!important}
@@ -573,8 +592,8 @@
   :root[data-theme="dark"] .badge--muted{background:rgba(255,236,222,.08)}
 
   :root[data-theme="dark"] .side{box-shadow:0 20px 40px -24px rgba(0,0,0,.7)}
-  :root[data-theme="dark"] .nav-item.is-active{background:rgba(232,93,117,.16);color:#F29BAA}
-  :root[data-theme="dark"] .nav-item.is-active svg{color:#F29BAA}
+  :root[data-theme="dark"] .nav-item.is-active{background:rgba(255,177,153,.14);color:#FFC7B2}
+  :root[data-theme="dark"] .nav-item.is-active svg{color:#FFC7B2}
   :root[data-theme="dark"] #panel{background:rgba(28,22,18,.85)}
   :root[data-theme="dark"] .loopnav .disc{fill:#2A1B1C}
   :root[data-theme="dark"] .stepper .n{background:var(--panel)}
@@ -588,41 +607,40 @@
   :root[data-theme="dark"] .msg--me,:root[data-theme="dark"] .btn--primary{color:#15100D}
   :root[data-theme="dark"] .msg--miss,:root[data-theme="dark"] .src--conflict{background:#2A2012}
   :root[data-theme="dark"] .q.is-approved{border-color:rgba(107,192,143,.35)}
+  /* ---------- top-right controls (setup has no sidebar: nothing else is open yet) ---------- */
+  .obar{position:fixed;top:24px;right:26px;z-index:50;display:flex;align-items:center;gap:10px}
+  .obar .theme-toggle{margin:0}
+  .obar__me{display:inline-flex;align-items:center;gap:11px;padding:0;border:0;background:none;color:var(--ink);cursor:pointer;transition:opacity .15s ease}
+  .obar__me:hover{opacity:.8}
+  .obar__me img{display:block;width:34px;height:34px;border-radius:22%}
+  .obar__word{font-family:var(--display);font-weight:700;font-size:1.45rem;letter-spacing:-.03em}
+  .obar .me{position:fixed;top:24px;left:26px}
+  .orbit__title{margin-top:64px}
+  .obar .pop{left:0;right:auto;width:240px}
+  .obar .skipsetup,.obar .loopclose{position:static}
+  .obar .loopclose{width:38px;height:38px}
+  .shell,body.is-collapsed .shell{padding-left:32px}
+  body.is-focus .shell{padding-left:72px}
+  #panel{padding-top:56px}
+  @media (max-width:760px){.obar{top:10px;right:12px}.obar .skipsetup{padding:0 12px;font-size:.8rem}.shell,body.is-collapsed .shell{padding:64px 12px 64px!important}}
 </style>
 </head>
 <body class="is-overview">
 
-<button class="mnav" id="mnav" type="button" aria-label="Open menu" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-<div class="mscrim" id="mscrim"></div>
-<aside class="side" aria-label="Main navigation">
-  <button class="side__collapse" id="collapse" type="button" aria-label="Collapse sidebar" aria-expanded="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16M15 10l-2 2 2 2"/></svg></button>
+<header class="obar">
+  <span id="wsName" hidden>New workspace</span>
+  <button class="skipsetup" id="skipSetup" type="button" hidden>Skip setup for now →</button>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode" title="Dark mode"><svg class="t-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></svg><svg class="t-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg></button>
   <div class="me">
-    <button class="side__user" id="meBtn" type="button" aria-expanded="false" aria-haspopup="menu">
-      <span class="ava" id="ava">SL</span>
-      <span class="side__who"><b id="meName">Sara Lindqvist</b><span class="role">Owner</span></span>
-      <svg class="side__caret" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-    </button>
+    <button class="obar__me" id="meBtn" type="button" aria-expanded="false" aria-haspopup="menu" aria-label="Account menu"><img src="assets/lojo-icon.png" alt="" width="34" height="34"><span class="obar__word">lojo</span><span class="ava" id="ava" hidden>SL</span><span id="meName" hidden>Sara Lindqvist</span></button>
     <div class="pop" id="mePop" role="menu" hidden>
       <div class="pop__h" id="meEmail">sara@oslo.com</div>
       <button class="pop__row" id="restartSetup" type="button" role="menuitem"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg>Start setup again</button>
-      <a class="pop__row" href="dashboard.html?tour=1" role="menuitem"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg>Take the tour</a>
       <a class="pop__row" href="login.html" id="signOut" role="menuitem"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sign out</a>
     </div>
   </div>
-  <div class="side__rule"></div>
-  <nav>
-    <span class="nav-item is-locked" title="Unlocks after setup"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg><span class="lbl">Dashboard</span><svg class="lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
-    <span class="nav-item is-active" aria-current="page"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/></svg><span class="lbl">My loop</span><span class="count" id="progressTxt">0 of 5</span></span>
-    <span class="nav-item is-locked" title="Unlocks after setup"><svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg><span class="lbl">Review</span><svg class="lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
-    <span class="nav-item is-locked" title="Unlocks after setup"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg><span class="lbl">Approved answers</span><svg class="lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
-  </nav>
-  <p class="side__note">The rest of lojo opens once your loop is set up.</p>
-  <div class="side__foot">
-    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode" title="Dark mode"><svg class="t-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></svg><svg class="t-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg></button>
-    <div class="side__rule"></div>
-    <div class="ws"><img src="assets/lojo-icon.png" alt="" width="40" height="40"><div><b>lojo</b><span id="wsPill"><i></i><span id="wsName">New workspace</span> · setting up</span></div></div>
   </div>
-</aside>
+</header>
 
 <div class="shell">
   <section class="orbit" id="orbit" aria-labelledby="setupH">
@@ -639,15 +657,15 @@
           <circle class="track" id="loopTrack" cx="220" cy="250" r="150"/>
           <path class="nextpath" id="nextPath" d=""/>
           <circle class="prog" id="loopProg" cx="220" cy="250" r="150" transform="rotate(-90 220 250)"/>
-          <path class="tri" data-a="-45" d="M-5 -5 L5 0 L-5 5 Z"/><path class="tri" data-a="45" d="M-5 -5 L5 0 L-5 5 Z"/><path class="tri" data-a="160" d="M-5 -5 L5 0 L-5 5 Z"/><path class="tri" data-a="225" d="M-5 -5 L5 0 L-5 5 Z"/>
+          <path class="tri" data-a="-45" d="M-5 -5 L5 0 L-5 5 Z"/><path class="tri" data-a="135" d="M-5 -5 L5 0 L-5 5 Z"/><path class="tri" data-a="225" d="M-5 -5 L5 0 L-5 5 Z"/>
         </g>
       </svg>
       <ol class="stepper" id="stepper">
-        <li data-k="2" data-side="top" data-title="Connect a source" data-desc="Documents or an app" data-stage="01 Source"><button type="button" data-go="2" aria-label="01 Source: Connect a source"><span class="n"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg><b class="cnt"></b></span><span class="t"><small>Up next</small><b>01 Source</b><i>Documents or a folder</i><em class="res"></em></span></button></li>
-        <li data-k="3" data-side="right" data-title="Index by meaning" data-desc="Text pulled out, split and indexed" data-stage="02 Insights"><button type="button" data-go="3" aria-label="02 Insights: Index by meaning"><span class="n"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg><b class="cnt"></b></span><span class="t"><small>Up next</small><b>02 Insights</b><i>Text pulled out, split and indexed</i><em class="res"></em></span></button></li>
-        <li data-k="4" data-side="bottom" data-title="Draft answers" data-desc="The agent drafts answers with sources" data-stage="03 Build"><button type="button" data-go="4" aria-label="03 Build: Draft answers"><span class="n"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg><b class="cnt"></b></span><span class="t"><small>Up next</small><b>03 Build</b><i>The agent drafts answers with sources</i><em class="res"></em></span></button></li>
-        <li data-k="5" data-side="gate" data-title="Review" data-desc="Approve, edit or reject" data-stage="Validation"><button type="button" data-go="5" aria-label="Validation: Review"><span class="n"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><b class="cnt"></b></span><span class="t"><small>Up next</small><b>Waiting for validation</b><i>Approve, edit or reject</i><em class="res"></em></span></button></li>
-        <li data-k="6" data-side="left" data-title="Ask" data-desc="A chat that reads only approved answers" data-stage="04 Distribute"><button type="button" data-go="6" aria-label="04 Distribute: Ask"><span class="n"><svg viewBox="0 0 24 24"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/></svg><b class="cnt"></b></span><span class="t"><small>Up next</small><b>04 Distribute</b><i>A chat that reads only approved answers</i><em class="res"></em></span></button></li>
+        <li data-k="2" data-side="top" data-title="Connect a source" data-stage="01 Source"><button type="button" data-go="2" aria-label="01 Source: Connect a source"><span class="n"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg><b class="cnt"></b></span><span class="t"><small>Up next</small><b>01 Source</b><i>Gather every channel into one place</i><em class="res"></em></span></button></li>
+        <li data-k="3" data-side="right" data-title="Build the knowledge" data-stage="02 Build"><button type="button" data-go="3" aria-label="02 Build: Build the knowledge"><span class="n"><svg viewBox="0 0 24 24"><path d="M12 3 3 8l9 5 9-5z"/><path d="m3 13 9 5 9-5"/></svg><b class="cnt"></b></span><span class="t"><small>Up next</small><b>02 Build</b><i>Unify and structure the knowledge</i><em class="res"></em></span></button></li>
+        <li data-k="4" data-side="gate" data-title="Review" data-stage="Human validation"><button type="button" data-go="4" aria-label="Human validation: Review"><span class="n"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="m15.5 11 2 2 4-4"/></svg><b class="cnt"></b></span><span class="t"><small>Up next</small><b>Waiting for validation</b><i>People sign off before it goes live</i><em class="res"></em></span></button></li>
+        <li data-k="5" data-side="bottom" data-title="Find patterns" data-stage="03 Insights"><button type="button" data-go="5" aria-label="03 Insights: Find patterns"><span class="n"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg><b class="cnt"></b></span><span class="t"><small>Up next</small><b>03 Insights</b><i>Cross-channel patterns and trends</i><em class="res"></em></span></button></li>
+        <li data-k="6" data-side="left" data-title="Ask" data-stage="04 Distribute"><button type="button" data-go="6" aria-label="04 Distribute: Ask"><span class="n"><svg viewBox="0 0 24 24"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/></svg><b class="cnt"></b></span><span class="t"><small>Up next</small><b>04 Distribute</b><i>Deliver the right answer, everywhere</i><em class="res"></em></span></button></li>
       </ol>
       <div class="loopcenter" aria-live="polite">
         <div class="lc-form" id="lcForm">
@@ -678,7 +696,7 @@
   <main id="panel">
     <!-- inside the app: where the loop is now, with links back into each stage -->
     <section class="step" data-step="inside" aria-labelledby="hIn">
-      <p class="label" id="inLabel">Step 4 of 5 · Validation</p>
+      <p class="label" id="inLabel">Step 3 of 5 · Human validation</p>
       <h1 id="hIn">10 drafts are waiting for you</h1>
       <p class="lead" id="inLead">Approve, edit, or reject with a reason. The loop keeps running: new drafts land here as your sources change.</p>
       <div class="actions" style="margin-top:20px;padding-top:0;border-top:0"><a class="btn btn--primary" id="inCta" href="build.html">Start reviewing →</a><a class="btn btn--secondary" href="dashboard.html">Back to dashboard</a></div>
@@ -724,15 +742,15 @@
         <button class="btn btn--secondary" data-back>Back</button>
         <span class="spacer"></span>
         <span class="note" id="srcNote">Choose a source to connect.</span>
-        <button class="btn btn--primary" id="toIndex" disabled>Continue to 02 Insights →</button>
+        <button class="btn btn--primary" id="toIndex" disabled>Continue to 02 Build →</button>
       </div>
     </section>
 
     <!-- 3 · index -->
     <section class="step" data-step="3" aria-labelledby="h3">
-      <p class="label">Step 2 of 5 · Insights</p>
-      <h1 id="h3">Reading your documents</h1>
-      <p class="lead">We pull the text out, split it into passages, and index each one by meaning, so a question finds the right passage even when the words differ.</p>
+      <p class="label">Step 2 of 5 · Build</p>
+      <h1 id="h3">Building your knowledge base</h1>
+      <p class="lead">We pull the text out, split it into passages and index each one by meaning. Then the agent works out which questions your documents answer and drafts each answer with its sources.</p>
       <div class="stats">
         <div class="stat"><b id="stPages">0</b><span>pages read</span></div>
         <div class="stat"><b id="stPassages">0</b><span>passages created</span></div>
@@ -740,36 +758,26 @@
       </div>
       <div class="panel"><ul class="ix" id="ixList"></ul></div>
 
-      <div class="actions">
-        <button class="btn btn--secondary" data-back>Back</button>
-        <span class="spacer"></span>
-        <button class="btn btn--primary" id="toDraft" disabled>Continue to 03 Build →</button>
-      </div>
-    </section>
-
-    <!-- 4 · draft -->
-    <section class="step" data-step="4" aria-labelledby="h4">
-      <p class="label">Step 3 of 5 · Build</p>
-      <h1 id="h4">The agent is drafting answers</h1>
-      <p class="lead">It reads your documents, works out which questions they answer, and drafts each answer with its sources.</p>
+      <div id="buildDraft" hidden style="margin-top:16px">
       <div class="panel">
-        <div class="agent" style="margin-bottom:0">
-          <span class="ava-agent" aria-hidden="true"></span>
-          <div><b id="agentTitle">Reading 6 documents…</b><span id="agentSub">Looking for questions your documents can answer.</span></div>
+          <div class="agent" style="margin-bottom:0">
+            <span class="ava-agent" aria-hidden="true"></span>
+            <div><b id="agentTitle">Reading 6 documents…</b><span id="agentSub">Looking for questions your documents can answer.</span></div>
+          </div>
         </div>
+        <div id="draftList" style="margin-top:16px"></div>
       </div>
-      <div id="draftList" style="margin-top:16px"></div>
       <div class="actions">
         <button class="btn btn--secondary" data-back>Back</button>
         <span class="spacer"></span>
         <span class="note" id="draftNote"></span>
-        <button class="btn btn--primary" id="toReview" disabled>Continue to Validation →</button>
+        <button class="btn btn--primary" id="toReview" disabled>Continue to human validation →</button>
       </div>
     </section>
 
-    <!-- 5 · review -->
-    <section class="step" data-step="5" aria-labelledby="h5">
-      <p class="label">Step 4 of 5 · Validation</p>
+    <!-- 4 · review -->
+    <section class="step" data-step="4" aria-labelledby="h5">
+      <p class="label">Step 3 of 5 · Human validation</p>
       <h1 id="h5">Review the queue</h1>
       <p class="lead">Approve, edit, or reject with a reason. A rejected draft is written again once, using your reason.</p>
       <div class="toolbar">
@@ -792,7 +800,27 @@
         <button class="btn btn--secondary" data-back>Back</button>
         <span class="spacer"></span>
         <span class="note" id="revNote"></span>
-        <button class="btn btn--primary" id="toAsk" disabled>Continue to 04 Distribute →</button>
+        <button class="btn btn--primary" id="toInsights" disabled>Continue to 03 Insights →</button>
+      </div>
+    </section>
+
+    <!-- 5 · insights -->
+    <section class="step" data-step="5" aria-labelledby="h7">
+      <p class="label">Step 4 of 5 · Insights</p>
+      <h1 id="h7">What your sources are telling you</h1>
+      <p class="lead">What people keep asking, and what you don’t have an answer for yet, read across every source at once.</p>
+      <div class="itabs" role="tablist" aria-label="Insights">
+        <button class="itab" role="tab" data-it="q" aria-selected="true">Recurring questions</button>
+        <button class="itab" role="tab" data-it="g" aria-selected="false">Knowledge gaps</button>
+        <button class="itab" role="tab" data-it="t" aria-selected="false">Trends</button>
+        <button class="itab" role="tab" data-it="o" aria-selected="false">Opportunities</button>
+      </div>
+      <div class="panel"><p class="sub" id="itSub"></p><ul class="ilines" id="itList"></ul></div>
+      <p class="note" style="margin-top:12px">The full Insights page opens in the app once setup is done.</p>
+      <div class="actions">
+        <button class="btn btn--secondary" data-back>Back</button>
+        <span class="spacer"></span>
+        <button class="btn btn--primary" id="toAsk">Continue to 04 Distribute →</button>
       </div>
     </section>
 
@@ -817,7 +845,7 @@
         </div>
       </div>
       <div class="actions">
-        <button class="btn btn--secondary" data-back>Back to review</button>
+        <button class="btn btn--secondary" data-back>Back to insights</button>
         <span class="spacer"></span>
         <button class="btn btn--primary" id="finish">Go to dashboard →</button>
       </div>
@@ -913,7 +941,7 @@ function useOsloPack() {
 const hasOslo = () => S.mode === 'upload' && S.files.some(f => window.OSLO_PACK && OSLO_PACK.match(f.name));
 
 /* ---------------- state ---------------- */
-const S = { picked: new Set(), step: 1, reached: 1, mode: 'upload', conn: null, scopes: [], files: [], queue: [], seeded: false, indexed: false, finished: false };
+const S = { picked: new Set(), step: 1, reached: 1, mode: 'upload', conn: null, scopes: [], files: [], queue: [], seeded: false, indexed: false, finished: false, trendN: 0 };
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const P = (id) => PASSAGES.find(p => p.id === id);
@@ -932,16 +960,6 @@ try { const u = JSON.parse(sessionStorage.getItem('lojo-user')); if (u && u.name
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); } });
   $('signOut').addEventListener('click', () => { try { sessionStorage.clear(); } catch (err) {} });
   $('restartSetup').addEventListener('click', () => location.reload());
-  const mnav = $('mnav');
-  const setNav = (open) => { document.body.classList.toggle('nav-open', open); mnav.setAttribute('aria-expanded', open); };
-  mnav.addEventListener('click', () => setNav(!document.body.classList.contains('nav-open')));
-  $('mscrim').addEventListener('click', () => setNav(false));
-  // onboarding keeps the sidebar collapsed so the loop has the room; the toggle can still open it
-  document.body.classList.add('is-collapsed');
-  const col = $('collapse');
-  const syncCol = () => { const c = document.body.classList.contains('is-collapsed'); col.setAttribute('aria-expanded', !c); col.setAttribute('aria-label', c ? 'Expand sidebar' : 'Collapse sidebar'); };
-  syncCol();
-  col.addEventListener('click', () => { document.body.classList.toggle('is-collapsed'); syncCol(); });
 }
 
 function toast(msg) {
@@ -966,7 +984,6 @@ function setView(v) {
   document.body.classList.toggle('is-overview', v === 'overview');
   document.body.classList.toggle('is-focus', v === 'focus');
   document.body.classList.add('is-collapsed');
-  if ($('collapse')) { const c = document.body.classList.contains('is-collapsed'); $('collapse').setAttribute('aria-expanded', !c); }
   if (reduceMotion || window.innerWidth <= 1000) return;
   const r2 = orbit.getBoundingClientRect();
   const dx = (r1.left + r1.width / 2) - (r2.left + r2.width / 2);
@@ -977,7 +994,7 @@ function setView(v) {
 
 /* geometry: nodes sit on the ring; the ring turns so the current stage is always on top */
 const CX = 220, CY = 250;
-const BASE = { 2: -90, 3: 0, 4: 90, 5: 135, 6: 180 };
+const BASE = { 2: -90, 3: 0, 4: 45, 5: 90, 6: 180 };
 const geo = { phi: 0, r: 178 };
 let spinRaf = 0;
 const rad = (d) => d * Math.PI / 180;
@@ -1013,7 +1030,7 @@ function layout() {
   const path = $('nextPath');
   if (!S.ws || S.finished || S.view === 'focus' || S.reached === 2) path.setAttribute('d', '');
   else {
-    const pad = (k) => (+k === 5 ? 12 : 18);
+    const pad = (k) => (+k === 4 ? 12 : 18);
     const a1 = BASE[S.reached - 1] + pad(S.reached - 1), a2 = BASE[S.reached] - pad(S.reached);
     path.setAttribute('d', 'M ' + pt(a1, r) + ' A ' + r + ' ' + r + ' 0 0 1 ' + pt(a2, r));
   }
@@ -1047,9 +1064,9 @@ function renderLoop() {
     if (focus && k === S.step) c = 'is-active';
     else if (S.ws && (k < S.reached || S.finished)) c = 'is-done';
     else if (S.ws && k === S.reached) c = 'is-next';
-    li.className = c + (k === 5 ? ' gate' : '');
-    li.querySelector('small').textContent = c === 'is-active' ? "You're here" : 'Up next';
-    if (k === 5) li.querySelector('.t b').textContent = focus ? 'Validation' : 'Waiting for validation';
+    li.className = c + (k === 4 ? ' gate' : '');
+    li.querySelector('small').textContent = c === 'is-active' || (S.inApp && c === 'is-next') ? "You're here" : 'Up next';
+    if (k === 4) li.querySelector('.t b').textContent = focus || S.inApp ? 'Human validation' : 'Waiting for human validation';
     const btn = li.querySelector('button');
     btn.setAttribute('aria-current', c === 'is-active' ? 'step' : 'false');
     btn.setAttribute('aria-disabled', c === 'is-upcoming');
@@ -1057,16 +1074,17 @@ function renderLoop() {
   });
   const res = {
     2: () => sourceLabel(),
-    3: () => $('stPassages').textContent + ' passages indexed',
-    4: () => S.queue.length + ' draft' + (S.queue.length === 1 ? '' : 's') + ' in the queue',
-    5: () => approvedItems().length + ' approved by you',
+    3: () => S.queue.length + ' draft' + (S.queue.length === 1 ? '' : 's') + ' with sources',
+    4: () => approvedItems().length + ' approved by you',
+    5: () => S.trendN + ' recurring topic' + (S.trendN === 1 ? '' : 's'),
     6: () => 'Chat is live on the approved store',
   };
-  const cnt = { 2: () => sourceDocs().length, 3: () => $('stPassages').textContent, 4: () => S.queue.length, 5: () => approvedItems().length, 6: () => approvedItems().length };
+  const cnt = { 2: () => sourceDocs().length, 3: () => S.queue.length, 4: () => approvedItems().length, 5: () => S.trendN, 6: () => approvedItems().length };
   NODES.forEach(li => {
     const d = li.classList.contains('is-done');
-    li.querySelector('.res').textContent = d ? res[li.dataset.k]() : '';
-    li.querySelector('.cnt').textContent = d ? cnt[li.dataset.k]() : '';
+    const own = S.inApp && S.inRes[li.dataset.k];
+    li.querySelector('.res').textContent = d ? (own ? own[0] : res[li.dataset.k]()) : '';
+    li.querySelector('.cnt').textContent = d ? (own ? own[1] : cnt[li.dataset.k]()) : '';
   });
 
   $('lcForm').hidden = S.ws;
@@ -1075,8 +1093,8 @@ function renderLoop() {
   if (S.ws && !focus) {
     const next = NODES.find(li => +li.dataset.k === S.reached);
     $('lcWs').textContent = $('wsName').textContent;
-    $('lcNext').textContent = 'Up next: ' + next.dataset.stage + ' · ' + next.dataset.title.toLowerCase();
-    $('lcGo').textContent = S.reached === 2 ? 'Start with Source →' : 'Continue →';
+    $('lcNext').textContent = S.inApp ? 'Now: ' + next.dataset.stage + ' · ' + S.hubNext : 'Up next: ' + next.dataset.stage + ' · ' + next.dataset.title.toLowerCase();
+    $('lcGo').textContent = S.inApp ? S.hubGo : S.reached === 2 ? 'Start with Source →' : 'Continue →';
   }
   if (focus) {
     const cur = NODES.find(li => +li.dataset.k === S.step);
@@ -1099,8 +1117,8 @@ function go(n) {
   renderLoop();
   window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
   if (n === 3 && !S.indexed) runIndexing();
-  if (n === 4 && !S.seeded) runDrafting();
-  if (n === 5) renderReview();
+  if (n === 4) renderReview();
+  if (n === 5) renderInsights();
   if (n === 6) renderStore();
 }
 function showOverview() {
@@ -1132,6 +1150,7 @@ $('createWs').addEventListener('click', () => {
     S.ws = true;
     S.reached = 2;
     renderLoop();
+    $('skipSetup').hidden = false;
     toast($('wsInput').value.trim() + ' workspace is ready');
   }, 900);
 });
@@ -1225,22 +1244,22 @@ checkSource();   // Upload documents is preselected
 checkSource();
 $('toIndex').addEventListener('click', () => { S.indexed = false; S.seeded = false; S.queue = []; if (hasOslo()) useOsloPack(); go(3); });
 
-/* ---------------- 3 · index ---------------- */
+/* ---------------- 3 · build: index, then draft ---------------- */
 function runIndexing() {
   const docs = sourceDocs();
   S.docIdx = new Set(S.mode === 'connect' ? S.scopes.flatMap(i => S.conn.scopes[i][1]) : SAMPLE.map((_, i) => i));
   const STAGES = ['Extract text', 'Split into passages', 'Index by meaning'];
   $('ixList').innerHTML = docs.map((d, i) =>
     '<li><span class="name">' + esc(d.name) + '</span><span class="stages">' + STAGES.map(s => '<span class="stage">' + s + '</span>').join('') + '</span><span class="bar"><i id="bar' + i + '"></i></span></li>').join('');
-  $('toDraft').disabled = true;
+  $('buildDraft').hidden = true; $('toReview').disabled = true; $('draftNote').textContent = '';
   let pages = 0, passages = 0, doneStages = 0;
   const total = docs.length * 3;
   const rows = [...$('ixList').children];
   const tick = (di, si) => {
     if (di >= docs.length) {
       S.indexed = true;
-      $('toDraft').disabled = false;
-      toast('Indexing complete');
+      $('buildDraft').hidden = false;
+      if (!S.seeded) runDrafting();
       return;
     }
     const pills = rows[di].querySelectorAll('.stage');
@@ -1275,9 +1294,7 @@ function search(q, pool) {
   }).filter(r => r.conceptHits > 0).sort((a, b) => b.score - a.score);
 }
 
-$('toDraft').addEventListener('click', () => go(4));
 
-/* ---------------- 4 · draft ---------------- */
 function makeItem(seed, from) {
   return { ...seed, from: from || 'agent', status: 'drafting', answer: '', redrafted: false, prevAnswer: '', reason: '', t0: Date.now() };
 }
@@ -1318,11 +1335,11 @@ function addOwn(q, silent) {
   const it = makeItem({ id: 'u' + Date.now(), q, ...draftForOwn(q) }, 'you');
   S.queue.push(it);
   renderDrafts();
-  if (S.step === 5) renderReview();
+  if (S.step === 4) renderReview();
   setTimeout(() => {
     it.status = 'pending'; it.answer = it.draft;
     renderDrafts();
-    if (S.step === 5) renderReview();
+    if (S.step === 4) renderReview();
   }, 1200);
   if (!silent) toast('Added to the queue');
 }
@@ -1374,9 +1391,9 @@ function renderDrafts() {
   $('toReview').disabled = !(seedDone && !drafting);
   $('draftNote').textContent = seedDone && !drafting ? n + ' drafts ready' : '';
 }
-$('toReview').addEventListener('click', () => go(5));
+$('toReview').addEventListener('click', () => go(4));
 
-/* ---------------- 5 · review ---------------- */
+/* ---------------- 4 · review ---------------- */
 const REASONS = ['Wrong answer', 'Outdated source', 'Missing detail', 'Not a question we answer'];
 const settled = (it) => it.status === 'approved' || it.status === 'final';
 function renderReview() {
@@ -1395,7 +1412,7 @@ function renderReview() {
   $('bulk').disabled = !lowRisk;
   const open = S.queue.length - decided;
   // approving some is enough to continue; the rest stay in the queue for later
-  $('toAsk').disabled = !approved;
+  $('toInsights').disabled = !approved;
   $('revNote').textContent = !approved ? 'Approve at least one to continue' : open > 0 ? approved + ' approved · ' + open + ' left for later' : approved + ' approved';
   renderSel();
 }
@@ -1515,6 +1532,42 @@ $('bulk').addEventListener('click', () => {
   renderReview();
   toast(n + ' low-risk answer' + (n === 1 ? '' : 's') + ' approved');
 });
+$('toInsights').addEventListener('click', () => go(5));
+
+/* ---------------- 5 · insights ---------------- */
+const TOPIC = { sso: 'SSO and sign-in', refund: 'Refunds', plan: 'Plans and pricing', limit: 'Limits and seats', change: 'Plan changes', setup: 'Setup and onboarding' };
+const topicName = (k) => TOPIC[k] || k[0].toUpperCase() + k.slice(1);
+let itab = 'q';
+function renderInsights() {
+  const pool = PASSAGES.filter(p => !S.docIdx || S.docIdx.has(p.doc));
+  const topics = Object.keys(CONCEPTS).map(k => {
+    const hits = pool.filter(p => p.c.includes(k)), qs = S.queue.filter(it => conceptsOf(it.q).includes(k)).length;
+    return { k, n: hits.length + qs, docs: new Set(hits.map(p => p.doc)).size, qs };
+  }).filter(r => r.n).sort((a, b) => b.n - a.n);
+  S.trendN = topics.length;
+  const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
+  // demo numbers: how often a question came up, from how many passages share its topics
+  const asked = (it) => 2 + pool.filter(p => p.c.some(c => conceptsOf(it.q).includes(c))).length;
+  const gaps = S.queue.filter(it => it.conflict || it.noSource);
+  const top = topics.length ? topics[0].n : 1;
+  const TABS = {
+    q: ['The questions your sources answer, most asked first.',
+      S.queue.slice().sort((a, b) => asked(b) - asked(a)).slice(0, 5).map(it => '<li><div><b>' + esc(it.q) + '</b><span>Asked ' + asked(it) + ' times</span></div>' +
+        (approvedItems().includes(it) ? '<span class="badge badge--ok">Approved</span>' : '<span class="badge badge--warn">No approved answer yet</span>') + '</li>')],
+    g: ['Where your documents disagree, or don’t answer at all.',
+      gaps.map(it => '<li><div><b>' + esc(it.q) + '</b><span>' + (it.conflict ? esc(docName(P(it.conflict).doc)) + ' says something different from the rest' : 'None of your documents answer this yet') + '</span></div>' +
+        (it.conflict ? '<span class="badge badge--warn">Sources disagree</span>' : '<span class="badge badge--err">No source</span>') + '</li>')],
+    t: ['What comes up most across your sources.',
+      topics.slice(0, 5).map(r => '<li class="is-bar"><b>' + esc(topicName(r.k)) + '</b><span class="tbar"><i style="width:' + Math.round(r.n / top * 100) + '%"></i></span><em>' + plural(r.docs, 'source') + ' · ' + plural(r.qs, 'question') + '</em></li>')],
+    o: ['Content worth writing next, from what comes up most.',
+      topics.slice(0, 3).map(r => '<li><div><b>A help article on ' + esc(topicName(r.k).toLowerCase()) + '</b><span>Comes up in ' + plural(r.docs, 'source') + ' and ' + plural(r.qs, 'question') + '</span></div><span class="badge badge--rose">Article</span></li>')],
+  };
+  const [sub, rows] = TABS[itab];
+  document.querySelectorAll('.itab').forEach(b => b.setAttribute('aria-selected', b.dataset.it === itab));
+  $('itSub').textContent = sub;
+  $('itList').innerHTML = rows.length ? rows.join('') : '<li><span>Nothing here yet.</span></li>';
+}
+document.querySelectorAll('.itab').forEach(b => b.addEventListener('click', () => { itab = b.dataset.it; renderInsights(); }));
 $('toAsk').addEventListener('click', () => go(6));
 
 /* ---------------- 6 · ask ---------------- */
@@ -1591,7 +1644,13 @@ function sourceLabel() {
   if (S.mode === 'upload') return S.files.length + ' uploaded document' + (S.files.length === 1 ? '' : 's');
   return 'Connected app';
 }
+// workspace exists, so they can leave setup and come back to it from the dashboard
+$('skipSetup').addEventListener('click', () => {
+  try { sessionStorage.setItem('lojo-setup-skipped', JSON.stringify({ workspace: $('wsName').textContent })); } catch (e) {}
+  location.href = 'dashboard.html';
+});
 $('finish').addEventListener('click', () => {
+  try { sessionStorage.removeItem('lojo-setup-skipped'); } catch (e) {}
   const handoff = {
     workspace: $('wsName').textContent, user: user.name, source: sourceLabel(),
     docs: sourceDocs().length, passages: $('stPassages').textContent, found: S.seedCount || 0,
@@ -1607,51 +1666,51 @@ $('finish').addEventListener('click', () => {
 
 // opened from the app (My loop, or the loop widget): no setup, just the loop where it stands
 const INSIDE = new URLSearchParams(location.search);
-if (INSIDE.has('inside')) {
+const IN_APP = INSIDE.has('loop') || INSIDE.has('inside');
+if (IN_APP) {
+  // the loop opens over the app, so it gets a close that goes back where you were
+  const closeLoop = () => { if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) history.back(); else location.href = 'dashboard.html'; };
+  document.querySelector('.obar').insertAdjacentHTML('beforeend', '<button class="loopclose" id="loopClose" type="button" aria-label="Close the loop" title="Close (Esc)"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>');
+  $('loopClose').addEventListener('click', closeLoop);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !document.querySelector('.pop:not([hidden])')) closeLoop(); });
   const [docs, questions, gaps, drafts, pending, approved] = (INSIDE.get('c') || '10.23.5.16.10.6').split('.').map(Number);
   $('wsName').textContent = 'Oslo'; $('wsInput').value = 'Oslo';
-  S.ws = true; S.indexed = true; S.seeded = true;
-  const atVal = pending > 0, k = atVal ? 5 : 6;
-  S.reached = k; S.step = k;
+  S.ws = true; S.indexed = true; S.seeded = true; S.trendN = Object.keys(CONCEPTS).length;
+  const atVal = pending > 0, k = atVal ? 4 : 6;
+  S.reached = k; S.step = k; S.inApp = true;
+  $('setupH').textContent = 'Your loop';
+  S.hubNext = atVal ? pending + ' draft' + (pending === 1 ? '' : 's') + ' waiting for you' : approved + ' approved answers are live';
+  S.hubGo = atVal ? 'Review drafts →' : 'Open Distribute →';
+  S.inRes = { 2: [docs + ' documents indexed', docs], 3: [drafts + ' drafts with sources', drafts], 4: [approved + ' approved by you', approved], 5: [questions + ' questions · ' + gaps + ' gaps', questions] };
   document.querySelectorAll('.step').forEach(s => s.classList.toggle('is-active', s.dataset.step === 'inside'));
-  // the app's sidebar, with My loop selected
-  const IC = (d) => '<svg viewBox="0 0 24 24">' + d + '</svg>';
-  const NAV = [['dashboard.html', 'Dashboard', '<rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/>'],
-    [null, 'My loop', '<path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/>'],
-    ['sources.html', 'Sources', '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>'],
-    ['insights.html', 'Insights', '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/>'],
-    ['build.html', 'Build <em class="lbl-sub">(Validate)</em>', '<path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/>'],
-    ['distribute.html', 'Distribute', '<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>'],
-    ['knowledge.html', 'Knowledge', '<path d="M4 20h16M7 16V9M12 16V5M17 16v-4"/>'],
-    ['activity.html', 'Activity', '<path d="M3 12h4l3-8 4 16 3-8h4"/>']];
-  document.querySelector('.side nav').innerHTML = NAV.map(([href, l, d]) => href
-    ? '<a class="nav-item" href="' + href + '">' + IC(d) + '<span class="lbl">' + l + '</span></a>'
-    : '<span class="nav-item is-active" aria-current="page">' + IC(d) + '<span class="lbl">' + l + '</span></span>').join('');
-  const note = document.querySelector('.side__note'); if (note) note.remove();
-  $('wsPill').innerHTML = '<span id="wsName">Oslo</span>';
-  // right panel: where you are, and every stage with a link into the app
+    // right panel: where you are, and every stage with a link into the app
   const ST = [['01 Source', docs + ' documents indexed', 'sources.html', '<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>'],
-    ['02 Insights', questions + ' questions · ' + gaps + ' gaps', 'insights.html', '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>'],
-    ['03 Build', drafts + ' drafts with sources', 'build.html', '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>'],
-    ['Validation', atVal ? pending + ' drafts waiting for you' : 'First batch reviewed', 'build.html', '<path d="M5 12.5l4.5 4.5L19 7.5"/>'],
+    ['02 Build', drafts + ' drafts with sources', 'build.html', '<path d="M12 3 3 8l9 5 9-5z"/><path d="m3 13 9 5 9-5"/>'],
+    ['Human validation', atVal ? pending + ' drafts waiting for you' : 'First batch reviewed', 'build.html', '<circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="m15.5 11 2 2 4-4"/>'],
+    ['03 Insights', questions + ' questions · ' + gaps + ' gaps', 'insights.html', '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>'],
     ['04 Distribute', approved + ' approved answers in Ask lojo', 'distribute.html', '<path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/>']];
-  const nowI = atVal ? 3 : 4;
+  const nowI = atVal ? 2 : 4;
   $('inList').innerHTML = ST.map(([t, s, href, d], i) => '<li class="' + (i < nowI ? 'is-done' : i === nowI ? 'is-now' : '') + '"><a href="' + href + '"><span class="n"><svg viewBox="0 0 24 24">' + d + '</svg></span><span><b>' + t + '</b><span class="s">' + s + '</span></span><em>' + (i < nowI ? 'Done' : i === nowI ? 'You’re here' : 'Next') + '</em><span class="go">→</span></a></li>').join('');
   if (atVal) { $('hIn').textContent = pending + ' draft' + (pending === 1 ? ' is' : 's are') + ' waiting for you'; }
   else { $('inLabel').textContent = 'Step 5 of 5 · Distribute'; $('hIn').textContent = 'Your approved answers are live'; $('inLead').textContent = 'Ask lojo reads only approved answers. The loop keeps running as your sources change.'; $('inCta').textContent = 'Open Ask lojo →'; $('inCta').href = 'chat.html'; }
   // a loop stage opens its page in the app, not a setup step
-  const PAGE = { 2: 'sources.html', 3: 'insights.html', 4: 'build.html', 5: 'build.html', 6: 'distribute.html' };
+  const PAGE = { 2: 'sources.html', 3: 'build.html', 4: 'build.html', 5: 'insights.html', 6: 'distribute.html' };
   ['stepper'].forEach(id => $(id).addEventListener('click', (e) => {
     const b = e.target.closest('[data-go]'); if (!b) return;
     e.stopImmediatePropagation();
     location.href = PAGE[b.dataset.go];
   }, true));
+  $('lcGo').addEventListener('click', (e) => { e.stopImmediatePropagation(); location.href = PAGE[k]; }, true);
   setView('focus');
 }
 renderLoop();
 document.body.classList.add('intro');
 setTimeout(() => document.body.classList.remove('intro'), 1800);
-if (!INSIDE.has('inside')) $('wsInput').focus({ preventScroll: true });
+if (!IN_APP && INSIDE.has('resume')) {
+  let ws = 'Oslo'; try { ws = JSON.parse(sessionStorage.getItem('lojo-setup-skipped')).workspace || ws; } catch (e) {}
+  $('wsName').textContent = ws; $('wsInput').value = ws;
+  S.ws = true; S.reached = 2; $('skipSetup').hidden = false; renderLoop();
+} else if (!IN_APP) $('wsInput').focus({ preventScroll: true });
 </script>
 <script>
 (function themeToggle() {

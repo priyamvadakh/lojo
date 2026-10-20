@@ -67,8 +67,8 @@ DARK_BASE = r"""
 
 DARK_APP = r"""
   :root[data-theme="dark"] .side{box-shadow:0 20px 40px -24px rgba(0,0,0,.7)}
-  :root[data-theme="dark"] .nav-item.is-active{background:rgba(232,93,117,.16);color:#F29BAA}
-  :root[data-theme="dark"] .nav-item.is-active svg{color:#F29BAA}
+  :root[data-theme="dark"] .nav-item.is-active{background:rgba(255,177,153,.14);color:#FFC7B2}
+  :root[data-theme="dark"] .nav-item.is-active svg{color:#FFC7B2}
   :root[data-theme="dark"] .head{background:rgba(18,14,11,.88)}
   :root[data-theme="dark"] .sec__head h2,:root[data-theme="dark"] .hello h1{color:#F29BAA}
   :root[data-theme="dark"] .sec,:root[data-theme="dark"] .card{box-shadow:0 16px 30px -28px rgba(0,0,0,.7)}
@@ -79,7 +79,7 @@ DARK_APP = r"""
   :root[data-theme="dark"] .tile--warn .tile__val{color:#E3C27A}
   :root[data-theme="dark"] .tile--bad{background:#2B1618;border-color:#4C2429}
   :root[data-theme="dark"] .tip{background:#F29BAA;color:#15100D}
-  :root[data-theme="dark"] .tip::after{background:#F2EBE5;color:#15100D}
+  :root[data-theme="dark"] .tip::after,:root[data-theme="dark"] .htip::after{background:#F2EBE5;color:#15100D}
   :root[data-theme="dark"] .next__main{background:linear-gradient(135deg,#2A1B1C,var(--panel) 60%)}
   :root[data-theme="dark"] .todo li.is-hot{background:#2A2012;border-color:#4A3A1E}
   :root[data-theme="dark"] .vs blockquote{background:var(--bg-soft)}

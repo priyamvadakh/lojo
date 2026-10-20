@@ -1,3 +1,4 @@
+import re
 from theme import HEAD_JS, SEG_CSS, SEG_HTML, SEG_JS, DARK_BASE, DARK_APP
 
 CSS = r"""
@@ -36,8 +37,8 @@ CSS = r"""
   .nav-item{display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border-radius:12px;color:var(--ink);font-weight:500;font-size:.92rem;text-decoration:none;white-space:nowrap;transition:background-color .15s ease,color .15s ease}
   .nav-item svg{color:var(--muted)}
   .nav-item:hover{background:var(--bg-soft);text-decoration:none}
-  .nav-item.is-active{background:rgba(232,93,117,.1);color:#B73C54;font-weight:700}
-  .nav-item.is-active svg{color:#B73C54}
+  .nav-item.is-active{background:#FFF0E8;color:#8A4B2F;font-weight:700}
+  .nav-item.is-active svg{color:#8A4B2F}
   .nav-item .count{margin-left:auto;min-width:24px;height:22px;padding:0 8px;border-radius:999px;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--bg-soft);color:var(--muted)}
   .nav-item .count--hot{background:var(--rose);color:#fff}
   .nav-item .step{margin-left:auto;font-size:.66rem;font-weight:700;letter-spacing:.06em;color:var(--muted);opacity:.7}
@@ -70,6 +71,10 @@ CSS = r"""
   .head{position:sticky;top:0;z-index:25;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:-28px -36px 26px;padding:18px 36px 18px;background:rgba(251,250,249,.9);backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);border-bottom:1px solid var(--line);box-shadow:0 12px 14px -16px rgba(36,26,20,.25)}
   .head h1{font-family:var(--display);font-weight:700;font-size:1.75rem;letter-spacing:-.02em;line-height:1.15;margin:6px 0 4px}
   .head p{margin:0;color:var(--muted);max-width:64ch}
+  .htip{position:relative;display:inline-grid;place-items:center;width:20px;height:20px;margin-left:6px;vertical-align:middle;border-radius:50%;border:1.5px solid var(--line-2);color:var(--muted);font:700 .7rem/1 var(--body);font-style:normal;letter-spacing:0;cursor:help;transition:border-color .15s ease,color .15s ease}
+  .htip:hover,.htip:focus-visible{border-color:#FFB199;color:#8A4B2F;outline:none}
+  .htip::after{content:attr(data-tip);position:absolute;top:calc(100% + 10px);left:-8px;width:max-content;max-width:340px;padding:10px 12px;border-radius:12px;background:var(--ink);color:#fff;font:500 .82rem/1.45 var(--body);letter-spacing:0;white-space:normal;box-shadow:0 14px 30px -18px rgba(36,26,20,.6);opacity:0;transform:translateY(-4px);pointer-events:none;transition:opacity .15s ease,transform .15s ease;z-index:40}
+  .htip:hover::after,.htip:focus-visible::after{opacity:1;transform:none}
   .head .spacer{flex:1}
   .card{border:1px solid var(--line);border-radius:16px;background:var(--panel)}
   .sec{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:20px 22px 22px;margin-bottom:22px;box-shadow:0 16px 30px -28px rgba(36,26,20,.3)}
@@ -679,23 +684,23 @@ ICONS = {
 NAV = [
   (None, [('overview', 'dashboard.html', 'Dashboard', None)]),
   ('<b>01</b> Source', [('documents', 'sources.html', 'Sources', None)]),
-  ('<b>02</b> Insights', [('questions', 'insights.html', 'Insights', 'navQuestions')]),
-  ('<b>03</b> Build', [('review', 'build.html', 'Build', 'navReview')]),
+  ('<b>02</b> Build', [('review', 'build.html', 'Build', 'navReview')]),
+  ('<b>03</b> Insights', [('questions', 'insights.html', 'Insights', 'navQuestions')]),
   ('<b>04</b> Distribute', [('approved', 'distribute.html', 'Distribute', 'navApproved'), ('chat', 'chat.html', 'Chat', None)]),
   ('Decide', [('readout', 'knowledge.html', 'Knowledge', None)]),
 ]
 
 NAV_FLAT = [
   ('overview', 'dashboard.html', 'Dashboard', None, ''),
-  ('loop', 'onboarding.html?inside=1', 'My loop', None, ''),
+  ('loop', 'onboarding.html?loop=1', 'My loop', None, ''),
   ('documents', 'sources.html', 'Sources', None, '01'),
-  ('questions', 'insights.html', 'Insights', 'navQuestions', ''),
   ('review', 'build.html', 'Build <em class="lbl-sub">(Validate)</em>', 'navReview', ''),
+  ('questions', 'insights.html', 'Insights', 'navQuestions', ''),
   ('approved', 'distribute.html', 'Distribute', 'navApproved', ''),
   ('readout', 'knowledge.html', 'Knowledge', None, ''),
   ('activity', 'activity.html', 'Activity', None, ''),
 ]
-LOOP_STAGE = {'documents': '01 Source', 'questions': '02 Insights', 'review': '03 Build · Validation', 'approved': '04 Distribute', 'chat': '04 Distribute', 'readout': 'Decide'}
+LOOP_STAGE = {'documents': '01 Source', 'questions': '03 Insights', 'review': '02 Build · Validation', 'approved': '04 Distribute', 'chat': '04 Distribute', 'readout': 'Decide'}
 
 def sidebar(active):
     out = ['<aside class="side" aria-label="Main navigation">',
@@ -928,15 +933,15 @@ function counts() {
 
 HELPERS_JS = r"""
 // agents, shared by the dashboard widget and the Activity page
-const AG_STAGES = [['src', '01 Source', 'sources.html'], ['ins', '02 Insights', 'insights.html'], ['bld', '03 Build', 'build.html'], ['dis', '04 Distribute', 'distribute.html']];
+const AG_STAGES = [['src', '01 Source', 'sources.html'], ['bld', '02 Build', 'build.html'], ['ins', '03 Insights', 'insights.html'], ['dis', '04 Distribute', 'distribute.html']];
 // [stage, name, minutes since last activity (0 = running, null = not yet), last action, what it does]
 const AGENTS = [
   ['src', 'Sync agent', 0, 'Reading Partner terms.docx', 'Keeps your uploads and connected apps current'],
   ['src', 'Indexer', 6, 'Indexed Security overview · 51 passages', 'Splits documents into passages and indexes them by meaning'],
-  ['ins', 'Question finder', 42, 'Found 4 new questions', 'Finds the questions your sources answer'],
-  ['ins', 'Gap finder', 180, 'Flagged 1 contradiction', 'Detects gaps and contradictions between sources'],
   ['bld', 'Drafting agent', 75, 'Drafted 3 answers with sources', 'Drafts each answer with its sources for review'],
   ['bld', 'Rewrite agent', 600, 'Rewrote 2 rejected drafts using your reasons', 'Writes a rejected draft again using your reason'],
+  ['ins', 'Question finder', 42, 'Found 4 new questions', 'Finds the questions your sources answer'],
+  ['ins', 'Gap finder', 180, 'Flagged 1 contradiction', 'Detects gaps and contradictions between sources'],
   ['dis', 'Chat agent', 11, 'Answered “How fast can we call the API?”', 'Answers questions from approved answers only'],
   ['dis', 'Publisher', null, 'Publishing to your help centre comes with the full build', 'Publishes approved answers to your help centre and Slack'],
 ];
@@ -1276,7 +1281,7 @@ function refreshNav() {
   set('navQuestions', c.needCall + c.gaps);
   set('navApproved', c.approved);
   // My loop opens the loop where it stands, with today's numbers
-  const loopUrl = 'onboarding.html?inside=1&c=' + [c.docs, c.questions, c.gaps, c.drafts, c.pending, c.approved].join('.');
+  const loopUrl = 'onboarding.html?loop=1&c=' + [c.docs, c.questions, c.gaps, c.drafts, c.pending, c.approved].join('.');
   document.querySelectorAll('a[href^="onboarding.html?inside"]').forEach(a => { a.href = loopUrl; });
   window.LOOP_URL = loopUrl;
 }
@@ -1483,8 +1488,16 @@ FAB_HTML = '''<button class="fab" id="fab" type="button" aria-label="Ask lojo" a
 </section>
 '''
 
+def head_tips(body):
+    # a page's one-line description lives behind an info icon next to its title
+    return re.sub(r'<h1>(.*?)</h1>\s*<p>(.*?)</p>',
+        lambda m: '<h1>' + m.group(1) + ' <i class="htip" tabindex="0" role="note" aria-label="' + m.group(2).replace('"', '&quot;') + '" data-tip="' + m.group(2).replace('"', '&quot;') + '">i</i></h1>',
+        body, count=1)
+
+
 def page(active, title, css, body, js, desc=''):
     FAB = FAB_HTML
+    body = head_tips(body)
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
