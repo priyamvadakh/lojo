@@ -774,7 +774,7 @@ PERSONAS = {
 # Editor and Viewer use the Owner's pages; the role is picked at runtime from View as
 PERSONAS_RUNTIME = {
   'editor': dict(ini='LO', role='Editor', home='dashboard.html?as=editor', note='Oslo · sources, review, read-only settings'),
-  'viewer': dict(ini='JL', role='Viewer', home='chat.html?as=viewer', note='Oslo · Ask lojo and Knowledge'),
+  'viewer': dict(ini='JL', role='Viewer', home='knowledge.html?as=viewer', note='Oslo · Knowledge and Ask lojo'),
 }
 CHEV = '<svg class="side__chev" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></svg>'
 LOOP_STAGE = {'documents': '01 Source', 'questions': '03 Insights', 'review': '02 Build · Validation', 'approved': '04 Distribute', 'chat': '04 Distribute', 'readout': 'Decide'}
@@ -1444,7 +1444,8 @@ function roleView(role) {
   if (role !== 'owner') { hide('.side nav a[href="people.html"]'); hide('#orgInvite'); hide('#wsAdd'); document.body.classList.add('not-owner'); }
   if (role === 'viewer') {
     document.querySelectorAll('.side nav a.nav-item').forEach(a => { const f = a.getAttribute('href').split('?')[0]; a.hidden = !['chat.html', 'knowledge.html'].includes(f); a.classList.toggle('is-active', f === here); });
-    const nav = document.querySelector('.side nav'), ask = nav.querySelector('[data-only="viewer"]'); if (ask) nav.prepend(ask);
+    const br = document.querySelector('.side__brand'); if (br) br.href = 'knowledge.html';
+    const nav = document.querySelector('.side nav'), ask = nav.querySelector('[data-only="viewer"]'), kn = nav.querySelector('a[href="knowledge.html"]'); if (ask) nav.prepend(ask); if (kn) nav.prepend(kn);
   }
   const OPEN = { editor: (f) => f !== 'people.html', viewer: (f) => ['chat.html', 'knowledge.html', 'settings.html', 'states.html', 'emails.html'].includes(f) };
   if (OPEN[role] && !OPEN[role](here)) setTimeout(() => noAccess(role, here), 0);
@@ -1455,7 +1456,7 @@ function noAccess(role, here) {
   const viewer = role === 'viewer';
   document.querySelector('main.wrap').innerHTML = '<section class="noacc"><p class="label">Oslo</p><h1>You can’t open ' + esc(NAMES[here] || 'this page') + '</h1>' +
     '<p>' + (viewer ? 'Viewers ask lojo and read approved answers in Knowledge. Reviewing drafts and adding sources needs Editor access.' : 'Only Owners invite people and change roles.') + ' Ask ' + esc(owner.name) + ', an Owner of Oslo, if you need more.</p>' +
-    '<div class="noacc__b"><a class="btn btn--primary" href="' + (viewer ? 'chat.html' : 'dashboard.html') + '">Go to ' + (viewer ? 'Ask lojo' : 'Dashboard') + '</a><a class="btn btn--secondary" href="mailto:' + esc(owner.email) + '">Ask ' + esc(owner.name.split(' ')[0]) + ' for access</a></div></section>';
+    '<div class="noacc__b"><a class="btn btn--primary" href="' + (viewer ? 'knowledge.html' : 'dashboard.html') + '">Go to ' + (viewer ? 'Knowledge' : 'Dashboard') + '</a><a class="btn btn--secondary" href="mailto:' + esc(owner.email) + '">Ask ' + esc(owner.name.split(' ')[0]) + ' for access</a></div></section>';
 }
 function srcChip(docId, loc, warn) {
   return '<span class="src' + (warn ? ' src--warn' : '') + '">' + esc(docShort(docId)) + ' <em>' + esc(loc) + '</em>' + (warn ? ' <em>· conflicts</em>' : '') + '</span>';

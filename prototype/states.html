@@ -863,7 +863,7 @@
       <a class="pop__row persona" data-persona="super" href="platform.html"><span class="persona__ava">SF</span><span><b>Super admin</b><em>lojo staff · all companies</em></span></a>
       <a class="pop__row persona is-cur" data-persona="owner" href="dashboard.html?as=owner" aria-current="true"><span class="persona__ava">EO</span><span><b>Owner</b><em>Oslo · sources, answers, people</em></span></a>
       <a class="pop__row persona" data-persona="editor" href="dashboard.html?as=editor"><span class="persona__ava">LO</span><span><b>Editor</b><em>Oslo · sources, review, read-only settings</em></span></a>
-      <a class="pop__row persona" data-persona="viewer" href="chat.html?as=viewer"><span class="persona__ava">JL</span><span><b>Viewer</b><em>Oslo · Ask lojo and Knowledge</em></span></a>
+      <a class="pop__row persona" data-persona="viewer" href="knowledge.html?as=viewer"><span class="persona__ava">JL</span><span><b>Viewer</b><em>Oslo · Knowledge and Ask lojo</em></span></a>
         <a class="pop__row" href="dashboard.html?tour=1" id="tourAgain">Take the tour</a>
         <a class="pop__row" href="states.html">Design use cases</a>
         <button class="pop__row" id="resetDemo" type="button">Reset demo data</button>
@@ -1506,7 +1506,8 @@ function roleView(role) {
   if (role !== 'owner') { hide('.side nav a[href="people.html"]'); hide('#orgInvite'); hide('#wsAdd'); document.body.classList.add('not-owner'); }
   if (role === 'viewer') {
     document.querySelectorAll('.side nav a.nav-item').forEach(a => { const f = a.getAttribute('href').split('?')[0]; a.hidden = !['chat.html', 'knowledge.html'].includes(f); a.classList.toggle('is-active', f === here); });
-    const nav = document.querySelector('.side nav'), ask = nav.querySelector('[data-only="viewer"]'); if (ask) nav.prepend(ask);
+    const br = document.querySelector('.side__brand'); if (br) br.href = 'knowledge.html';
+    const nav = document.querySelector('.side nav'), ask = nav.querySelector('[data-only="viewer"]'), kn = nav.querySelector('a[href="knowledge.html"]'); if (ask) nav.prepend(ask); if (kn) nav.prepend(kn);
   }
   const OPEN = { editor: (f) => f !== 'people.html', viewer: (f) => ['chat.html', 'knowledge.html', 'settings.html', 'states.html', 'emails.html'].includes(f) };
   if (OPEN[role] && !OPEN[role](here)) setTimeout(() => noAccess(role, here), 0);
@@ -1517,7 +1518,7 @@ function noAccess(role, here) {
   const viewer = role === 'viewer';
   document.querySelector('main.wrap').innerHTML = '<section class="noacc"><p class="label">Oslo</p><h1>You can’t open ' + esc(NAMES[here] || 'this page') + '</h1>' +
     '<p>' + (viewer ? 'Viewers ask lojo and read approved answers in Knowledge. Reviewing drafts and adding sources needs Editor access.' : 'Only Owners invite people and change roles.') + ' Ask ' + esc(owner.name) + ', an Owner of Oslo, if you need more.</p>' +
-    '<div class="noacc__b"><a class="btn btn--primary" href="' + (viewer ? 'chat.html' : 'dashboard.html') + '">Go to ' + (viewer ? 'Ask lojo' : 'Dashboard') + '</a><a class="btn btn--secondary" href="mailto:' + esc(owner.email) + '">Ask ' + esc(owner.name.split(' ')[0]) + ' for access</a></div></section>';
+    '<div class="noacc__b"><a class="btn btn--primary" href="' + (viewer ? 'knowledge.html' : 'dashboard.html') + '">Go to ' + (viewer ? 'Knowledge' : 'Dashboard') + '</a><a class="btn btn--secondary" href="mailto:' + esc(owner.email) + '">Ask ' + esc(owner.name.split(' ')[0]) + ' for access</a></div></section>';
 }
 function srcChip(docId, loc, warn) {
   return '<span class="src' + (warn ? ' src--warn' : '') + '">' + esc(docShort(docId)) + ' <em>' + esc(loc) + '</em>' + (warn ? ' <em>· conflicts</em>' : '') + '</span>';
