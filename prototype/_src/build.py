@@ -328,26 +328,20 @@ OVERVIEW = dict(
       <div class="checks" id="checks"></div>
     </section>
 
-    <div class="duo">
+    <section class="sec" aria-labelledby="feedH">
+      <div class="sec__head"><h2 id="feedH">Since you last looked</h2></div>
+      <ul class="feed" id="feed"></ul>
+    </section>
+
+
     <section class="sec" aria-labelledby="agH" data-feature="agents">
       <div class="sec__head"><h2 id="agH">Agents at work</h2><span>· What each agent in your loop did last</span><a href="activity.html">View all agents →</a></div>
       <div class="agf chips" id="agFilters" role="group" aria-label="Filter agents"></div>
       <ul class="agl" id="agents"></ul>
     </section>
 
-    <section class="sec" aria-labelledby="feedH">
-        <div class="sec__head"><h2 id="feedH">Since you last looked</h2></div>
-        <ul class="feed" id="feed"></ul>
-      </section>
-    </div>
 
 
-    <div class="strip">
-      <img src="assets/lojo-icon.png" alt="">
-      <span><b>Coming in week 4:</b> Ask lojo opens for your team, and the readout lands.</span>
-      <span class="spacer"></span>
-      <a class="btn btn--secondary btn--sm" href="chat.html">Preview Ask lojo →</a>
-    </div>
 
     <!-- ASSUMPTION: server location wording is a placeholder until the week-1 sign-off is written up. check with Eric -->
     <div class="scope">
@@ -513,6 +507,104 @@ render();
 DOCUMENTS = dict(
   active='documents', title='Sources',
   css=r"""
+  /* drop zone: a hoop appears while dragging; dropping shoots a ball through it */
+  .drop{position:relative;overflow:hidden}
+  .hoop{position:absolute;top:10px;right:22px;width:64px;overflow:visible;height:92px;opacity:0;transform:translateY(-8px) scale(.9);transition:opacity .2s ease,transform .25s ease;pointer-events:none}
+  .drop.is-over .hoop,.drop.is-shot .hoop{opacity:1;transform:none}
+  .hoop__board{position:absolute;top:0;left:0;width:64px;height:56px;fill:#fff;stroke:var(--line-2);stroke-width:2}
+  .hoop__board rect:last-child{fill:none;stroke:var(--rose)}
+  .hoop__rim{position:absolute;top:40px;left:12px;width:40px;height:6px;border-radius:3px;background:#E8743B;z-index:2}
+  .hoop__net{position:absolute;top:44px;left:12px;width:40px;height:26px;fill:none;stroke:rgba(36,26,20,.35);stroke-width:1.4;transform-origin:top center}
+  .ball{position:absolute;top:0;left:20px;width:26px;height:26px;opacity:0;z-index:1}
+  .ball svg{width:100%;height:100%;fill:#F28C38;stroke:#7A3410;stroke-width:1.3}
+  .swish{position:absolute;top:36px;right:68px;left:auto;transform:none;font-family:var(--display);font-weight:800;font-size:.8rem;color:var(--rose);white-space:nowrap;opacity:0}
+  .drop.is-over .ball{opacity:1;top:-30px;left:-110px;animation:bob 1s ease-in-out infinite}
+  .drop.is-shot .ball{animation:shoot 1.1s cubic-bezier(.3,.7,.4,1) forwards}
+  .drop.is-shot .hoop__net{animation:netsw .5s ease .62s}
+  .drop.is-shot .swish{animation:swish 1s ease .7s forwards}
+  @keyframes bob{50%{transform:translateY(-6px) rotate(20deg)}}
+  @keyframes shoot{
+    0%{opacity:1;left:-150px;top:80px;transform:rotate(0)}
+    45%{left:-40px;top:-60px;transform:rotate(240deg)}
+    70%{left:19px;top:18px;transform:rotate(360deg)}
+    85%{left:19px;top:52px;opacity:1}
+    100%{left:19px;top:96px;opacity:0;transform:rotate(420deg)}}
+  @keyframes netsw{40%{transform:scaleY(1.35)}100%{transform:none}}
+  @keyframes swish{0%{opacity:0;transform:translateY(6px)}30%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-8px)}}
+  @media (prefers-reduced-motion:reduce){.drop.is-over .ball{animation:none}}
+
+  #logsBtn{gap:8px}
+  .logs__n{height:20px;padding:0 8px;border-radius:999px;background:rgba(198,69,69,.12);color:var(--error);font-size:.72rem;font-weight:700;display:inline-grid;place-items:center}
+
+  .dvdlg{width:calc(100vw - 32px);height:calc(100vh - 32px);max-width:none;max-height:none;margin:16px;padding:0;border:0;border-radius:18px;background:var(--panel);color:var(--ink);flex-direction:column;box-shadow:0 40px 90px -30px rgba(36,26,20,.5)}
+  .dvdlg[open]{display:flex}
+  .dvdlg::backdrop{background:rgba(36,26,20,.35)}
+  .dv__h{display:flex;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line)}
+  .dv__h h2{margin:0;font-family:var(--display);font-size:1.2rem}
+  .dv__h .spacer{flex:1}
+  .dv__bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 22px;border-bottom:1px solid var(--line)}
+  .dv__q{position:relative;flex:1;min-width:220px;max-width:420px}
+  .dv__q svg{position:absolute;left:11px;top:50%;width:16px;height:16px;transform:translateY(-50%);fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round}
+  .dv__q input{width:100%;height:36px;padding:0 12px 0 34px;border-radius:10px;border:1px solid var(--line-2);font:inherit;font-size:.88rem;background:var(--panel)}
+  .dv__st{display:flex;gap:6px;flex-wrap:wrap}
+  .dv__chip{height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--line-2);background:var(--panel);font:inherit;font-size:.8rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .dv__chip span{color:var(--muted);font-weight:700}
+  .dv__chip.is-bad{color:var(--error);border-color:rgba(198,69,69,.35)}
+  .dv__chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .dv__chip[aria-pressed="true"] span{color:rgba(255,255,255,.7)}
+  .dv__type{width:auto;height:36px}
+  .dv__body{flex:1;overflow:auto}
+  .dv__body thead th{position:sticky;top:0;background:var(--panel);z-index:1}
+  .dv__empty{padding:40px;text-align:center;color:var(--muted)}
+
+  .zform{display:grid;gap:14px}
+  .zform__h{display:flex;align-items:center;gap:12px}
+  .zform__ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:rgba(106,63,212,.1);color:#6A3FD4}
+  .zform__ic svg{width:22px;height:22px}
+  .zform__ic--w{background:rgba(62,111,166,.1);color:var(--info)}
+  .wrow{display:flex;gap:10px}
+  .wrow .text{flex:1;min-width:0}
+  .wrow .btn{flex:none}
+  .text.is-bad{border-color:var(--error)}
+  .wprog{display:grid;gap:6px}
+  .wprog .gm-bar{height:4px;border-radius:4px;background:var(--bg-soft);overflow:hidden}
+  .wprog .gm-bar i{display:block;height:100%;background:var(--brand-gradient);transition:width .3s ease}
+  .wprog .sub{margin:0}
+  .zform__h b{display:block;font-size:1rem}
+  .zform__h span{font-size:.82rem;color:var(--muted)}
+  .zform .fld{display:grid;gap:6px}
+  .zform .fld label{font-size:.84rem;font-weight:600}
+  .zform .fhint{font-size:.78rem;color:var(--muted)}
+  .zok{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:12px;background:var(--bg-soft);font-size:.86rem;line-height:1.5;cursor:pointer}
+  .zok input{width:18px;height:18px;margin:2px 0 0;flex:none;accent-color:var(--rose)}
+  .zform__f{display:flex;gap:10px;align-items:center}
+
+  .gm-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .gm-h h3{margin:0}
+  .gm-card{border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:grid;gap:12px}
+  .gm-card + .gm-card{margin-top:10px}
+  .gm-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .gm-av{width:40px;height:40px;border-radius:11px;flex:none;display:grid;place-items:center;background:#D93025;color:#fff;font-weight:800}
+  .gm-id{flex:1;min-width:180px}
+  .gm-id b{display:block;font-size:.95rem}
+  .gm-id span{font-size:.82rem;color:var(--muted)}
+  .gm-top .btn.is-on{border-color:var(--ink)}
+  .gm-top .btn .spin,.gm-foot .btn .spin{width:12px;height:12px;margin-right:6px}
+  .gm-bar{height:4px;border-radius:4px;background:var(--bg-soft);overflow:hidden}
+  .gm-bar i{display:block;height:100%;background:var(--brand-gradient);transition:width .4s ease}
+  .gm-note{margin:0;color:var(--muted);font-size:.86rem}
+  .gm-labels{display:grid;gap:8px}
+  .gm-l{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line-2);border-radius:12px;cursor:pointer;font-size:.92rem}
+  .gm-l.is-on{border-color:rgba(232,93,117,.35);background:#FFF8F6}
+  .gm-l input{width:18px;height:18px;margin:0;accent-color:var(--rose);cursor:pointer}
+  .gm-l span{flex:1}
+  .gm-l em{font-style:normal;font-size:.8rem;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+  .gm-l em .spin{width:12px;height:12px}
+  .gm-run{color:var(--info)!important;font-weight:600}
+  .gm-ok{color:var(--success)!important;font-weight:600}
+  .gm-foot{display:flex;align-items:center;gap:12px}
+  :root[data-theme="dark"] .gm-l.is-on{background:rgba(232,93,117,.08)}
+
   .forgap{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:12px 14px;border-radius:14px;border:1px solid rgba(47,116,232,.3);background:rgba(47,116,232,.06)}
   .forgap__ic{width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;background:rgba(47,116,232,.12)}
   .forgap > div{flex:1;min-width:0}
@@ -681,6 +773,7 @@ DOCUMENTS = dict(
         <p>Select a source to see its health, what it gives lojo, and the one thing to do next.</p>
       </div>
       <span class="spacer"></span>
+      <button class="btn btn--secondary" id="logsBtn" type="button"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>All logs <span class="logs__n" id="logsN"></span></button>
       <button class="btn btn--grad" id="addSrc" type="button"><svg class="i" viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round"><path d="M12 5v14M5 12h14"/></svg>Add source</button>
     </div>
     <p class="srcsum" id="srcSum"></p>
@@ -708,14 +801,24 @@ DOCUMENTS = dict(
             </div>
           </section>
           <section class="card dcard" aria-labelledby="docH">
-            <div class="card__head"><h2 id="docH">Your documents</h2><span class="sub" id="docMeta"></span><span class="spacer"></span><button class="btn btn--secondary btn--sm" id="addDocs" type="button">Upload documents</button></div>
+            <div class="card__head"><h2 id="docH">Everything lojo reads</h2><span class="sub" id="docMeta"></span><span class="spacer"></span><button class="btn btn--ghost btn--sm" id="dvOpen" type="button">View all</button><button class="btn btn--secondary btn--sm" id="addDocs" type="button">Upload documents</button></div>
             <div class="dscroll"><table class="dtable">
-              <thead><tr><th>Document</th><th class="num">Pages</th><th class="num">Passages</th><th class="num">Questions</th><th>Status</th><th class="tacts"><span class="sr-only">Actions</span></th></tr></thead>
+              <thead><tr><th>Item</th><th class="num">Pages</th><th class="num">Passages</th><th class="num">Questions</th><th>Status</th><th class="tacts"><span class="sr-only">Actions</span></th></tr></thead>
               <tbody id="docRows"></tbody>
             </table></div>
           </section>
         </div>
         <div class="card srcitems" id="appBody" hidden></div>
+        <dialog class="dvdlg" id="dvDlg" aria-labelledby="dvH">
+          <div class="dv__h"><div><h2 id="dvH">Everything lojo reads</h2><span class="sub" id="dvMeta"></span></div><span class="spacer"></span><button class="btn btn--ghost btn--sm" type="button" data-dvx aria-label="Close">Close ×</button></div>
+          <div class="dv__bar">
+            <label class="dv__q"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="dvQ" type="search" placeholder="Search everything lojo reads" aria-label="Search everything lojo reads"></label>
+            <div class="dv__st" id="dvSt" role="group" aria-label="Status"></div>
+            <select class="text dv__type" id="dvType" aria-label="Source"></select>
+          </div>
+          <div class="dv__body"><table class="dtable"><thead><tr><th>Item</th><th class="num">Pages</th><th class="num">Passages</th><th class="num">Questions</th><th>Status</th><th class="tacts"><span class="sr-only">Actions</span></th></tr></thead><tbody id="dvRows"></tbody></table>
+            <p class="dv__empty" id="dvEmpty" hidden>Nothing matches. Try other words or another filter.</p></div>
+        </dialog>
       </section>
     </div>
 
@@ -728,6 +831,13 @@ DOCUMENTS = dict(
       <section id="tabDocs">
         <section class="uperr" id="upErr" hidden role="alert"></section>
         <label class="drop" id="drop">
+          <span class="hoop" aria-hidden="true">
+            <svg class="hoop__board" viewBox="0 0 64 56"><rect x="6" y="2" width="52" height="34" rx="4"/><rect x="22" y="12" width="20" height="14" rx="2"/></svg>
+            <span class="hoop__rim"></span>
+            <svg class="hoop__net" viewBox="0 0 40 26"><path d="M2 2l6 22M12 2l3 22M20 2v22M28 2l-3 22M38 2l-6 22M4 10h32M7 18h26"/></svg>
+            <span class="ball"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2v20M5 5c3 3 3 11 0 14M19 5c-3 3-3 11 0 14"/></svg></span>
+            <span class="swish">Swish!</span>
+          </span>
           <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg></span>
           <strong>Drop files here, or browse</strong>
           <p class="hint">PDF, DOCX, Markdown or TXT · up to 25 MB each</p>
@@ -737,6 +847,21 @@ DOCUMENTS = dict(
       </section>
       <section id="tabConnect" hidden>
         <div class="apps" id="apps"></div>
+        <form class="zform" id="wForm" hidden novalidate>
+          <div class="zform__h"><span class="zform__ic zform__ic--w"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span><div><b>Connect a website</b><span>Public pages, read the same way as documents.</span></div></div>
+          <div class="fld"><label for="wUrl">Website address</label>
+            <div class="wrow"><input class="text" id="wUrl" type="url" placeholder="https://help.yourcompany.com" autocomplete="off"><button class="btn btn--primary" type="submit" id="wGo" disabled>Read the site</button></div>
+            <span class="fhint" id="wHint">lojo reads the public pages under this address, up to 200. It never signs in.</span><span class="ferr" id="wErr"></span></div>
+          <div class="wprog" id="wProg" hidden></div>
+          <div class="zform__f"><button class="btn btn--ghost" type="button" id="wCancel">Cancel</button></div>
+        </form>
+        <form class="zform" id="zForm" hidden novalidate>
+          <div class="zform__h"><span class="zform__ic"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"></svg></span><div><b>Connect ZIWO</b><span>Calls and their transcripts. lojo only reads.</span></div></div>
+          <div class="fld"><label for="zAcc">ZIWO account name</label><input class="text" id="zAcc" autocomplete="off"><span class="fhint">The name of your account in ZIWO, as your ZIWO admin gives it.</span><span class="ferr"></span></div>
+          <div class="fld"><label for="zKey">API key</label><input class="text" id="zKey" type="password" autocomplete="off"><span class="ferr"></span></div>
+          <label class="zok"><input type="checkbox" id="zOk"><span>On behalf of the <b>“Oslo”</b> workspace, I confirm that we may share these call recordings with lojo, that callers were told their calls are recorded, and that we are responsible for this personal data.</span></label>
+          <div class="zform__f"><button class="btn btn--primary" type="submit" id="zGo" disabled>Connect ZIWO</button><button class="btn btn--ghost" type="button" id="zCancel">Cancel</button></div>
+        </form>
         <div class="synced" id="synced" hidden></div>
       </section>
     </dialog>
@@ -748,13 +873,14 @@ const APPS = [
   { id: 'website', name: 'Website', kind: 'Web parsing', mono: 'W', color: '#3E6FA6', n: 3 },
   { id: 'notion', name: 'Notion', kind: 'Pages & wikis', mono: 'N', color: 'var(--ink)', n: 5 },
   { id: 'gmail', name: 'Gmail', kind: 'Email', mono: 'M', color: '#D93025', n: 3 },
+  { id: 'ziwo', name: 'ZIWO', kind: 'Calls & transcripts', mono: 'Z', color: '#6A3FD4', n: 2 },
   { id: 'gdrive', soon: true, name: 'Google Drive', kind: 'Docs & files', mono: 'GD', color: '#1A73E8', n: 6 },
   { id: 'sharepoint', soon: true, name: 'SharePoint', kind: 'Sites & libraries', mono: 'SP', color: '#036C70', n: 5 },
   { id: 'confluence', soon: true, name: 'Confluence', kind: 'Spaces', mono: 'C', color: '#0C66E4', n: 4 },
   { id: 'aircall', soon: true, name: 'Aircall', kind: 'Calls', mono: 'A', color: '#00B388', n: 2 },
   { id: 'gsheets', soon: true, name: 'Google Sheets', kind: 'Spreadsheets', mono: 'GS', color: '#188038', n: 2 },
 ];
-const LOGO = {"notion": "<path d=\"M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.139c-.093-.514.28-.887.747-.933zM1.936 1.035l13.31-.98c1.634-.14 2.055-.047 3.082.7l4.249 2.986c.7.513.934.653.934 1.213v16.378c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.047-1.448-.093-1.962-.747l-3.129-4.06c-.56-.747-.793-1.306-.793-1.96V2.667c0-.839.374-1.54 1.447-1.632z\"/>", "gdrive": "<path d=\"M12.01 1.485c-2.082 0-3.754.02-3.743.047.01.02 1.708 3.001 3.774 6.62l3.76 6.574h3.76c2.081 0 3.753-.02 3.742-.047-.005-.02-1.708-3.001-3.775-6.62l-3.76-6.574zm-4.76 1.73a789.828 789.861 0 0 0-3.63 6.319L0 15.868l1.89 3.298 1.885 3.297 3.62-6.335 3.618-6.33-1.88-3.287C8.1 4.704 7.255 3.22 7.25 3.214zm2.259 12.653-.203.348c-.114.198-.96 1.672-1.88 3.287a423.93 423.948 0 0 1-1.698 2.97c-.01.026 3.24.042 7.222.042h7.244l1.796-3.157c.992-1.734 1.85-3.23 1.906-3.323l.104-.167h-7.249z\"/>", "gsheets": "<path d=\"M11.318 12.545H7.91v-1.909h3.41v1.91zM14.728 0v6h6l-6-6zm1.363 10.636h-3.41v1.91h3.41v-1.91zm0 3.273h-3.41v1.91h3.41v-1.91zM20.727 6.5v15.864c0 .904-.732 1.636-1.636 1.636H4.909a1.636 1.636 0 0 1-1.636-1.636V1.636C3.273.732 4.005 0 4.909 0h9.318v6.5h6.5zm-3.273 2.773H6.545v7.909h10.91v-7.91zm-6.136 4.636H7.91v1.91h3.41v-1.91z\"/>", "gmail": "<path d=\"M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z\"/>", "confluence": "<path d=\"M.87 18.257c-.248.382-.53.875-.763 1.245a.764.764 0 0 0 .255 1.04l4.965 3.054a.764.764 0 0 0 1.058-.26c.199-.332.454-.763.733-1.221 1.967-3.247 3.945-2.853 7.508-1.146l4.957 2.337a.764.764 0 0 0 1.028-.382l2.364-5.346a.764.764 0 0 0-.382-1 599.851 599.851 0 0 1-4.965-2.361C10.911 10.97 5.224 11.185.87 18.257zM23.131 5.743c.249-.405.531-.875.764-1.25a.764.764 0 0 0-.256-1.034L18.675.404a.764.764 0 0 0-1.058.26c-.195.335-.451.763-.734 1.225-1.966 3.246-3.945 2.85-7.508 1.146L4.437.694a.764.764 0 0 0-1.027.382L1.046 6.422a.764.764 0 0 0 .382 1c1.039.49 3.105 1.467 4.965 2.361 6.698 3.246 12.392 3.029 16.738-4.04z\"/>", "aircall": "<path d=\"M23.451 5.906a6.978 6.978 0 0 0-5.375-5.39C16.727.204 14.508 0 12 0S7.273.204 5.924.516a6.978 6.978 0 0 0-5.375 5.39C.237 7.26.034 9.485.034 12s.203 4.74.515 6.094a6.978 6.978 0 0 0 5.375 5.39C7.273 23.796 9.492 24 12 24s4.727-.204 6.076-.516a6.978 6.978 0 0 0 5.375-5.39c.311-1.354.515-3.578.515-6.094 0-2.515-.203-4.74-.515-6.094zm-5.873 12.396l-.003.001c-.428.152-1.165.283-2.102.377l-.147.014a.444.444 0 0 1-.45-.271 1.816 1.816 0 0 0-1.296-1.074c-.351-.081-.928-.134-1.58-.134s-1.229.053-1.58.134a1.817 1.817 0 0 0-1.291 1.062.466.466 0 0 1-.471.281 8 8 0 0 0-.129-.012c-.938-.094-1.676-.224-2.105-.377l-.003-.001a.76.76 0 0 1-.492-.713c0-.032.003-.066.005-.098.073-.979.666-3.272 1.552-5.89C8.5 8.609 9.559 6.187 10.037 5.714a1.029 1.029 0 0 1 .404-.26l.004-.002c.314-.106.892-.178 1.554-.178.663 0 1.241.071 1.554.178l.005.002a1.025 1.025 0 0 1 .405.26c.478.472 1.537 2.895 2.549 5.887.886 2.617 1.479 4.91 1.552 5.89.002.032.005.066.005.098a.76.76 0 0 1-.491.713z\"/>", "sharepoint": "<path d=\"M24 13.5q0 1.242-.475 2.332-.474 1.09-1.289 1.904-.814.815-1.904 1.29-1.09.474-2.332.474-.762 0-1.523-.2-.106.997-.557 1.858-.451.862-1.154 1.494-.704.633-1.606.99-.902.358-1.91.358-1.09 0-2.045-.416-.955-.416-1.664-1.125-.709-.709-1.125-1.664Q6 19.84 6 18.75q0-.188.018-.375.017-.188.04-.375H.997q-.41 0-.703-.293T0 17.004V6.996q0-.41.293-.703T.996 6h3.54q.14-1.277.726-2.373.586-1.096 1.488-1.904Q7.652.914 8.807.457 9.96 0 11.25 0q1.395 0 2.625.533T16.02 1.98q.914.915 1.447 2.145T18 6.75q0 .188-.012.375-.011.188-.035.375 1.242 0 2.344.469 1.101.468 1.928 1.277.826.809 1.3 1.904Q24 12.246 24 13.5zm-12.75-12q-.973 0-1.857.34-.885.34-1.577.943-.691.604-1.154 1.43Q6.2 5.039 6.06 6h4.945q.41 0 .703.293t.293.703v4.945l.21-.035q.212-.75.61-1.424.399-.673.944-1.218.545-.545 1.213-.944.668-.398 1.43-.61.093-.503.093-.96 0-1.09-.416-2.045-.416-.955-1.125-1.664-.709-.709-1.664-1.125Q12.34 1.5 11.25 1.5zM6.117 15.902q.54 0 1.06-.111.522-.111.932-.37.41-.257.662-.679.252-.422.252-1.055 0-.632-.263-1.054-.264-.422-.662-.703-.399-.282-.856-.463l-.855-.34q-.399-.158-.662-.334-.264-.176-.264-.445 0-.2.14-.323.141-.123.335-.193.193-.07.404-.094.21-.023.351-.023.598 0 1.055.152.457.153.95.457V8.543q-.282-.082-.522-.14-.24-.06-.475-.1-.234-.041-.486-.059-.252-.017-.557-.017-.515 0-1.054.117-.54.117-.979.375-.44.258-.715.68-.275.421-.275 1.03 0 .598.263.997.264.398.663.68.398.28.855.474l.856.363q.398.17.662.358.263.187.263.457 0 .222-.123.351-.123.13-.31.2-.188.07-.393.087-.205.018-.369.018-.703 0-1.248-.234-.545-.235-1.107-.621v1.875q1.195.468 2.472.468zM11.25 22.5q.773 0 1.453-.293t1.19-.803q.51-.51.808-1.195.299-.686.299-1.459 0-.668-.223-1.277-.222-.61-.62-1.096-.4-.486-.95-.826-.55-.34-1.207-.48v1.933q0 .41-.293.703t-.703.293H7.57q-.07.375-.07.75 0 .773.293 1.459t.803 1.195q.51.51 1.195.803.686.293 1.459.293zM18 18q.926 0 1.746-.352.82-.351 1.436-.966.615-.616.966-1.43.352-.815.352-1.752 0-.926-.352-1.746-.351-.82-.966-1.436-.616-.615-1.436-.966Q18.926 9 18 9t-1.74.357q-.815.358-1.43.973t-.973 1.43q-.357.814-.357 1.74 0 .129.006.258t.017.258q.551.27 1.02.65t.838.855q.369.475.627 1.026.258.55.387 1.148Q17.18 18 18 18Z\"/>", "website": "<circle cx=\"12\" cy=\"12\" r=\"9\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/><path d=\"M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/>"};
+const LOGO = {"ziwo": "<path d=\"M6.6 2.5c.5 0 .9.3 1.1.8l1.4 3.4c.2.5 0 1.1-.4 1.4l-1.9 1.4a12.3 12.3 0 0 0 5.7 5.7l1.4-1.9c.3-.4.9-.6 1.4-.4l3.4 1.4c.5.2.8.6.8 1.1V19c0 1.4-1.2 2.5-2.6 2.4C8.6 20.8 3.2 15.4 2.6 8.1 2.5 6.7 3.6 5.5 5 5.5h.1V3.6c0-.6.5-1.1 1.1-1.1zM14 2h7v2.2l-4.4 5.1H21V11h-7V8.8l4.4-5.1H14z\"/>", "notion": "<path d=\"M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.139c-.093-.514.28-.887.747-.933zM1.936 1.035l13.31-.98c1.634-.14 2.055-.047 3.082.7l4.249 2.986c.7.513.934.653.934 1.213v16.378c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.047-1.448-.093-1.962-.747l-3.129-4.06c-.56-.747-.793-1.306-.793-1.96V2.667c0-.839.374-1.54 1.447-1.632z\"/>", "gdrive": "<path d=\"M12.01 1.485c-2.082 0-3.754.02-3.743.047.01.02 1.708 3.001 3.774 6.62l3.76 6.574h3.76c2.081 0 3.753-.02 3.742-.047-.005-.02-1.708-3.001-3.775-6.62l-3.76-6.574zm-4.76 1.73a789.828 789.861 0 0 0-3.63 6.319L0 15.868l1.89 3.298 1.885 3.297 3.62-6.335 3.618-6.33-1.88-3.287C8.1 4.704 7.255 3.22 7.25 3.214zm2.259 12.653-.203.348c-.114.198-.96 1.672-1.88 3.287a423.93 423.948 0 0 1-1.698 2.97c-.01.026 3.24.042 7.222.042h7.244l1.796-3.157c.992-1.734 1.85-3.23 1.906-3.323l.104-.167h-7.249z\"/>", "gsheets": "<path d=\"M11.318 12.545H7.91v-1.909h3.41v1.91zM14.728 0v6h6l-6-6zm1.363 10.636h-3.41v1.91h3.41v-1.91zm0 3.273h-3.41v1.91h3.41v-1.91zM20.727 6.5v15.864c0 .904-.732 1.636-1.636 1.636H4.909a1.636 1.636 0 0 1-1.636-1.636V1.636C3.273.732 4.005 0 4.909 0h9.318v6.5h6.5zm-3.273 2.773H6.545v7.909h10.91v-7.91zm-6.136 4.636H7.91v1.91h3.41v-1.91z\"/>", "gmail": "<path d=\"M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z\"/>", "confluence": "<path d=\"M.87 18.257c-.248.382-.53.875-.763 1.245a.764.764 0 0 0 .255 1.04l4.965 3.054a.764.764 0 0 0 1.058-.26c.199-.332.454-.763.733-1.221 1.967-3.247 3.945-2.853 7.508-1.146l4.957 2.337a.764.764 0 0 0 1.028-.382l2.364-5.346a.764.764 0 0 0-.382-1 599.851 599.851 0 0 1-4.965-2.361C10.911 10.97 5.224 11.185.87 18.257zM23.131 5.743c.249-.405.531-.875.764-1.25a.764.764 0 0 0-.256-1.034L18.675.404a.764.764 0 0 0-1.058.26c-.195.335-.451.763-.734 1.225-1.966 3.246-3.945 2.85-7.508 1.146L4.437.694a.764.764 0 0 0-1.027.382L1.046 6.422a.764.764 0 0 0 .382 1c1.039.49 3.105 1.467 4.965 2.361 6.698 3.246 12.392 3.029 16.738-4.04z\"/>", "aircall": "<path d=\"M23.451 5.906a6.978 6.978 0 0 0-5.375-5.39C16.727.204 14.508 0 12 0S7.273.204 5.924.516a6.978 6.978 0 0 0-5.375 5.39C.237 7.26.034 9.485.034 12s.203 4.74.515 6.094a6.978 6.978 0 0 0 5.375 5.39C7.273 23.796 9.492 24 12 24s4.727-.204 6.076-.516a6.978 6.978 0 0 0 5.375-5.39c.311-1.354.515-3.578.515-6.094 0-2.515-.203-4.74-.515-6.094zm-5.873 12.396l-.003.001c-.428.152-1.165.283-2.102.377l-.147.014a.444.444 0 0 1-.45-.271 1.816 1.816 0 0 0-1.296-1.074c-.351-.081-.928-.134-1.58-.134s-1.229.053-1.58.134a1.817 1.817 0 0 0-1.291 1.062.466.466 0 0 1-.471.281 8 8 0 0 0-.129-.012c-.938-.094-1.676-.224-2.105-.377l-.003-.001a.76.76 0 0 1-.492-.713c0-.032.003-.066.005-.098.073-.979.666-3.272 1.552-5.89C8.5 8.609 9.559 6.187 10.037 5.714a1.029 1.029 0 0 1 .404-.26l.004-.002c.314-.106.892-.178 1.554-.178.663 0 1.241.071 1.554.178l.005.002a1.025 1.025 0 0 1 .405.26c.478.472 1.537 2.895 2.549 5.887.886 2.617 1.479 4.91 1.552 5.89.002.032.005.066.005.098a.76.76 0 0 1-.491.713z\"/>", "sharepoint": "<path d=\"M24 13.5q0 1.242-.475 2.332-.474 1.09-1.289 1.904-.814.815-1.904 1.29-1.09.474-2.332.474-.762 0-1.523-.2-.106.997-.557 1.858-.451.862-1.154 1.494-.704.633-1.606.99-.902.358-1.91.358-1.09 0-2.045-.416-.955-.416-1.664-1.125-.709-.709-1.125-1.664Q6 19.84 6 18.75q0-.188.018-.375.017-.188.04-.375H.997q-.41 0-.703-.293T0 17.004V6.996q0-.41.293-.703T.996 6h3.54q.14-1.277.726-2.373.586-1.096 1.488-1.904Q7.652.914 8.807.457 9.96 0 11.25 0q1.395 0 2.625.533T16.02 1.98q.914.915 1.447 2.145T18 6.75q0 .188-.012.375-.011.188-.035.375 1.242 0 2.344.469 1.101.468 1.928 1.277.826.809 1.3 1.904Q24 12.246 24 13.5zm-12.75-12q-.973 0-1.857.34-.885.34-1.577.943-.691.604-1.154 1.43Q6.2 5.039 6.06 6h4.945q.41 0 .703.293t.293.703v4.945l.21-.035q.212-.75.61-1.424.399-.673.944-1.218.545-.545 1.213-.944.668-.398 1.43-.61.093-.503.093-.96 0-1.09-.416-2.045-.416-.955-1.125-1.664-.709-.709-1.664-1.125Q12.34 1.5 11.25 1.5zM6.117 15.902q.54 0 1.06-.111.522-.111.932-.37.41-.257.662-.679.252-.422.252-1.055 0-.632-.263-1.054-.264-.422-.662-.703-.399-.282-.856-.463l-.855-.34q-.399-.158-.662-.334-.264-.176-.264-.445 0-.2.14-.323.141-.123.335-.193.193-.07.404-.094.21-.023.351-.023.598 0 1.055.152.457.153.95.457V8.543q-.282-.082-.522-.14-.24-.06-.475-.1-.234-.041-.486-.059-.252-.017-.557-.017-.515 0-1.054.117-.54.117-.979.375-.44.258-.715.68-.275.421-.275 1.03 0 .598.263.997.264.398.663.68.398.28.855.474l.856.363q.398.17.662.358.263.187.263.457 0 .222-.123.351-.123.13-.31.2-.188.07-.393.087-.205.018-.369.018-.703 0-1.248-.234-.545-.235-1.107-.621v1.875q1.195.468 2.472.468zM11.25 22.5q.773 0 1.453-.293t1.19-.803q.51-.51.808-1.195.299-.686.299-1.459 0-.668-.223-1.277-.222-.61-.62-1.096-.4-.486-.95-.826-.55-.34-1.207-.48v1.933q0 .41-.293.703t-.703.293H7.57q-.07.375-.07.75 0 .773.293 1.459t.803 1.195q.51.51 1.195.803.686.293 1.459.293zM18 18q.926 0 1.746-.352.82-.351 1.436-.966.615-.616.966-1.43.352-.815.352-1.752 0-.926-.352-1.746-.351-.82-.966-1.436-.616-.615-1.436-.966Q18.926 9 18 9t-1.74.357q-.815.358-1.43.973t-.973 1.43q-.357.814-.357 1.74 0 .129.006.258t.017.258q.551.27 1.02.65t.838.855q.369.475.627 1.026.258.55.387 1.148Q17.18 18 18 18Z\"/>", "website": "<circle cx=\"12\" cy=\"12\" r=\"9\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/><path d=\"M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/>"};
 ST.apps = ST.apps || {};
 function passagesFor(id) {
   const out = [];
@@ -782,7 +908,7 @@ function renderScope() {
 }
 // one table row per document; failed, waiting and retired rows say why under the name
 const ST_TXT = { done: ['✓ Indexed', 'ok'], run: ['', 'run'], fail: ['✕ Couldn’t process', 'fail'], wait: ['Waiting', 'wait'], ret: ['Retired', 'ret'] };
-const docRow = (o) => '<tr class="drow' + (o.cls || '') + '"' + (o.id ? ' data-id="' + o.id + '"' : '') + '><td><span class="dname"><span class="ext">' + esc(o.ext) + '</span><span class="dn"><span class="nm">' + esc(o.name) + (o.badge || '') + '</span>' + (o.why || '') + '</span></span></td>' +
+const docRow = (o) => '<tr class="drow' + (o.cls || '') + '" data-st="' + (o.st || 'done') + '" data-ext="' + esc((o.ext || '').toLowerCase()) + '"' + (o.id ? ' data-id="' + o.id + '"' : '') + '><td><span class="dname"><span class="ext">' + esc(o.ext) + '</span><span class="dn"><span class="nm">' + esc(o.name) + (o.badge || '') + '</span>' + (o.why || '') + '</span></span></td>' +
   '<td class="num">' + (o.pages ?? '–') + '</td><td class="num">' + (o.passages ?? '–') + '</td><td class="num">' + (o.qs ? o.qs : '–') + '</td>' +
   '<td><span class="dst ' + ST_TXT[o.st][1] + '">' + (o.st === 'run' ? '<span class="spin" style="width:10px;height:10px"></span> ' + esc(o.stage) : ST_TXT[o.st][0]) + '</span></td>' +
   '<td class="tacts">' + (o.acts || '') + '</td></tr>' + (o.detail ? '<tr class="ddetail"><td colspan="6">' + o.detail + '</td></tr>' : '');
@@ -825,7 +951,13 @@ function render() {
     acts: '<button class="btn btn--secondary" data-restore="' + d.id + '" data-base="1">Restore</button>' })));
   docx.filter(d => d.status === 'retired').forEach(d => rows.push(docRow({ cls: ' is-retired', ext: d.ext, name: d.name, st: 'ret', why: '<span class="why mute">' + esc(d.retiredNote) + '</span>',
     acts: '<button class="btn btn--secondary" data-restore="' + d.id + '">Restore</button>' })));
+  rows.push(docRow({ ext: 'gmail', name: 'SSO stopped working after we upgraded', cls: ' is-failed', st: 'fail', why: '<span class="why">The email body is an image only, so there’s no text to read. Paste the text into a document and upload it.</span>',
+    acts: '<button class="btn btn--secondary" data-retrymail="1">Try again</button>' }));
+  rows.push(docRow({ ext: 'web', name: 'help.oslo.com/sso', cls: ' is-failed', st: 'fail', why: '<span class="why">The page asks visitors to sign in, and lojo never signs in. Make the page public, or upload it as a document.</span>',
+    acts: '<button class="btn btn--secondary" data-retrymail="1">Try again</button>' }));
   $('docRows').innerHTML = rows.join('');
+  if ($('dvDlg').open) dvRender();
+  const nf = $('docRows').querySelectorAll('tr[data-st="fail"]').length; $('logsN').textContent = nf ? nf + ' failed' : ''; $('logsN').hidden = !nf;
   renderApps();
 }
 function renderApps() {
@@ -836,13 +968,73 @@ function renderApps() {
 $('apps').addEventListener('click', (e) => {
   const b = e.target.closest('[data-app]'); if (!b || ST.apps[b.dataset.app]) return;
   const a = APPS.find(x => x.id === b.dataset.app);
-  if (a.soon) { e.stopImmediatePropagation(); toast(a.name + ' is coming soon. Connect Website, Notion or Gmail for now.'); return; }
+  if (a.soon) { e.stopImmediatePropagation(); toast(a.name + ' is coming soon. Connect Website, Notion, Gmail or ZIWO for now.'); return; }
+  // ZIWO needs an account, an API key and a recording consent
+  if (a.id === 'website') { $('wForm').reset(); $('wGo').disabled = true; $('wErr').textContent = ''; $('wProg').hidden = true; $('apps').hidden = true; $('wForm').hidden = false; $('wUrl').focus(); return; }
+  if (a.id === 'ziwo') { $('zForm').reset(); $('zGo').disabled = true; $('apps').hidden = true; $('zForm').hidden = false; $('zForm').querySelector('svg').innerHTML = LOGO.ziwo; $('zAcc').focus(); return; }
   b.classList.add('is-busy'); b.disabled = true;
   b.querySelector('.k').innerHTML = '<span class="spin" style="width:11px;height:11px;vertical-align:-1px"></span> Connecting…';
   setTimeout(() => { ST.apps[a.id] = true; save(); render(); toast(a.name + ' connected as eric@oslo.com'); }, 900);
 });
+// website: check the address, then show pages being read
+$('wUrl').addEventListener('input', () => { $('wGo').disabled = !$('wUrl').value.trim(); $('wErr').textContent = ''; $('wUrl').classList.remove('is-bad'); });
+$('wCancel').addEventListener('click', () => { $('wForm').hidden = true; $('apps').hidden = false; });
+$('wForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  let v = $('wUrl').value.trim(); if (!/^https?:\/\//i.test(v)) v = 'https://' + v;
+  let host = ''; try { host = new URL(v).hostname; } catch (err) {}
+  if (!/\.[a-z]{2,}$/i.test(host)) { $('wErr').textContent = 'Use a full address, like https://help.yourcompany.com.'; $('wUrl').classList.add('is-bad'); return; }
+  $('wUrl').value = v; $('wUrl').disabled = true; $('wGo').disabled = true; $('wGo').innerHTML = '<span class="spin" style="width:12px;height:12px;margin-right:6px"></span>Reading…';
+  const pages = ['/', '/getting-started', '/billing', '/security', '/sso', '/refunds'];
+  $('wProg').hidden = false;
+  const draw = (n) => { $('wProg').innerHTML = '<div class="gm-bar"><i style="width:' + Math.round(n / pages.length * 100) + '%"></i></div><p class="sub">' + (n < pages.length ? 'Reading ' + host + pages[n] + '…' : 'Read ' + pages.length + ' pages from ' + host) + '</p>'; };
+  draw(0);
+  pages.forEach((_, i) => setTimeout(() => { draw(i + 1); if (i === pages.length - 1) setTimeout(() => {
+    ST.apps.website = true; save(); $('wForm').hidden = true; $('apps').hidden = false; $('wUrl').disabled = false; $('wGo').textContent = 'Read the site'; render(); toast(host + ' connected · ' + pages.length + ' pages read'); }, 600); }, 450 * (i + 1)));
+});
+const zReady = () => { $('zGo').disabled = !($('zAcc').value.trim() && $('zKey').value.trim() && $('zOk').checked); };
+['zAcc', 'zKey', 'zOk'].forEach(id => $(id).addEventListener('input', zReady)); $('zOk').addEventListener('change', zReady);
+$('zCancel').addEventListener('click', () => { $('zForm').hidden = true; $('apps').hidden = false; });
+$('zForm').addEventListener('submit', (e) => {
+  e.preventDefault(); const acc = $('zAcc').value.trim();
+  $('zGo').disabled = true; $('zGo').innerHTML = '<span class="spin" style="width:12px;height:12px;margin-right:6px"></span>Connecting…';
+  setTimeout(() => { ST.apps.ziwo = true; save(); $('zForm').hidden = true; $('apps').hidden = false; $('zGo').textContent = 'Connect ZIWO'; render(); toast('ZIWO connected · ' + acc + '. lojo reads calls after they end.'); }, 1100);
+});
 $('synced').addEventListener('click', (e) => { const b = e.target.closest('[data-off]'); if (!b) return; delete ST.apps[b.dataset.off]; save(); render(); toast('Disconnected. Documents already indexed stay until you retire them.'); });
+// full-screen documents log with search, status and type filters
+const DV_ST = [['all', 'All'], ['fail', 'Failed'], ['run', 'Processing'], ['wait', 'Waiting'], ['done', 'Indexed'], ['ret', 'Retired']];
+const DV_TYPE = { pdf: 'Uploads', docx: 'Uploads', doc: 'Uploads', md: 'Uploads', txt: 'Uploads', gmail: 'Gmail', web: 'Website', website: 'Website', notion: 'Notion', ziwo: 'ZIWO' };
+const dvSrc = (ext) => DV_TYPE[ext] || 'Uploads';
+let dvSt = 'all', dvType = '';
+function dvRender() {
+  const rows = [...$('docRows').querySelectorAll('tr.drow')].map(r => r.cloneNode(true));
+  const q = $('dvQ').value.trim().toLowerCase();
+  // items from connected apps join the uploads
+  Object.keys(ST.apps || {}).filter(id => ST.apps[id] && APPINFO[id]).forEach(id => APPINFO[id].items.forEach(([n, st]) => {
+    if (rows.some(r => r.textContent.includes(n))) return;
+    const bad = /couldn|changed/.test(st), t = document.createElement('tbody');
+    t.innerHTML = docRow({ ext: id === 'website' ? 'web' : id, name: n, st: bad ? 'fail' : /awaiting|running/.test(st) ? 'run' : 'done', cls: bad ? ' is-failed' : '', why: '<span class="why' + (bad ? '' : ' mute') + '">' + esc(st) + '</span>' });
+    rows.push(t.firstElementChild);
+  }));
+  const srcs = [...new Set(rows.map(r => dvSrc(r.dataset.ext)))];
+  $('dvType').innerHTML = '<option value="">All sources</option>' + srcs.map(t => '<option value="' + t + '"' + (t === dvType ? ' selected' : '') + '>' + t + ' · ' + rows.filter(r => dvSrc(r.dataset.ext) === t).length + '</option>').join('');
+  $('dvSt').innerHTML = DV_ST.map(([k, l]) => { const n = k === 'all' ? rows.length : rows.filter(r => r.dataset.st === k).length; return (k === 'all' || n) ? '<button type="button" class="dv__chip' + (k === 'fail' ? ' is-bad' : '') + '" data-dvst="' + k + '" aria-pressed="' + (dvSt === k) + '">' + l + ' <span>' + n + '</span></button>' : ''; }).join('');
+  const shown = rows.filter(r => (dvSt === 'all' || r.dataset.st === dvSt) && (!dvType || dvSrc(r.dataset.ext) === dvType) && (!q || r.textContent.toLowerCase().includes(q)));
+  $('dvRows').replaceChildren(...shown); $('dvEmpty').hidden = shown.length > 0;
+  $('dvMeta').textContent = shown.length + ' of ' + rows.length + ' · ' + rows.filter(r => r.dataset.st === 'fail').length + ' failed';
+}
+$('logsBtn').addEventListener('click', () => $('dvOpen').click());
+$('dvOpen').addEventListener('click', () => { dvSt = 'all'; dvType = ''; $('dvQ').value = ''; dvRender(); $('dvDlg').showModal(); $('dvQ').focus(); });
+$('dvDlg').addEventListener('click', (e) => {
+  if (e.target.closest('[data-dvx]')) { $('dvDlg').close(); return; }
+  const c = e.target.closest('[data-dvst]'); if (c) { dvSt = c.dataset.dvst; dvRender(); return; }
+  // actions inside the log act on the real row
+  const b = e.target.closest('#dvRows button'); if (b) { const attr = [...b.attributes].find(a => a.name.startsWith('data-')); if (attr) { const real = $('docRows').querySelector('[' + attr.name + '="' + attr.value + '"]'); if (real) real.click(); setTimeout(dvRender, 50); } }
+});
+$('dvQ').addEventListener('input', dvRender);
+$('dvType').addEventListener('change', (e) => { dvType = e.target.value; dvRender(); });
 $('docRows').addEventListener('click', (e) => {
+  if (e.target.closest('[data-retrymail]')) { toast('Trying again…'); setTimeout(() => toastError('Still couldn’t be read. Follow the note under it.'), 1200); return; }
   const b = e.target.closest('button');
   if (!b) { const li = e.target.closest('tr.is-row'); if (li && !e.target.closest('a')) { open = open === li.dataset.id ? null : li.dataset.id; render(); } return; }
   const docx = ST.docx || [];
@@ -906,11 +1098,17 @@ function addFiles(list) {
   });
   render();
 }
-$('fileInput').addEventListener('change', (e) => { addFiles(e.target.files); e.target.value = ''; });
+$('fileInput').addEventListener('change', (e) => { if (e.target.files.length) shoot(); addFiles(e.target.files); e.target.value = ''; });
 const drop = $('drop');
 ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('is-over'); }));
 ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove('is-over'); }));
-drop.addEventListener('drop', (e) => addFiles(e.dataTransfer.files));
+drop.addEventListener('drop', (e) => { shoot(); addFiles(e.dataTransfer.files); });
+// a basketball drops through the hoop when files go in
+function shoot() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  drop.classList.remove('is-shot'); void drop.offsetWidth; drop.classList.add('is-shot');
+  clearTimeout(shoot.t); shoot.t = setTimeout(() => drop.classList.remove('is-shot'), 1600);
+}
 function show(tab) {
   document.querySelectorAll('.ptab').forEach(t => t.setAttribute('aria-selected', t.dataset.tab === tab));
   $('tabDocs').hidden = tab !== 'docs'; $('tabConnect').hidden = tab !== 'connect';
@@ -923,6 +1121,7 @@ const APPINFO = {
   notion: { what: 'Oslo wiki', items: [['Pricing wiki', '6 pages'], ['Onboarding playbook', '11 pages'], ['Security docs', '4 pages'], ['Policies', '5 pages'], ['Help centre drafts', '3 pages']], state: 'ok', fresh: 'Synced 6 min ago', supplies: 'Pages and wikis from the teamspaces you chose, split into passages for drafting answers.' },
   website: { what: 'help.oslo.com · oslo.com/pricing', items: [['help.oslo.com/sso', 'changed since last sync'], ['oslo.com/pricing', 'synced'], ['oslo.com/legal/refunds', 'synced']], state: 'warn', fresh: '1 page changed since the last sync', next: 'Sync now to pick up the changed page. Drafts that cite it will be checked again.', supplies: 'Public pages from your website and help centre, read the same way as documents.' },
   gmail: { what: 'support@oslo.com', items: [['SSO stopped working after we upgraded', 'couldn’t be analysed'], ['Invoice for our annual plan', 'ready'], ['Apple Pay in Germany?', 'analysed']], state: 'warn', fresh: '1 email couldn’t be analysed', next: 'Open it in Insights and try the analysis again.', nextHref: 'insights.html#inbox', supplies: 'Incoming email threads, participants and message text, analysed in Insights for new questions.' },
+  ziwo: { what: 'Support line · inbound and outbound', items: [['Inbound call · Emmanuel · 25 Sep', 'analysed'], ['Inbound call · Emmanuel · 19 Aug', 'analysed'], ['Outbound call · Maria · 12 Aug', 'ready']], state: 'ok', fresh: 'Synced after the last call', supplies: 'Call recordings and their transcripts, split by speaker, analysed in Insights for new questions.' },
   aircall: { what: 'Support line · Sales line', items: [['+44 20 7946 0958', 'awaiting transcript'], ['+33 6 85 36 57 11', 'ready'], ['+33 7 57 91 26 97', 'too short to transcribe']], state: 'warn', fresh: 'Waiting for 1 transcript', next: 'Nothing to do: the transcript arrives from Aircall, then the call can be analysed.', supplies: 'Call recordings and transcripts, analysed in Insights for the questions customers ask.' },
 };
 const DEF = { what: 'Connected just now', items: [['First sync', 'running']], state: 'ok', fresh: 'First sync in progress', supplies: 'Files and pages from this app, read like documents.' };
@@ -947,6 +1146,7 @@ function sources() {
 const ABOUT = (s) => {
   const app = { upload: ['Uploaded documents', 'Files you upload here', 'When you upload'], notion: ['Notion', 'Teamspaces: Pricing wiki, Onboarding playbook, Security docs, Policies', 'Automatic · every hour'],
     website: ['Website', 'help.oslo.com and oslo.com/pricing, oslo.com/legal', 'Automatic · daily'], gmail: ['Gmail', 'support@oslo.com inbox', 'Automatic · as emails arrive'],
+    ziwo: ['ZIWO', 'Support line calls, inbound and outbound, with transcripts', 'Automatic · after each call'],
     aircall: ['Aircall', 'Support line and Sales line, with transcripts', 'Automatic · after each call'] }[s.id] || [s.name, 'Everything the account can read', 'Automatic · every hour'];
   return [['Source type', app[0]], ['Configured scope', app[1]], ['Sync mode', app[2]], ['Connected by', s.id === 'upload' ? 'Anyone who uploads' : 'Eric Ouisse · eric@oslo.com'], ['Access', 'Read only. lojo never edits your files.']];
 };
@@ -963,16 +1163,56 @@ function renderSources() {
   $('srcHead').innerHTML = '<div class="sh__top">' + s.icon + '<div><h2>' + esc(s.name) + '</h2><p>' + esc(s.sub) + '</p></div><span class="spacer"></span>' +
     '<span class="about"><button class="btn btn--secondary" type="button" data-about aria-expanded="false"><svg class="i" viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>About this source</button>' +
     '<span class="aboutpop" role="dialog" aria-label="About this source"><dl>' + ABOUT(s).map(([k, v]) => '<div><dt>' + k + '</dt><dd>' + esc(v) + '</dd></div>').join('') + '</dl></span></span>' +
-    '<button class="btn btn--grad" type="button" data-sync>Sync now</button></div>' +
-    '<div class="owner">' + ava3d('src', 'Sync agent', s.state === 'warn' ? 6 : 0) + '<em>Import owner</em><a href="activity.html?stage=src">Sync agent</a><em>· ' + (s.state === 'warn' ? 'paused until this is fixed' : 'importing') + '</em></div>' +
-    '<div class="health"><div class="hcard"><small>Connection<i></i></small><b>' + s.conn + '</b><span>' + esc(s.connS) + '</span></div>' +
-    '<div class="hcard"><small>Freshness<i class="' + (s.state === 'warn' ? 'warn' : '') + '"></i></small><b>' + esc(s.fresh) + '</b><span>' + esc(s.freshS) + '</span></div>' +
-    '<div class="hcard"><small>Contribution<i></i></small><b>' + esc(s.contrib) + '</b><span>' + esc(s.contribS) + '</span></div></div>' +
-    '<div class="supply"><div><h4>What this source supplies</h4><p>' + esc(s.supplies) + '</p></div><div><h4>What happens next</h4><p>' + esc(s.next) + (s.nextHref ? ' <a href="' + s.nextHref + '">Open →</a>' : '') + '</p></div><p class="note">Importing a source never approves or publishes knowledge on its own.</p></div>';
+    '<button class="btn btn--grad" type="button" data-sync>Sync now</button></div>';
   $('uploadBody').hidden = s.id !== 'upload'; $('appBody').hidden = s.id === 'upload';
+  if (s.id === 'gmail') { renderGmail(); return; }
   if (s.id !== 'upload') $('appBody').innerHTML = '<h3>What’s synced<span class="spacer"></span><button class="btn btn--ghost btn--sm" type="button" data-off="' + s.id + '">Disconnect</button></h3>' +
     s.items.map(([n, st]) => '<div class="sirow"><span>' + esc(n) + '</span><em>' + esc(st) + '</em><span class="pstage ' + (/couldn|changed/.test(st) ? 'is-fail' : /awaiting|running|ready/.test(st) ? 'is-wait' : 'is-done') + '">' + (/couldn|changed/.test(st) ? 'Needs attention' : /awaiting|running/.test(st) ? 'Waiting' : /ready/.test(st) ? 'Ready' : 'Synced') + '</span></div>').join('');
 }
+// ---------- Gmail: one card per address; pick labels, then lojo reads them
+ST.gmail = ST.gmail || { open: true, accounts: [{ id: 'g1', email: 'support@oslo.com', docs: 31, fresh: 16, at: '23 Oct, 00:42',
+  labels: [['Inbox', 1, 24], ['Sent', 1, 11], ['Starred', 1, 6], ['Important', 1, 9], ['Support', 0, 42], ['Billing', 0, 17]] }] };
+let gRead = null; // { id, done: [] } while labels are being read
+function renderGmail() {
+  const G = ST.gmail;
+  $('appBody').innerHTML = '<div class="gm-h"><h3>Gmail</h3><button class="btn btn--secondary btn--sm" type="button" data-gm="add">+ Add another address</button></div>' +
+    G.accounts.map(a => {
+      const reading = gRead && gRead.id === a.id, open = G.open === a.id || G.open === true;
+      const on = a.labels.filter(l => l[1]), total = on.reduce((n, l) => n + l[2], 0), done = reading ? gRead.done.length : 0;
+      return '<div class="gm-card"><div class="gm-top"><span class="gm-av">M</span><div class="gm-id"><b>' + esc(a.email) + '</b><span>' +
+        (reading ? 'Reading ' + on.length + ' label' + (on.length === 1 ? '' : 's') + '…' : a.docs + ' documents · ' + a.fresh + ' new · synced ' + esc(a.at)) + '</span></div>' +
+        '<button class="btn btn--secondary btn--sm" type="button" data-gm="sync" data-a="' + a.id + '"' + (reading ? ' disabled' : '') + '>Sync again</button>' +
+        '<button class="btn btn--secondary btn--sm' + (open ? ' is-on' : '') + '" type="button" data-gm="labels" data-a="' + a.id + '">Labels</button>' +
+        '<button class="btn btn--ghost btn--sm" type="button" data-gm="retire" data-a="' + a.id + '">Retire</button></div>' +
+        (reading ? '<div class="gm-bar"><i style="width:' + Math.round(done / on.length * 100) + '%"></i></div>' : '') +
+        (open ? '<p class="gm-note">Choose the labels to read. lojo reads their threads from the last 12 months, up to 200, and PDF, DOCX, TXT and MD attachments.</p>' +
+          '<div class="gm-labels">' + a.labels.map(([n, chk, t], i) => {
+            const st = reading && chk ? (gRead.done.includes(i) ? '<em class="gm-ok">✓ Read · ' + t + ' threads</em>' : gRead.done.length === on.filter(l => a.labels.indexOf(l) < i).length ? '<em class="gm-run"><span class="spin"></span>Reading ' + t + ' threads…</em>' : '<em class="gm-wait">Waiting</em>') : '<em class="gm-t">' + t + ' threads</em>';
+            return '<label class="gm-l' + (chk ? ' is-on' : '') + '"><input type="checkbox" data-gl="' + i + '" data-a="' + a.id + '"' + (chk ? ' checked' : '') + (reading ? ' disabled' : '') + '><span>' + esc(n) + '</span>' + st + '</label>'; }).join('') + '</div>' +
+          '<div class="gm-foot"><button class="btn btn--primary" type="button" data-gm="read" data-a="' + a.id + '"' + (reading || !on.length ? ' disabled' : '') + '>' + (reading ? '<span class="spin"></span>Reading…' : 'Read labels') + '</button>' +
+          '<span class="sub">' + (on.length ? on.length + ' label' + (on.length === 1 ? '' : 's') + ' · about ' + Math.min(total, 200) + ' threads' : 'Pick at least one label') + '</span></div>' : '') + '</div>';
+    }).join('');
+}
+$('appBody').addEventListener('change', (e) => {
+  const c = e.target.closest('[data-gl]'); if (!c) return;
+  const a = ST.gmail.accounts.find(x => x.id === c.dataset.a); a.labels[+c.dataset.gl][1] = c.checked ? 1 : 0; save(); renderGmail();
+});
+$('appBody').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-gm]'); if (!b) return;
+  const G = ST.gmail, a = G.accounts.find(x => x.id === b.dataset.a), k = b.dataset.gm;
+  if (k === 'labels') { G.open = G.open === a.id || G.open === true ? null : a.id; save(); renderGmail(); }
+  if (k === 'add') toast('Sign in with the Google account to add. lojo only reads.');
+  if (k === 'retire') { G.accounts = G.accounts.filter(x => x !== a); save(); renderGmail(); toast(a.email + ' retired. What it already gave lojo stays.'); }
+  if (k === 'sync') { b.disabled = true; b.innerHTML = '<span class="spin"></span>Syncing…'; setTimeout(() => { a.at = 'just now'; a.fresh = 0; save(); renderGmail(); toast(a.email + ' is up to date'); }, 1400); }
+  if (k === 'read') {
+    // read each ticked label in turn, then show what came in
+    const idx = a.labels.map((l, i) => l[1] ? i : -1).filter(i => i >= 0);
+    gRead = { id: a.id, done: [] }; renderGmail();
+    idx.forEach((i, n) => setTimeout(() => { gRead.done.push(i); renderGmail(); if (n === idx.length - 1) setTimeout(() => {
+      const got = Math.min(200, idx.reduce((t, j) => t + a.labels[j][2], 0)); a.fresh = got - a.docs > 0 ? got - a.docs : 3; a.docs = got; a.at = 'just now'; gRead = null; save(); renderGmail();
+      toast('Read ' + idx.length + ' label' + (idx.length === 1 ? '' : 's') + ' · ' + got + ' threads. New questions show up in Insights.'); }, 700); }, 900 * (n + 1)));
+  }
+});
 $('srcList').addEventListener('click', (e) => { const b = e.target.closest('[data-src]'); if (!b) return; srcSel = b.dataset.src; ST.srcSel = srcSel; save(); renderSources(); });
 $('srcQ').addEventListener('input', renderSources);
 $('srcDet').addEventListener('click', (e) => {
@@ -1673,6 +1913,19 @@ REVIEW = dict(
   .meter .bar{height:6px;border-radius:6px;background:var(--bg-soft);margin-top:8px;overflow:hidden}
   .meter .bar i{display:block;height:100%;background:var(--brand-gradient);transition:width .4s ease}
   .rv{display:grid;grid-template-columns:420px minmax(0,1fr);gap:20px;align-items:start}
+  .fsbtn{gap:6px}
+  .fsbtn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  /* full screen: no sidebar, full width, both columns use the whole height */
+  body.is-fs .side,body.is-fs .mnav,body.is-fs .fab{display:none!important}
+  body.is-fs .main{margin-left:0}
+  body.is-fs .wrap{max-width:none;padding:16px 24px 24px}
+  body.is-fs .head{margin:-16px -24px 16px;padding:12px 24px}
+  body.is-fs .head > div:first-child > p:not(.label),body.is-fs .head .htip{display:none}
+  body.is-fs .head h1{font-size:1.3rem;margin:2px 0 0}
+  body.is-fs .rv{grid-template-columns:minmax(380px,32%) minmax(0,1fr)}
+  body.is-fs .list{top:76px;max-height:calc(100vh - 96px)}
+  body.is-fs .detail{min-height:calc(100vh - 96px)}
+  body.is-fs .fsbtn{background:var(--ink);border-color:var(--ink);color:#fff}
   .list{position:sticky;top:84px;max-height:calc(100vh - 110px);display:flex;flex-direction:column;overflow:hidden}
   .list .tabs{padding:0 10px;margin:0}
   .list .tab{padding:12px 8px;font-size:.8rem;white-space:nowrap}
@@ -1844,6 +2097,7 @@ REVIEW = dict(
       </div>
       <span class="spacer"></span>
       <div class="meter"><b id="mCount">0 of 0</b><span>reviewed</span><div class="bar"><i id="mBar"></i></div></div>
+      <button class="btn btn--secondary btn--sm fsbtn" id="fsBtn" type="button" aria-pressed="false" title="Full screen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>Full screen</span></button>
     </div>
     <div class="fromins" id="fromIns" hidden></div>
     <div class="rv">
@@ -2241,8 +2495,19 @@ document.addEventListener('click', (e) => { if (!e.target.closest('.lfdrop')) { 
 document.querySelectorAll('#rtabs .tab').forEach(t => t.addEventListener('click', () => {
   tab = t.dataset.f; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x === t)); sel = null; fsel = null; mode = 'view'; ltags.clear(); render();
 }));
+// full screen review: hides the sidebar and widens both columns; F toggles, Esc leaves
+function setFs(on) {
+  document.body.classList.toggle('is-fs', on); $('fsBtn').setAttribute('aria-pressed', on);
+  $('fsBtn').querySelector('span').textContent = on ? 'Exit full screen' : 'Full screen';
+  $('fsBtn').querySelector('svg').innerHTML = on ? '<path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/>' : '<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>';
+  try { sessionStorage.setItem('lojo-build-fs', on ? '1' : ''); } catch (err) {}
+}
+$('fsBtn').addEventListener('click', () => setFs(!document.body.classList.contains('is-fs')));
+try { if (sessionStorage.getItem('lojo-build-fs')) setFs(true); } catch (err) {}
 document.addEventListener('keydown', (e) => {
   if (e.target.closest('input,textarea,select') || e.metaKey || e.ctrlKey) return;
+  if (e.key.toLowerCase() === 'f') { setFs(!document.body.classList.contains('is-fs')); return; }
+  if (e.key === 'Escape' && document.body.classList.contains('is-fs') && mode === 'view' && !document.querySelector('dialog[open]')) { setFs(false); return; }
   const k = e.key.toLowerCase(), r = DRAFTS.find(x => x.id === sel);
   if (k === 'j' || k === 'k') {
     const list = DRAFTS.filter(inTab), i = list.findIndex(x => x.id === sel);

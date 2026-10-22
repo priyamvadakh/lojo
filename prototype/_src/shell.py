@@ -827,7 +827,6 @@ def sidebar(active, persona='owner'):
             '      <div class="pop pop--up" id="mePop" hidden>',
             '        <div class="pop__h" id="meEmail">' + me['email'] + '</div>',
             '        <a class="pop__row" href="' + ('account.html' if persona == 'super' else 'settings.html#profile') + '" id="meProfile">Your profile</a>',
-            '        <div class="pop__row pop__theme"><span>Appearance</span>' + SEG_HTML + '</div>',
             '        <a class="pop__row" href="login.html" id="signOut">Sign out</a>',
             '        <div class="pop__sep"></div>',
             '        <div class="ws-h">Prototype only</div>',

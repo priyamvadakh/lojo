@@ -765,6 +765,19 @@
   .meter .bar{height:6px;border-radius:6px;background:var(--bg-soft);margin-top:8px;overflow:hidden}
   .meter .bar i{display:block;height:100%;background:var(--brand-gradient);transition:width .4s ease}
   .rv{display:grid;grid-template-columns:420px minmax(0,1fr);gap:20px;align-items:start}
+  .fsbtn{gap:6px}
+  .fsbtn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  /* full screen: no sidebar, full width, both columns use the whole height */
+  body.is-fs .side,body.is-fs .mnav,body.is-fs .fab{display:none!important}
+  body.is-fs .main{margin-left:0}
+  body.is-fs .wrap{max-width:none;padding:16px 24px 24px}
+  body.is-fs .head{margin:-16px -24px 16px;padding:12px 24px}
+  body.is-fs .head > div:first-child > p:not(.label),body.is-fs .head .htip{display:none}
+  body.is-fs .head h1{font-size:1.3rem;margin:2px 0 0}
+  body.is-fs .rv{grid-template-columns:minmax(380px,32%) minmax(0,1fr)}
+  body.is-fs .list{top:76px;max-height:calc(100vh - 96px)}
+  body.is-fs .detail{min-height:calc(100vh - 96px)}
+  body.is-fs .fsbtn{background:var(--ink);border-color:var(--ink);color:#fff}
   .list{position:sticky;top:84px;max-height:calc(100vh - 110px);display:flex;flex-direction:column;overflow:hidden}
   .list .tabs{padding:0 10px;margin:0}
   .list .tab{padding:12px 8px;font-size:.8rem;white-space:nowrap}
@@ -1021,7 +1034,6 @@
       <div class="pop pop--up" id="mePop" hidden>
         <div class="pop__h" id="meEmail">eric@oslo.com</div>
         <a class="pop__row" href="settings.html#profile" id="meProfile">Your profile</a>
-        <div class="pop__row pop__theme"><span>Appearance</span><button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode" title="Dark mode"><svg class="t-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></svg><svg class="t-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg></button></div>
         <a class="pop__row" href="login.html" id="signOut">Sign out</a>
         <div class="pop__sep"></div>
         <div class="ws-h">Prototype only</div>
@@ -1050,6 +1062,7 @@
       </div>
       <span class="spacer"></span>
       <div class="meter"><b id="mCount">0 of 0</b><span>reviewed</span><div class="bar"><i id="mBar"></i></div></div>
+      <button class="btn btn--secondary btn--sm fsbtn" id="fsBtn" type="button" aria-pressed="false" title="Full screen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>Full screen</span></button>
     </div>
     <div class="fromins" id="fromIns" hidden></div>
     <div class="rv">
@@ -2301,8 +2314,19 @@ document.addEventListener('click', (e) => { if (!e.target.closest('.lfdrop')) { 
 document.querySelectorAll('#rtabs .tab').forEach(t => t.addEventListener('click', () => {
   tab = t.dataset.f; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x === t)); sel = null; fsel = null; mode = 'view'; ltags.clear(); render();
 }));
+// full screen review: hides the sidebar and widens both columns; F toggles, Esc leaves
+function setFs(on) {
+  document.body.classList.toggle('is-fs', on); $('fsBtn').setAttribute('aria-pressed', on);
+  $('fsBtn').querySelector('span').textContent = on ? 'Exit full screen' : 'Full screen';
+  $('fsBtn').querySelector('svg').innerHTML = on ? '<path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/>' : '<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>';
+  try { sessionStorage.setItem('lojo-build-fs', on ? '1' : ''); } catch (err) {}
+}
+$('fsBtn').addEventListener('click', () => setFs(!document.body.classList.contains('is-fs')));
+try { if (sessionStorage.getItem('lojo-build-fs')) setFs(true); } catch (err) {}
 document.addEventListener('keydown', (e) => {
   if (e.target.closest('input,textarea,select') || e.metaKey || e.ctrlKey) return;
+  if (e.key.toLowerCase() === 'f') { setFs(!document.body.classList.contains('is-fs')); return; }
+  if (e.key === 'Escape' && document.body.classList.contains('is-fs') && mode === 'view' && !document.querySelector('dialog[open]')) { setFs(false); return; }
   const k = e.key.toLowerCase(), r = DRAFTS.find(x => x.id === sel);
   if (k === 'j' || k === 'k') {
     const list = DRAFTS.filter(inTab), i = list.findIndex(x => x.id === sel);
