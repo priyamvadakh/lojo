@@ -26,14 +26,50 @@ CSS = r"""
   .side{position:fixed;top:12px;left:12px;bottom:12px;width:var(--side);z-index:30;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 40px -32px rgba(36,26,20,.35);display:flex;flex-direction:column;padding:16px 14px;overflow:visible;transition:width .3s cubic-bezier(.2,.8,.2,1)}
   .side__collapse{width:34px;height:34px;border-radius:9px;border:0;background:none;color:var(--muted);display:grid;place-items:center;cursor:pointer;margin:0 0 14px 4px}
   .side__collapse:hover{background:var(--bg-soft);color:var(--ink)}
+  .side__top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 4px 14px;padding:0 0 12px;border-bottom:1px solid var(--line)}
+  .side__top .side__collapse{margin:0 0 0 auto}
+  .side__brand{display:flex;align-items:center;gap:8px;height:34px;padding:0 6px;margin-left:-2px;border-radius:9px;color:var(--ink);text-decoration:none}
+  .side__brand b{font-family:var(--display);font-weight:700;font-size:.95rem;letter-spacing:-.01em}
+  .side__brand:hover{background:var(--bg-soft)}
+  .side__brand:hover{text-decoration:none}
+  .side__brand img{width:26px;height:26px;border-radius:24%;flex:none;display:block}
+  .side__brand b{font-family:var(--display);font-weight:800;font-size:1.6rem;letter-spacing:-.02em;line-height:1}
+  body.is-collapsed .side__top{flex-direction:column;gap:10px;margin:0 0 14px}
+  body.is-collapsed .side__brand b{display:none}
+  .side__brand b span{color:var(--muted);font-weight:700}
+  body.is-collapsed .side__top .side__collapse{margin:0}
   .me{position:relative}
   .side__user{display:flex;align-items:center;gap:12px;width:100%;padding:6px;border:0;background:none;border-radius:12px;cursor:pointer;text-align:left}
   .side__user:hover{background:var(--bg-soft)}
   .side__ava{width:44px;height:44px;border-radius:12px;flex:none;display:grid;place-items:center;background:var(--brand-gradient);color:#fff;font-family:var(--display);font-weight:800;font-size:.95rem;text-shadow:0 1px 2px rgba(142,47,69,.25)}
   .side__who b{display:block;font-size:.92rem;line-height:1.25}
+  .side__who{flex:1;min-width:0}
+  .side__who b,.side__sub{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .side__sub{display:block;color:var(--muted);font-size:.74rem;letter-spacing:.02em}
+  .side__org{width:40px;height:40px;border-radius:11px;flex:none}
+  .side__org--co{display:grid;place-items:center;background:var(--ink);color:#fff;font-family:var(--display);font-weight:800;font-size:1.05rem}
+  .side__org--co svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .side__chev{width:16px;height:16px;flex:none;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .side__ava--me{width:34px;height:34px;border-radius:50%;font-size:.76rem}
+  .side__user--me{padding:4px 6px}
+  .pop.pop--up{top:auto;bottom:calc(100% + 6px)}
+  :root:not([data-agents="on"]) [data-feature="agents"]{display:none!important}
+  :root:not([data-agents="on"]) .duo{grid-template-columns:1fr!important}
+  .not-owner .ws-del{display:none}
+  .noacc{max-width:560px;margin:72px auto;padding:32px;border:1px solid var(--line);border-radius:20px;background:var(--panel);box-shadow:0 16px 30px -28px rgba(36,26,20,.3)}
+  .noacc h1{font-family:var(--display);font-weight:700;font-size:1.6rem;margin:6px 0 10px}
+  .noacc p{color:var(--muted);margin:0 0 18px}
+  .noacc__b{display:flex;gap:10px;flex-wrap:wrap}
+  .pop .pop__theme{display:flex;align-items:center;justify-content:space-between;padding-top:5px;padding-bottom:5px;cursor:default}
+  .pop .pop__theme:hover{background:none}
+  .side .pop .theme-toggle{flex-direction:row;width:58px;height:30px;padding:0 7px}
+  :root[data-theme="dark"] .side .pop .theme-toggle::before{transform:translateX(28px)}
+  body[data-persona="super"] #orgBtn{pointer-events:none}
+  body[data-persona="super"] #orgBtn .side__chev{display:none}
+  body.is-collapsed .side__chev{display:none}
   .side__who .badge{margin-top:4px}
   .side__rule{height:1px;background:var(--line);margin:14px 4px}
-  .side nav{display:grid;gap:4px;overflow-y:auto}
+  .side nav{display:grid;gap:4px;overflow-y:auto;flex:1 1 auto;min-height:0;align-content:start}
   .nav-item{display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border-radius:12px;color:var(--ink);font-weight:500;font-size:.92rem;text-decoration:none;white-space:nowrap;transition:background-color .15s ease,color .15s ease}
   .nav-item svg{color:var(--muted)}
   .nav-item:hover{background:var(--bg-soft);text-decoration:none}
@@ -57,11 +93,16 @@ CSS = r"""
   .pop__h{padding:8px 10px;font-size:.78rem;color:var(--muted)}
   .pop__row{display:block;width:100%;padding:9px 10px;border:0;background:none;border-radius:9px;text-align:left;cursor:pointer;font-size:.88rem;font-weight:500;color:var(--ink)}
   .pop__row:hover{background:var(--bg-soft);text-decoration:none}
+  .persona{display:flex;align-items:center;gap:10px}
+  .persona__ava{width:30px;height:30px;border-radius:9px;flex:none;display:grid;place-items:center;background:var(--bg-soft);color:var(--muted);font-family:var(--display);font-weight:800;font-size:.72rem}
+  .persona b{display:block;font-size:.86rem;line-height:1.2}
+  .persona em{display:block;font-style:normal;font-size:.74rem;color:var(--muted);font-weight:500}
+  .persona.is-cur .persona__ava{background:var(--brand-gradient);color:#fff}
   /* collapsed */
   body.is-collapsed{--side:76px}
   body.is-collapsed .side__who,body.is-collapsed .nav-item .lbl,body.is-collapsed .nav-item .count,body.is-collapsed .nav-item .step,body.is-collapsed .product div{display:none}
   body.is-collapsed .nav-item{justify-content:center;padding:0}
-  body.is-collapsed .side__user,body.is-collapsed .product{justify-content:center}
+  body.is-collapsed .side__user{justify-content:center}
   body.is-collapsed .side__collapse svg{transform:scaleX(-1)}
   .main{margin-left:calc(var(--side) + 12px);min-height:100vh;transition:margin .3s cubic-bezier(.2,.8,.2,1)}
 
@@ -292,6 +333,14 @@ CSS = r"""
   .askp-bg{position:fixed;inset:0;z-index:49;background:rgba(36,26,20,.32);backdrop-filter:blur(3px);animation:fadeIn .2s ease}
   @keyframes fadeIn{from{opacity:0}}
   .askp__intro{justify-self:center;width:100%;max-width:640px;padding:18px 20px;border:1px solid rgba(232,93,117,.28);border-radius:16px;background:linear-gradient(180deg,rgba(232,93,117,.06),transparent);font-size:.84rem}
+  .awb{justify-self:start;max-width:85%;padding:12px 15px;border-radius:14px;background:var(--bg-soft);font-size:.92rem;line-height:1.5}
+  .askp__foot .chips{gap:6px}
+  .askp__foot .chip{height:auto;min-height:32px;padding:6px 12px;border-radius:999px;border:1px solid var(--line-2);background:var(--panel);font-size:.82rem;text-align:left;line-height:1.35}
+  .askp__foot .chip:hover{border-color:rgba(36,26,20,.3)}
+  .cl__find{position:relative;display:block}
+  .cl__find svg{position:absolute;left:10px;top:50%;width:15px;height:15px;transform:translateY(-50%);fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round}
+  .cl__find input{width:100%;height:36px;padding:0 10px 0 32px;border-radius:10px;border:1px solid var(--line-2);background:var(--panel);font:inherit;font-size:.84rem}
+  .cl__find input:focus{outline:none;border-color:var(--rose)}
   .askp__intro small{display:flex;align-items:center;gap:6px;font-size:.66rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--rose)}
   .askp__intro small svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}
   .askp__intro b{display:block;font-family:var(--display);font-size:1rem;margin:8px 0 6px}
@@ -572,7 +621,8 @@ CSS = r"""
     body,body.is-collapsed{--side:0px}
     .mnav{display:grid}
     .side,body.is-collapsed .side{width:272px;transform:translateX(-120%);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
-    body.is-collapsed .side__who,body.is-collapsed .nav-item .lbl,body.is-collapsed .nav-item .count,body.is-collapsed .product div{display:revert}
+    body.is-collapsed .side__who,body.is-collapsed .nav-item .lbl,body.is-collapsed .nav-item .count{display:revert}
+    body.is-collapsed .side__chev{display:block}
     body.is-collapsed .nav-item{justify-content:flex-start;padding:0 12px}
     body.nav-open .side{transform:none}
     body.nav-open .mnav{left:296px;transition:left .3s cubic-bezier(.2,.8,.2,1)}
@@ -679,6 +729,12 @@ ICONS = {
   'approved': '<svg class="i" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>',
   'chat': '<svg class="i" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>',
   'readout': '<svg class="i" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+  'people': '<svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.2a6.5 6.5 0 0 1 3.5 5.8"/></svg>',
+  'pdash': '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>',
+  'team': '<svg class="i" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><circle cx="12" cy="10" r="2.5"/><path d="M8 16a4 4 0 0 1 8 0"/></svg>',
+  'auditlog': '<svg class="i" viewBox="0 0 24 24"><path d="M8 4h11a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H8M8 4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2M8 4v16M11 9h6M11 13h6M11 17h3"/></svg>',
+  'psettings': '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  'companies': '<svg class="i" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1M10 21v-3h4v3"/></svg>',
 }
 
 NAV = [
@@ -699,40 +755,88 @@ NAV_FLAT = [
   ('approved', 'distribute.html', 'Distribute', 'navApproved', ''),
   ('readout', 'knowledge.html', 'Knowledge', None, ''),
   ('activity', 'activity.html', 'Activity', None, ''),
+  ('chat', 'chat.html', 'Ask lojo', None, 'viewer'),
 ]
+# lojo staff see every company, never a company's sources or answers
+NAV_SUPER = [
+  ('pdash', 'platform.html', 'Dashboard', None, ''),
+  ('companies', 'superadmin.html', 'Companies', 'navCompanies', ''),
+  ('auditlog', 'auditlog.html', 'Audit log', None, ''),
+  ('psettings', 'account.html', 'Settings', None, ''),
+]
+# who the prototype can be viewed as; switch in the account menu
+PERSONAS = {
+  'super': dict(name='Sadaf Farman', ini='SF', role='Super admin', email='sadaf@lojo.ai', home='platform.html', note='lojo staff · all companies',
+                org_name='Platform', org_sub='lojo back office', org_note='lojo back office · every company on lojo'),
+  'owner': dict(name='Eric Ouisse', ini='EO', role='Owner', email='eric@oslo.com', home='dashboard.html?as=owner', note='Oslo · sources, answers, people',
+                org_name='Oslo', org_sub='Oslo · 2 workspaces', org_note='Oslo · oslo.com'),
+}
+# Editor and Viewer use the Owner's pages; the role is picked at runtime from View as
+PERSONAS_RUNTIME = {
+  'editor': dict(ini='LO', role='Editor', home='dashboard.html?as=editor', note='Oslo · sources, review, read-only settings'),
+  'viewer': dict(ini='JL', role='Viewer', home='chat.html?as=viewer', note='Oslo · Ask lojo and Knowledge'),
+}
+CHEV = '<svg class="side__chev" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></svg>'
 LOOP_STAGE = {'documents': '01 Source', 'questions': '03 Insights', 'review': '02 Build · Validation', 'approved': '04 Distribute', 'chat': '04 Distribute', 'readout': 'Decide'}
 
-def sidebar(active):
+def sidebar(active, persona='owner'):
+    me = PERSONAS[persona]
+    def prow(k, v):
+        cur = k == persona
+        return ('      <a class="pop__row persona' + (' is-cur' if cur else '') + '" data-persona="' + k + '" href="' + v['home'] + '"' + (' aria-current="true"' if cur else '') + '>'
+                '<span class="persona__ava">' + v['ini'] + '</span><span><b>' + v['role'] + '</b><em>' + v['note'] + '</em></span></a>')
+    ALL = {'super': PERSONAS['super'], 'owner': PERSONAS['owner'], **PERSONAS_RUNTIME}
+    switch = '\n'.join(prow(k, v) for k, v in ALL.items())
+    org_tile = ('<span class="side__org side__org--co">' + ICONS['companies'] + '</span>' if persona == 'super'
+                else '<span class="side__org side__org--co">' + me['org_name'][:1] + '</span>')
     out = ['<aside class="side" aria-label="Main navigation">',
+           # lojo's own mark, beside the collapse button (super admin already shows it in the top-left)
+           '  <div class="side__top"><a class="side__brand" href="' + ('platform.html' if persona == 'super' else 'dashboard.html') + '" aria-label="lojo.ai home"><img src="assets/lojo-icon.png" alt="" width="26" height="26"><b>lojo.ai</b></a>',
            '  <button class="side__collapse" id="collapse" type="button" aria-label="Collapse sidebar" aria-expanded="true"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16M15 10l-2 2 2 2"/></svg></button>',
+           '  </div>',
+           # where you are: company and current workspace (Linear, Notion, Slack)
            '  <div class="me">',
-           '    <button class="side__user" id="meBtn" type="button" aria-expanded="false"><span class="side__ava" id="topAva">SL</span><span class="side__who"><b id="meName">Sara Lindqvist</b><span class="badge badge--rose">Owner</span></span></button>',
-           '    <div class="pop" id="mePop" hidden>',
-           '      <div class="pop__h" id="meEmail">sara@oslo.com</div>',
+           '    <button class="side__user" id="orgBtn" type="button" aria-expanded="false" aria-haspopup="true">' + org_tile + '<span class="side__who"><b id="orgName">' + me['org_name'] + '</b><span class="side__sub" id="orgSub">' + me['org_sub'] + '</span></span>' + CHEV + '</button>',
+           '    <div class="pop" id="orgPop" hidden>',
+           '      <div class="pop__h">' + me['org_note'] + '</div>',
+           '      <div' + (' hidden' if persona == 'super' else '') + '>',
            '      <div class="pop__sep"></div>',
            '      <div class="ws-h">Workspaces <button class="ws-add" id="wsAdd" type="button" aria-label="New workspace" title="New workspace">+</button></div>',
            '      <form class="ws-new" id="wsNew" hidden><input id="wsNewName" placeholder="Workspace name" aria-label="New workspace name"><button class="btn btn--primary" type="submit">Create</button></form>',
            '      <ul class="ws-list" id="wsList"></ul>',
            '      <div class="pop__sep"></div>',
-           '      <a class="pop__row" href="states.html">Design states</a>',
-           '      <a class="pop__row" href="dashboard.html?tour=1" id="tourAgain"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;margin-right:8px;vertical-align:-3px"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg>Take the tour</a>',
-           '      <button class="pop__row" id="resetDemo" type="button">Reset demo data</button>',
-           '      <a class="pop__row" href="login.html" id="signOut">Sign out</a>',
+           '      <a class="pop__row" id="orgInvite" href="people.html">Invite and manage people</a>',
+           '      </div>',
            '    </div>',
            '  </div>',
            '  <div class="side__rule"></div>',
            '  <nav>']
-    for key, href, name, count, _ in NAV_FLAT:
+    for key, href, name, count, only in (NAV_SUPER if persona == 'super' else NAV_FLAT):
         cls = ' is-active' if key == active else ''
         cur = ' aria-current="page"' if key == active else ''
         tip = f' title="{LOOP_STAGE[key]}"' if key in LOOP_STAGE else ''
         cnt = f'<span class="count" id="{count}" hidden></span>' if count else ''
-        out.append(f'    <a class="nav-item{cls}" href="{href}"{cur}{tip}>{ICONS[key]}<span class="lbl">{name}</span>{cnt}</a>')
+        flag = f' data-only="{only}" hidden' if only == 'viewer' else (' data-feature="agents"' if key == 'activity' else '')
+        out.append(f'    <a class="nav-item{cls}" href="{href}"{cur}{tip}{flag}>{ICONS[key]}<span class="lbl">{name}</span>{cnt}</a>')
     out += ['  </nav>',
             '  <div class="side__foot">',
-            '    ' + SEG_HTML,
             '    <div class="side__rule"></div>',
-            '    <div class="product"><img src="assets/lojo-icon.png" alt="" width="44" height="44"><div><b>lojo</b><span id="pocWeek">Oslo</span></div></div>',
+            # who you are: profile, theme and sign out live here
+            '    <div class="me">',
+            '      <button class="side__user side__user--me" id="meBtn" type="button" aria-expanded="false" aria-haspopup="true"><span class="side__ava side__ava--me" id="topAva">' + me['ini'] + '</span><span class="side__who"><b id="meName">' + me['name'] + '</b><span class="side__sub" id="meRole">' + me['role'] + '</span></span>' + CHEV + '</button>',
+            '      <div class="pop pop--up" id="mePop" hidden>',
+            '        <div class="pop__h" id="meEmail">' + me['email'] + '</div>',
+            '        <a class="pop__row" href="' + ('account.html' if persona == 'super' else 'settings.html#profile') + '" id="meProfile">Your profile</a>',
+            '        <div class="pop__row pop__theme"><span>Appearance</span>' + SEG_HTML + '</div>',
+            '        <a class="pop__row" href="login.html" id="signOut">Sign out</a>',
+            '        <div class="pop__sep"></div>',
+            '        <div class="ws-h">Prototype only</div>',
+            switch,
+            '        <a class="pop__row" href="dashboard.html?tour=1" id="tourAgain">Take the tour</a>',
+            '        <a class="pop__row" href="states.html">Design use cases</a>',
+            '        <button class="pop__row" id="resetDemo" type="button">Reset demo data</button>',
+            '      </div>',
+            '    </div>',
             '  </div>',
             '</aside>']
     return '\n'.join(out)
@@ -783,6 +887,7 @@ const QUESTIONS = [
   { id: 'q22', q: 'What is the chargeback fee on Scale?', origin: 'you', docs: [], gap: 'g2' },
   { id: 'q23', q: 'How long do we keep call recordings?', origin: 'you', docs: [], gap: 'g3' },
   { id: 'q24', q: 'How do customers contact support?', origin: 'faq', docs: ['d2'] },
+  { id: 'q25', q: 'Où puis-je effectuer mes remboursements si je me rends dans un hôpital ou une clinique ailleurs qu’à Dubaï ? (Par exemple à Abu Dhabi.)', origin: 'found', docs: ['d5'] },
 ];
 
 // things the documents refer to but never explain
@@ -796,6 +901,11 @@ const GAPS = [
 
 // first review batch: drafts with their sources
 const DRAFTS = [
+  { id: 'r18', qid: 'q25', src: [
+      ['d5', 'ZIWO call, 25 Sep', 'You can go to any vet clinic in the UAE. You pay the bill and upload it in your Oslo account.'],
+      ['d5', 'ZIWO call, 19 Aug', 'You can go to Sharjah, Abu Dhabi, Al Ain, Dubai, everywhere.']],
+    draft: 'Vous pouvez vous rendre dans n’importe quelle clinique vétérinaire aux Émirats arabes unis, y compris à Abu Dhabi.\n- **Zone couverte :** toute clinique vétérinaire aux EAU (Dubaï, Abu Dhabi, Al Ain, Sharjah…).\n- **Procédure :** payez la facture sur place, puis téléchargez-la dans votre espace Oslo.\n- **Documents requis :** aucun formulaire, licence ni rapport médical. La facture suffit.',
+    redraft: 'Partout aux EAU, y compris à Abu Dhabi : payez la facture sur place, puis téléchargez-la dans votre espace Oslo. Aucun autre document n’est demandé.' },
   { id: 'r1', qid: 'q1', risk: 'high', conflict: 'd2',
     src: [['d1', 'p. 4', 'SAML single sign-on is available to Growth and Scale workspaces.'], ['d5', 'Brightline call, 12 Aug', 'Told Brightline their Growth plan covers SSO.'], ['d2', 'Security & login · 9 months old', 'SSO is an Enterprise-only feature.']],
     draft: 'Yes. SAML SSO is included on Growth and Scale. The Help Center still says Enterprise-only; that page is 9 months old and conflicts with the 2026 pricing.',
@@ -898,19 +1008,51 @@ const SEED = () => ({
   docx: [
     { id: 'x1', name: 'Holiday policy 2025.pdf', ext: 'pdf', status: 'failed', reason: 'This PDF is password-protected. Remove the password and upload it again.', added: '30 Sep' },
     { id: 'x2', name: 'Partner terms.docx', ext: 'docx', status: 'waiting', added: 'Just now' },
-    { id: 'x3', name: 'Pricing & plans 2025.pdf', ext: 'pdf', status: 'retired', pages: 12, added: '9 Sep', retiredNote: 'Replaced by Pricing & plans 2026 · retired 12 Sep by Sara Lindqvist' },
+    { id: 'x3', name: 'Pricing & plans 2025.pdf', ext: 'pdf', status: 'retired', pages: 12, added: '9 Sep', retiredNote: 'Replaced by Pricing & plans 2026 · retired 12 Sep by Eric Ouisse' },
   ],
   extra: [],
   gaps: {},
-  scope: { signed: true, by: 'Sara Lindqvist', at: '9 Sep' },
+  scope: { signed: true, by: 'Eric Ouisse', at: '9 Sep' },
   decision: null,
 });
+// People (owner) and Companies (super admin). ws: workspace id -> role
+const PEOPLE_SEED = () => [
+  { id: 'p1', name: 'Eric Ouisse', email: 'eric@oslo.com', title: 'Head of Support Operations', about: 'Owns the lojo rollout and approves answers.', ws: { w1: 'owner', w2: 'owner' }, status: 'member' },
+  { id: 'p2', name: 'Lena Okafor', email: 'lena@oslo.com', title: 'Support Team Lead', about: 'Reviews drafts in Build every week.', ws: { w1: 'editor' }, status: 'member' },
+  { id: 'p3', name: 'Maria Eide', email: 'maria@oslo.com', title: 'Product Manager', about: 'Keeps product and pricing documents current.', ws: { w1: 'editor', w2: 'editor' }, status: 'member' },
+  { id: 'p4', name: 'Jonas Lie', email: 'jonas@oslo.com', title: 'Account Executive', about: 'Uses Ask lojo before customer calls.', ws: { w1: 'viewer' }, status: 'member' },
+  { id: 'p5', name: 'Erik Nilsen', email: 'erik@oslo.com', ws: { w1: 'viewer' }, status: 'invited', sent: '2 days ago' },
+];
+const COMPANIES_SEED = () => [
+  { id: 'c1', name: 'Oslo', domain: 'oslo.com', owner: 'Eric Ouisse', email: 'eric@oslo.com', ws: ['Oslo', 'Oslo — Sandbox'], users: 5, status: 'active', since: '9 Sep' },
+  { id: 'c2', name: 'Fjord Health', domain: 'fjordhealth.no', owner: 'Ingrid Solberg', email: 'ingrid@fjordhealth.no', ws: ['Clinics', 'Patient services'], users: 9, status: 'active', since: '21 Aug' },
+  { id: 'c3', name: 'Aurora Energy', domain: 'auroraenergy.no', owner: 'Lena Berg', email: 'lena.berg@auroraenergy.no', ws: ['Customer care', 'Field', 'Billing', 'Trading', 'HR'], users: 31, status: 'active', since: '2 Jul' },
+  { id: 'c4', name: 'Halvorsen Legal', domain: 'halvorsen.law', owner: 'Martin Halvorsen', email: 'martin@halvorsen.law', ws: [], users: 0, status: 'invited', sent: '2 days ago' },
+];
+// the super admin's own account and what happened on the platform
+const STAFF_SEED = () => [
+  { id: 's1', name: 'Sadaf Farman', email: 'sadaf@lojo.ai', role: 'super', title: 'Head of Customer Success', status: 'member' },
+];
+const STAFF_ROLES = { super: ['Super admin', 'Every company on lojo, counts only'] };
+const PLOG_SEED = () => [
+  { msg: 'Invited Martin Halvorsen as owner of Halvorsen Legal', by: 'Sadaf Farman', at: '20 Oct, 10:12', kind: 'invite' },
+  { msg: 'Eric Ouisse accepted, Oslo is active', by: 'System', at: '9 Sep, 09:03', kind: 'accept' },
+  { msg: 'Ingrid Solberg accepted, Fjord Health is active', by: 'System', at: '21 Aug, 14:22', kind: 'accept' },
+  { msg: 'Invited Ingrid Solberg as owner of Fjord Health', by: 'Sadaf Farman', at: '19 Aug, 11:05', kind: 'invite' },
+];
+function plog(msg, kind) { ST.platformLog.unshift({ msg, by: 'Sadaf Farman', at: new Date().toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }), kind: kind || 'change' }); }
+const CO_USAGE = { c1: [10, 24, 7, 48], c2: [6, 15, 11, 120], c3: [42, 88, 61, 930] };
+const ROLES = { owner: ['Owner', 'Everything, plus settings and people'], editor: ['Editor', 'Adds sources and approves answers'], viewer: ['Viewer', 'Asks lojo and reads Knowledge'] };
 const KEY = 'lojo-poc-v2';
 function load() {
   try { const s = JSON.parse(sessionStorage.getItem(KEY)); if (s && s.v === 2) return s; } catch (e) {}
   return SEED();
 }
 let ST = load();
+ST.people = ST.people || PEOPLE_SEED();
+ST.companies = ST.companies || COMPANIES_SEED();
+ST.staff = ST.staff || STAFF_SEED();
+ST.platformLog = ST.platformLog || PLOG_SEED();
 function save() { try { sessionStorage.setItem(KEY, JSON.stringify(ST)); } catch (e) {} refreshNav(); }
 
 function decision(r) { return ST.decisions[r.id] || { status: 'pending' }; }
@@ -1061,7 +1203,7 @@ function downloadDoc(name, text) {
 // Ask lojo conversations: every chat is kept, titled by its first question, newest first
 // guided tour: a spotlight on one part of the page at a time, with a short explanation
 function runTour(steps, onDone) {
-  steps = steps.filter(s => !s.el || document.querySelector(s.el));
+  steps = steps.filter(s => { if (!s.el) return true; const el = document.querySelector(s.el); return el && el.getClientRects().length > 0; });
   let i = 0;
   const veil = document.createElement('div'); veil.className = 'tour-veil';
   const spot = document.createElement('div'); spot.className = 'tour-spot';
@@ -1130,15 +1272,21 @@ const askHistory = {
 };
 // the history list, shared by the Ask lojo page and full screen
 function convList(el, onPick) {
+  let term = '';
+  const find = document.createElement('label'); find.className = 'cl__find';
+  find.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" placeholder="Search chats" aria-label="Search chats">';
+  el.parentNode.insertBefore(find, el);
   const draw = () => {
-    const cs = askHistory.convs().filter(c => c.msgs.some(m => m.kind === 'me') || c.title);
+    const all = askHistory.convs().filter(c => c.msgs.some(m => m.kind === 'me') || c.title);
+    const cs = term ? all.filter(c => ((c.title || '') + ' ' + c.msgs.map(m => m.html.replace(/<[^>]+>/g, ' ')).join(' ')).toLowerCase().includes(term)) : all;
     const day = (ts) => { const d = new Date(ts), n = new Date(); const y = new Date(n); y.setDate(n.getDate() - 1);
       return d.toDateString() === n.toDateString() ? 'Today' : d.toDateString() === y.toDateString() ? 'Yesterday' : 'Earlier'; };
     let last = '', h = '';
     cs.forEach(c => { const g = day(c.at); if (g !== last) { h += '<p class="cl__g">' + g + '</p>'; last = g; }
       h += '<div class="cl__i' + (c.id === ST.convId ? ' is-on' : '') + '"><button type="button" class="cl__t" data-conv="' + c.id + '">' + esc(c.title || 'New chat') + '</button><button type="button" class="cl__x" data-delconv="' + c.id + '" aria-label="Delete chat" title="Delete">×</button></div>'; });
-    el.innerHTML = h || '<p class="cl__empty">Your chats will show up here.</p>';
+    el.innerHTML = h || '<p class="cl__empty">' + (term ? 'No chats match “' + esc(term) + '”.' : 'Your chats will show up here.') + '</p>';
   };
+  find.querySelector('input').addEventListener('input', (e) => { term = e.target.value.trim().toLowerCase(); draw(); });
   el.addEventListener('click', (e) => {
     const x = e.target.closest('[data-delconv]'); if (x) { askHistory.remove(x.dataset.delconv); onPick(); return; }
     const b = e.target.closest('[data-conv]'); if (b) { askHistory.open(b.dataset.conv); onPick(); }
@@ -1280,21 +1428,58 @@ function refreshNav() {
   set('navReview', c.pending, true);
   set('navQuestions', c.needCall + c.gaps);
   set('navApproved', c.approved);
+  set('navPeople', ST.people.filter(x => x.status === 'invited').length);
+  set('navCompanies', ST.companies.length);
   // My loop opens the loop where it stands, with today's numbers
   const loopUrl = 'onboarding.html?loop=1&c=' + [c.docs, c.questions, c.gaps, c.drafts, c.pending, c.approved].join('.');
   document.querySelectorAll('a[href^="onboarding.html?inside"]').forEach(a => { a.href = loopUrl; });
   window.LOOP_URL = loopUrl;
 }
+// what an Editor or Viewer can't see: hidden, or a "you can't open this" page
+function roleView(role) {
+  const ROLE_NAME = { owner: 'Owner', editor: 'Editor', viewer: 'Viewer' };
+  $('meRole').textContent = ROLE_NAME[role];
+  document.querySelectorAll('.persona').forEach(a => { const on = a.dataset.persona === role; a.classList.toggle('is-cur', on); if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
+  const hide = (sel) => document.querySelectorAll(sel).forEach(el => { el.hidden = true; });
+  const here = location.pathname.split('/').pop() || 'dashboard.html';
+  if (role !== 'owner') { hide('.side nav a[href="people.html"]'); hide('#orgInvite'); hide('#wsAdd'); document.body.classList.add('not-owner'); }
+  if (role === 'viewer') {
+    document.querySelectorAll('.side nav a.nav-item').forEach(a => { const f = a.getAttribute('href').split('?')[0]; a.hidden = !['chat.html', 'knowledge.html'].includes(f); a.classList.toggle('is-active', f === here); });
+    const nav = document.querySelector('.side nav'), ask = nav.querySelector('[data-only="viewer"]'); if (ask) nav.prepend(ask);
+  }
+  const OPEN = { editor: (f) => f !== 'people.html', viewer: (f) => ['chat.html', 'knowledge.html', 'settings.html', 'states.html', 'emails.html'].includes(f) };
+  if (OPEN[role] && !OPEN[role](here)) setTimeout(() => noAccess(role, here), 0);
+}
+function noAccess(role, here) {
+  const NAMES = { 'build.html': 'Build', 'sources.html': 'Sources', 'insights.html': 'Insights', 'distribute.html': 'Distribute', 'activity.html': 'Activity', 'people.html': 'People', 'dashboard.html': 'the Dashboard' };
+  const owner = (ST.people.find(p => p.id === 'p1') || { name: 'an Owner', email: '' });
+  const viewer = role === 'viewer';
+  document.querySelector('main.wrap').innerHTML = '<section class="noacc"><p class="label">Oslo</p><h1>You can’t open ' + esc(NAMES[here] || 'this page') + '</h1>' +
+    '<p>' + (viewer ? 'Viewers ask lojo and read approved answers in Knowledge. Reviewing drafts and adding sources needs Editor access.' : 'Only Owners invite people and change roles.') + ' Ask ' + esc(owner.name) + ', an Owner of Oslo, if you need more.</p>' +
+    '<div class="noacc__b"><a class="btn btn--primary" href="' + (viewer ? 'chat.html' : 'dashboard.html') + '">Go to ' + (viewer ? 'Ask lojo' : 'Dashboard') + '</a><a class="btn btn--secondary" href="mailto:' + esc(owner.email) + '">Ask ' + esc(owner.name.split(' ')[0]) + ' for access</a></div></section>';
+}
 function srcChip(docId, loc, warn) {
   return '<span class="src' + (warn ? ' src--warn' : '') + '">' + esc(docShort(docId)) + ' <em>' + esc(loc) + '</em>' + (warn ? ' <em>· conflicts</em>' : '') + '</span>';
 }
+// prototype only: who the Owner's pages are viewed as (Owner, Editor or Viewer), from View as
+const ROLE_PERSON = { owner: 'p1', editor: 'p2', viewer: 'p4' };
+window.LOJO_ROLE = 'owner';
+if (document.body.dataset.persona !== 'super') {
+  try {
+    const as = new URLSearchParams(location.search).get('as');
+    if (as && ROLE_PERSON[as]) { const p = ST.people.find(x => x.id === ROLE_PERSON[as]); sessionStorage.setItem('lojo-persona', as); sessionStorage.setItem('lojo-user', JSON.stringify({ name: p.name, email: p.email })); }
+    const r = sessionStorage.getItem('lojo-persona'); if (ROLE_PERSON[r]) window.LOJO_ROLE = r;
+  } catch (e) {}
+}
 (function shell() {
-  let user = { name: 'Sara', email: 'sara@oslo.com' };
+  let user = { name: 'Eric', email: 'eric@oslo.com' };
   try { const u = JSON.parse(sessionStorage.getItem('lojo-user')); if (u && u.name) user = u; } catch (e) {}
-  const full = user.name === 'Sara' ? 'Sara Lindqvist' : user.name;
+  if (document.body.dataset.persona === 'super') user = { name: 'Sadaf Farman', email: 'sadaf@lojo.ai' };
+  const full = user.name === 'Eric' ? 'Eric Ouisse' : user.name;
   $('meName').textContent = full;
   $('topAva').textContent = full.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
   $('meEmail').textContent = user.email;
+  if (document.body.dataset.persona !== 'super') roleView(window.LOJO_ROLE);
 
   try { if (localStorage.getItem('lojo-side') === 'collapsed') document.body.classList.add('is-collapsed'); } catch (e) {}
   const col = $('collapse');
@@ -1305,9 +1490,13 @@ function srcChip(docId, loc, warn) {
     try { localStorage.setItem('lojo-side', document.body.classList.contains('is-collapsed') ? 'collapsed' : 'open'); } catch (e) {}
   });
 
-  const pop = $('mePop'), btn = $('meBtn');
-  btn.addEventListener('click', (e) => { e.stopPropagation(); pop.hidden = !pop.hidden; btn.setAttribute('aria-expanded', !pop.hidden); });
-  document.addEventListener('click', (e) => { if (!e.target.closest('.me')) { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); } });
+  // two menus: the company/workspace at the top, you at the bottom
+  const MENUS = [['orgBtn', 'orgPop'], ['meBtn', 'mePop']].map(([b, p]) => [$(b), $(p)]);
+  const shut = (keep) => MENUS.forEach(([b, p]) => { if (p !== keep) { p.hidden = true; b.setAttribute('aria-expanded', 'false'); } });
+  MENUS.forEach(([b, p]) => b.addEventListener('click', (e) => { e.stopPropagation(); shut(p); p.hidden = !p.hidden; b.setAttribute('aria-expanded', !p.hidden); }));
+  document.addEventListener('click', (e) => { const m = e.target.closest('.me'); shut(m && m.querySelector('.pop')); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') shut(); });
+
   $('resetDemo').addEventListener('click', () => { try { sessionStorage.removeItem(KEY); } catch (e) {} location.reload(); });
   // G21 / G23: workspaces in the account menu
   const TRASH = '<svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>';
@@ -1316,6 +1505,9 @@ function srcChip(docId, loc, warn) {
     $('wsList').innerHTML = wss.map((w, i) => '<li class="ws-item"><span class="ws-dot' + (i % 2 ? ' alt' : '') + '">' + esc(w.name.split(/\s+/).map(x => x[0]).join('').slice(0, 2).toUpperCase()) + '</span>' +
       '<span class="ws-n"><b>' + esc(w.name) + '</b><span>' + esc(w.region) + '</span></span>' + (w.current ? '<span class="ws-cur">Current</span>' : '') +
       '<button class="ws-del" type="button" data-del="' + w.id + '" aria-label="Delete ' + esc(w.name) + '" title="Delete workspace">' + TRASH + '</button></li>').join('');
+    // the top-left shows the workspace you're in, with its company underneath
+    const cur = wss.find(w => w.current);
+    if (cur && document.body.dataset.persona !== 'super') { $('orgName').textContent = cur.name; $('orgSub').textContent = 'Oslo · ' + wss.length + ' workspace' + (wss.length === 1 ? '' : 's'); }
   }
   renderWs();
   $('wsAdd').addEventListener('click', (e) => { e.stopPropagation(); $('wsNew').hidden = !$('wsNew').hidden; if (!$('wsNew').hidden) $('wsNewName').focus(); });
@@ -1324,6 +1516,7 @@ function srcChip(docId, loc, warn) {
     toast('Creating ' + v + '…'); setTimeout(() => location.href = 'onboarding.html', 700);
   });
   $('mePop').addEventListener('click', (e) => e.stopPropagation());
+  $('orgPop').addEventListener('click', (e) => e.stopPropagation());
   $('wsList').addEventListener('click', (e) => {
     const b = e.target.closest('[data-del]'); if (!b) return;
     const w = ST.workspaces.find(x => x.id === b.dataset.del);
@@ -1386,21 +1579,19 @@ function srcChip(docId, loc, warn) {
   };
   function meta() {
     const n = store().length;
-    $('askMeta').textContent = n ? n + ' approved answer' + (n === 1 ? '' : 's') : 'Nothing approved yet';
+    $('askMeta').textContent = n ? 'Answers only from approved answers' : 'Nothing approved yet';
   }
   function welcome() {
     const s = store(), n = s.length, qs = s.map(x => x.q);
     const firstQ = qs.find(x => /contact|support/i.test(x)); if (firstQ) qs.unshift(...qs.splice(qs.indexOf(firstQ), 1));
-    const w = document.createElement('div'); w.className = 'aw'; w.id = 'askWelcome';
-    w.innerHTML = '<span class="aw__ava">' + agentIcon('Chat agent') + '</span><h3>How can I help?</h3>' +
-      (n ? '<p>I answer from Oslo’s <b>' + n + ' approved answer' + (n === 1 ? '' : 's') + '</b> and show the source behind each one. If something isn’t approved yet, I’ll say so instead of guessing.</p>' +
-        '<div class="aw__list">' + qs.slice(0, 4).map(x => '<button type="button" class="aw__q" data-ask="' + esc(x) + '"><span class="aw__qi">?</span><span>' + esc(x) + '</span><em>→</em></button>').join('') + '</div>'
-        : '<p>Nothing is approved yet, so there’s nothing I can answer from. <a href="build.html">Review the first drafts</a> to fill the store.</p>') +
-      '<div class="aw__tip">' + CLIP + '<span>Drop a document or image to check it against what’s approved</span></div>' +
-      '<a class="aw__link" href="distribute.html">Browse approved answers</a>';
+    const w = document.createElement('div'); w.className = 'awb'; w.id = 'askWelcome';
+    w.innerHTML = n ? 'Ask me about Oslo. I only use the <b>' + n + ' approved answer' + (n === 1 ? '' : 's') + '</b>.'
+      : 'Nothing is approved yet, so there’s nothing I can answer from. <a href="build.html">Review the first drafts</a> to fill the store.';
     log.appendChild(w);
+    $('askSugg').innerHTML = qs.slice(0, 3).map(x => '<button type="button" class="chip">' + esc(x) + '</button>').join('');
   }
   function ask(q) {
+    $('askSugg').innerHTML = ''; const w0 = $('askWelcome'); if (w0) w0.remove();
     say('me', esc(q));
     const tp = typing();
     setTimeout(() => {
@@ -1495,8 +1686,9 @@ def head_tips(body):
         body, count=1)
 
 
-def page(active, title, css, body, js, desc=''):
-    FAB = FAB_HTML
+def page(active, title, css, body, js, desc='', persona='owner'):
+    # super admin never sees a company's answers, so no Ask lojo
+    FAB = '' if persona == 'super' else FAB_HTML
     body = head_tips(body)
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -1514,9 +1706,9 @@ def page(active, title, css, body, js, desc=''):
 {desc}
 <style>{CSS}{SEG_CSS}{css}{DARK_BASE}{DARK_APP}</style>
 </head>
-<body>
+<body data-persona="{persona}">
 
-{sidebar(active)}
+{sidebar(active, persona)}
 
 <button class="mnav" id="mnav" type="button" aria-label="Open menu" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
 <div class="mscrim" id="mscrim"></div>

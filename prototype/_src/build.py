@@ -282,45 +282,11 @@ OVERVIEW = dict(
   .tile--soft .gauge{grid-row:auto}
   .tile--soft .tile__lbl,.tile--soft .tile__sub{align-self:center}
   .tile .tip::after{left:50%;transform:translate(-50%,4px)}
-  /* loop runs */
-  .runs{border:1px solid var(--line);border-radius:14px;overflow:hidden}
-  .rrow{display:grid;grid-template-columns:86px 140px minmax(0,1fr) 170px 120px 90px;gap:14px;align-items:center;padding:11px 16px;color:inherit;text-decoration:none;transition:background-color .15s ease}
-  .rrow + .rrow{border-top:1px solid var(--line)}
-  a.rrow:hover{background:var(--bg-soft);text-decoration:none}
-  .rhead{padding:8px 16px;background:var(--bg-soft);font-size:.64rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-  .rid{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.8rem;font-weight:600;color:var(--ink)}
-  .rst{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;font-style:normal;font-size:.72rem;font-weight:700;white-space:nowrap}
-  .rst::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
-  .rst.run{background:rgba(62,111,166,.1);color:var(--info)}
-  .rst.run::before{animation:livePulse 1.2s ease-in-out infinite}
-  .rst.queue{background:var(--bg-soft);color:var(--muted)}
-  .rst.wait{background:var(--amber-soft);color:#8A6212}
-  .rst.done{background:rgba(63,143,95,.12);color:var(--success)}
-  .rst.fail{background:rgba(198,69,69,.1);color:var(--error)}
-  .rtr{min-width:0}
-  .rtr b{display:block;font-size:.86rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .rtr small,.rprog small{display:block;font-size:.74rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .rsteps{display:flex;gap:3px;margin-bottom:4px}
-  .rsteps i{flex:1;height:6px;border-radius:3px;background:var(--line-2)}
-  .rsteps i.ok{background:var(--success)}
-  .rsteps i.now{background:var(--info);animation:livePulse 1.2s ease-in-out infinite}
-  .rsteps i.hold{background:#C9A24A}
-  .rsteps i.bad{background:var(--error)}
-  .rtime{font-size:.78rem;color:var(--muted);white-space:nowrap}
-  @media (max-width:1100px){.rrow{grid-template-columns:76px 120px minmax(0,1fr) 120px}.rrow > :nth-child(5),.rrow > :nth-child(6){display:none}}
-  .rfail{display:flex;align-items:center;gap:12px;margin:-4px 16px 12px 116px;padding:10px 12px;border-radius:10px;border:1px solid rgba(198,69,69,.25);background:rgba(198,69,69,.05);font-size:.8rem;color:var(--ink)}
-  .rfail svg{width:18px;height:18px;flex:none;fill:none;stroke:var(--error);stroke-width:1.9;stroke-linecap:round}
-  .rfail > div{flex:1;min-width:0}
-  .rfail b{color:var(--error)}
-  .rfail span{color:var(--muted)}
-  .rfail code{margin-left:8px;padding:1px 6px;border-radius:5px;background:var(--panel);border:1px solid var(--line);font-size:.68rem;color:var(--muted)}
-  .rfail .btn{flex:none}
-  @media (max-width:1100px){.rfail{margin-left:16px;flex-wrap:wrap}}
 """,
   body=r"""
     <div class="head">
       <div class="hello">
-        <div><h1 id="ovTitle">Good evening, Sara <span class="wave" aria-hidden="true">👋</span></h1><p id="ovDate"></p></div>
+        <div><h1 id="ovTitle">Good evening, Eric <span class="wave" aria-hidden="true">👋</span></h1><p id="ovDate"></p></div>
       </div>
       <span class="spacer"></span>
       <button class="mini" id="loopBtn" type="button" aria-label="Open the loop">
@@ -362,13 +328,8 @@ OVERVIEW = dict(
       <div class="checks" id="checks"></div>
     </section>
 
-    <section class="sec" aria-labelledby="runH">
-      <div class="sec__head"><h2 id="runH">Loop runs</h2><span>· Every time the loop runs, from new sources to approved answers</span><a href="activity.html">All activity →</a></div>
-      <div class="runs" id="runs"></div>
-    </section>
-
     <div class="duo">
-    <section class="sec" aria-labelledby="agH">
+    <section class="sec" aria-labelledby="agH" data-feature="agents">
       <div class="sec__head"><h2 id="agH">Agents at work</h2><span>· What each agent in your loop did last</span><a href="activity.html">View all agents →</a></div>
       <div class="agf chips" id="agFilters" role="group" aria-label="Filter agents"></div>
       <ul class="agl" id="agents"></ul>
@@ -396,8 +357,8 @@ OVERVIEW = dict(
       <button class="btn btn--ghost btn--sm" id="scopeToggle" aria-expanded="false">Details</button>
     </div>
     <div class="scope-more" id="scopeMore" hidden>
-      <div><h4>In scope</h4><ul><li>10 documents you sent us, on one lojo-run server</li><li>One fixed model, called through our proxy</li><li>Personal details are not removed automatically</li></ul></div>
-      <div><h4>Not in this phase</h4><ul><li>Roles and permissions</li><li>Publishing to a help centre or widget</li><li>Live sources such as mail and calls</li><li>Dashboards, billing and uptime guarantees</li></ul></div>
+      <div><h4>In scope</h4><ul><li>10 documents you sent us, on one lojo-run server</li><li>One fixed model, called through our proxy</li><li>Personal details are not removed automatically</li><li>Three fixed roles: Owner, Editor, Viewer</li></ul></div>
+      <div><h4>Not in this phase</h4><ul><li>Publishing to a help centre or widget</li><li>Live sources such as mail and calls</li><li>Dashboards, billing and uptime guarantees</li></ul></div>
     </div>
 """,
   js=r"""
@@ -462,56 +423,21 @@ function stackCycle() {
   show(); clearInterval(stackT);
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches) stackT = setInterval(show, 3200);
 }
-// loop runs: each pass of the loop gets an id and a status; the newest is still running
-const RUN_STAGES = ['Source', 'Insights', 'Build', 'Validate', 'Distribute'];
-const RUNS = [
-  { id: 'L-0012', status: 'run', trigger: 'Partner terms.docx uploaded', started: -14, stage: 2, stats: '1 document · 4 questions so far' },
-  { id: 'L-0013', status: 'queue', trigger: 'Website change: help.oslo.com/sso', started: null, stage: 0, stats: 'Starts when L-0012 finishes' },
-  { id: 'L-0011', status: 'wait', trigger: 'Gmail: 3 new emails', started: -320, ended: -305, stage: 3, stats: '2 questions · 10 drafts waiting for review' },
-  { id: 'L-0010', status: 'done', trigger: 'Notion sync', started: -1460, ended: -1442, stage: 5, stats: '5 pages · 3 answers approved' },
-  { id: 'L-0009', status: 'fail', trigger: 'Holiday policy 2025.pdf uploaded', started: -2900, ended: -2899, stage: 0, stats: 'Stopped before any questions were found',
-    reason: 'The PDF is password-protected, so lojo couldn’t read its text.', fix: 'Remove the password in your PDF app, then upload it again.', code: 'ERR_PDF_ENCRYPTED' },
-  { id: 'L-0008', status: 'done', trigger: 'Initial setup · 10 documents', started: -40320, ended: -40290, stage: 5, stats: '680 passages · 17 drafts · 7 approved' },
-];
-const RUN_ST = { run: ['Running', 'run'], queue: ['Queued', 'queue'], wait: ['Waiting for you', 'wait'], done: ['Completed', 'done'], fail: ['Failed', 'fail'] };
-const T0 = Date.now();
-const whenRun = (m) => { const d = new Date(T0 + m * 60000), today = new Date().toDateString() === d.toDateString(); return (today ? 'Today ' : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ', ') + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); };
-const dur = (mins) => mins < 1 ? '<1 min' : mins < 60 ? Math.round(mins) + ' min' : Math.floor(mins / 60) + ' h ' + Math.round(mins % 60) + ' min';
-function renderRuns() {
-  $('runs').innerHTML = '<div class="rrow rhead"><span>Run</span><span>Status</span><span>Trigger</span><span>Progress</span><span>Started</span><span>Duration</span></div>' + RUNS.map(r => {
-    const [lbl, cls] = RUN_ST[r.status], done = r.status === 'done' ? 5 : r.stage;
-    const steps = RUN_STAGES.map((s, i) => '<i class="' + (i < done ? 'ok' : i === done && (r.status === 'run' || r.status === 'wait') ? (r.status === 'run' ? 'now' : 'hold') : r.status === 'fail' && i === 0 ? 'bad' : '') + '" title="' + s + '"></i>').join('');
-    const mins = r.started === null ? null : ((r.ended ?? (Date.now() - T0) / 60000) - r.started);
-    return '<a class="rrow" href="' + (r.status === 'wait' ? 'build.html' : r.status === 'fail' ? 'sources.html' : 'activity.html') + '"><span class="rid">#' + r.id + '</span>' +
-      '<span><em class="rst ' + cls + '">' + lbl + '</em></span><span class="rtr"><b>' + esc(r.trigger) + '</b><small>' + esc(r.stats) + '</small></span>' +
-      '<span class="rprog"><span class="rsteps">' + steps + '</span><small>' + (r.status === 'queue' ? 'Not started' : r.status === 'done' ? 'All 5 stages' : r.status === 'fail' ? 'Stopped at Source' : 'At ' + RUN_STAGES[r.stage]) + '</small></span>' +
-      '<span class="rtime">' + (r.started === null ? '—' : whenRun(r.started)) + '</span><span class="rtime"' + (r.status === 'run' ? ' data-live="' + r.started + '"' : '') + '>' + (mins === null ? '—' : dur(mins)) + '</span></a>' +
-      (r.reason ? '<div class="rfail"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><div><b>Why it failed:</b> ' + esc(r.reason) + ' <span>' + esc(r.fix) + '</span><code>' + r.code + '</code></div>' +
-        '<button type="button" class="btn btn--secondary btn--sm" data-retry-run="' + r.id + '">Retry run</button><a class="btn btn--ghost btn--sm" href="sources.html">Open in Sources</a></div>' : '');
-  }).join('');
-}
-document.addEventListener('click', (e) => {
-  const b = e.target.closest('[data-retry-run]'); if (!b) return;
-  const r = RUNS.find(x => x.id === b.dataset.retryRun);
-  b.disabled = true; b.innerHTML = '<span class="spin" style="width:11px;height:11px"></span> Retrying…';
-  setTimeout(() => { r.status = 'fail'; r.started = -0.2; r.ended = 0; r.stats = 'Retried just now · still couldn’t read it'; renderRuns(); toastError('L-' + r.id.slice(2) + ' failed again: the PDF is still password-protected.'); }, 1400);
-});
-setInterval(() => document.querySelectorAll('[data-live]').forEach(el => { el.textContent = dur((Date.now() - T0) / 60000 - +el.dataset.live); }), 15000);
 function render() {
   const c = counts();
-  let first = 'Sara';
+  let first = 'Eric';
   try { const u = JSON.parse(sessionStorage.getItem('lojo-user')); if (u && u.name) first = u.name.trim().split(' ')[0]; } catch (e) {}
   const hr = new Date().getHours();
   $('ovTitle').innerHTML = (hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening') + ', ' + esc(first) + ' <span class="wave" aria-hidden="true">👋</span>';
   $('ovDate').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
-  miniLoop(c); renderRuns();
+  miniLoop(c);
 
   // up next + weekly target
   const decided = c.approved + c.final, mins = Math.max(1, Math.round(c.pending * 1.2));
   if (c.pending) {
     $('nextH').innerHTML = 'Review <span class="num">' + c.pending + '</span> draft' + (c.pending > 1 ? 's' : '');
     $('stackN').textContent = c.pending; $('stack').hidden = false; stackCycle();
-    $('nextSub').textContent = 'Approve, edit, or reject with a reason; a rejected draft is written again up to twice.';
+    $('nextSub').textContent = 'Approve, edit, or reject with a reason. Reject to have it rewritten, or send it to a person.';
     $('nextCta').innerHTML = 'Start reviewing <span class="ar">→</span>'; $('nextCta').href = 'build.html';
   } else {
     $('nextH').textContent = 'Try Ask lojo';
@@ -522,7 +448,7 @@ function render() {
   const also = [];
   const noSource = allQuestions().filter(q => (!q.docs || !q.docs.length) && matters(q) !== false).length;
   const human = c.final + noSource, failedDrafts = Object.keys(ST.draftFailed || {}).filter(k => ST.draftFailed[k] && ST.draftFailed[k] !== 'retrying').length;
-  if (human) also.push({ ic: 'hand', t: human + ' question' + (human === 1 ? ' needs' : 's need') + ' a human answer', s: 'No source, or rejected three times', href: 'insights.html#questions' });
+  if (human) also.push({ ic: 'hand', t: human + ' question' + (human === 1 ? ' needs' : 's need') + ' a human answer', s: 'No source, or sent to a person', href: 'build.html?tab=final' });
   if (failedDrafts) also.push({ ic: 'q', t: failedDrafts + ' draft' + (failedDrafts === 1 ? '' : 's') + ' could not be written', s: 'Try ' + (failedDrafts === 1 ? 'it' : 'them') + ' again from Insights', href: 'insights.html?demo=failed' });
   if (c.needCall) also.push({ ic: 'q', t: 'Say whether ' + c.needCall + ' question' + (c.needCall > 1 ? 's matter' : ' matters'), s: 'Only those get drafted', href: 'insights.html#questions' });
   if (c.gaps) also.push({ ic: 'gap', t: c.gaps + ' gaps need a source', s: 'Send a document or add them as questions', href: 'insights.html#gaps' });
@@ -545,7 +471,7 @@ function render() {
   $('today').innerHTML = [
     '<a class="tile tile--soft" href="build.html">' + gauge(decided / c.drafts, '#4F7A2F') + '<span class="tile__lbl">Review progress ' + tip('Drafts in the first batch that you have approved, edited or left for a human answer.') + '</span><span class="tile__sub">' + decided + ' of ' + c.drafts + ' decided · ' + c.approved + ' approved</span><span class="tile__go">→</span></a>',
     '<a class="tile tile--ok" href="sources.html"><span class="tile__tag">Indexed</span><span class="tile__lbl">Sources ' + tip('Documents you sent us. Their text is pulled out, split into passages and indexed by meaning.') + '</span><span class="tile__val">' + c.docs + '</span><span class="tile__sub">' + c.pages + ' pages · ' + c.passages + ' passages</span></a>',
-    '<a class="tile' + (c.needCall ? ' tile--warn' : '') + '" href="insights.html#questions">' + (c.needCall ? '<span class="tile__tag">' + c.needCall + ' need your call</span>' : '') + '<span class="tile__lbl">Questions ' + tip('Questions your documents answer, found by the agent, plus the ones you added.') + '</span><span class="tile__val">' + c.questions + '</span><span class="tile__sub">' + (c.questions - yours) + ' found · ' + yours + ' from you</span></a>',
+    '<a class="tile' + (c.needCall ? ' tile--warn' : '') + '" href="build.html">' + (c.needCall ? '<span class="tile__tag">' + c.needCall + ' need your call</span>' : '') + '<span class="tile__lbl">Questions ' + tip('Questions your documents answer, found by the agent, plus the ones you added.') + '</span><span class="tile__val">' + c.questions + '</span><span class="tile__sub">' + (c.questions - yours) + ' found · ' + yours + ' from you</span></a>',
     '<a class="tile' + (c.gaps ? ' tile--warn' : ' tile--ok') + '" href="insights.html#gaps">' + (c.gaps ? '<span class="tile__tag">Needs input</span>' : '') + '<span class="tile__lbl">Gaps ' + tip('Things your documents refer to but never explain. Expected at this stage: send a document or answer them yourself.') + '</span><span class="tile__val">' + c.gaps + '</span><span class="tile__sub">Referred to, never explained</span></a>',
   ].join('');
 
@@ -587,6 +513,13 @@ render();
 DOCUMENTS = dict(
   active='documents', title='Sources',
   css=r"""
+  .forgap{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:12px 14px;border-radius:14px;border:1px solid rgba(47,116,232,.3);background:rgba(47,116,232,.06)}
+  .forgap__ic{width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;background:rgba(47,116,232,.12)}
+  .forgap > div{flex:1;min-width:0}
+  .forgap small{display:block;font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#2F74E8}
+  .forgap b{display:block;font-size:.92rem}
+  .forgap span{font-size:.82rem;color:var(--muted)}
+
   .soon{cursor:not-allowed!important;opacity:.55;background:var(--bg-soft)!important;box-shadow:none!important;transform:none!important}
   .soon:hover{border-color:var(--line-2)!important}
   .soon .logo,.soon .tile,.soon .mono{filter:grayscale(1)}
@@ -763,6 +696,7 @@ DOCUMENTS = dict(
       <section class="srcdet" id="srcDet" aria-live="polite">
         <div class="card srchead" id="srcHead"></div>
         <div id="uploadBody">
+          <div class="forgap" id="forGap" hidden></div>
           <section class="scope" id="scope">
             <span class="ok">✓</span>
             <div><b id="scopeTitle">Data in scope, signed off</b><span class="sub" id="scopeSub"></span></div>
@@ -887,7 +821,7 @@ function render() {
       acts: '<button class="btn btn--ghost dlbtn" data-dl="' + d.id + '" title="Download" aria-label="Download ' + esc(d.name) + '">' + DL_ICON + '</button><button class="btn btn--ghost" data-retire="' + d.id + '">Retire</button>', detail }));
   });
   // G4: retired documents stay listed, greyed, and can be restored
-  DOCS.filter(d => ST.retired[d.id]).forEach(d => rows.push(docRow({ cls: ' is-retired', ext: d.name.split('.').pop(), name: d.name, st: 'ret', pages: d.pages, why: '<span class="why mute">Retired just now by Sara Lindqvist</span>',
+  DOCS.filter(d => ST.retired[d.id]).forEach(d => rows.push(docRow({ cls: ' is-retired', ext: d.name.split('.').pop(), name: d.name, st: 'ret', pages: d.pages, why: '<span class="why mute">Retired just now by Eric Ouisse</span>',
     acts: '<button class="btn btn--secondary" data-restore="' + d.id + '" data-base="1">Restore</button>' })));
   docx.filter(d => d.status === 'retired').forEach(d => rows.push(docRow({ cls: ' is-retired', ext: d.ext, name: d.name, st: 'ret', why: '<span class="why mute">' + esc(d.retiredNote) + '</span>',
     acts: '<button class="btn btn--secondary" data-restore="' + d.id + '">Restore</button>' })));
@@ -897,7 +831,7 @@ function render() {
 function renderApps() {
   $('apps').innerHTML = APPS.map(a => '<button type="button" class="app' + (ST.apps[a.id] ? ' is-on' : '') + (a.soon ? ' soon' : '') + '" data-app="' + a.id + '"' + (a.soon ? ' aria-disabled="true" title="Coming soon"' : '') + '><span class="mono logo" style="color:' + a.color + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + LOGO[a.id] + '</svg></span><span><b>' + esc(a.name) + '</b><span class="k">' + (a.soon ? '<em class="soon__tag">Coming soon</em>' : ST.apps[a.id] ? 'Connected · ' + a.n + ' documents' : esc(a.kind)) + '</span></span></button>').join('');
   const on = APPS.filter(a => ST.apps[a.id]);
-  $('synced').innerHTML = on.map(a => '<div class="file"><span class="mono logo" style="color:' + a.color + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + LOGO[a.id] + '</svg></span><span><span class="name">' + esc(a.name) + '</span><span class="meta">Connected as sara@oslo.com · ' + a.n + ' documents · reads only</span></span><span class="pstage is-done">Synced</span><span class="acts"><button class="btn btn--ghost" style="opacity:1" data-off="' + a.id + '">Disconnect</button></span></div>').join('');
+  $('synced').innerHTML = on.map(a => '<div class="file"><span class="mono logo" style="color:' + a.color + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + LOGO[a.id] + '</svg></span><span><span class="name">' + esc(a.name) + '</span><span class="meta">Connected as eric@oslo.com · ' + a.n + ' documents · reads only</span></span><span class="pstage is-done">Synced</span><span class="acts"><button class="btn btn--ghost" style="opacity:1" data-off="' + a.id + '">Disconnect</button></span></div>').join('');
 }
 $('apps').addEventListener('click', (e) => {
   const b = e.target.closest('[data-app]'); if (!b || ST.apps[b.dataset.app]) return;
@@ -905,7 +839,7 @@ $('apps').addEventListener('click', (e) => {
   if (a.soon) { e.stopImmediatePropagation(); toast(a.name + ' is coming soon. Connect Website, Notion or Gmail for now.'); return; }
   b.classList.add('is-busy'); b.disabled = true;
   b.querySelector('.k').innerHTML = '<span class="spin" style="width:11px;height:11px;vertical-align:-1px"></span> Connecting…';
-  setTimeout(() => { ST.apps[a.id] = true; save(); render(); toast(a.name + ' connected as sara@oslo.com'); }, 900);
+  setTimeout(() => { ST.apps[a.id] = true; save(); render(); toast(a.name + ' connected as eric@oslo.com'); }, 900);
 });
 $('synced').addEventListener('click', (e) => { const b = e.target.closest('[data-off]'); if (!b) return; delete ST.apps[b.dataset.off]; save(); render(); toast('Disconnected. Documents already indexed stay until you retire them.'); });
 $('docRows').addEventListener('click', (e) => {
@@ -945,6 +879,12 @@ function showUploadErrors(errs) {
   el.hidden = false; $('upErrX').onclick = () => { el.hidden = true; };
 }
 window.demoUploadErrors = () => showUploadErrors([['Q3 board deck.pptx', 'This file type isn’t supported. Use PDF, DOCX, MD or TXT.'], ['Call recordings.zip', 'Too large: 212 MB. Each file can be up to 25 MB.'], ['Billing FAQ.docx', 'Already uploaded on 10 Sep. Retire the old one first if this is a newer version.']]);
+// arriving from Build to explain a gap
+const FOR_GAP = GAPS.find(g => g.id === SP0().get('gap'));
+if (FOR_GAP) {
+  $('forGap').hidden = false;
+  $('forGap').innerHTML = '<span class="forgap__ic">🧩</span><div><small>From Build · Gap</small><b>' + esc(FOR_GAP.term) + '</b><span>' + esc(FOR_GAP.why) + ' Upload a document that explains it.</span></div><a class="btn btn--ghost btn--sm" href="build.html?gap=' + FOR_GAP.id + '">Back to Build</a>';
+}
 function addFiles(list) {
   const errs = [], names = DOCS.map(d => d.name.toLowerCase()).concat((ST.docx || []).map(d => d.name.toLowerCase()), extra.map(x => x.name.toLowerCase()));
   const files = [...list].filter(f => {
@@ -955,6 +895,8 @@ function addFiles(list) {
     return true;
   });
   showUploadErrors(errs);
+  // the first file sent for a gap shows as "Document sent" on that gap in Build
+  if (FOR_GAP && files.length) { ST.gapDocs = ST.gapDocs || {}; ST.gapDocs[FOR_GAP.id] = files[0].name; save(); $('forGap').querySelector('span:last-of-type').textContent = files[0].name + ' sent for this gap. lojo reads it and checks the gap.'; }
   files.forEach(f => {
     const item = { name: f.name, ext: (f.name.split('.').pop() || '').slice(0, 4), stage: 'Extracting text', done: false, pages: Math.max(1, Math.round(f.size / 40000)) };
     extra.unshift(item);
@@ -996,7 +938,7 @@ function sources() {
   APPS.filter(a => ST.apps[a.id]).forEach(a => {
     const i = APPINFO[a.id] || DEF;
     list.push({ id: a.id, name: a.name, sub: a.name + ' · ' + i.what, icon: '<span class="sico" style="color:' + a.color + '"><svg viewBox="0 0 24 24" fill="currentColor">' + LOGO[a.id] + '</svg></span>', state: i.state,
-      line: (i.state === 'warn' ? 'Needs attention · ' : '') + i.fresh, conn: 'Connected', connS: 'Signed in as sara@oslo.com. lojo only reads.', fresh: i.fresh, freshS: i.state === 'warn' ? 'See what happens next below.' : 'Checked for changes every hour.',
+      line: (i.state === 'warn' ? 'Needs attention · ' : '') + i.fresh, conn: 'Connected', connS: 'Signed in as eric@oslo.com. lojo only reads.', fresh: i.fresh, freshS: i.state === 'warn' ? 'See what happens next below.' : 'Checked for changes every hour.',
       contrib: i.items.length + ' item' + (i.items.length === 1 ? '' : 's'), contribS: 'Imported knowledge can be reviewed in Insights and Knowledge.', supplies: i.supplies, next: i.next || 'Nothing to do. lojo keeps it in sync.', nextHref: i.nextHref, items: i.items });
   });
   return list;
@@ -1006,7 +948,7 @@ const ABOUT = (s) => {
   const app = { upload: ['Uploaded documents', 'Files you upload here', 'When you upload'], notion: ['Notion', 'Teamspaces: Pricing wiki, Onboarding playbook, Security docs, Policies', 'Automatic · every hour'],
     website: ['Website', 'help.oslo.com and oslo.com/pricing, oslo.com/legal', 'Automatic · daily'], gmail: ['Gmail', 'support@oslo.com inbox', 'Automatic · as emails arrive'],
     aircall: ['Aircall', 'Support line and Sales line, with transcripts', 'Automatic · after each call'] }[s.id] || [s.name, 'Everything the account can read', 'Automatic · every hour'];
-  return [['Source type', app[0]], ['Configured scope', app[1]], ['Sync mode', app[2]], ['Connected by', s.id === 'upload' ? 'Anyone who uploads' : 'Sara Lindqvist · sara@oslo.com'], ['Access', 'Read only. lojo never edits your files.']];
+  return [['Source type', app[0]], ['Configured scope', app[1]], ['Sync mode', app[2]], ['Connected by', s.id === 'upload' ? 'Anyone who uploads' : 'Eric Ouisse · eric@oslo.com'], ['Access', 'Read only. lojo never edits your files.']];
 };
 document.addEventListener('click', (e) => { if (!e.target.closest('.about')) document.querySelectorAll('.about.is-open').forEach(w => { w.classList.remove('is-open'); w.querySelector('[data-about]').setAttribute('aria-expanded', 'false'); }); });
 function renderSources() {
@@ -1730,24 +1672,16 @@ REVIEW = dict(
   .meter span{color:var(--muted);font-size:.8rem;margin-left:6px}
   .meter .bar{height:6px;border-radius:6px;background:var(--bg-soft);margin-top:8px;overflow:hidden}
   .meter .bar i{display:block;height:100%;background:var(--brand-gradient);transition:width .4s ease}
-  .rv{display:grid;grid-template-columns:340px minmax(0,1fr);gap:20px;align-items:start}
+  .rv{display:grid;grid-template-columns:420px minmax(0,1fr);gap:20px;align-items:start}
   .list{position:sticky;top:84px;max-height:calc(100vh - 110px);display:flex;flex-direction:column;overflow:hidden}
   .list .tabs{padding:0 10px;margin:0}
   .list .tab{padding:12px 8px;font-size:.8rem;white-space:nowrap}
-  .items{list-style:none;margin:0;padding:6px;overflow:auto}
-  .item{padding:11px 12px;border-radius:10px;cursor:pointer;display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:5px;align-items:start}
-  .item > b,.item > .meta{grid-column:2}
-  .item .pick{grid-row:1/span 2;margin-top:2px}
-  .pick{width:17px;height:17px;margin:0;accent-color:var(--rose);cursor:pointer}
-  .item.is-picked{background:rgba(232,93,117,.06)}
-  .bulk{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
-  .bulk label{display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:600;cursor:pointer;margin-right:auto}
-  .bulk.is-on{background:#FFF6F3}
-  .bulk .btn{height:30px;padding:0 12px;font-size:.76rem}
-  .bulkrej{display:grid;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--bg-soft)}
-  .bulkrej .row{display:flex;gap:8px}
-  .item:hover{background:var(--bg-soft)}
-  .item.is-sel{background:var(--bg-soft);box-shadow:inset 3px 0 0 var(--rose)}
+  .items{list-style:none;margin:0;padding:8px;overflow:auto;display:grid;gap:6px;align-content:start}
+  .item{padding:14px 14px;border-radius:12px;cursor:pointer;display:grid;row-gap:8px;align-items:start;background:#F7F6F4}
+  .item:hover{background:#F0EEEB}
+  :root[data-theme="dark"] .item{background:rgba(255,255,255,.04)}
+  :root[data-theme="dark"] .item:hover{background:rgba(255,255,255,.07)}
+  .item.is-sel{background:var(--panel);box-shadow:inset 3px 0 0 var(--rose),0 0 0 1px var(--line-2),0 6px 16px -12px rgba(36,26,20,.4)}
   .item b{font-size:.84rem;font-weight:600;line-height:1.35}
   .item .meta{display:flex;gap:6px;flex-wrap:wrap}
   .detail{padding:24px 26px}
@@ -1757,12 +1691,114 @@ REVIEW = dict(
   .quotes{display:grid;gap:10px;margin-bottom:22px}
   .quote{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
   .quote.is-warn{border-color:rgba(217,154,43,.5);background:rgba(217,154,43,.05)}
+  .quote.is-gap{border-color:rgba(47,116,232,.4);background:rgba(47,116,232,.04)}
+  .quote mark.gapw{background:rgba(47,116,232,.16);color:inherit;padding:1px 2px;border-radius:3px}
+  .badge--gap{background:rgba(47,116,232,.1);color:#2F74E8}
+  .lfind{display:grid;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
+  .lfind .text{height:36px}
+  .lfrow{display:flex;gap:8px}
+  .lfsearch{position:relative;flex:1;min-width:0;display:block}
+  .lfsearch svg{position:absolute;left:11px;top:50%;width:16px;height:16px;transform:translateY(-50%);fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;pointer-events:none}
+  .lfsearch .text{width:100%;padding-left:34px}
+  .lfdrop{position:relative}
+  .lfbtn{height:36px;padding:0 13px;font-size:.8rem;gap:6px}
+  .lfbtn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round}
+  .lfbtn.is-on{border-color:var(--ink);background:var(--ink);color:#fff}
+  .lfmenu{position:absolute;right:0;top:calc(100% + 6px);z-index:20;width:230px;padding:6px;border:1px solid var(--line);border-radius:12px;background:var(--panel);box-shadow:0 18px 40px -20px rgba(36,26,20,.45)}
+  .lfitem{display:flex;align-items:center;gap:10px;width:100%;height:34px;padding:0 10px;border-radius:8px;font-size:.86rem;color:var(--ink);cursor:pointer}
+  .lfitem:hover{background:var(--bg-soft)}
+  .lfitem input{width:16px;height:16px;margin:0;accent-color:var(--ink);cursor:pointer}
+  .lfitem span{flex:1}
+  .lfitem em{font-style:normal;font-weight:700;font-size:.76rem;color:var(--muted)}
+  .lfclear{display:block;width:100%;margin-top:4px;padding:8px 10px;border:0;border-top:1px solid var(--line);background:none;font:inherit;font-size:.8rem;font-weight:600;color:var(--muted);text-align:left;cursor:pointer}
+  .lfclear:hover{color:var(--ink)}
+  .lfactive{flex-wrap:wrap}
+  .lfactive{display:flex;align-items:center;gap:8px}
+  .lfchip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 4px 0 11px;border-radius:999px;background:var(--ink);color:#fff;font-size:.78rem;font-weight:600}
+  .lfchip button{width:22px;height:22px;border:0;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;font-size:.9rem;line-height:1;cursor:pointer}
+  .lfreset{border:0;background:none;font:inherit;font-size:.78rem;font-weight:600;color:var(--muted);cursor:pointer}
+  .lfreset:hover{color:var(--ink)}
+  .badge--q{background:rgba(36,26,20,.06);color:var(--ink)}
+  .badge--fromgap{background:transparent;color:#2F74E8;box-shadow:inset 0 0 0 1px rgba(47,116,232,.35)}
+  .item.is-failed{grid-template-columns:minmax(0,1fr) auto;column-gap:10px;background:rgba(198,69,69,.06)}
+  .item.is-failed:hover{background:rgba(198,69,69,.1)}
+  .item.is-failed.is-sel{background:rgba(198,69,69,.12);box-shadow:inset 3px 0 0 var(--error)}
+  .item.is-failed > b,.item.is-failed > .meta{grid-column:1}
+  .fstate{grid-column:2;grid-row:1/span 2;align-self:center;font-size:.76rem;font-weight:600;color:var(--error);white-space:nowrap;text-align:right}
+  .fstate small{display:block;font-size:.74rem;font-weight:500;color:var(--muted)}
+  .item.has-side{grid-template-columns:minmax(0,1fr) auto;column-gap:16px}
+  .item.has-side > b,.item.has-side > .meta{grid-column:1}
+  .srcb{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:999px;background:#FFF0E8;border:1px solid rgba(232,93,117,.22);color:#B73C54;font-size:.72rem;font-weight:700;cursor:default}
+  :root[data-theme="dark"] .srcb{background:rgba(232,93,117,.14);border-color:rgba(232,93,117,.3);color:#FFB199}
+  .srcb svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
+  .fstate small{margin-top:4px}
+  .item.has-av{grid-template-columns:32px minmax(0,1fr);column-gap:12px}
+  .item.has-av.has-side,.item.has-av.is-failed{grid-template-columns:32px minmax(0,1fr) auto}
+  .item.has-av > b,.item.has-av > .meta{grid-column:2}
+  .item.has-av > .rside,.item.has-av > .fstate{grid-column:3}
+  .rav{grid-column:1;grid-row:1/span 2;align-self:center;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:.95rem;line-height:1}
+  .rav--question{background:#FFF0E8}
+  .rav--gap{background:rgba(47,116,232,.12)}
+  .rav--failed{background:rgba(198,69,69,.14)}
+  :root[data-theme="dark"] .rav--question{background:rgba(255,177,153,.14)}
+  .rside{grid-column:2;grid-row:1/span 2;align-self:center;font-size:.74rem;color:var(--muted);white-space:nowrap;text-align:right}
+  .item.is-redo{background:rgba(63,143,95,.07)}
+  .item.is-redo:hover{background:rgba(63,143,95,.11)}
+  .item.is-redo.is-sel{background:rgba(63,143,95,.13);box-shadow:inset 3px 0 0 var(--success)}
+  .rstate{display:block;margin-bottom:4px;font-size:.76rem;font-weight:600;color:var(--success)}
+  .item.is-other{background:rgba(123,92,240,.07)}
+  .item.is-other:hover{background:rgba(123,92,240,.11)}
+  .item.is-other.is-sel{background:rgba(123,92,240,.13);box-shadow:inset 3px 0 0 #7B5CF0}
+  .item.is-other .rstate{color:#6A48D7}
+  .badge--bad{background:rgba(198,69,69,.1);color:var(--error)}
+  .fnote2{display:grid;gap:4px;margin:0 0 22px;padding:12px 14px;border-radius:12px;background:rgba(198,69,69,.06);border:1px solid rgba(198,69,69,.2);font-size:.88rem}
+  .fnote2 b{color:var(--error)}
+  .fnote2 span{color:var(--muted)}
+  .item.is-hl{background:rgba(47,116,232,.07);box-shadow:inset 3px 0 0 #2F74E8}
+  .item.is-hl.is-sel{background:rgba(47,116,232,.12)}
+  .gapnote .g.is-hl{margin:-6px -8px;padding:8px;border-radius:10px;background:rgba(47,116,232,.1);box-shadow:0 0 0 2px #2F74E8;animation:hlPulse 1.6s ease-out 2}
+  .quote.is-hl{border-color:#2F74E8;box-shadow:0 0 0 2px rgba(47,116,232,.25)}
+  @keyframes hlPulse{0%{box-shadow:0 0 0 2px #2F74E8,0 0 0 0 rgba(47,116,232,.45)}100%{box-shadow:0 0 0 2px #2F74E8,0 0 0 12px rgba(47,116,232,0)}}
+  @media (prefers-reduced-motion:reduce){.gapnote .g.is-hl{animation:none}}
+  .gapnote{display:grid;gap:10px;margin:0 0 18px;padding:12px 14px;border-radius:12px;border:1px solid rgba(47,116,232,.3);background:rgba(47,116,232,.05)}
+  .gapnote .g{display:flex;gap:10px;align-items:flex-start}
+  .gapnote .g > div{flex:1;min-width:0;font-size:.84rem;color:var(--muted)}
+  .gapnote .g b{display:block;color:var(--ink);font-size:.88rem}
+  .gapnote .g .btn{height:30px;padding:0 12px;font-size:.76rem}
+  .gacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .gwhy{margin:-6px 0 20px;color:var(--muted);font-size:.95rem;line-height:1.6}
+  .gsent{display:flex;align-items:center;gap:10px;margin:-8px 0 20px;padding:10px 12px;border-radius:10px;background:rgba(63,143,95,.08);font-size:.86rem;color:var(--muted)}
+  .gsent b{color:var(--ink)}
+  .gdrafts{display:grid;gap:8px;margin-bottom:22px}
+  .gdraft{display:flex;justify-content:space-between;gap:12px;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);font:inherit;font-size:.88rem;font-weight:600;text-align:left;cursor:pointer}
+  .gdraft:hover{border-color:rgba(36,26,20,.24)}
+  .gdraft span{color:#B73C54;font-size:.8rem;white-space:nowrap}
   .quote .qtop{display:flex;gap:8px;align-items:center;margin-bottom:4px}
   .quote .qtop b{font-size:.8rem}
   .quote .qtop em{font-style:normal;color:var(--muted);font-size:.74rem}
   .quote p{margin:0;font-size:.86rem}
   .quote .more{border:0;background:none;padding:0;margin-top:8px;font-size:.76rem;font-weight:700;color:#B73C54;cursor:pointer}
   .quote .full{margin-top:10px;padding:12px 14px;border-radius:10px;background:var(--bg-soft);font-size:.84rem;line-height:1.65;color:var(--muted)}
+  .callq .qtop{gap:8px}
+  .cl-dir{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center}
+  .cl-dir svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .cl-dir--in{background:rgba(62,111,166,.12);color:var(--info)}
+  .cl-dir--out{background:rgba(63,143,95,.13);color:var(--success)}
+  .badge--in{background:rgba(62,111,166,.1);color:var(--info)}
+  .badge--out{background:rgba(63,143,95,.12);color:var(--success)}
+  .cl-used{margin-left:auto;font-size:.74rem;font-weight:600;color:#8A6212}
+  .cl-meta{margin:2px 0 10px!important;font-size:.78rem!important;color:var(--muted)}
+  .cl-log{display:grid;gap:2px;border-left:2px solid var(--line);padding-left:10px}
+  .cl-log.is-open{max-height:320px;overflow:auto}
+  .cl-row{display:grid;grid-template-columns:44px 104px minmax(0,1fr);gap:8px;align-items:baseline;padding:5px 8px;border-radius:8px;font-size:.85rem;line-height:1.5}
+  .cl-row.is-used{background:#FFF4D6;box-shadow:inset 2px 0 0 #E0B04A}
+  .cl-t{font-family:ui-monospace,Menlo,monospace;font-size:.72rem;color:var(--muted)}
+  .cl-who{font-size:.74rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cl-who--a{color:#B73C54}
+  .cl-who--c{color:var(--info)}
+  .cl-gap{padding:2px 8px 2px 60px;color:var(--muted);font-size:.8rem;letter-spacing:.2em}
+  :root[data-theme="dark"] .cl-row.is-used{background:rgba(224,176,74,.16)}
+  @media (max-width:700px){ .cl-row{grid-template-columns:1fr} }
   .quote .full mark{background:rgba(255,177,153,.55);color:var(--ink);padding:1px 2px;border-radius:3px}
   :root[data-theme="dark"] .quote .full mark{background:rgba(232,93,117,.35)}
   .other{display:grid;grid-template-columns:36px 1fr;gap:12px;align-items:start;padding:14px 16px;border-radius:12px;background:rgba(62,111,166,.08);border:1px solid rgba(62,111,166,.25);margin-bottom:18px;font-size:.88rem}
@@ -1804,7 +1840,7 @@ REVIEW = dict(
       <div>
         <p class="label">02 Build · Validation</p>
         <h1>Build</h1>
-        <p>Approve, edit, or reject with a reason. A rejected draft is written again up to twice; if it’s still wrong, it waits for a human answer.</p>
+        <p>Approve, edit, or reject with a reason. A rejected draft is written again with your reason, or sent to a person to answer.</p>
       </div>
       <span class="spacer"></span>
       <div class="meter"><b id="mCount">0 of 0</b><span>reviewed</span><div class="bar"><i id="mBar"></i></div></div>
@@ -1817,16 +1853,15 @@ REVIEW = dict(
           <button class="tab" data-f="approved" aria-selected="false">Approved <span class="n" id="nA">0</span></button>
           <button class="tab" data-f="final" aria-selected="false">Human <span class="n" id="nF">0</span></button>
         </div>
-        <div class="bulk" id="bulk" hidden>
-          <label><input type="checkbox" class="pick" id="pickAll"> <span id="pickTxt">Select all</span></label>
-          <button class="btn btn--primary" id="bulkApprove" type="button" disabled>Approve</button>
-          <button class="btn btn--danger" id="bulkReject" type="button" disabled>Reject</button>
-        </div>
-        <div class="bulkrej" id="bulkRej" hidden>
-          <span class="sub" id="bulkRejTxt"></span>
-          <select class="text" id="bulkWhy"></select>
-          <input class="text" id="bulkNote" placeholder="What should change? (optional)">
-          <div class="row"><button class="btn btn--danger btn--sm" id="bulkRejGo" type="button">Reject selected</button><button class="btn btn--ghost btn--sm" id="bulkRejCancel" type="button">Cancel</button></div>
+        <div class="lfind">
+          <div class="lfrow">
+            <label class="lfsearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="text" id="lq" type="search" placeholder="Search drafts" aria-label="Search drafts" autocomplete="off"></label>
+            <div class="lfdrop">
+              <button class="btn btn--secondary lfbtn" id="lfBtn" type="button" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 5h16l-6 8v5l-4 2v-7z"/></svg><span>Filter</span></button>
+              <div class="lfmenu" id="ltags" role="menu" hidden></div>
+            </div>
+          </div>
+          <div class="lfactive" id="lfActive" hidden></div>
         </div>
         <ul class="items" id="items"></ul>
       </section>
@@ -1840,7 +1875,6 @@ const AIC = {
   link: '<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>',
   ai: '<svg viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>',
 };
-const picked = new Set();
 const REASONS = ['Wrong answer', 'Outdated source', 'Missing detail', 'Not a question we answer'];
 const openFull = new Set();
 const CONTEXT = {
@@ -1867,13 +1901,52 @@ const CONTEXT = {
   'd9|§2': ['§2 Renewals. ', ' We email a reminder 30 days before each renewal.'],
 };
 const Q = (r) => QUESTIONS.find(q => q.id === r.qid).q;
+// gaps a draft leans on: a source quote mentions something no document explains
+const GAP_WORDS = { g1: /enterprise/i, g2: /chargeback fee/i, g3: /retention/i, g4: /onboarding manager/i, g5: /over the limit|requests per second|burst/i };
+const gapsOf = (r) => GAPS.filter(g => !ST.gaps[g.id] && r.src.some(s => GAP_WORDS[g.id].test(s[2])));
+const gapIn = (text, gs) => gs.find(g => GAP_WORDS[g.id].test(text));
+// arriving from an Insights gap: highlight every draft that leans on it
+const HL_GAP = new URLSearchParams(location.search).get('gap');
+const hasHl = (r) => !!HL_GAP && gapsOf(r).some(g => g.id === HL_GAP);
 const inTab = (r) => { const s = decision(r).status; return tab === 'pending' ? (s === 'pending' || s === 'redrafting') : s === tab; };
-function badges(r) {
-  const d = decision(r); let b = '';
+// every draft answers a question; some also lean on a gap
+const isGap = (r) => gapsOf(r).length > 0;
+// questions someone added from a gap (Add as a question)
+const fromGap = (qid) => { const q = allQuestions().find(x => x.id === qid); return !!(q && q.gap); };
+let lq = '', gsel = null, fsel = null, fwrite = false;
+// filters: several can be on; a row shows if it matches any of them
+const ltags = new Set();
+const onlyGaps = () => ltags.size === 1 && ltags.has('gap');
+// questions lojo couldn't draft: no answer with sources that check out
+const failedQs = () => tab !== 'pending' ? [] : allQuestions().filter(q => (ST.draftFailed || {})[q.id] && (!lq || q.q.toLowerCase().includes(lq)));
+// open gaps: things the documents mention but never explain
+const openGaps = () => GAPS.filter(g => !ST.gaps[g.id] && (!lq || (g.term + ' ' + g.why).toLowerCase().includes(lq)));
+const gapDrafts = (g) => DRAFTS.filter(r => decision(r).status !== 'approved' && gapsOf(r).some(x => x.id === g.id));
+const TAGS = [['all', 'All', () => true], ['question', 'Questions', (r) => !isGap(r)], ['gap', 'Gaps', isGap], ['failed', 'Draft failed', () => false], ['conflict', 'Sources disagree', (r) => !!r.conflict]];
+const tagOk = (r) => !ltags.size || [...ltags].some(k => TAGS.find(t => t[0] === k)[2](r));
+const showFailed = () => !ltags.size || ltags.has('failed') || ltags.has('question');
+function renderTags() {
+  const base = DRAFTS.filter(inTab), nf = failedQs().length;
+  const count = (k, f) => k === 'gap' ? GAPS.filter(g => !ST.gaps[g.id]).length : k === 'failed' ? nf : base.filter(f).length + (k === 'question' ? nf : 0);
+  $('ltags').innerHTML = TAGS.filter(t => t[0] !== 'all').map(([k, l, f]) => { const n = count(k, f), on = ltags.has(k); return (n || on) ? '<label class="lfitem"><input type="checkbox" data-tag="' + k + '"' + (on ? ' checked' : '') + '><span>' + l + '</span><em>' + n + '</em></label>' : ''; }).join('') +
+    (ltags.size ? '<button type="button" class="lfclear" data-reset>Clear all</button>' : '');
+  $('lfActive').hidden = !ltags.size;
+  $('lfActive').innerHTML = [...ltags].map(k => '<span class="lfchip">' + TAGS.find(t => t[0] === k)[1] + '<button type="button" data-untag="' + k + '" aria-label="Remove ' + TAGS.find(t => t[0] === k)[1] + '">×</button></span>').join('') + (ltags.size ? '<button type="button" class="lfreset" data-reset>Reset</button>' : '');
+  $('lfBtn').classList.toggle('is-on', ltags.size > 0);
+  $('lfBtn').lastChild.textContent = ltags.size ? 'Filter · ' + ltags.size : 'Filter';
+}
+const nsrc = (n) => n === 1 ? '1 source' : n + ' sources';
+// a small avatar at the start of each row says what it is
+const ROW_ICON = { question: ['❓', 'Question'], gap: ['🧩', 'Gap'], failed: ['⚠️', 'Draft failed'] };
+const rowAv = (k) => '<span class="rav rav--' + k + '" title="' + ROW_ICON[k][1] + '" aria-hidden="true">' + ROW_ICON[k][0] + '</span>';
+// compact source count for list rows; hover says "3 sources"
+const srcBadge = (n) => '<span class="srcb" title="' + nsrc(n) + '" aria-label="' + nsrc(n) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>' + n + '</span>';
+function badges(r, inList) {
+  const d = decision(r); let b = isGap(r) ? '' : '<span class="badge badge--q">Question</span>';
   if (r.conflict) b += '<span class="badge badge--amber">Sources disagree</span>';
-  if (r.src.length > 1 && !r.conflict) b += '<span class="badge badge--muted">' + r.src.length + ' sources</span>';
-  if (d.redrafted) b += '<span class="badge badge--info">' + (d.redrafted === 2 ? 'Rewritten twice' : 'Redrafted') + '</span>';
-  if (ST.others && ST.others[r.id] && d.status === 'pending') b += '<span class="badge badge--rose">Decided by ' + esc(ST.others[r.id].by.split(' ')[0]) + '</span>';
+  const gs = gapsOf(r); if (gs.length) b = '<span class="badge badge--gap" title="' + esc(gs.map(g => g.term).join(', ')) + '">Gap</span>' + b;
+  if (fromGap(r.qid)) b += '<span class="badge badge--fromgap" title="Added as a question from a gap">From gap</span>';
+  if (!inList) b += '<span class="badge badge--muted">' + nsrc(r.src.length) + '</span>';
   if (d.by) b += '<span class="badge badge--muted">By ' + esc(d.by.split(' ')[0]) + '</span>';
   if (d.edited) b += '<span class="badge badge--muted">Edited</span>';
   return b;
@@ -1883,40 +1956,131 @@ function renderList() {
   $('nP').textContent = c.pending; $('nA').textContent = c.approved; $('nF').textContent = c.final;
   const done = c.approved + c.final;
   $('mCount').textContent = done + ' of ' + c.drafts; $('mBar').style.width = (done / c.drafts * 100) + '%';
-  const list = DRAFTS.filter(inTab);
+  renderTags();
+  if (onlyGaps()) {
+    const gl = openGaps();
+    if (!gl.some(g => g.id === gsel)) gsel = gl.length ? gl[0].id : null;
+    $('items').innerHTML = gl.length ? gl.map(g => {
+      return '<li class="item has-av' + (g.id === gsel ? ' is-sel' : '') + (g.id === HL_GAP ? ' is-hl' : '') + '" data-gapid="' + g.id + '">' + rowAv('gap') + '<b>' + esc(g.term) + '</b><span class="meta"><span class="badge badge--gap">Gap</span>' + ((ST.gapDocs || {})[g.id] ? '<span class="badge badge--ok">Document sent</span>' : '') + '</span></li>'; }).join('')
+      : '<li class="empty"><b>' + (lq ? 'Nothing matches.' : 'No open gaps.') + '</b>' + (lq ? 'Try other words.' : 'Every gap is explained or set aside.') + '</li>';
+    return;
+  }
+  const fl = showFailed() ? failedQs() : [];
+  const list = (ltags.size === 1 && ltags.has('failed')) ? [] : DRAFTS.filter(inTab).filter(r => tagOk(r) && (!lq || (Q(r) + ' ' + answerOf(r)).toLowerCase().includes(lq)));
+  if (fsel && !fl.some(q => q.id === fsel)) fsel = null;
+  if (!list.length && !fsel && fl.length) fsel = fl[0].id;
+  const fhtml = fl.map(q => { const n = (q.docs || []).length;
+    return '<li class="item has-av is-failed' + (q.id === fsel ? ' is-sel' : '') + '" data-fq="' + q.id + '">' + rowAv('failed') + '<b>' + esc(q.q) + '</b><span class="meta"><span class="badge badge--q">Question</span>' + (q.gap ? '<span class="badge badge--fromgap">From gap</span>' : '') +
+      '</span><span class="fstate">' + ((ST.draftFailed || {})[q.id] === 'retrying' ? 'Drafting again…' : 'Draft failed') + '<small>' + srcBadge(n) + '</small></span></li>'; }).join('');
   if (!list.some(r => r.id === sel)) { sel = list.length ? list[0].id : null; mode = 'view'; }
-  const pickable = tab === 'pending';
-  [...picked].forEach(id => { if (!list.some(r => r.id === id && decision(r).status === 'pending')) picked.delete(id); });
-  $('items').innerHTML = list.length ? list.map(r => '<li class="item' + (r.id === sel ? ' is-sel' : '') + (picked.has(r.id) ? ' is-picked' : '') + '" data-id="' + r.id + '">' +
-    (pickable ? '<input type="checkbox" class="pick" data-pick="' + r.id + '" aria-label="Select: ' + esc(Q(r)) + '"' + (picked.has(r.id) ? ' checked' : '') + (decision(r).status !== 'pending' || (ST.others && ST.others[r.id]) ? ' disabled' : '') + '>' : '<span></span>') +
-    '<b>' + esc(Q(r)) + '</b><span class="meta">' + (badges(r) || '<span class="badge badge--muted">1 source</span>') + '</span></li>').join('')
+  const rows = list.map(r => '<li class="item has-av has-side' + '' + (r.id === sel && !fsel ? ' is-sel' : '') + (hasHl(r) ? ' is-hl' : '') + '" data-id="' + r.id + '">' + rowAv(isGap(r) ? 'gap' : 'question') + '' +
+    '<b>' + esc(Q(r)) + '</b><span class="meta">' + badges(r, true) + '</span><span class="rside">' + '' + srcBadge(r.src.length) + '</span></li>');
+  rows.splice(Math.min(3, rows.length), 0, fhtml); // failed questions sit among the others, fourth in the list
+  $('items').innerHTML = (list.length || fl.length) ? rows.join('')
+    : (lq || ltags.size) ? '<li class="empty"><b>Nothing matches.</b>Try other words or another tag.</li>'
     : '<li class="empty"><b>' + (tab === 'pending' ? 'Nothing to review.' : 'Nothing here yet.') + '</b>' + (tab === 'pending' ? 'The first batch is done.' : '') + '</li>';
-  renderBulk(list.filter(r => decision(r).status === 'pending'));
 }
-function renderBulk(open) {
-  const on = tab === 'pending' && open.length > 0, n = picked.size;
-  $('bulk').hidden = !on;
-  if (!on) { $('bulkRej').hidden = true; return; }
-  $('bulk').classList.toggle('is-on', n > 0);
-  $('pickAll').checked = n > 0 && n === open.length;
-  $('pickAll').indeterminate = n > 0 && n < open.length;
-  $('pickTxt').textContent = n ? n + ' selected' : 'Select all (' + open.length + ')';
-  $('bulkApprove').disabled = $('bulkReject').disabled = !n;
-  $('bulkApprove').textContent = n ? 'Approve ' + n : 'Approve';
-  $('bulkReject').textContent = n ? 'Reject ' + n : 'Reject';
-  if (!n) $('bulkRej').hidden = true;
+function renderGap() {
+  const g = GAPS.find(x => x.id === gsel);
+  if (!g) { $('detail').innerHTML = '<div class="empty"><b>No open gaps.</b>Everything your documents mention is explained, or set aside.</div>'; return; }
+  const ds = gapDrafts(g);
+  $('detail').innerHTML = '<div class="meta" style="display:flex;gap:6px"><span class="badge badge--gap">' + (g.id === HL_GAP ? 'From Insights' : 'Gap') + '</span></div><h2>' + esc(g.term) + '</h2>' +
+    '<p class="gwhy">' + esc(g.why) + '</p>' +
+    ((ST.gapDocs || {})[g.id] ? '<div class="gsent"><span class="spin"></span><span><b>' + esc(ST.gapDocs[g.id]) + '</b> is being read. The gap closes once it’s explained.</span></div>' : '') +
+    '<p class="seclbl">Where it’s mentioned</p><div class="quotes">' + g.where.map(([doc, loc, text]) => '<div class="quote is-gap"><div class="qtop"><b>' + esc(docShort(doc)) + '</b><em>' + esc(loc) + '</em></div><p>“' + esc(text) + '”</p></div>').join('') + '</div>' +
+    (ds.length ? '<p class="seclbl">Drafts that rely on it</p><div class="gdrafts">' + ds.map(r => '<button type="button" class="gdraft" data-open="' + r.id + '">' + esc(Q(r)) + ' <span>Open →</span></button>').join('') + '</div>' : '') +
+    '<div class="acts"><button class="btn btn--primary" type="button" data-senddoc="' + g.id + '">Send a document that explains it</button><button class="btn btn--secondary" type="button" data-gapq="' + g.id + '">Add as a question</button><button class="btn btn--ghost" type="button" data-gap="' + g.id + '">Not needed</button></div>';
+}
+function renderFailed() {
+  const q = allQuestions().find(x => x.id === fsel), why = (ST.draftFailed || {})[q.id], again = why === 'retrying';
+  $('detail').innerHTML = '<div class="meta" style="display:flex;gap:6px"><span class="badge badge--q">Question</span></div><h2>' + esc(q.q) + '</h2>' +
+    (again ? '<div class="answer" style="display:flex;gap:10px;align-items:center;color:var(--muted)"><span class="spin"></span>lojo is drafting it again from its sources.</div>'
+      : '<div class="fnote2"><b>No draft with sources that check out could be written.</b>' + (why && why !== true ? '<span>' + esc(why) + '</span>' : '') + '</div>') +
+    ((q.docs || []).length ? '<p class="seclbl">Sources it tried</p><div class="quotes" style="display:flex;flex-wrap:wrap;gap:6px">' + q.docs.map(d => srcChip(d, '')).join('') + '</div>' : '') +
+    (fwrite ? '<p class="seclbl">Your answer</p><textarea class="text" id="fBox" style="min-height:130px;padding:12px 13px" placeholder="Write the answer as you would give it."></textarea>' : '') +
+    (again ? '' : '<div class="acts">' + (fwrite ? '<button class="btn btn--primary" data-fa="save">Save &amp; approve</button><button class="btn btn--ghost" data-fa="cancel">Cancel</button>'
+      : '<button class="btn btn--primary" data-fa="retry">Try again</button><button class="btn btn--secondary" data-fa="write">Write my own answer</button><button class="btn btn--ghost" data-fa="leave">Leave out</button>') + '</div>');
+  if (fwrite) $('fBox').focus();
+}
+// a call as one readable log: who, when, how long; only the turns lojo used, with a little context
+const CALLS = {
+  'd5|ZIWO call, 25 Sep': { dir: 'in', title: 'ZIWO call', meta: 'Oslo · Emmanuel · 25 Sep 2026, 04:59 · 7 min', who: { a: 'Emmanuel (Oslo)', c: 'Caller' }, lines: [
+    ['00:02', 'c', 'I mean, I have no idea what everything is, so…'],
+    ['00:09', 'a', 'So that means, yeah, the first claim they will remove only $500 and not $1,000. So you are saving $500.'],
+    ['00:21', 'a', 'And that’s annually, so every time I renew it, it resets.'],
+    ['00:34', 'a', 'But you can choose, and you can change everything at the renewal time. Upgrade, downgrade, change your co-payment, change the deductible.'],
+    ['00:52', 'c', 'And also, is it covered in Abu Dhabi as well?'],
+    ['00:57', 'a', 'You can go to any vet clinic in the UAE.', 1],
+    ['01:01', 'a', 'You can go to Al Ain, Abu Dhabi, Dubai, wherever you want.', 1],
+    ['01:06', 'c', 'Okay, perfect. And when I, say, for example, make a report, I just have to get the vet to fill in a form or a letter?'],
+    ['01:18', 'a', 'No, no. It’s much easier than that.'],
+    ['01:22', 'a', 'You go to any vet in the UAE, you pay the bill, and after that you will have access to your Oslo paid cloud in the login.', 1],
+    ['01:31', 'a', 'So you will enter your paid cloud, you upload the bill, and this is exactly what you have to do, nothing else.', 1],
+    ['01:40', 'a', 'You don’t have to fill in any paper or put any licence or medical report.', 1],
+    ['01:46', 'a', 'We do everything for you. You just have to upload the bill.', 1],
+    ['01:51', 'c', 'Okay. Because every time I ask, obviously, Abu Dhabi, I’m not in Dubai, they ask, do they accept pet insurance?'],
+    ['02:03', 'a', 'Everyone says no, because we don’t have an agreement with them. We do only reimbursement.'],
+    ['02:12', 'a', 'But the bill that you have paid, so it can be any bill in the UAE.'],
+  ] },
+  'd5|ZIWO call, 19 Aug': { dir: 'in', title: 'ZIWO call', meta: 'Oslo · Emmanuel · 19 Aug 2026, 13:27 · 13 min', who: { a: 'Emmanuel (Oslo)', c: 'Caller' }, lines: [
+    ['00:03', 'c', 'And I want to know, like, me, please.'],
+    ['04:10', 'a', 'There’s a payment link, so you pay with your debit card, credit card, on the website.'],
+    ['04:22', 'c', 'And what do I have to put about that? Do I have…'],
+    ['09:41', 'c', 'All clinics, all clinics on your way?'],
+    ['09:45', 'a', 'You can go to Sharjah, you can go to Abu Dhabi, you can go to Al Ain, you can go to Dubai. You can go everywhere.', 1],
+    ['09:53', 'c', 'Yes, but is it written on the website or no?'],
+    ['09:58', 'a', 'It’s in the policy summary and the policy wording, under coverage.'],
+    ['12:40', 'c', 'Okay, thank you. Have a great evening.'],
+  ] },
+  'd5|Brightline call, 12 Aug': { dir: 'out', title: 'Brightline call', meta: 'Maria Eide with Brightline · 12 Aug, 14:05 · 7 min', who: { a: 'Maria (Oslo)', c: 'Brightline' }, lines: [
+    ['00:04', 'c', 'Hi, thanks for taking the call. We’re looking at rolling lojo out to our support team.'],
+    ['00:11', 'a', 'Great. How many people would use it?'],
+    ['00:15', 'c', 'About forty, all in support. We have an audit in October, so we’d like it live before then.'],
+    ['00:24', 'a', 'That works. Which plan are you on today?'],
+    ['00:28', 'c', 'Growth, the annual one.'],
+    ['00:31', 'c', 'One thing we need is single sign-on. Our security team won’t approve it without SSO.'],
+    ['00:38', 'a', 'Your Growth plan covers SSO, yes. You can turn it on in Settings, Security.', 1],
+    ['00:45', 'c', 'Oh good, I thought it was Enterprise only.'],
+    ['00:49', 'a', 'Not any more. SAML single sign-on is on Growth and Scale since the 2026 pricing.', 1],
+    ['00:57', 'c', 'Perfect. Can you send us the setup guide?'],
+    ['01:02', 'a', 'I’ll send the Okta guide after this call.'],
+    ['01:06', 'c', 'And refunds, if it doesn’t work out?'],
+    ['01:10', 'a', 'Thirty days for a full refund. After that it’s prorated.'],
+    ['01:16', 'c', 'Okay. That covers it, thanks.'],
+  ] },
+};
+function callLog(k) {
+  const c = CALLS[k], open = openFull.has(k), L = c.lines;
+  // marked lines plus one line either side; gaps between excerpts show as a divider
+  const keep = new Set(); L.forEach((l, i) => { if (l[3]) [i - 1, i, i + 1].forEach(j => { if (j >= 0 && j < L.length) keep.add(j); }); });
+  const row = (l) => '<div class="cl-row' + (l[3] ? ' is-used' : '') + '"><span class="cl-t">' + l[0] + '</span><span class="cl-who cl-who--' + l[1] + '">' + esc(c.who[l[1]]) + '</span><span class="cl-x">' + esc(l[2]) + '</span></div>';
+  let body = '', last = -1;
+  if (open) body = L.map(row).join('');
+  else [...keep].sort((a, b) => a - b).forEach(i => { if (last >= 0 && i > last + 1) body += '<div class="cl-gap">· · ·</div>'; body += row(L[i]); last = i; });
+  const used = L.filter(l => l[3]).length;
+  const out = c.dir === 'out';
+  const ic = '<span class="cl-dir cl-dir--' + (out ? 'out' : 'in') + '" title="' + (out ? 'Outbound call' : 'Inbound call') + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 6 6L15 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>' +
+    (out ? '<path d="M15 3h6v6M21 3l-7 7"/>' : '<path d="M21 3l-7 7M14 4v6h6"/>') + '</svg></span>';
+  return '<div class="quote callq"><div class="qtop">' + ic + '<b>' + esc(c.title) + '</b><span class="badge ' + (out ? 'badge--out' : 'badge--in') + '">' + (out ? 'Outbound' : 'Inbound') + '</span><span class="cl-used">' + used + ' line' + (used === 1 ? '' : 's') + ' used</span></div>' +
+    '<p class="cl-meta">' + esc(c.meta) + '</p><div class="cl-log' + (open ? ' is-open' : '') + '">' + body + '</div>' +
+    '<button class="more" type="button" data-full="' + esc(k) + '" aria-expanded="' + open + '">' + (open ? 'Show only what was used' : 'Show full call (' + L.length + ' turns)') + '</button></div>';
 }
 function renderDetail() {
+  if (onlyGaps()) return renderGap();
+  if (fsel) return renderFailed();
   const r = DRAFTS.find(x => x.id === sel);
   if (!r) { $('detail').innerHTML = '<div class="empty"><b>Nothing to review. The loop is running.</b>Approved answers are in the store; try them in Ask lojot.</div>'; return; }
   const d = decision(r), ans = answerOf(r);
   let h = '<div class="meta" style="display:flex;gap:6px;flex-wrap:wrap">' + badges(r) + '</div><h2>' + esc(Q(r)) + '</h2>';
-  const other = ST.others && ST.others[r.id];
+  const other = ST.others && ST.others[r.id], gs = gapsOf(r);
+  // the answer relies on something the documents never explain: check it before approving
+  if (gs.length && d.status !== 'approved') h += '<div class="gapnote">' + gs.map(g => '<div class="g' + (g.id === HL_GAP ? ' is-hl' : '') + '"><span class="badge badge--gap">' + (g.id === HL_GAP ? 'From Insights' : 'Knowledge gap') + '</span><div><b>' + esc(g.term) + '</b>' + esc(g.why) + ' Check this answer doesn’t rely on it.' +
+    '<div class="gacts"><button class="btn btn--secondary" type="button" data-senddoc="' + g.id + '">Send a document that explains it</button><button class="btn btn--secondary" type="button" data-gapq="' + g.id + '">Add as a question</button><button class="btn btn--ghost" type="button" data-gap="' + g.id + '">Not needed</button></div></div></div>').join('') + '</div>';
   // G10: someone else decided this draft while it was open here
   if (other && d.status === 'pending') h += '<div class="other"><span class="av">' + esc(other.by.split(' ').map(x => x[0]).join('')) + '</span><div><b>' + esc(other.by) + ' ' + esc(other.action) + ' this ' + esc(other.when) + '.</b>' +
     'Your screen was out of date, so nothing you do here will change it. Their decision stands.<div class="btns"><button class="btn btn--primary btn--sm" data-a="ackOther">Got it, next draft</button><button class="btn btn--ghost btn--sm" data-a="seeOther">See their version</button></div></div></div>';
   if (d.status === 'approved') h += '<div class="done-note ok">✓ Approved' + (d.by ? ' by ' + esc(d.by) : '') + (d.at ? ' · ' + esc(d.at) : '') + '. It’s in the store and Ask lojo can use it.</div>';
-  if (d.status === 'final') h += '<div class="done-note no">Rejected three times (' + esc(d.reason) + '). Nothing lojo wrote was right, so write the answer yourself, or leave it out.</div>';
+  if (d.status === 'final') h += '<div class="done-note no">' + (d.own ? 'You’re writing this one yourself. Save to approve it, or leave it out.' : 'Sent to a person (' + esc(d.reason) + '). Write the answer yourself, or leave it out.') + '</div>';
   if (d.status === 'redrafting') {
     h += '<div class="answer" style="display:flex;gap:10px;align-items:center;color:var(--muted)"><span class="spin"></span>Writing it again with your reason: “' + esc(d.reason) + '”</div>';
   } else if (mode === 'edit') {
@@ -1929,32 +2093,35 @@ function renderDetail() {
       (refs.length ? '<div class="arefs">' + refs.map((x, i) => '<span class="aref">' + (x.kind === 'link' ? AIC.link : AIC.doc) + esc(x.name) + '<button type="button" data-rm="' + i + '" aria-label="Remove">×</button></span>').join('') + '</div>' : '') +
       '<div style="height:22px"></div>';
   } else {
-    h += '<p class="seclbl">' + (d.redrafted === 2 ? 'Third draft' : d.redrafted ? 'Rewritten draft' : 'Draft answer') + '</p><div class="answer">' + md(ans) + '</div>';
+    h += '<p class="seclbl">' + (d.redrafted ? 'Rewritten draft' : 'Draft answer') + '</p><div class="answer">' + md(ans) + '</div>';
   }
   // G14: a draft rewritten more than once keeps its history
   if (d.history && d.history.length) h += '<details class="hist"><summary>Earlier drafts (' + d.history.length + ')</summary><ol>' + d.history.map(x => '<li>' + esc(x.text) + '<span>Rejected · ' + esc(x.reason) + '</span></li>').join('') + '</ol></details>';
   else if (d.redrafted && d.prev) h += '<p class="prev"><b>First draft, rejected</b> (' + esc(d.reason) + '): ' + esc(d.prev) + '</p>';
   if (d.refs && d.refs.length && mode !== 'edit') h += '<p class="seclbl">Sources you added</p><div class="arefs" style="margin-bottom:22px">' + d.refs.map(x => '<span class="aref">' + (x.kind === 'link' ? AIC.link : AIC.doc) + esc(x.name) + '</span>').join('') + '</div>';
-  h += '<p class="seclbl">Where it came from</p><div class="quotes">' + r.src.map(([doc, loc, text]) => {
-    const warn = r.conflict === doc;
+  // several quotes from the same call show as one log
+  const calls = {}; r.src.forEach(([doc, loc]) => { const k = doc + '|' + loc; if (CALLS[k]) calls[k] = 1; });
+  h += '<p class="seclbl">Where it came from</p><div class="quotes">' + Object.keys(calls).map(k => callLog(k)).join('') + r.src.filter(([doc, loc]) => !CALLS[doc + '|' + loc]).map(([doc, loc, text]) => {
+    const warn = r.conflict === doc, gw = !warn && gapIn(text, gs), hl = gw && gw.id === HL_GAP;
     const key = doc + '|' + loc, ctx = CONTEXT[key] || ['', ''], openQ = openFull.has(key);
     // G9: the whole passage, with the quoted words highlighted
-    return '<div class="quote' + (warn ? ' is-warn' : '') + '"><div class="qtop"><b>' + esc(docShort(doc)) + '</b><em>' + esc(loc) + '</em>' + (warn ? '<span class="badge badge--amber">Conflicts</span>' : '') + '</div><p>“' + esc(text) + '”</p>' +
+    const said = gw ? esc(text).replace(new RegExp(GAP_WORDS[gw.id].source, 'i'), m => '<mark class="gapw">' + m + '</mark>') : esc(text);
+    return '<div class="quote' + (warn ? ' is-warn' : gw ? ' is-gap' : '') + (hl ? ' is-hl' : '') + '"><div class="qtop"><b>' + esc(docShort(doc)) + '</b><em>' + esc(loc) + '</em>' + (warn ? '<span class="badge badge--amber">Conflicts</span>' : gw ? '<span class="badge badge--gap">Gap</span>' : '') + '</div><p>“' + said + '”</p>' +
       (openQ ? '<div class="full">' + esc(ctx[0]) + '<mark>' + esc(text) + '</mark>' + esc(ctx[1]) + '</div>' : '') +
       '<button class="more" type="button" data-full="' + esc(key) + '" aria-expanded="' + openQ + '">' + (openQ ? 'Hide full passage' : 'Show full passage') + '</button></div>';
   }).join('') + '</div>';
   if (mode === 'reject') {
     h += '<div class="reject"><label class="seclbl" for="why" style="margin:0">Reason</label><select class="text" id="why">' + REASONS.map(x => '<option>' + x + '</option>').join('') + '</select>' +
       '<textarea class="text" id="note" placeholder="What should change? (optional)" style="min-height:70px"></textarea>' +
-      '<p class="sub">' + (d.redrafted === 2 ? 'This draft has been rewritten twice. Rejecting it again leaves it for a human answer.' : d.redrafted ? 'This draft was already rewritten once. Rejecting it again leaves it for a human answer.' : 'The agent writes it again once, using your reason.') + '</p></div>';
+      '<p class="sub">Rewrite: lojo writes it again using your reason. Send to Human: it waits in Human for a person to answer.</p></div>';
   }
   let acts = '';
   if (d.status === 'redrafting') acts = '';
   else if (mode === 'edit' && d.status === 'final') acts = '<button class="btn btn--primary" data-a="save">Save &amp; approve</button><button class="btn btn--ghost" data-a="leave">Leave out</button><span class="spacer"></span><span class="sub">Your answer is approved as soon as you save it.</span>';
   else if (mode === 'edit') acts = '<button class="btn btn--primary" data-a="save">' + (d.status === 'approved' ? 'Save changes' : 'Save &amp; approve') + '</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
-  else if (mode === 'reject') acts = '<button class="btn btn--danger" data-a="confirm">' + (d.redrafted === 2 ? 'Reject' : 'Reject &amp; rewrite') + '</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
+  else if (mode === 'reject') acts = '<button class="btn btn--danger" data-a="confirm">Reject &amp; rewrite</button><button class="btn btn--secondary" data-a="tohuman">Send to Human</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
   else if (d.status === 'pending' && ST.others && ST.others[r.id]) acts = '';
-  else if (d.status === 'pending') acts = '<button class="btn btn--primary" data-a="approve">Approve <kbd>A</kbd></button><button class="btn btn--secondary" data-a="edit">Edit &amp; approve <kbd>E</kbd></button><button class="btn btn--danger" data-a="reject">Reject <kbd>R</kbd></button><span class="spacer"></span><span class="sub"><kbd>J</kbd> <kbd>K</kbd> to move</span>';
+  else if (d.status === 'pending') acts = '<button class="btn btn--primary" data-a="approve">Approve <kbd>A</kbd></button><button class="btn btn--secondary" data-a="edit">Edit &amp; approve <kbd>E</kbd></button><button class="btn btn--danger" data-a="reject">Reject <kbd>R</kbd></button><button class="btn btn--ghost" data-a="own">Write my own answer</button><span class="spacer"></span><span class="sub"><kbd>J</kbd> <kbd>K</kbd> to move</span>';
   else if (d.status === 'final') acts = '<button class="btn btn--primary" data-a="edit">Write the answer</button><button class="btn btn--ghost" data-a="undo">Back to review</button>';
   else acts = '<button class="btn btn--primary" data-a="edit">Edit answer</button><button class="btn btn--ghost" data-a="undo">Undo approval</button><span class="spacer"></span><span class="sub">Edits go live in Ask lojo as soon as you save.</span>';
   if (acts) h += '<div class="acts">' + acts + '</div>';
@@ -1988,6 +2155,10 @@ function next() {
   const after = DRAFTS.slice(i + 1).find(inTab) || list[0];
   sel = after.id;
 }
+// the agent's rewrite, faked with a short wait
+function finishRewrite(id) {
+  setTimeout(() => { const x = ST.decisions[id]; if (!x || x.status !== 'redrafting') return; x.status = 'pending'; x.redrafted = (x.redrafted || 0) + 1; save(); if (sel === id || tab === 'pending') render(); toast('Rewritten once. Have another look.'); }, 1500);
+}
 function act(a) {
   const r = DRAFTS.find(x => x.id === sel); if (!r) return;
   const d = ST.decisions[r.id] = ST.decisions[r.id] || { status: 'pending' };
@@ -1998,6 +2169,13 @@ function act(a) {
     if (a === 'ackOther') { next(); } else { tab = 'approved'; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === 'approved')); sel = r.id; }
   }
   if (a === 'edit') { mode = 'edit'; refs = (d.refs || []).slice(); linking = false; }
+  // a person answers it from scratch instead of fixing the draft
+  if (a === 'own') {
+    // the draft moves to Human, opened for you to write
+    d.status = 'final'; d.own = true; d.reason = 'You chose to write it'; mode = 'edit'; refs = []; linking = false; typed = ''; save();
+    tab = 'final'; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === 'final'));
+    toast('Moved to Human. Write your answer.');
+  }
   if (a === 'link') { linking = true; keepText(); renderDetail(); $('linkIn').focus(); return; }
   if (a === 'nolink') { linking = false; keepText(); renderDetail(); return; }
   if (a === 'addlink') { const v = $('linkIn').value.trim(); if (!/^https?:\/\/\S+\.\S+/.test(v)) { $('linkIn').focus(); toast('Paste a full link'); return; } refs.push({ kind: 'link', name: v.replace(/^https?:\/\//, '') }); linking = false; keepText(); renderDetail(); return; }
@@ -2009,66 +2187,59 @@ function act(a) {
   if (a === 'save') {
     const v = $('editBox').value.trim(); if (!v) return;
     d.edited = v !== answerOf(r) || d.edited; d.answer = v; d.status = 'approved'; d.at = today; d.refs = refs.slice(); mode = 'view';
-    toast('Edited and approved'); save(); next();
+    toast(d.own ? 'Your answer is approved' : 'Edited and approved'); save(); next();
   }
   if (a === 'confirm') {
     const reason = $('why').value + ($('note').value.trim() ? ': ' + $('note').value.trim() : '');
     mode = 'view';
-    if (d.redrafted === 2) { d.status = 'final'; d.reason = reason; toast('Left for a human answer'); save(); next(); }
-    else {
-      d.status = 'redrafting'; d.reason = reason; d.prev = answerOf(r); d.history = (d.history || []).concat([{ text: answerOf(r), reason }]); save();
-      const id = r.id;
-      setTimeout(() => { const x = ST.decisions[id]; x.status = 'pending'; x.redrafted = (x.redrafted || 0) + 1; save(); if (sel === id || tab === 'pending') render(); toast('Rewritten once. Have another look.'); }, 1500);
-    }
+    d.status = 'redrafting'; d.reason = reason; d.prev = answerOf(r); d.history = (d.history || []).concat([{ text: answerOf(r), reason }]); save();
+    finishRewrite(r.id);
+  }
+  // the reviewer decides a person should answer it
+  if (a === 'tohuman') {
+    const reason = $('why').value + ($('note').value.trim() ? ': ' + $('note').value.trim() : '');
+    mode = 'view'; d.status = 'final'; d.reason = reason; toast('Sent to Human'); save(); next();
   }
   render();
 }
 $('detail').addEventListener('click', (e) => {
   const rm = e.target.closest('[data-rm]'); if (rm) { keepText(); refs.splice(+rm.dataset.rm, 1); renderDetail(); return; }
   const f = e.target.closest('[data-full]'); if (f) { const k = f.dataset.full; openFull.has(k) ? openFull.delete(k) : openFull.add(k); renderDetail(); return; }
+  const fa = e.target.closest('[data-fa]');
+  if (fa) {
+    const id = fsel, act2 = fa.dataset.fa; ST.draftFailed = ST.draftFailed || {};
+    if (act2 === 'write') { fwrite = true; renderDetail(); }
+    if (act2 === 'cancel') { fwrite = false; renderDetail(); }
+    if (act2 === 'save') { const v = $('fBox').value.trim(); if (!v) { $('fBox').focus(); return; } delete ST.draftFailed[id]; fwrite = false; fsel = null; save(); toast('Your answer is approved'); render(); }
+    if (act2 === 'leave') { delete ST.draftFailed[id]; ST.matters = ST.matters || {}; ST.matters[id] = false; fsel = null; save(); toast('Left out'); render(); }
+    if (act2 === 'retry') {
+      ST.draftFailed[id] = 'retrying'; save(); render();
+      setTimeout(() => { delete ST.draftFailed[id]; if (fsel === id) fsel = null; save(); render(); toast('Drafted. It joins the next batch to review.'); }, 1600);
+    }
+    return;
+  }
+  const sd = e.target.closest('[data-senddoc]'); if (sd) { location.href = 'sources.html?src=upload&gap=' + sd.dataset.senddoc; return; }
+  const od = e.target.closest('[data-open]'); if (od) { ltags.clear(); sel = od.dataset.open; const s0 = decision(DRAFTS.find(x => x.id === sel)).status; tab = s0 === 'final' ? 'final' : 'pending'; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === tab)); mode = 'view'; render(); return; }
+  const gb = e.target.closest('[data-gap]'); if (gb) { ST.gaps[gb.dataset.gap] = true; save(); toast('Marked not needed'); render(); return; }
+  // turn the gap into a question someone answers
+  const gq = e.target.closest('[data-gapq]'); if (gq) { const g = GAPS.find(x => x.id === gq.dataset.gapq); ST.extra.push({ id: 'qx' + Date.now(), q: 'What is ' + g.term.replace(/^The /, 'the ') + '?', origin: 'you', docs: [], gap: g.id }); ST.gaps[g.id] = true; save(); toast('Added as a question in Insights'); render(); return; }
   const b = e.target.closest('[data-a]'); if (b) act(b.dataset.a);
 });
 $('items').addEventListener('click', (e) => {
-  const cb = e.target.closest('[data-pick]');
-  if (cb) { cb.checked ? picked.add(cb.dataset.pick) : picked.delete(cb.dataset.pick); renderList(); return; }
-  const li = e.target.closest('[data-id]'); if (li) { sel = li.dataset.id; mode = 'view'; render(); }
-});
-$('pickAll').addEventListener('change', () => {
-  const open = DRAFTS.filter(r => inTab(r) && decision(r).status === 'pending' && !(ST.others && ST.others[r.id]));
-  if ($('pickAll').checked) open.forEach(r => picked.add(r.id)); else picked.clear();
-  renderList();
+  const gi = e.target.closest('[data-gapid]'); if (gi) { gsel = gi.dataset.gapid; render(); return; }
+  const fq = e.target.closest('[data-fq]'); if (fq) { fsel = fq.dataset.fq; fwrite = false; render(); return; }
+  const li = e.target.closest('[data-id]'); if (li) { fsel = null; sel = li.dataset.id; mode = 'view'; render(); }
 });
 const todayStr = () => new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }).replace(',', '');
-$('bulkApprove').addEventListener('click', () => {
-  const n = picked.size, at = todayStr();
-  picked.forEach(id => { const d = ST.decisions[id] = ST.decisions[id] || { status: 'pending' }; d.status = 'approved'; d.at = at; });
-  picked.clear(); $('bulkRej').hidden = true; save(); sel = null; render();
-  toast(n + ' draft' + (n === 1 ? '' : 's') + ' approved');
-});
-$('bulkReject').addEventListener('click', () => {
-  const ids = [...picked], again = ids.filter(id => (ST.decisions[id] || {}).redrafted === 2).length;
-  $('bulkWhy').innerHTML = REASONS.map(x => '<option>' + x + '</option>').join('');
-  $('bulkRejTxt').textContent = 'One reason for all ' + ids.length + '. Each is written again once' + (again ? '; ' + again + ' already rewritten will be left for a human answer.' : '.');
-  $('bulkRej').hidden = false; $('bulkWhy').focus();
-});
-$('bulkRejCancel').addEventListener('click', () => { $('bulkRej').hidden = true; });
-$('bulkRejGo').addEventListener('click', () => {
-  const reason = $('bulkWhy').value + ($('bulkNote').value.trim() ? ': ' + $('bulkNote').value.trim() : '');
-  const ids = [...picked]; let rewrite = 0, human = 0;
-  ids.forEach(id => {
-    const r = DRAFTS.find(x => x.id === id), d = ST.decisions[id] = ST.decisions[id] || { status: 'pending' };
-    if (d.redrafted === 2) { d.status = 'final'; d.reason = reason; human++; return; }
-    d.status = 'redrafting'; d.reason = reason; d.prev = answerOf(r); rewrite++;
-  });
-  picked.clear(); $('bulkRej').hidden = true; $('bulkNote').value = ''; save(); render();
-  toast(rewrite + ' sent back to be rewritten' + (human ? ' · ' + human + ' left for a human' : ''));
-  if (rewrite) setTimeout(() => {
-    ids.forEach(id => { const x = ST.decisions[id]; if (x && x.status === 'redrafting') { x.status = 'pending'; x.redrafted = (x.redrafted || 0) + 1; } });
-    save(); render(); toast('Rewritten once. Have another look.');
-  }, 1600);
-});
+$('lq').addEventListener('input', (e) => { lq = e.target.value.trim().toLowerCase(); sel = null; render(); });
+const refilter = () => { sel = null; fsel = null; fwrite = false; render(); };
+$('lfBtn').addEventListener('click', (e) => { e.stopPropagation(); const m = $('ltags'); m.hidden = !m.hidden; $('lfBtn').setAttribute('aria-expanded', !m.hidden); });
+$('ltags').addEventListener('change', (e) => { const c = e.target.closest('[data-tag]'); if (!c) return; c.checked ? ltags.add(c.dataset.tag) : ltags.delete(c.dataset.tag); refilter(); });
+$('ltags').addEventListener('click', (e) => { e.stopPropagation(); if (e.target.closest('[data-reset]')) { ltags.clear(); refilter(); } });
+$('lfActive').addEventListener('click', (e) => { const u = e.target.closest('[data-untag]'); if (u) { ltags.delete(u.dataset.untag); refilter(); } if (e.target.closest('[data-reset]')) { ltags.clear(); refilter(); } });
+document.addEventListener('click', (e) => { if (!e.target.closest('.lfdrop')) { $('ltags').hidden = true; $('lfBtn').setAttribute('aria-expanded', 'false'); } });
 document.querySelectorAll('#rtabs .tab').forEach(t => t.addEventListener('click', () => {
-  tab = t.dataset.f; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x === t)); sel = null; mode = 'view'; picked.clear(); render();
+  tab = t.dataset.f; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x === t)); sel = null; fsel = null; mode = 'view'; ltags.clear(); render();
 }));
 document.addEventListener('keydown', (e) => {
   if (e.target.closest('input,textarea,select') || e.metaKey || e.ctrlKey) return;
@@ -2095,7 +2266,14 @@ const RP = new URLSearchParams(location.search);
   el.querySelector('button').addEventListener('click', () => { el.hidden = true; });
 })();
 if (RP.get('edit')) mode = 'edit';
+// open a tab directly, e.g. from the dashboard
+if (['pending', 'approved', 'final'].includes(RP.get('tab'))) { tab = RP.get('tab'); document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === tab)); }
+// from an Insights gap: open the first pending draft that leans on it
+if (RP.get('gap') && !RP.get('sel')) { const gr = DRAFTS.find(r => decision(r).status === 'pending' && gapsOf(r).some(g => g.id === RP.get('gap'))); if (gr) sel = gr.id; }
 if (RP.get('sel')) { sel = RP.get('sel'); const sr = DRAFTS.find(x => x.id === sel); if (sr) { const s = decision(sr).status; tab = s === 'redrafting' ? 'pending' : (s === 'approved' || s === 'final') ? s : 'pending'; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === tab)); } if (RP.get('full')) { const r = DRAFTS.find(x => x.id === sel); if (r) openFull.add(r.src[0][0] + '|' + r.src[0][1]); } }
+if (HL_GAP) setTimeout(() => { const it = document.querySelector('.item.is-sel.is-hl') || document.querySelector('.item.is-hl'); if (it) it.scrollIntoView({ block: 'nearest' }); const n = document.querySelector('.gapnote .g.is-hl'); if (n) n.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 300);
+// a rewrite cut short by leaving the page finishes when you come back
+Object.keys(ST.decisions).forEach(id => { if (ST.decisions[id].status === 'redrafting') finishRewrite(id); });
 render();
 """)
 
@@ -2103,6 +2281,40 @@ render();
 APPROVED = dict(
   active='approved', title='Distribute',
   css=r"""
+  .srcsel{width:auto;min-width:220px;height:36px;padding:0 34px 0 12px}
+  .bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+
+  .apilead{margin:0 0 18px;color:var(--muted);max-width:70ch}
+  .apih{font-size:1rem;font-weight:700;margin:0 0 2px}
+  .apisub{margin:0 0 10px;color:var(--muted);font-size:.86rem}
+  .apicard{border:1px solid var(--line);border-radius:16px;background:var(--panel);padding:18px 20px;margin-bottom:22px;display:grid;gap:12px}
+  .apicard p{margin:0;color:var(--muted);font-size:.88rem}
+  .apilist{padding:0;gap:0}
+  .apirow{display:flex;align-items:center;gap:14px;padding:14px 20px}
+  .apirow + .apirow{border-top:1px solid var(--line)}
+  .apirow > div{flex:1;min-width:0}
+  .apirow b{display:block;font-size:.92rem}
+  .apirow span{display:block;color:var(--muted);font-size:.8rem}
+  .apiempty{padding:26px 20px;text-align:center;color:var(--muted)}
+  .apiempty b{display:block;color:var(--ink);margin-bottom:4px}
+  .modes{display:flex;gap:8px;flex-wrap:wrap}
+  .modes button{height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line-2);background:var(--panel);font-weight:600;font-size:.84rem;cursor:pointer}
+  .modes button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .modes button:disabled{cursor:default}
+  .addr{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 14px;border-radius:12px;background:var(--bg-soft)}
+  .addr code{flex:1;font-family:ui-monospace,Menlo,monospace;font-size:.86rem;overflow:hidden;text-overflow:ellipsis}
+  .keyrow{display:flex;gap:10px}
+  .keyrow .text{flex:1}
+  .scopes{display:flex;gap:8px;flex-wrap:wrap}
+  .scopes button{height:32px;padding:0 13px;border-radius:999px;border:1px solid var(--line-2);background:var(--panel);font-size:.82rem;font-weight:600;cursor:pointer}
+  .scopes button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .scopes em{font-style:normal;font-weight:500;opacity:.7;margin-left:4px}
+  .newkey{display:grid;gap:8px;padding:12px 14px;border-radius:12px;background:#EFF7F1;border:1px solid rgba(63,143,95,.25)}
+  .newkey b{font-size:.88rem}
+  .kchips{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+  .kchips i{font-style:normal;font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--bg-soft);color:var(--muted)}
+  :root[data-theme="dark"] .newkey{background:rgba(63,143,95,.12)}
+
   .chan{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:26px}
   .ch{display:grid;grid-template-columns:36px 1fr;gap:4px 12px;align-items:center;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--panel);text-decoration:none;color:inherit}
   .ch b{display:block;font-size:.9rem}
@@ -2148,19 +2360,21 @@ APPROVED = dict(
       <div>
         <p class="label">04 Distribute · Publish</p>
         <h1>Distribute</h1>
-        <p>Approved answers go out from here. In this phase they power Ask lojo and an export; publishing to your own pages comes with the full build.</p>
+        <p>Approved answers, and where they go: Ask lojo, export, and AI assistants through API &amp; MCP.</p>
       </div>
       <span class="spacer"></span>
       <button class="btn btn--secondary" id="csv">Export CSV</button>
       <button class="btn btn--primary" id="json">Export JSON</button>
     </div>
-    <section class="chan" aria-label="Where answers go">
-      <a class="ch is-live" href="chat.html"><span class="ch__ic"><svg class="i" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></span><span><b>Ask lojo page</b><span>Reads only approved answers</span></span><em>Live · open →</em></a>
-      <div class="ch is-live"><span class="ch__ic"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg></span><span><b>Ask lojo button</b><span>On every page of this workspace</span></span><em>Live</em></div>
-      <div class="ch is-off"><span class="ch__ic"><svg class="i" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></span><span><b>Help centre</b><span>Publish answers to your own pages</span></span><em>Full build</em></div>
-      <div class="ch is-off"><span class="ch__ic"><svg class="i" viewBox="0 0 24 24"><path d="M5 9h14M5 15h14M10 4 8 20M16 4l-2 16"/></svg></span><span><b>Slack &amp; Teams</b><span>Answer where your team asks</span></span><em>Full build</em></div>
-    </section>
-    <h2 class="sech">Approved answers</h2>
+    <div class="ptabs" id="dTabs" role="tablist" aria-label="Distribute">
+      <button class="ptab" type="button" role="tab" data-dtab="answers" aria-selected="true">Approved answers</button>
+      <button class="ptab" type="button" role="tab" data-dtab="ask" aria-selected="false">Ask lojo</button>
+      <button class="ptab" type="button" role="tab" data-dtab="api" aria-selected="false">API &amp; MCP</button>
+    </div>
+    <div id="tabAsk" hidden>
+      <div class="askhost" id="askHost"></div>
+    </div>
+    <div id="tabAnswers">
     <form class="smart" id="smartForm">
       <svg class="smart__ic" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>
       <input id="filter" placeholder="Search or ask: “find everything about refunds”, “remove answers about SSO”, “edit the API answer”" aria-label="Search or ask" autocomplete="off">
@@ -2168,8 +2382,24 @@ APPROVED = dict(
     </form>
     <div class="smart__tips" id="tips"><span>Try</span><button type="button">find everything about refunds</button><button type="button">edit the API rate limits answer</button><button type="button">remove answers about SSO</button></div>
     <div class="intent" id="intent" hidden></div>
-    <div class="bar"><span class="sub" id="meta"></span></div>
+    <div class="bar"><select class="text srcsel" id="srcSel" aria-label="Filter by source"></select><span class="sub" id="meta"></span></div>
     <div class="alist" id="alist"></div>
+    </div>
+
+    <div id="tabApi" hidden>
+      <p class="apilead">Let AI assistants and your own systems read the approved answers. They read only what a person approved, like the chat.</p>
+      <h2 class="apih">MCP connector</h2>
+      <p class="apisub">For any AI assistant that supports MCP connectors.</p>
+      <section class="apicard" id="mcpCard"></section>
+      <h2 class="apih">Connected apps</h2>
+      <section class="apicard apilist" id="appsCard"></section>
+      <div id="keysWrap">
+        <h2 class="apih">API keys</h2>
+        <p class="apisub">For your own systems and agents. A key belongs to this workspace and does only what you choose from what your role allows.</p>
+        <section class="apicard" id="keyMake"></section>
+        <section class="apicard apilist" id="keyList"></section>
+      </div>
+    </div>
 """,
   js=r"""
 const approved = () => DRAFTS.filter(r => decision(r).status === 'approved').map(r => ({ r, q: QUESTIONS.find(q => q.id === r.qid).q, a: answerOf(r), d: decision(r) }));
@@ -2190,10 +2420,17 @@ function matches(x, topic) {
   const sc = score(topic, x.q + ' ' + x.a);
   return sc.c > 0 || topic.split(' ').filter(w => w.length > 3).some(w => txt.includes(w.replace(/s$/, '')));
 }
+// filter by the document an answer came from
+let srcF = '';
+function fillSources() {
+  const used = [...new Set(approved().flatMap(x => x.r.src.map(s => s[0])))];
+  $('srcSel').innerHTML = '<option value="">All sources</option>' + used.map(d => '<option value="' + d + '"' + (d === srcF ? ' selected' : '') + '>' + esc(docShort(d)) + '</option>').join('');
+}
 function render() {
-  const all = approved(), list = all.filter(x => matches(x, ask.topic));
+  const all = approved(), list = all.filter(x => matches(x, ask.topic) && (!srcF || x.r.src.some(s => s[0] === srcF)));
   [...picked].forEach(id => { if (!list.some(x => x.r.id === id)) picked.delete(id); });
-  $('meta').textContent = (ask.topic ? list.length + ' of ' : '') + all.length + ' approved answers' + (ask.topic ? ' match “' + ask.topic + '”' : '');
+  const filtered = ask.topic || srcF;
+  $('meta').textContent = (filtered ? list.length + ' of ' : '') + all.length + ' approved answers' + (ask.topic ? ' match “' + ask.topic + '”' : '') + (srcF ? ' from ' + docShort(srcF) : '');
   const act = ask.verb !== 'find' && ask.topic;
   $('intent').hidden = !act; $('intent').classList.toggle('is-del', ask.verb === 'remove');
   if (act) $('intent').innerHTML = (ask.verb === 'remove'
@@ -2220,6 +2457,8 @@ function run(v) {
   render();
   if (ask.verb === 'edit') { const one = approved().filter(x => matches(x, ask.topic)); if (one.length === 1) location.href = 'build.html?sel=' + one[0].r.id + '&edit=1'; }
 }
+$('srcSel').addEventListener('change', (e) => { srcF = e.target.value; render(); });
+fillSources();
 $('smartForm').addEventListener('submit', (e) => { e.preventDefault(); run($('filter').value); });
 $('filter').addEventListener('input', () => { const v = $('filter').value; if (!/^(remove|delete|retire|edit|change|update|fix|rewrite|modify)\b/i.test(v.trim())) run(v); });
 $('tips').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; $('filter').value = b.textContent; run(b.textContent); });
@@ -2243,6 +2482,77 @@ $('csv').addEventListener('click', () => { if (!exportGuard(() => $('csv').click
   download('oslo-approved-answers.csv', csv, 'text/csv'); toast('Exported ' + rows().length + ' answers');
 });
 render();
+
+// ---------- tabs: Approved answers | API & MCP
+function dtab(t) {
+  document.querySelectorAll('[data-dtab]').forEach(b => b.setAttribute('aria-selected', b.dataset.dtab === t));
+  $('tabAnswers').hidden = t !== 'answers'; $('tabAsk').hidden = t !== 'ask'; $('tabApi').hidden = t !== 'api';
+  $('csv').hidden = $('json').hidden = t !== 'answers';
+  history.replaceState(null, '', t === 'answers' ? location.pathname + location.search : '#' + t);
+  if (t === 'api') renderApi();
+}
+$('dTabs').addEventListener('click', (e) => { const b = e.target.closest('[data-dtab]'); if (b) dtab(b.dataset.dtab); });
+
+// ---------- API & MCP: the Owner sets the mode and makes keys; everyone connects their own assistant
+ST.api = ST.api || { mode: 'signin', apps: [
+  { id: 'a1', app: 'claude.ai', pid: 'p1', on: '22 Oct 2026', used: '22 Oct 2026' },
+  { id: 'a2', app: 'claude.ai', pid: 'p2', on: '22 Oct 2026', used: '22 Oct 2026' },
+], keys: [] };
+const APIROLE = window.LOJO_ROLE || 'owner', OWNS = APIROLE === 'owner';
+const ME_ID = ({ owner: 'p1', editor: 'p2', viewer: 'p4' })[APIROLE];
+const SCOPES = [['adddoc', 'Add documents'], ['addq', 'Add questions'], ['ask', 'Ask'], ['read', 'Read approved answers'], ['readq', 'Read questions']];
+let pick = { ask: true, read: true }, fresh = null;
+const MODES = { off: ['Off', 'No AI assistant can connect.'], public: ['Public', 'Anyone with the address can read Oslo’s approved answers, without signing in.'], signin: ['Sign-in', 'People of this workspace sign in with lojo and connect their AI assistant.'] };
+const ADDR = 'https://mcp.poc.lojo.ai';
+const who = (pid) => (ST.people.find(p => p.id === pid) || { name: 'Someone' }).name;
+function renderApi() {
+  const m = ST.api.mode;
+  $('mcpCard').innerHTML = '<div class="modes" role="group" aria-label="MCP connector">' + Object.keys(MODES).map(k => '<button type="button" data-mode="' + k + '" aria-pressed="' + (m === k) + '"' + (OWNS ? '' : ' disabled') + '>' + MODES[k][0] + '</button>').join('') + '</div>' +
+    '<p>' + MODES[m][1] + (OWNS ? '' : ' Only Owners change this.') + '</p>' +
+    (m === 'off' ? '' : '<div class="addr"><code>' + ADDR + '</code><button class="btn btn--secondary btn--sm" type="button" data-copy="' + ADDR + '">Copy</button></div>' +
+      '<p>Add it as a custom connector in your AI assistant, and paste the address.' + (m === 'signin' ? ' You then sign in with lojo and choose this workspace.' : '') + '</p>');
+  const apps = ST.api.apps.filter(a => OWNS || a.pid === ME_ID);
+  $('appsCard').innerHTML = apps.length ? apps.map(a => '<div class="apirow"><div><b>' + esc(a.app) + '</b><span>Connected by ' + esc(who(a.pid)) + ' on ' + esc(a.on) + ' · Last used ' + esc(a.used) + '</span></div><button class="btn btn--secondary btn--sm" type="button" data-revoke-app="' + a.id + '">Revoke</button></div>').join('')
+    : '<div class="apiempty"><b>No connected apps.</b>' + (m === 'off' ? 'Turn the connector on first.' : 'Connect an AI assistant with the address above.') + '</div>';
+  $('keysWrap').hidden = !OWNS;
+  if (!OWNS) return;
+  $('keyMake').innerHTML = '<div class="keyrow"><input class="text" id="keyName" placeholder="Name the key, such as Voicebot" autocomplete="off"><button class="btn btn--primary" type="button" data-make>Make key</button></div>' +
+    '<div class="scopes" role="group" aria-label="What the key can do">' + SCOPES.map(([k, l, warn]) => '<button type="button" data-scope="' + k + '" aria-pressed="' + !!pick[k] + '" title="' + (warn ? 'This key can ' + warn : '') + '">' + l + (warn ? '<em>· ' + warn + '</em>' : '') + '</button>').join('') + '</div>' +
+    '<p>As Owner, you can give a key any of these.</p>' +
+    (fresh ? '<div class="newkey"><b>Copy your key for “' + esc(fresh.name) + '” now. You won’t see it again.</b><div class="addr"><code>' + fresh.secret + '</code><button class="btn btn--secondary btn--sm" type="button" data-copy="' + fresh.secret + '">Copy</button></div></div>' : '');
+  $('keyList').innerHTML = ST.api.keys.length ? ST.api.keys.map(k => '<div class="apirow"><div><b>' + esc(k.name) + '</b><span>Made by ' + esc(who(k.pid)) + ' on ' + esc(k.on) + ' · ' + esc(k.hint) + '</span><div class="kchips">' + k.scopes.map(x => '<i>' + (SCOPES.find(s => s[0] === x) || [, x])[1] + '</i>').join('') + '</div></div><button class="btn btn--secondary btn--sm" type="button" data-revoke-key="' + k.id + '">Revoke</button></div>').join('')
+    : '<div class="apiempty"><b>No keys yet.</b>Make one above to call lojo from your systems.</div>';
+}
+function askConfirm(title, body, go) {
+  return new Promise((res) => {
+    let d = $('apiDlg'); if (!d) { d = document.createElement('dialog'); d.id = 'apiDlg'; d.className = 'dlg'; document.body.appendChild(d); }
+    d.innerHTML = '<div class="dlg__b"><h3>' + title + '</h3><p>' + body + '</p></div><div class="dlg__f"><button class="btn btn--secondary" type="button" data-cf="0">Cancel</button><button class="btn btn--primary" type="button" data-cf="1">' + go + '</button></div>';
+    d.onclick = (e) => { const b = e.target.closest('[data-cf]'); if (b || e.target === d) { d.close(); res(!!(b && b.dataset.cf === '1')); } };
+    d.oncancel = () => res(false); d.showModal();
+  });
+}
+const today = () => new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+$('tabApi').addEventListener('click', async (e) => {
+  const t = e.target;
+  const md = t.closest('[data-mode]'); if (md && OWNS && md.dataset.mode !== ST.api.mode) {
+    if (md.dataset.mode === 'public' && !(await askConfirm('Make Oslo’s answers public?', 'Anyone with the address can read every approved answer, without signing in. You can turn it off any time.', 'Make public'))) return;
+    ST.api.mode = md.dataset.mode; save(); renderApi(); toast('MCP connector: ' + MODES[ST.api.mode][0]); return;
+  }
+  const cp = t.closest('[data-copy]'); if (cp) { try { navigator.clipboard.writeText(cp.dataset.copy); } catch (err) {} toast('Copied'); return; }
+  const ra = t.closest('[data-revoke-app]'); if (ra) { const a = ST.api.apps.find(x => x.id === ra.dataset.revokeApp); if (!(await askConfirm('Revoke ' + esc(a.app) + '?', 'It stops reading Oslo’s answers straight away.', 'Revoke'))) return; ST.api.apps = ST.api.apps.filter(x => x !== a); save(); renderApi(); toast(a.app + ' revoked'); return; }
+  const sc = t.closest('[data-scope]'); if (sc) { pick[sc.dataset.scope] = !pick[sc.dataset.scope]; const n = $('keyName').value; renderApi(); $('keyName').value = n; return; }
+  if (t.closest('[data-make]')) {
+    const name = $('keyName').value.trim(), scopes = SCOPES.map(x => x[0]).filter(k => pick[k]);
+    if (!name) { $('keyName').classList.add('is-bad'); $('keyName').focus(); toastError('Name the key first, so you know what uses it.'); return; }
+    if (!scopes.length) { toastError('Tick at least one thing the key can do.'); return; }
+    const secret = 'lojo_sk_' + Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 10);
+    ST.api.keys.unshift({ id: 'k' + Date.now(), name, scopes, pid: ME_ID, on: today(), hint: 'ends in …' + secret.slice(-4) });
+    fresh = { name, secret }; save(); renderApi(); toast('Key made'); return;
+  }
+  const rk = t.closest('[data-revoke-key]'); if (rk) { const k = ST.api.keys.find(x => x.id === rk.dataset.revokeKey); if (!(await askConfirm('Revoke “' + esc(k.name) + '”?', 'Anything using this key stops working straight away.', 'Revoke'))) return; ST.api.keys = ST.api.keys.filter(x => x !== k); fresh = null; save(); renderApi(); toast('Key revoked'); }
+});
+$('tabApi').addEventListener('input', (e) => { if (e.target.id === 'keyName') e.target.classList.remove('is-bad'); });
+if (location.hash === '#api' || location.hash === '#ask') dtab(location.hash.slice(1));
 """)
 
 
@@ -2354,7 +2664,7 @@ function statsFor(name, c) {
     'Question finder': [[c.questions, 'Questions found'], [4, 'New since yesterday'], [0, 'Failed runs']],
     'Gap finder': [[c.gaps, 'Open gaps'], [1, 'Contradictions'], [0, 'Failed runs']],
     'Drafting agent': [[c.drafts, 'Drafts written'], [c.pending, 'Waiting for review'], [failed, 'Failed drafts', failed]],
-    'Rewrite agent': [[rewritten, 'Drafts rewritten'], [DRAFTS.filter(r => decision(r).redrafted === 2).length, 'Rewritten twice'], [c.final, 'Left for a human']],
+    'Rewrite agent': [[rewritten, 'Drafts rewritten'], [DRAFTS.filter(r => decision(r).redrafted > 1).length, 'Rewritten more than once'], [c.final, 'Left for a human']],
     'Chat agent': [[(ch.asked || 0) + 14, 'Questions asked'], [(ch.answered || 0) + 11, 'Answered'], [(ch.declined || 0) + 3, 'Declined']],
     'Publisher': [[0, 'Published'], [0, 'Channels'], ['—', 'Full build']],
   }[name];
@@ -2716,7 +3026,7 @@ function entries() {
     const state = s === 'approved' ? 'Published' : (s === 'final' || r.conflict) ? 'Needs review' : 'Draft';
     const doc = r.src[0][0];
     out.push({ id: r.id, kind: 'answer', state, title: q.q, body: answerOf(r), src: r.src, space: SPACE(doc), type: TYPE(doc), conn: CONN(doc),
-      topic: (conceptsOf(q.q)[0] || 'contact'), sens: 'Internal', at: s === 'approved' ? DAY[3 + i % 3] : DAY[i % 2], by: d.by || (s === 'approved' ? 'Sara Lindqvist' : '') });
+      topic: (conceptsOf(q.q)[0] || 'contact'), sens: 'Internal', at: s === 'approved' ? DAY[3 + i % 3] : DAY[i % 2], by: d.by || (s === 'approved' ? 'Eric Ouisse' : '') });
   });
   const seen = new Set();
   DRAFTS.concat(GAPS.map(g => ({ src: g.where }))).forEach(r => r.src.forEach(([doc, loc, text], i) => {
@@ -2791,7 +3101,7 @@ function detail(e) {
   }[e.state];
   const hist = e.kind === 'answer' ? [['Drafted by lojo', 'from ' + e.src.length + ' source' + (e.src.length === 1 ? '' : 's'), DAY[0]]]
     .concat(e.state === 'Needs review' ? [['Flagged for review', 'sources disagree', e.at]] : [])
-    .concat(e.state === 'Published' ? [['Approved by ' + (e.by || 'Sara Lindqvist'), 'now live in Ask lojo', e.at]] : [])
+    .concat(e.state === 'Published' ? [['Approved by ' + (e.by || 'Eric Ouisse'), 'now live in Ask lojo', e.at]] : [])
     .concat(e.state === 'Draft' ? [['Waiting for a person', 'in Build', 'now']] : []) : [['Saved from ' + docShort(e.src[0][0]), e.src[0][1], e.at]];
   $('kdet').innerHTML =
     '<div class="kd__top"><div class="chipsrow"><span class="kc sp">' + IC.layers + esc(e.space) + '</span><span class="kc">' + IC.shield + e.sens + '</span><span class="kc">' + esc(TOPICS[e.topic] || e.topic) + '</span></div>' +
@@ -2827,7 +3137,7 @@ render();
 
 
 STATES = dict(
-  active='states', title='Design states',
+  active='states', title='Design use cases',
   css=r"""
   .grp{margin-bottom:26px}
   .grp h2{font-size:.8rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8E2F45;margin:0 0 12px}
@@ -2844,7 +3154,7 @@ STATES = dict(
     <div class="head">
       <div>
         <p class="label">For review</p>
-        <h1>Design states</h1>
+        <h1>Design use cases</h1>
         <p>Every screen and state from DESIGN_GAPS.md, designed into the prototype. Open one to see it in place. G numbers match the file.</p>
       </div>
     </div>
@@ -2856,7 +3166,7 @@ const B = (fn, label) => ({ fn, label });
 const GROUPS = [
   ['Signing in', [
     ['G25', 'Email, then password', 'Two steps. The email shows as a chip with “Change” on the password step.', [L('login.html', 'Open sign in')]],
-    ['G26', 'Forgot your password?', 'Ask for a reset link, then a “Check your email” page with a resend timer.', [L('auth.html?s=forgot', 'Forgot'), L('auth.html?s=sent&email=sara@oslo.com', 'Check your email')]],
+    ['G26', 'Forgot your password?', 'Ask for a reset link, then a “Check your email” page with a resend timer.', [L('auth.html?s=forgot', 'Forgot'), L('auth.html?s=sent&email=eric@oslo.com', 'Check your email')]],
     ['G27', 'Set your password', 'From an invite or a reset email. Live rules: length, a number, both match.', [L('auth.html?s=set&from=invite', 'From invite'), L('auth.html?s=set&from=reset', 'From reset')]],
     ['G24', 'Your details', 'First sign-in with a missing last name (e.g. Microsoft didn’t share it).', [L('auth.html?s=details', 'Open')]],
     ['G28', 'Error, notice, expired', 'Sign-in error with a reference, signed-out notice, expired link.', [L('auth.html?s=error', 'Error'), L('auth.html?s=notice', 'Notice'), L('auth.html?s=expired', 'Expired')]],
@@ -2882,7 +3192,7 @@ const GROUPS = [
   ['Build', [
     ['G9', 'Full source passage', '“Show full passage” with the quoted words highlighted.', [L('build.html?sel=r1&full=1', 'Open')]],
     ['G10', 'Someone else decided it', 'Banner with who and when; your actions are hidden.', [L('build.html?sel=r12', 'Open')]],
-    ['G14', 'Rewritten twice', '“Rewritten twice” badge and the earlier drafts with their reasons.', [L('build.html?sel=r8', 'Open')]],
+    ['G14', 'Rewritten more than once', '“Rewritten 2 times” badge and the earlier drafts with their reasons.', [L('build.html?sel=r8', 'Open')]],
   ]],
   ['Ask lojo', [
     ['G29', 'Small talk', '“Hi” and “Thanks” get a short reply with no sources.', [L('chat.html?say=Hi|Thanks', 'Open')]],
@@ -2893,6 +3203,22 @@ const GROUPS = [
   ]],
   ['Knowledge', [
     ['—', 'Knowledge', 'Every entry with its state, provenance and governance; filter by space, state, source and topic.', [L('knowledge.html', 'Open knowledge')]],
+  ]],
+  ['Emails', [
+    ['E1', 'Company owner invitation', 'From the super admin. The future Owner sets up the company.', [L('emails.html#owner-invite', 'Open')]],
+    ['E2', 'Teammate invitation', 'From an Owner, with each workspace and role.', [L('emails.html#team-invite', 'Open')]],
+    ['E3', 'Confirm your email', 'First sign-in with email.', [L('emails.html#verify', 'Open')]],
+    ['E4', 'Reset password', 'From “Forgot password?” on sign-in.', [L('emails.html#reset', 'Open')]],
+    ['E5', 'Your role changed', 'When an Owner changes someone’s role.', [L('emails.html#role', 'Open')]],
+    ['E6', 'Removed from a workspace', 'When an Owner removes someone.', [L('emails.html#removed', 'Open')]],
+    ['E7', 'Workspace deleted', 'To everyone in a deleted workspace.', [L('emails.html#deleted', 'Open')]],
+    ['E8', 'Drafts waiting', 'A new batch lands in Build. Owners and Editors.', [L('emails.html#drafts', 'Open')]],
+    ['E9', 'Friday review reminder', 'How many of the week’s drafts are done.', [L('emails.html#weekly', 'Open')]],
+    ['E10', 'New gaps found', 'Things the documents mention but never explain.', [L('emails.html#gaps', 'Open')]],
+    ['E11', 'Ask lojo declined a question', 'Nothing approved answers it yet.', [L('emails.html#declined', 'Open')]],
+    ['E12', 'Owner accepted', 'To super admins when a company becomes active.', [L('emails.html#accepted', 'Open')]],
+    ['E13', 'Invitation about to expire', 'To super admins, a day before the link runs out.', [L('emails.html#expiring', 'Open')]],
+    ['E14', 'Weekly platform summary', 'To super admins, counts only.', [L('emails.html#summary', 'Open')]],
   ]],
   ['Everywhere', [
     ['G12', 'Error pages', 'Page not found, no access, something went wrong.', [L('auth.html?s=404', '404'), L('auth.html?s=403', '403'), L('auth.html?s=500', '500')]],
@@ -2908,9 +3234,781 @@ $('groups').innerHTML = GROUPS.map(([g, items]) => '<section class="grp"><h2>' +
 $('groups').addEventListener('click', (e) => { const b = e.target.closest('[data-act]'); if (b) { e.stopPropagation(); acts[+b.dataset.act](); } });
 """)
 
-PAGES = {'states': STATES, 'dashboard': OVERVIEW, 'sources': DOCUMENTS, 'insights': QUESTIONS_PAGE, 'build': REVIEW, 'distribute': APPROVED, 'chat': CHAT, 'knowledge': READOUT, 'activity': ACTIVITY}
+# ============================================================ PEOPLE + COMPANIES
+# shared by the owner's People page and the super admin's Companies page
+ADMIN_CSS = r"""
+  .roster{display:grid;gap:8px}
+  .rrow2{display:grid;align-items:center;gap:6px 18px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--panel);transition:border-color .15s ease,box-shadow .15s ease}
+  .rrow2.is-click{cursor:pointer}
+  .rrow2.is-click:hover{border-color:rgba(36,26,20,.24);box-shadow:0 10px 24px -20px rgba(36,26,20,.5)}
+  .rhead{display:grid;gap:18px;padding:0 16px 8px;font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .who{display:flex;align-items:center;gap:12px;min-width:0}
+  .who .av{width:40px;height:40px;border-radius:12px;flex:none;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:800;font-size:.82rem;background:var(--brand-gradient)}
+  .who .av.c1{background:linear-gradient(135deg,#E85D75,#FFB199)}
+  .who .av.c2{background:linear-gradient(135deg,#7B5CF0,#C4AEFF)}
+  .who .av.c3{background:linear-gradient(135deg,#E39A12,#FFD978)}
+  .who .av.c4{background:linear-gradient(135deg,#3F8F5F,#9ED8B0)}
+  .who .av.is-pending{background:var(--bg-soft);color:var(--muted);border:1.5px dashed var(--line-2)}
+  .who b{display:flex;align-items:center;gap:4px 8px;flex-wrap:wrap;font-size:.92rem;line-height:1.3}
+  .who span{display:block;color:var(--muted);font-size:.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .who > div{min-width:0}
+  .cell b{display:block;font-size:.88rem;font-weight:600}
+  .cell span{display:block;color:var(--muted);font-size:.8rem}
+  .num{font-family:var(--display);font-weight:700;font-size:1.1rem}
+  .num.is-none{color:var(--muted);font-weight:500}
+  .wsl{display:flex;flex-wrap:wrap;gap:6px}
+  .wsc{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;border:1px solid var(--line-2);font-size:.76rem;font-weight:600;white-space:nowrap}
+  .wsc em{font-style:normal;color:var(--muted);font-weight:500}
+  .rstat{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+  .rstat .btn{height:30px;padding:0 12px;font-size:.76rem}
+  .empty2{padding:28px 16px;text-align:center;color:var(--muted);border:1.5px dashed var(--line-2);border-radius:14px}
+  .empty2 b{display:block;color:var(--ink);margin-bottom:4px}
+  /* forms in dialogs and the invite drawer */
+  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .fld{display:grid;gap:6px}
+  .fld label{font-size:.82rem;font-weight:600;margin:0}
+  .fld .text.is-bad{border-color:var(--error)}
+  .ferr{font-size:.78rem;color:var(--error);min-height:0}
+  .fhint{font-size:.78rem;color:var(--muted)}
+  .fnote{display:flex;gap:10px;padding:10px 12px;border-radius:10px;background:var(--amber-soft);color:#8A6212;font-size:.82rem}
+  .dlg--wide{width:min(560px,calc(100vw - 32px))}
+  .dlg .label{margin-bottom:6px}
+  .drawer{margin:12px 12px 12px auto;height:calc(100vh - 24px);max-height:none;width:min(480px,calc(100vw - 24px));flex-direction:column}
+  .drawer[open]{display:flex}
+  .drawer .dlg__b{flex:1;overflow:auto;display:grid;gap:18px;align-content:start}
+  .drawer .dlg__f{border-radius:0 0 18px 18px}
+  .drawer h3{margin:0}
+  .dx{width:34px;height:34px;border-radius:50%;border:0;background:var(--bg-soft);color:var(--muted);font-size:1.1rem;cursor:pointer;flex:none}
+  .dx:hover{color:var(--ink)}
+  .dtop{display:flex;align-items:center;gap:12px}
+  .dtop .spacer{flex:1}
+  .wsp{display:grid;gap:8px}
+  .wso{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);transition:border-color .15s ease,background-color .15s ease}
+  .wso.is-on{border-color:#FFB199;background:#FFF6F3}
+  .wso input{width:18px;height:18px;margin:0;accent-color:var(--rose);flex:none;cursor:pointer}
+  .wso .n{flex:1;min-width:0;cursor:pointer}
+  .wso .n b{display:block;font-size:.9rem}
+  .wso .n span{display:block;color:var(--muted);font-size:.78rem}
+  .rseg{display:inline-flex;padding:3px;border-radius:999px;background:var(--bg-soft);gap:2px}
+  .rseg button{height:28px;padding:0 11px;border:0;border-radius:999px;background:none;font-size:.76rem;font-weight:600;color:var(--muted);cursor:pointer}
+  .rseg button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:0 1px 3px rgba(36,26,20,.15)}
+  .rseg button:disabled{cursor:default;opacity:.45}
+  .rhelp{margin:0;color:var(--muted);font-size:.78rem}
+  .rhelp b{color:var(--ink);font-weight:600}
+  .mail{padding:16px 18px;border-radius:14px;background:var(--bg-soft);display:grid;gap:10px}
+  .mail b{font-family:var(--display);font-size:1.02rem;line-height:1.3}
+  .mail p{margin:0;color:var(--muted);font-size:.82rem}
+  .kv{display:grid;grid-template-columns:120px 1fr;gap:10px 14px;font-size:.86rem;margin:4px 0 16px}
+  .kv dt{color:var(--muted)}
+  .kv dd{margin:0;font-weight:600}
+  .lock{display:flex;gap:10px;padding:10px 12px;border-radius:10px;background:var(--bg-soft);color:var(--muted);font-size:.8rem}
+  :root[data-theme="dark"] .wso.is-on{background:rgba(255,177,153,.08)}
+  :root[data-theme="dark"] .fnote{background:rgba(201,162,74,.14);color:#E9CF8E}
+  @media (max-width:860px){ .rhead{display:none} .rrow2{grid-template-columns:1fr!important} .rstat{justify-content:flex-start} .fgrid{grid-template-columns:1fr} }
+"""
+ADMIN_JS = r"""
+// what each fixed role can do
+const CAPS = [
+  ['Ask lojo and read Knowledge', 1, 1, 1], ['Add and remove sources', 1, 1, 0], ['Decide which questions matter', 1, 1, 0],
+  ['Approve, edit and reject drafts', 1, 1, 0], ['Export approved answers', 1, 1, 0], ['Change workspace settings', 1, 0, 0],
+  ['Invite people and change roles', 1, 0, 0], ['Delete the workspace', 1, 0, 0],
+];
+const owners = (wsId) => ST.people.filter(p => p.ws[wsId] === 'owner' && p.status === 'member');
+function roleLog(msg) { ST.roleLog = ST.roleLog || []; ST.roleLog.unshift({ msg, by: 'Eric Ouisse', at: new Date().toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) }); ST.roleLog = ST.roleLog.slice(0, 8); }
+// change one person's role in one workspace; null removes access. Returns an error or ''.
+function setRole(person, wsId, role) {
+  const was = person.ws[wsId];
+  if (was === role) return '';
+  if (was === 'owner' && person.status === 'member' && owners(wsId).length === 1) return 'Every workspace needs at least one Owner. Make someone else Owner first.';
+  const wn = (ST.workspaces.find(w => w.id === wsId) || {}).name;
+  if (role) person.ws[wsId] = role; else delete person.ws[wsId];
+  roleLog(role ? person.name + ' is now ' + ROLES[role][0] + ' in ' + wn + (was ? ' (was ' + ROLES[was][0] + ')' : '') : person.name + ' removed from ' + wn);
+  return '';
+}
+// a small confirm dialog in the design system; resolves true or false
+function confirmDlg(title, body, go, danger) {
+  return new Promise((res) => {
+    let d = $('cfDlg'); if (!d) { d = document.createElement('dialog'); d.id = 'cfDlg'; d.className = 'dlg'; document.body.appendChild(d); }
+    d.innerHTML = '<div class="dlg__b"><h3>' + title + '</h3><p>' + body + '</p></div><div class="dlg__f"><button class="btn btn--secondary" type="button" data-cf="0">Cancel</button><button class="btn ' + (danger ? 'btn--danger' : 'btn--primary') + '" type="button" data-cf="1">' + go + '</button></div>';
+    d.onclick = (e) => { const b = e.target.closest('[data-cf]'); if (b || e.target === d) { d.close(); res(!!(b && b.dataset.cf === '1')); } };
+    d.oncancel = () => res(false);
+    d.showModal(); d.querySelector('[data-cf="1"]').focus();
+  });
+}
+const ini = (n) => n.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+const validEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+const domainOf = (v) => (v.split('@')[1] || '').toLowerCase();
+// a field's error under it; returns false when there is one
+function fieldErr(input, msg) {
+  input.classList.toggle('is-bad', !!msg);
+  const e = input.parentElement.querySelector('.ferr'); if (e) e.textContent = msg || '';
+  return !msg;
+}
+function tabs(el, items, cur, onPick) {
+  el.innerHTML = items.map(([k, label, n]) => '<button class="ptab" type="button" role="tab" data-k="' + k + '" aria-selected="' + (k === cur) + '">' + label + ' <span class="n">' + n + '</span></button>').join('');
+  el.onclick = (e) => { const b = e.target.closest('[data-k]'); if (b) onPick(b.dataset.k); };
+}
+"""
+
+PEOPLE = dict(
+  active='people', title='Invite and manage people',
+  css=ADMIN_CSS + r"""
+  .prow{grid-template-columns:minmax(170px,1.2fr) minmax(0,1.2fr) minmax(0,1.3fr) 250px}
+""",
+  body=r"""
+    <div class="head">
+      <div><p class="label" id="pOrg">Oslo</p><h1>Invite and manage people</h1><p>Invite teammates, change their access, and see who’s still invited.</p></div>
+      <span class="spacer"></span>
+      <button class="btn btn--primary" id="inviteBtn" type="button">+ Invite teammate</button>
+    </div>
+    <section class="sec">
+      <div class="ptabs" id="pTabs" role="tablist" aria-label="People"></div>
+      <div class="rhead prow" id="pHead"><span>Person</span><span>Position</span><span>Workspace access</span><span></span></div>
+      <div class="roster" id="pList"></div>
+    </section>
+
+    <dialog class="dlg dlg--wide" id="accDlg" aria-labelledby="accTitle">
+      <div class="dlg__b" style="display:grid;gap:14px">
+        <div class="dtop"><div><h3 id="accTitle">Access</h3><span class="rhelp" id="accSub"></span></div><span class="spacer"></span><button class="dx" type="button" data-close aria-label="Close">×</button></div>
+        <div class="wsp"><p class="label">Workspace access</p><div class="wsp" id="accWs"></div><span class="ferr" id="accErr"></span>
+          <p class="rhelp"><b>Owner</b> everything, plus settings and people · <b>Editor</b> adds sources and approves answers · <b>Viewer</b> asks lojo and reads Knowledge.</p></div>
+        <p class="rhelp">Untick every workspace to remove them from Oslo. Changes are logged.</p>
+      </div>
+      <div class="dlg__f"><button class="btn btn--secondary" type="button" data-close>Cancel</button><button class="btn btn--primary" type="button" data-accsave>Save access</button></div>
+    </dialog>
+
+    <dialog class="dlg drawer" id="invDlg" aria-labelledby="invTitle">
+      <form id="invForm" novalidate style="display:contents">
+      <div class="dlg__b">
+        <div class="dtop"><h3 id="invTitle">Invite a teammate</h3><span class="spacer"></span><button class="dx" type="button" data-close aria-label="Close">×</button></div>
+        <div class="fld"><label for="invEmail">Work email</label><input class="text" id="invEmail" type="email" autocomplete="off" placeholder="name@oslo.com"><span class="ferr"></span></div>
+        <div class="fld"><label for="invName">Name</label><input class="text" id="invName" autocomplete="off" placeholder="First and last name"><span class="ferr"></span></div>
+        <div class="fnote" id="invGuest" hidden><span>!</span><span>This email isn’t on <b>oslo.com</b>. They’ll join as a guest and only see the workspaces you pick.</span></div>
+        <div class="wsp"><p class="label">Workspace access</p><div class="wsp" id="invWs"></div><span class="ferr" id="invWsErr"></span>
+          <p class="rhelp"><b>Owner</b> everything, plus settings and people · <b>Editor</b> adds sources and approves answers · <b>Viewer</b> asks lojo and reads Knowledge</p></div>
+        <div class="wsp"><p class="label">What they’ll receive</p><div class="mail" id="invMail"></div></div>
+      </div>
+      <div class="dlg__f"><button class="btn btn--secondary" type="button" data-close>Cancel</button><button class="btn btn--primary" type="submit">Send invitation</button></div>
+      </form>
+    </dialog>
+""",
+  js=ADMIN_JS + r"""
+const ORG = 'oslo.com';
+let pTab = location.hash === '#invited' ? 'invited' : 'member';
+const wsName = (id) => (ST.workspaces.find(w => w.id === id) || { name: id }).name;
+const chips = (ws) => Object.keys(ws).map(id => '<span class="wsc">' + esc(wsName(id)) + ' <em>· ' + ROLES[ws[id]][0] + '</em></span>').join('');
+function render() {
+  const mem = ST.people.filter(x => x.status === 'member'), inv = ST.people.filter(x => x.status === 'invited');
+  tabs($('pTabs'), [['member', 'Members', mem.length], ['invited', 'Invited', inv.length]], pTab, (k) => { pTab = k; history.replaceState(null, '', k === 'invited' ? '#invited' : '#'); render(); });
+  const list = pTab === 'member' ? mem : inv;
+  $('pHead').hidden = !list.length;
+  $('pList').innerHTML = list.length ? list.map((x, i) => {
+    const owner = Object.values(x.ws).includes('owner'), pending = x.status === 'invited';
+    return '<div class="rrow2 prow"><div class="who"><span class="av c' + (i % 4 + 1) + (pending ? ' is-pending' : '') + '">' + ini(x.name) + '</span><div><b>' + esc(x.name) + (owner ? ' <span class="badge badge--rose">Owner</span>' : '') + (x.guest ? ' <span class="badge badge--muted">Guest</span>' : '') + '</b><span>' + esc(x.email) + '</span></div></div>' +
+      '<div class="cell">' + (pending ? '<span>Adds their position when they accept</span>' : '<b>' + esc(x.title || '') + '</b><span>' + esc(x.about || '') + '</span>') + '</div>' +
+      '<div class="wsl">' + chips(x.ws) + '</div>' +
+      '<div class="rstat">' + (pending ? '<span class="badge badge--amber">Invited ' + esc(x.sent) + '</span><button class="btn btn--secondary" type="button" data-resend="' + x.id + '">Resend</button><button class="btn btn--ghost" type="button" data-revoke="' + x.id + '">Revoke</button>' : '<button class="btn btn--secondary" type="button" data-access="' + x.id + '">Edit access</button>') + '</div></div>';
+  }).join('') : '<div class="empty2"><b>' + (pTab === 'invited' ? 'No open invitations.' : 'No members yet.') + '</b>Invite a teammate to share the work.</div>';
+}
+$('pList').addEventListener('click', (e) => {
+  const r = e.target.closest('[data-resend]'), v = e.target.closest('[data-revoke]');
+  if (r) { const x = ST.people.find(p => p.id === r.dataset.resend); x.sent = 'just now'; save(); render(); toast('Invitation resent to ' + x.email + '. The link works for 7 days.'); }
+  if (v) { const i = ST.people.findIndex(p => p.id === v.dataset.revoke), x = ST.people[i]; ST.people.splice(i, 1); save(); render(); toast('Invitation to ' + x.email + ' revoked'); }
+  const a = e.target.closest('[data-access]'); if (a) openAccess(ST.people.find(p => p.id === a.dataset.access));
+});
+
+// ---------- edit a member's access: a role per workspace, or none
+const acc = $('accDlg'); let accP = null, accPick = {};
+function renderAcc() {
+  $('accWs').innerHTML = ST.workspaces.map(w => {
+    const on = w.id in accPick;
+    return '<div class="wso' + (on ? ' is-on' : '') + '"><input type="checkbox" id="acc_' + w.id + '" data-aws="' + w.id + '"' + (on ? ' checked' : '') + '>' +
+      '<label class="n" for="acc_' + w.id + '"><b>' + esc(w.name) + '</b><span>' + esc(w.region) + '</span></label>' +
+      '<span class="rseg">' + Object.keys(ROLES).map(k => '<button type="button" data-arole="' + k + '" data-for="' + w.id + '" aria-pressed="' + (accPick[w.id] === k) + '"' + (on ? '' : ' disabled') + '>' + ROLES[k][0] + '</button>').join('') + '</span></div>';
+  }).join('');
+}
+function openAccess(p) {
+  accP = p; accPick = { ...p.ws }; $('accErr').textContent = '';
+  $('accTitle').textContent = 'Access for ' + p.name; $('accSub').textContent = p.email + (p.title ? ' · ' + p.title : '');
+  renderAcc(); acc.showModal();
+}
+acc.addEventListener('click', async (e) => {
+  if (e.target === acc || e.target.closest('[data-close]')) { acc.close(); return; }
+  const r = e.target.closest('[data-arole]'); if (r && !r.disabled) { accPick[r.dataset.for] = r.dataset.arole; $('accErr').textContent = ''; renderAcc(); }
+  if (e.target.closest('[data-accsave]')) {
+    const ids = new Set([...Object.keys(accP.ws), ...Object.keys(accPick)]);
+    for (const id of ids) if (accP.ws[id] === 'owner' && accPick[id] !== 'owner' && owners(id).length === 1) { $('accErr').textContent = 'Every workspace needs at least one Owner. Make someone else Owner of ' + wsName(id) + ' first.'; return; }
+    if (!Object.keys(accPick).length && !(await confirmDlg('Remove ' + esc(accP.name) + ' from Oslo?', 'They lose access to every workspace straight away. Their approved answers stay. This is logged.', 'Remove', true))) return;
+    ids.forEach(id => setRole(accP, id, accPick[id] || null));
+    if (!Object.keys(accP.ws).length) { ST.people.splice(ST.people.indexOf(accP), 1); }
+    save(); acc.close(); render(); toast('Access updated for ' + accP.name);
+  }
+});
+$('accWs').addEventListener('change', (e) => {
+  const c = e.target.closest('[data-aws]'); if (!c) return;
+  if (c.checked) accPick[c.dataset.aws] = 'viewer'; else delete accPick[c.dataset.aws];
+  renderAcc();
+});
+
+// ---------- invite drawer
+const dlg = $('invDlg');
+let pick = {};
+function renderWs() {
+  $('invWs').innerHTML = ST.workspaces.map(w => {
+    const on = w.id in pick, role = pick[w.id] || 'viewer';
+    return '<div class="wso' + (on ? ' is-on' : '') + '"><input type="checkbox" id="ws_' + w.id + '" data-ws="' + w.id + '"' + (on ? ' checked' : '') + '>' +
+      '<label class="n" for="ws_' + w.id + '"><b>' + esc(w.name) + '</b><span>' + esc(w.region) + '</span></label>' +
+      '<span class="rseg" role="group" aria-label="Role in ' + esc(w.name) + '">' + Object.keys(ROLES).map(k => '<button type="button" data-role="' + k + '" data-for="' + w.id + '" aria-pressed="' + (on && role === k) + '"' + (on ? '' : ' disabled') + '>' + ROLES[k][0] + '</button>').join('') + '</span></div>';
+  }).join('');
+}
+function renderMail() {
+  const name = $('invName').value.trim(), ids = Object.keys(pick);
+  $('invMail').innerHTML = '<b>Eric Ouisse invited ' + (name ? esc(name.split(' ')[0]) : 'you') + ' to join Oslo on lojo</b>' +
+    (ids.length ? '<div class="wsl">' + chips(pick) + '</div>' : '<p>Pick at least one workspace.</p>') +
+    '<p>They add their position and a short description when they accept. The link works for 7 days.</p>';
+  const em = $('invEmail').value.trim();
+  $('invGuest').hidden = !(validEmail(em) && domainOf(em) !== ORG);
+}
+function openInvite() {
+  pick = { [ST.workspaces[0].id]: 'viewer' };
+  $('invForm').reset(); [$('invEmail'), $('invName')].forEach(i => fieldErr(i, '')); $('invWsErr').textContent = '';
+  renderWs(); renderMail(); dlg.showModal(); $('invEmail').focus();
+}
+$('inviteBtn').addEventListener('click', openInvite);
+dlg.addEventListener('click', (e) => {
+  if (e.target === dlg || e.target.closest('[data-close]')) { dlg.close(); return; }
+  const r = e.target.closest('[data-role]'); if (r && !r.disabled) { pick[r.dataset.for] = r.dataset.role; renderWs(); renderMail(); }
+});
+$('invWs').addEventListener('change', (e) => {
+  const c = e.target.closest('[data-ws]'); if (!c) return;
+  if (c.checked) pick[c.dataset.ws] = 'viewer'; else delete pick[c.dataset.ws];
+  $('invWsErr').textContent = ''; renderWs(); renderMail();
+});
+['invEmail', 'invName'].forEach(id => $(id).addEventListener('input', (e) => { fieldErr(e.target, ''); renderMail(); }));
+$('invForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const em = $('invEmail').value.trim().toLowerCase(), name = $('invName').value.trim();
+  const taken = ST.people.find(p => p.email.toLowerCase() === em);
+  let ok = fieldErr($('invEmail'), !em ? 'Enter their work email.' : !validEmail(em) ? 'That doesn’t look like an email address.' : taken ? (taken.status === 'invited' ? 'Already invited. Resend it from Invited.' : 'Already a member.') : '');
+  ok = fieldErr($('invName'), name ? '' : 'Enter their name.') && ok;
+  if (!Object.keys(pick).length) { $('invWsErr').textContent = 'Pick at least one workspace.'; ok = false; }
+  if (!ok) { (document.querySelector('#invForm .is-bad') || $('invEmail')).focus(); return; }
+  ST.people.push({ id: 'p' + Date.now(), name, email: em, ws: { ...pick }, status: 'invited', sent: 'just now', guest: domainOf(em) !== ORG });
+  save(); dlg.close(); pTab = 'invited'; history.replaceState(null, '', '#invited'); render();
+  toast('Invitation sent to ' + em);
+});
+if (new URLSearchParams(location.search).get('invite')) openInvite();
+render();
+""")
+
+SUPER = dict(
+  active='companies', title='Companies', persona='super',
+  css=ADMIN_CSS + r"""
+  .crow{grid-template-columns:minmax(150px,1.2fr) minmax(0,1.4fr) 96px 64px 270px;gap:6px 14px}
+  .crow .num{text-align:left}
+""",
+  body=r"""
+    <div class="head">
+      <div><p class="label">lojo back office</p><h1>Companies</h1><p>Every company on lojo, who owns it, and invitations still waiting. You can’t see any company’s sources or answers.</p></div>
+      <span class="spacer"></span>
+      <button class="btn btn--primary" id="inviteBtn" type="button">+ Invite company owner</button>
+    </div>
+    <section class="sec">
+      <div class="ptabs" id="cTabs" role="tablist" aria-label="Companies"></div>
+      <div class="rhead crow" id="cHead"><span>Company</span><span>Owner</span><span>Workspaces</span><span>Users</span><span style="text-align:right">Status</span></div>
+      <div class="roster" id="cList"></div>
+    </section>
+
+    <dialog class="dlg dlg--wide" id="invDlg" aria-labelledby="invTitle">
+      <form id="invForm" novalidate>
+      <div class="dlg__b" style="display:grid;gap:14px">
+        <div class="dtop"><div><p class="label">New company</p><h3 id="invTitle">Invite a company owner</h3></div><span class="spacer"></span><button class="dx" type="button" data-close aria-label="Close">×</button></div>
+        <p style="margin:0">They set up the company, create workspaces and invite their team.</p>
+        <div class="fgrid">
+          <div class="fld"><label for="cName">Company name</label><input class="text" id="cName" autocomplete="off" placeholder="Skagen Maritime"><span class="ferr"></span></div>
+          <div class="fld"><label for="cDomain">Email domain</label><input class="text" id="cDomain" autocomplete="off" placeholder="skagenmaritime.no"><span class="ferr"></span></div>
+          <div class="fld"><label for="oName">Owner name</label><input class="text" id="oName" autocomplete="off" placeholder="Tone Skagen"><span class="ferr"></span></div>
+          <div class="fld"><label for="oEmail">Owner email</label><input class="text" id="oEmail" type="email" autocomplete="off" placeholder="tone@skagenmaritime.no"><span class="ferr"></span></div>
+        </div>
+      </div>
+      <div class="dlg__f"><button class="btn btn--secondary" type="button" data-close>Cancel</button><button class="btn btn--primary" type="submit">Send invitation</button></div>
+      </form>
+    </dialog>
+
+""",
+  js=ADMIN_JS + r"""
+let cTab = 'all';
+const cls = (i) => ' c' + (i % 4 + 1);
+function render() {
+  const all = ST.companies, act = all.filter(c => c.status === 'active'), inv = all.filter(c => c.status === 'invited');
+  tabs($('cTabs'), [['all', 'All', all.length], ['active', 'Active', act.length], ['invited', 'Invited', inv.length]], cTab, (k) => { cTab = k; render(); });
+  const list = cTab === 'all' ? all : cTab === 'active' ? act : inv;
+  $('cHead').hidden = !list.length;
+  $('cList').innerHTML = list.length ? list.map(c => {
+    const i = all.indexOf(c), pending = c.status === 'invited';
+    return '<div class="rrow2 crow is-click" data-open="' + c.id + '" tabindex="0" role="button" aria-label="Open ' + esc(c.name) + '">' +
+      '<div class="who"><span class="av' + cls(i) + '">' + ini(c.name) + '</span><div><b>' + esc(c.name) + '</b><span>' + esc(c.domain) + '</span></div></div>' +
+      '<div class="cell"><b>' + esc(c.owner) + '</b><span>' + esc(c.email) + '</span></div>' +
+      '<span class="num' + (pending ? ' is-none' : '') + '">' + (pending ? '—' : c.ws.length) + '</span>' +
+      '<span class="num' + (pending ? ' is-none' : '') + '">' + (pending ? '—' : c.users) + '</span>' +
+      '<div class="rstat">' + (pending ? '<span class="badge badge--amber">Invited ' + esc(c.sent) + '</span><button class="btn btn--secondary" type="button" data-resend="' + c.id + '">Resend</button><button class="btn btn--ghost" type="button" data-revoke="' + c.id + '">Revoke</button>' : '<span class="badge badge--ok">Active</span>') + '</div></div>';
+  }).join('') : '<div class="empty2"><b>Nothing here.</b>' + (cTab === 'invited' ? 'Every invited owner has accepted.' : 'Invite a company owner to get started.') + '</div>';
+}
+function resend(c) { c.sent = 'just now'; plog('Resent the invitation to ' + c.owner + ' (' + c.name + ')', 'invite'); save(); render(); toast('Invitation resent to ' + c.email + '. The link works for 7 days.'); }
+function revoke(c) { ST.companies.splice(ST.companies.indexOf(c), 1); plog('Revoked the invitation for ' + c.name, 'revoke'); save(); render(); toast('Invitation to ' + c.name + ' revoked'); }
+$('cList').addEventListener('click', (e) => {
+  const r = e.target.closest('[data-resend]'), v = e.target.closest('[data-revoke]'), o = e.target.closest('[data-open]');
+  if (r) return resend(ST.companies.find(c => c.id === r.dataset.resend));
+  if (v) return revoke(ST.companies.find(c => c.id === v.dataset.revoke));
+  if (o) location.href = 'company.html?id=' + o.dataset.open;
+});
+$('cList').addEventListener('keydown', (e) => { const o = e.target.closest('[data-open]'); if (o && (e.key === 'Enter' || e.key === ' ') && e.target === o) { e.preventDefault(); location.href = 'company.html?id=' + o.dataset.open; } });
+
+// ---------- invite a company owner
+const dlg = $('invDlg'), F = ['cName', 'cDomain', 'oName', 'oEmail'];
+const openInv = () => { $('invForm').reset(); F.forEach(id => fieldErr($(id), '')); dlg.showModal(); $('cName').focus(); };
+$('inviteBtn').addEventListener('click', openInv);
+if (new URLSearchParams(location.search).get('invite')) openInv();
+dlg.addEventListener('click', (e) => { if (e.target === dlg || e.target.closest('[data-close]')) dlg.close(); });
+F.forEach(id => $(id).addEventListener('input', (e) => fieldErr(e.target, '')));
+// the domain fills in from the owner's email if left empty
+$('oEmail').addEventListener('blur', () => { const d = domainOf($('oEmail').value.trim()); if (d && !$('cDomain').value.trim()) $('cDomain').value = d; });
+$('invForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const v = Object.fromEntries(F.map(id => [id, $(id).value.trim()]));
+  const dom = v.cDomain.toLowerCase().replace(/^@/, ''), em = v.oEmail.toLowerCase();
+  const onLojo = ST.companies.find(c => c.domain === dom);
+  let ok = fieldErr($('cName'), v.cName ? '' : 'Enter the company name.');
+  ok = fieldErr($('cDomain'), !dom ? 'Enter the email domain.' : !/^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(dom) ? 'Use a domain like company.com.' : onLojo ? onLojo.name + ' already uses this domain.' : '') && ok;
+  ok = fieldErr($('oName'), v.oName ? '' : 'Enter the owner’s name.') && ok;
+  ok = fieldErr($('oEmail'), !em ? 'Enter the owner’s email.' : !validEmail(em) ? 'That doesn’t look like an email address.' : dom && domainOf(em) !== dom ? 'The email should end in @' + dom + '.' : '') && ok;
+  if (!ok) { document.querySelector('#invForm .is-bad').focus(); return; }
+  ST.companies.push({ id: 'c' + Date.now(), name: v.cName, domain: dom, owner: v.oName, email: em, ws: [], users: 0, status: 'invited', sent: 'just now' });
+  plog('Invited ' + v.oName + ' as owner of ' + v.cName, 'invite');
+  save(); dlg.close(); cTab = 'invited'; render();
+  toast('Invitation sent to ' + em);
+});
+render();
+""")
+
+# ============================================================ SETTINGS (MVP)
+# only what the four-week build has
+SETTINGS = dict(
+  active='settings', title='Settings',
+  css=ADMIN_CSS + r"""
+  .sgrid{display:grid;grid-template-columns:230px minmax(0,1fr);gap:22px;align-items:start}
+  .snav{position:sticky;top:110px;padding:12px}
+  .snav h4{margin:12px 8px 6px;font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .snav h4:first-child{margin-top:4px}
+  .snav a{display:flex;align-items:center;justify-content:space-between;gap:8px;height:34px;padding:0 10px;border-radius:9px;color:var(--ink);font-weight:500;font-size:.88rem;text-decoration:none}
+  .snav a:hover{background:var(--bg-soft)}
+  .snav a[aria-current="true"]{background:#FFF0E8;color:#8A4B2F;font-weight:700}
+  .snav a.is-later{color:var(--muted);cursor:default}
+  .snav a.is-later:hover{background:none}
+  .snav em{font-style:normal;font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line-2);border-radius:999px;padding:1px 7px}
+  .spane{display:grid;gap:18px}
+  .spane h2{font-family:var(--display);font-weight:700;font-size:1.3rem;margin:0}
+  .spane > p{margin:-10px 0 0;color:var(--muted)}
+  .srow{display:flex;align-items:center;gap:16px;padding:14px 0;border-top:1px solid var(--line)}
+  .srow:first-of-type{border-top:0}
+  .srow > div{flex:1;min-width:0}
+  .srow b{display:block;font-size:.9rem}
+  .srow span{display:block;color:var(--muted);font-size:.8rem}
+  .sw{position:relative;width:40px;height:22px;border-radius:999px;border:0;background:var(--line-2);cursor:pointer;flex:none;transition:background-color .15s ease}
+  .sw::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:transform .15s ease}
+  .sw[aria-checked="true"]{background:var(--ink)}
+  .sw[aria-checked="true"]::after{transform:translateX(18px)}
+  .sw:disabled{opacity:.45;cursor:default}
+  .fixed{font-size:.72rem;font-weight:700;color:var(--muted);white-space:nowrap}
+  .prov{padding:14px 16px;border-radius:12px;background:var(--bg-soft)}
+  .prov small{display:block;font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+  .prov b{font-size:.9rem}
+  .meav{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:var(--brand-gradient);color:#fff;font-family:var(--display);font-weight:800;font-size:1.2rem}
+  .later{display:grid;gap:8px;padding:16px;border:1.5px dashed var(--line-2);border-radius:14px;color:var(--muted);font-size:.86rem}
+  .later b{color:var(--ink)}
+  .later ul{margin:0;padding-left:18px}
+  .danger{border-color:rgba(198,69,69,.25)}
+  .meth{display:flex;align-items:center;gap:10px}
+  .mrow{grid-template-columns:minmax(0,1fr) auto auto}
+  .caps{width:100%;border-collapse:collapse;font-size:.86rem}
+  .caps th{font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:center;padding:8px;border-bottom:1px solid var(--line)}
+  .caps th:first-child{text-align:left}
+  .caps td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:center}
+  .caps td:first-child{text-align:left}
+  .caps .yes{color:var(--success);font-weight:800}
+  .caps .no{color:var(--muted)}
+  .alog{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+  .alog li{padding:10px 12px;border-radius:10px;background:var(--bg-soft)}
+  .alog b{display:block;font-size:.86rem;font-weight:600}
+  .alog span{font-size:.76rem;color:var(--muted)}
+  @media (max-width:860px){ .mrow{grid-template-columns:1fr} }
+  @media (max-width:900px){ .sgrid{grid-template-columns:1fr} .snav{position:static} }
+""",
+  body=r"""
+    <div class="head">
+      <div><p class="label">Oslo</p><h1>Settings</h1><p>How you appear to your team.</p></div>
+    </div>
+    <div class="sgrid">
+      <nav class="card snav" id="snav" aria-label="Settings"></nav>
+      <section class="sec spane" id="spane" aria-live="polite"></section>
+    </div>
+""",
+  js=ADMIN_JS + r"""
+ST.prefs = ST.prefs || { drafts: true, weekly: true, gaps: false, declined: false, target: 20, suggest: true };
+const ROLE = window.LOJO_ROLE;
+const ME = ST.people.find(p => p.id === ({ owner: 'p1', editor: 'p2', viewer: 'p4' })[ROLE]);
+// [id, label, group, later?]
+const NAVS = [
+  ['YOU', [['profile', 'Profile']]],
+];
+let cur = (location.hash || '#profile').slice(1);
+function nav() {
+  $('snav').innerHTML = NAVS.map(([g, items]) => '<h4>' + g + '</h4>' +
+    items.map(([id, l, later]) => '<a href="#' + id + '"' + (cur === id ? ' aria-current="true"' : '') + '>' + l + (later ? '<em>Full build</em>' : '') + '</a>').join('')).join('');
+}
+const row = (t, d, right) => '<div class="srow"><div><b>' + t + '</b><span>' + d + '</span></div>' + right + '</div>';
+const fixed = '<span class="fixed">Fixed</span>';
+const PANES = {
+  profile: () => '<h2>Profile</h2><p>How you appear to your team, and on answers you approve.</p>' +
+    '<div class="meth"><span class="meav">' + ini(ME.name) + '</span><button class="btn btn--secondary btn--sm" type="button" data-photo>Change photo</button></div>' +
+    '<div class="fgrid"><div class="fld"><label for="pfName">Name</label><input class="text" id="pfName" value="' + esc(ME.name) + '"><span class="ferr"></span></div>' +
+    '<div class="fld"><label for="pfEmail">Work email</label><input class="text" id="pfEmail" value="' + esc(ME.email) + '" disabled><span class="fhint">Managed by Oslo · you sign in with Google</span></div></div>' +
+    '<div class="fld"><label for="pfTitle">Position</label><input class="text" id="pfTitle" value="' + esc(ME.title || '') + '"></div>' +
+    '<div class="fld"><label for="pfAbout">Description</label><textarea class="text" id="pfAbout" style="height:auto;min-height:72px;padding:10px 13px">' + esc(ME.about || '') + '</textarea></div>' +
+    '<div class="prov"><small>Shown on answers you approve</small><b id="pfProv"></b></div>' +
+    '<div><button class="btn btn--primary" type="button" data-save="profile">Save</button></div>',
+};
+function render() {
+  if (!PANES[cur]) cur = 'profile';
+  nav(); $('spane').innerHTML = PANES[cur]();
+  if (cur === 'profile') prov();
+}
+function prov() { const n = $('pfName').value.trim() || ME.name, t = $('pfTitle').value.trim(); $('pfProv').textContent = '✓ Approved by ' + n + (t ? ', ' + t : '') + ' · ' + new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }); }
+window.addEventListener('hashchange', () => { cur = location.hash.slice(1); render(); });
+
+$('spane').addEventListener('input', (e) => { if (cur === 'profile') prov(); fieldErr(e.target, ''); });
+$('spane').addEventListener('click', async (e) => {
+  const t = e.target;
+  if (t.closest('[data-photo]')) toast('Photo upload works in the full product');
+  const sv = t.closest('[data-save]'); if (!sv) return;
+  if (sv.dataset.save === 'profile') {
+    const n = $('pfName').value.trim(); if (!fieldErr($('pfName'), n ? '' : 'Enter your name.')) return;
+    ME.name = n; ME.title = $('pfTitle').value.trim(); ME.about = $('pfAbout').value.trim();
+    try { const u = JSON.parse(sessionStorage.getItem('lojo-user')) || {}; u.name = n; u.email = ME.email; sessionStorage.setItem('lojo-user', JSON.stringify(u)); } catch (err) {}
+    save(); $('meName').textContent = n; $('topAva').textContent = ini(n); toast('Profile saved');
+  }
+});
+render();
+""")
+
+# ============================================================ SUPER ADMIN: company, audit log, account
+PLATFORM = dict(
+  active='pdash', title='Dashboard', persona='super',
+  css=ADMIN_CSS + r"""
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+  .kpi{padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:var(--panel);text-align:center}
+  .kpi small{display:block;font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .kpi b{display:block;font-family:var(--display);font-size:1.9rem;line-height:1.15;margin:6px 0 2px}
+  .kpi span{font-size:.8rem;color:var(--muted)}
+  .pgrid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:22px;align-items:start}
+  .sec h2{font-family:var(--display);font-weight:700;font-size:1.1rem;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+  .sec h2 a{margin-left:auto;font-family:var(--body);font-size:.8rem}
+  .ctab{width:100%;border-collapse:collapse;font-size:.86rem}
+  .ctab th{font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:right;padding:0 8px 8px}
+  .ctab th:first-child,.ctab td:first-child{text-align:left}
+  .ctab td{padding:10px 8px;border-top:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+  .ctab tr.is-click{cursor:pointer}
+  .ctab tr.is-click:hover td{background:var(--bg-soft)}
+  .ctab .who .av{width:30px;height:30px;border-radius:9px;font-size:.7rem}
+  .alog{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+  .alog li{padding:10px 12px;border-radius:10px;background:var(--bg-soft)}
+  .alog b{display:block;font-size:.86rem;font-weight:600}
+  .alog span{font-size:.76rem;color:var(--muted)}
+  .attn{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+  .attn:first-of-type{border-top:0}
+  .attn div{flex:1;min-width:0}
+  .attn b{display:block;font-size:.88rem}
+  .attn span{font-size:.78rem;color:var(--muted)}
+  @media (max-width:980px){ .kpis{grid-template-columns:repeat(2,1fr)} .pgrid{grid-template-columns:1fr} }
+""",
+  body=r"""
+    <div class="head">
+      <div><p class="label">lojo back office</p><h1>Dashboard</h1><p>How lojo is doing across every company. Counts only: lojo staff never see a company’s sources, drafts or answers.</p></div>
+      <span class="spacer"></span>
+      <a class="btn btn--primary" href="superadmin.html?invite=1">+ Invite company owner</a>
+    </div>
+    <div class="kpis" id="pKpis"></div>
+    <section class="sec"><h2>Companies <a href="superadmin.html">All companies →</a></h2><table class="ctab" id="pTable"></table></section>
+""",
+  js=ADMIN_JS + r"""
+function render() {
+  const act = ST.companies.filter(c => c.status === 'active'), inv = ST.companies.filter(c => c.status === 'invited');
+  const sum = (i) => act.reduce((a, c) => a + ((CO_USAGE[c.id] || [])[i] || 0), 0);
+  const people = act.reduce((a, c) => a + c.users, 0), ws = act.reduce((a, c) => a + c.ws.length, 0);
+  $('pKpis').innerHTML = [
+    ['Active companies', act.length, inv.length + ' invitation' + (inv.length === 1 ? '' : 's') + ' open'],
+    ['People', people, 'in ' + ws + ' workspaces'],
+    ['Approved answers', sum(2), 'from ' + sum(0) + ' documents'],
+    ['Ask lojo questions', sum(3), 'this month'],
+  ].map(([l, n, sub]) => '<div class="kpi"><small>' + l + '</small><b>' + n + '</b><span>' + sub + '</span></div>').join('');
+  $('pTable').innerHTML = '<thead><tr><th>Company</th><th>People</th><th>Documents</th><th>Approved</th><th>Questions</th></tr></thead><tbody>' +
+    ST.companies.map((c, i) => { const u = CO_USAGE[c.id], p = c.status === 'invited';
+      return '<tr class="is-click" data-open="' + c.id + '"><td><div class="who"><span class="av c' + (i % 4 + 1) + '">' + ini(c.name) + '</span><div><b>' + esc(c.name) + '</b><span>' + (p ? 'Invited ' + esc(c.sent) : esc(c.domain)) + '</span></div></div></td>' +
+        [p ? '—' : c.users, u ? u[0] : '—', u ? u[2] : '—', u ? u[3] : '—'].map(v => '<td>' + v + '</td>').join('') + '</tr>'; }).join('') + '</tbody>';
+}
+document.addEventListener('click', (e) => {
+  const o = e.target.closest('[data-open]'); if (o) location.href = 'company.html?id=' + o.dataset.open;
+});
+render();
+""")
+
+COMPANY = dict(
+  active='companies', title='Company', persona='super',
+  css=ADMIN_CSS + r"""
+  .crumb{font-size:.82rem;color:var(--muted);margin:0 0 6px}
+  .crumb a{color:var(--muted)}
+  .cgrid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:22px;align-items:start}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .kpi{padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+  .kpi b{display:block;font-family:var(--display);font-size:1.5rem;line-height:1.1}
+  .kpi span{font-size:.78rem;color:var(--muted)}
+  .sec h2{font-family:var(--display);font-weight:700;font-size:1.1rem;margin:0 0 12px}
+  .srow{display:flex;align-items:center;gap:16px;padding:12px 0;border-top:1px solid var(--line)}
+  .srow:first-of-type{border-top:0}
+  .srow > div{flex:1;min-width:0}
+  .srow b{display:block;font-size:.9rem}
+  .srow span{display:block;color:var(--muted);font-size:.8rem}
+  .fixed{font-size:.72rem;font-weight:700;color:var(--muted);white-space:nowrap}
+  .alog{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+  .alog li{padding:10px 12px;border-radius:10px;background:var(--bg-soft)}
+  .alog b{display:block;font-size:.86rem;font-weight:600}
+  .alog span{font-size:.76rem;color:var(--muted)}
+  @media (max-width:980px){ .cgrid{grid-template-columns:1fr} .kpis{grid-template-columns:repeat(2,1fr)} }
+""",
+  body=r"""
+    <div class="head">
+      <div><p class="crumb"><a href="superadmin.html">Companies</a> ›</p><h1 id="cName">Company</h1><p id="cSub"></p></div>
+      <span class="spacer"></span>
+      <div id="cActs" style="display:flex;gap:8px"></div>
+    </div>
+    <div id="cBody"></div>
+""",
+  js=ADMIN_JS + r"""
+const c = ST.companies.find(x => x.id === new URLSearchParams(location.search).get('id')) || ST.companies[0];
+// counts only: super admins never see a company's sources, drafts or answers
+const USAGE = CO_USAGE;
+function render() {
+  const pending = c.status === 'invited', u = USAGE[c.id] || [0, 0, 0, 0];
+  document.title = c.name + ' · lojo';
+  $('cName').textContent = c.name;
+  $('cSub').innerHTML = esc(c.domain) + ' · ' + (pending ? '<span class="badge badge--amber">Invited ' + esc(c.sent) + '</span>' : '<span class="badge badge--ok">Active</span> since ' + esc(c.since));
+  $('cActs').innerHTML = pending ? '<button class="btn btn--ghost" type="button" data-act="revoke">Revoke</button><button class="btn btn--secondary" type="button" data-act="resend">Resend invitation</button>' : '';
+  $('cBody').innerHTML = (pending ? '<div class="sec"><div class="empty2"><b>Waiting for ' + esc(c.owner) + ' to accept.</b>Workspaces, people and usage show up once they set up ' + esc(c.name) + '. The link works for 7 days.</div></div>' :
+    '<div class="kpis" style="margin-bottom:22px">' + [[c.ws.length, 'Workspaces'], [c.users, 'People'], [u[0], 'Documents'], [u[2], 'Approved answers']].map(([n, l]) => '<div class="kpi"><b>' + n + '</b><span>' + l + '</span></div>').join('') + '</div>') +
+    '<div class="cgrid"><div>' +
+      '<section class="sec"><h2>Owner</h2><div class="who"><span class="av c1">' + ini(c.owner) + '</span><div><b>' + esc(c.owner) + ' <span class="badge badge--rose">Owner</span></b><span>' + esc(c.email) + '</span></div></div></section>' +
+      (pending ? '' : '<section class="sec"><h2>Workspaces</h2><div class="wsl">' + c.ws.map(w => '<span class="wsc">' + esc(w) + '</span>').join('') + '</div></section>' +
+      '<section class="sec"><h2>Usage this month</h2><div>' +
+        '<div class="srow"><div><b>Questions found</b><span>From their documents</span></div><b>' + u[1] + '</b></div>' +
+        '<div class="srow"><div><b>Approved answers</b><span>Reviewed by a person</span></div><b>' + u[2] + '</b></div>' +
+        '<div class="srow"><div><b>Ask lojo questions</b><span>From their team</span></div><b>' + u[3] + '</b></div></div></section>') +
+    '</div><div>' +
+      '<section class="sec"><h2>Privacy</h2><div class="lock"><span>🔒</span><span>Sources, drafts and answers belong to ' + esc(c.name) + '. lojo staff see counts only.</span></div></section>' +
+      '<section class="sec"><h2>History</h2>' + hist() + '</section>' +
+    '</div></div>';
+}
+function hist() {
+  const L = ST.platformLog.filter(x => x.msg.includes(c.name));
+  return L.length ? '<ul class="alog">' + L.map(x => '<li><b>' + esc(x.msg) + '</b><span>' + esc(x.by) + ' · ' + esc(x.at) + '</span></li>').join('') + '</ul>' : '<p class="rhelp">Nothing yet.</p>';
+}
+$('cActs').addEventListener('click', async (e) => {
+  const a = e.target.closest('[data-act]'); if (!a) return;
+  if (a.dataset.act === 'resend') { c.sent = 'just now'; plog('Resent the invitation to ' + c.owner + ' (' + c.name + ')', 'invite'); save(); render(); toast('Invitation resent to ' + c.email); }
+  if (a.dataset.act === 'revoke' && await confirmDlg('Revoke the invitation for ' + esc(c.name) + '?', 'The link stops working and ' + esc(c.name) + ' leaves the list. This is logged.', 'Revoke', true)) {
+    ST.companies.splice(ST.companies.indexOf(c), 1); plog('Revoked the invitation for ' + c.name, 'revoke'); save(); location.href = 'superadmin.html';
+  }
+});
+render();
+""")
+
+AUDIT = dict(
+  active='auditlog', title='Audit log', persona='super',
+  css=ADMIN_CSS + r"""
+  .lrow{grid-template-columns:minmax(0,1fr) 180px 150px}
+  .lrow .k{justify-self:start}
+  @media (max-width:860px){ .lrow{grid-template-columns:1fr} }
+""",
+  body=r"""
+    <div class="head">
+      <div><p class="label">lojo back office</p><h1>Audit log</h1><p>Everything done in this admin area: who did it and when. Entries can’t be edited or deleted.</p></div>
+    </div>
+    <section class="sec">
+      <div class="ptabs" id="lTabs" role="tablist" aria-label="Filter"></div>
+      <div class="rhead lrow"><span>What happened</span><span>Who</span><span>When</span></div>
+      <div class="roster" id="lList"></div>
+    </section>
+""",
+  js=ADMIN_JS + r"""
+const KINDS = { all: 'All', invite: 'Invitations', accept: 'Accepted', revoke: 'Revoked' };
+let f = 'all';
+function render() {
+  const L = ST.platformLog;
+  tabs($('lTabs'), Object.keys(KINDS).map(k => [k, KINDS[k], k === 'all' ? L.length : L.filter(x => x.kind === k).length]), f, (k) => { f = k; render(); });
+  const list = f === 'all' ? L : L.filter(x => x.kind === f);
+  $('lList').innerHTML = list.length ? list.map(x => '<div class="rrow2 lrow"><div class="cell"><b>' + esc(x.msg) + '</b><span>' + esc(KINDS[x.kind] || 'Change') + '</span></div><span>' + esc(x.by) + '</span><span class="rhelp">' + esc(x.at) + '</span></div>').join('')
+    : '<div class="empty2"><b>Nothing here yet.</b>Actions in Companies show up here.</div>';
+}
+render();
+""")
+
+ACCOUNT = dict(
+  active='psettings', title='Settings', persona='super',
+  css=ADMIN_CSS + r"""
+  .srow{display:flex;align-items:center;gap:16px;padding:14px 0;border-top:1px solid var(--line)}
+  .srow:first-of-type{border-top:0}
+  .srow > div{flex:1;min-width:0}
+  .srow b{display:block;font-size:.9rem}
+  .srow span{display:block;color:var(--muted);font-size:.8rem}
+  .sw{position:relative;width:40px;height:22px;border-radius:999px;border:0;background:var(--line-2);cursor:pointer;flex:none}
+  .sw::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s ease}
+  .sw[aria-checked="true"]{background:var(--ink)}
+  .sw[aria-checked="true"]::after{transform:translateX(18px)}
+  .fixed{font-size:.72rem;font-weight:700;color:var(--muted);white-space:nowrap}
+  .later{display:grid;gap:8px;padding:16px;border:1.5px dashed var(--line-2);border-radius:14px;color:var(--muted);font-size:.86rem}
+  .later b{color:var(--ink)}
+  .sec h2{font-family:var(--display);font-weight:700;font-size:1.2rem;margin:0 0 4px}
+  .sec > p{margin:0 0 14px;color:var(--muted)}
+""",
+  body=r"""
+    <div class="head">
+      <div><p class="label">lojo back office</p><h1>Settings</h1><p>Your lojo staff account.</p></div>
+    </div>
+    <section class="sec" id="aProfile"></section>
+""",
+  js=ADMIN_JS + r"""
+const me = ST.staff.find(s => s.id === 's1');
+function render() {
+  $('aProfile').innerHTML = '<h2>Profile</h2><p>How you appear in the audit log and in invitations.</p>' +
+    '<div class="fgrid"><div class="fld"><label for="aName">Name</label><input class="text" id="aName" value="' + esc(me.name) + '"><span class="ferr"></span></div>' +
+    '<div class="fld"><label for="aEmail">lojo email</label><input class="text" id="aEmail" value="' + esc(me.email) + '" disabled><span class="fhint">Signs in with Google for lojo.ai</span></div></div>' +
+    '<div class="fld" style="margin-top:14px"><label for="aTitle">Position</label><input class="text" id="aTitle" value="' + esc(me.title || '') + '"></div>' +
+    '<div class="srow" style="margin-top:8px"><div><b>Role</b><span>' + STAFF_ROLES[me.role][1] + '</span></div><span class="badge badge--rose">' + STAFF_ROLES[me.role][0] + '</span></div>' +
+    '<div style="margin-top:8px"><button class="btn btn--primary" type="button" data-save>Save</button></div>';
+}
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#aProfile [data-save]')) {
+    const n = $('aName').value.trim(); if (!fieldErr($('aName'), n ? '' : 'Enter your name.')) return;
+    me.name = n; me.title = $('aTitle').value.trim(); save(); $('meName').textContent = n; $('topAva').textContent = ini(n); toast('Profile saved');
+  }
+});
+$('aProfile').addEventListener('input', (e) => fieldErr(e.target, ''));
+render();
+""")
+
+# ============================================================ EMAILS (design use cases)
+# every email the MVP sends, previewed as it would arrive
+EMAILS_PAGE = dict(
+  active='states', title='Emails',
+  css=r"""
+  .egrid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:22px;align-items:start}
+  .elist{position:sticky;top:110px;padding:10px;max-height:calc(100vh - 140px);overflow:auto}
+  .elist h4{margin:12px 8px 6px;font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .elist h4:first-child{margin-top:4px}
+  .elist a{display:block;padding:8px 10px;border-radius:9px;color:var(--ink);font-weight:500;text-decoration:none}
+  .elist a:hover{background:var(--bg-soft)}
+  .elist a b{display:block;font-size:.86rem;font-weight:600}
+  .elist a span{display:block;font-size:.74rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .elist a[aria-current="true"]{background:#FFF0E8}
+  .elist a[aria-current="true"] b{color:#8A4B2F}
+  .meta2{display:grid;grid-template-columns:90px 1fr;gap:6px 12px;font-size:.84rem;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .meta2 dt{color:var(--muted)}
+  .meta2 dd{margin:0}
+  .meta2 .subj{font-weight:700}
+  .why{display:flex;gap:10px;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--bg-soft);font-size:.8rem;color:var(--muted)}
+  .why b{color:var(--ink);font-weight:600}
+  .inbox{padding:28px 18px;background:#F4F1EE}
+  .mail2{max-width:560px;margin:0 auto;background:#fff;border-radius:16px;border:1px solid var(--line);overflow:hidden;color:#241A14}
+  .mail2__top{display:flex;align-items:center;gap:10px;padding:20px 28px 0}
+  .mail2__top img{width:30px;height:30px;border-radius:22%}
+  .mail2__top b{font-family:var(--display);font-size:1.05rem}
+  .mail2__body{padding:18px 28px 26px}
+  .mail2 h2{font-family:var(--display);font-weight:700;font-size:1.35rem;line-height:1.25;margin:0 0 12px}
+  .mail2 p{margin:0 0 12px;font-size:.92rem;line-height:1.6;color:#4A3B32}
+  .mail2 .cta{display:inline-block;margin:6px 0 14px;padding:11px 20px;border-radius:999px;background:#241A14;color:#fff;font-weight:700;font-size:.9rem;text-decoration:none}
+  .mail2 .box{padding:12px 14px;border-radius:12px;background:#F7F4F1;margin:0 0 14px;font-size:.88rem}
+  .mail2 .box b{display:block}
+  .mail2 ul{margin:0 0 14px;padding-left:20px;font-size:.9rem;line-height:1.7;color:#4A3B32}
+  .mail2 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+  .mail2 .chip2{display:inline-flex;height:26px;align-items:center;padding:0 10px;border-radius:999px;border:1px solid rgba(36,26,20,.16);font-size:.78rem;font-weight:600}
+  .mail2 .chip2 em{font-style:normal;color:#6E5A4E;font-weight:500;margin-left:4px}
+  .mail2 .small{font-size:.78rem;color:#6E5A4E}
+  .mail2__foot{padding:16px 28px;border-top:1px solid rgba(36,26,20,.08);font-size:.74rem;color:#6E5A4E;line-height:1.5}
+  :root[data-theme="dark"] .inbox{background:#1E1714}
+  @media (max-width:900px){ .egrid{grid-template-columns:1fr} .elist{position:static;max-height:none} }
+""",
+  body=r"""
+    <div class="head">
+      <div><p class="label"><a href="states.html">Design use cases</a> ›</p><h1>Emails</h1><p>Every email lojo sends in this phase, who gets it and what triggers it. Previews use the demo data.</p></div>
+    </div>
+    <div class="egrid">
+      <nav class="card elist" id="elist" aria-label="Emails"></nav>
+      <section class="card" id="epane" aria-live="polite"></section>
+    </div>
+""",
+  js=r"""
+const OFF = 'You get this because you review answers in Oslo.';
+const ACC = 'You get this because of a change to your lojo account. If you didn’t expect it, reply and we’ll look into it.';
+const STAFF = 'Sent to lojo staff only.';
+const chip = (w, r) => '<span class="chip2">' + w + '<em>· ' + r + '</em></span>';
+// key, group, list label, to, trigger, subject, preheader, body html, footer
+const EMAILS = [
+  ['owner-invite', 'Joining lojo', 'Company owner invitation', 'The future company owner', 'Super admin sends “Invite a company owner”, or resends it', 'Sadaf Farman invited you to set up Oslo on lojo', 'Accept to create your workspace and invite your team.',
+    '<h2>Set up Oslo on lojo</h2><p>Hi Eric, Sadaf Farman from lojo invited you to be the <b>Owner</b> of Oslo.</p><p>As Owner you create workspaces, add your documents and invite your team. lojo drafts the answers your team keeps asking for, and only shares an answer once a person has approved it.</p><a class="cta" href="#">Accept and set up Oslo</a><p class="small">This link works for 7 days. It’s for eric@oslo.com only.</p>', ACC],
+  ['team-invite', 'Joining lojo', 'Teammate invitation', 'A new teammate', 'An Owner sends an invitation from People, or resends it', 'Eric Ouisse invited you to join Oslo on lojo', 'Your access: Oslo · Editor.',
+    '<h2>Join Oslo on lojo</h2><p>Hi Henrik, Eric Ouisse invited you to join Oslo. Here’s what you’ll have access to:</p><div class="chips">' + chip('Oslo', 'Editor') + chip('Oslo — Sandbox', 'Viewer') + '</div><p>When you accept, you add your position and a short description. They show next to answers you approve.</p><a class="cta" href="#">Accept invitation</a><p class="small">This link works for 7 days. It’s for henrik@oslo.com only.</p>', ACC],
+  ['verify', 'Joining lojo', 'Confirm your email', 'Someone signing in with email', 'Signing in with email for the first time', 'Confirm your email for lojo', 'One click and you’re in.',
+    '<h2>Confirm your email</h2><p>Click below to confirm eric@oslo.com and finish signing in.</p><a class="cta" href="#">Confirm email</a><p class="small">This link works for 24 hours. If you didn’t try to sign in, you can ignore this email.</p>', ACC],
+  ['reset', 'Your account', 'Reset password', 'Anyone who signs in with email', '“Forgot password?” on the sign-in page', 'Reset your lojo password', 'The link works for 1 hour.',
+    '<h2>Reset your password</h2><p>Someone asked to reset the password for eric@oslo.com. If that was you, choose a new one below.</p><a class="cta" href="#">Choose a new password</a><p class="small">This link works for 1 hour. If you didn’t ask, ignore this email and your password stays the same.</p>', ACC],
+  ['role', 'Your account', 'Your role changed', 'The person whose role changed', 'An Owner changes their role in Members and roles or Edit access', 'Your role in Oslo is now Viewer', 'Eric Ouisse changed your access.',
+    '<h2>Your role in Oslo changed</h2><p>Hi Lena, Eric Ouisse changed your role in Oslo from <b>Editor</b> to <b>Viewer</b>.</p><div class="box"><b>As a Viewer you can</b>Ask lojo and read approved answers in Knowledge.</div><p>You can no longer add sources or review drafts. Answers you already approved stay as they are.</p><a class="cta" href="#">Open lojo</a><p class="small">Questions? Ask Eric Ouisse, an Owner of Oslo.</p>', ACC],
+  ['removed', 'Your account', 'Removed from a workspace', 'The person removed', 'An Owner removes them in Members and roles or Edit access', 'You no longer have access to Oslo', 'Eric Ouisse removed your access.',
+    '<h2>You no longer have access to Oslo</h2><p>Hi Jonas, Eric Ouisse removed you from Oslo on lojo. You can’t sign in to it any more.</p><p>Answers you approved stay in Oslo’s knowledge, with your name on them.</p><p class="small">If you think this is a mistake, ask Eric Ouisse.</p>', ACC],
+  ['deleted', 'Your account', 'Workspace deleted', 'Everyone in the workspace', 'An Owner deletes a workspace in Data and export', 'Oslo — Sandbox was deleted', 'Its documents, drafts and answers are gone.',
+    '<h2>Oslo — Sandbox was deleted</h2><p>Eric Ouisse deleted the workspace Oslo — Sandbox. Its documents, questions, drafts and approved answers were deleted for everyone.</p><p>Your other workspaces aren’t affected.</p><a class="cta" href="#">Open lojo</a>', ACC],
+  ['drafts', 'Review', 'Drafts waiting', 'Owners and Editors', 'A new batch of drafts lands in Build', '10 drafts are ready for review', 'Approve, edit or reject them in Build.',
+    '<h2>10 drafts are ready for review</h2><p>lojo drafted answers to questions your team keeps asking. Each one shows the sources it came from.</p><ul><li>Is SSO included on the Growth plan? <span class="small">· sources disagree</span></li><li>How long do refunds take?</li><li>What are the API rate limits?</li></ul><a class="cta" href="#">Review in Build</a>', OFF],
+  ['weekly', 'Review', 'Friday review reminder', 'Owners and Editors', 'Fridays, while the week’s target isn’t met', 'Friday review: 7 of 20 drafts done', '13 drafts left this week.',
+    '<h2>13 drafts left this week</h2><p>Your team reviewed <b>7 of 20</b> drafts so far. Approved answers go straight to Ask lojo.</p><div class="box"><b>Waiting the longest</b>Is SSO included on the Growth plan? · 4 days</div><a class="cta" href="#">Review now</a>', OFF],
+  ['gaps', 'Review', 'New gaps found', 'Owners and Editors', 'lojo finds things the documents mention but never explain', 'lojo found 3 gaps in your documents', 'Send a document or explain them yourself.',
+    '<h2>3 things your documents never explain</h2><p>They’re mentioned, but no document says what they are. Answers that rely on them can’t be approved yet.</p><ul><li>The Enterprise plan</li><li>Chargeback fee</li><li>Data retention period</li></ul><a class="cta" href="#">See gaps in Insights</a>', OFF],
+  ['declined', 'Review', 'Ask lojo declined a question', 'Owners and Editors', 'Ask lojo couldn’t answer from approved knowledge', 'Ask lojo couldn’t answer a question', 'Decide whether it matters.',
+    '<h2>Ask lojo couldn’t answer this</h2><div class="box"><b>“Do we support Apple Pay in Germany?”</b>Asked by Jonas Lie · today</div><p>Nothing approved answers it yet, so lojo said so instead of guessing. It’s now a question in Insights.</p><a class="cta" href="#">Decide in Insights</a>', OFF],
+  ['accepted', 'lojo staff', 'Owner accepted', 'Super admins', 'A company owner accepts their invitation', 'Oslo is active on lojo', 'Eric Ouisse accepted the invitation.',
+    '<h2>Oslo is active</h2><p>Eric Ouisse accepted the invitation and set up Oslo. You’ll see its numbers on the company page.</p><a class="cta" href="#">Open Oslo in Companies</a>', STAFF],
+  ['expiring', 'lojo staff', 'Invitation about to expire', 'Super admins', 'One day before a company owner’s 7-day link runs out', 'The invitation to Halvorsen Legal expires tomorrow', 'Martin Halvorsen hasn’t accepted yet.',
+    '<h2>Halvorsen Legal hasn’t joined yet</h2><p>Martin Halvorsen’s invitation expires tomorrow. Resend it for another 7 days, or revoke it.</p><a class="cta" href="#">Open Companies</a>', STAFF],
+  ['summary', 'lojo staff', 'Weekly platform summary', 'Super admins', 'Mondays', 'lojo this week: 1 new company, 1 open invitation', 'Usage across all companies.',
+    '<h2>lojo this week</h2><ul><li>1 company became active: Oslo</li><li>1 invitation is still open: Halvorsen Legal</li><li>48 questions asked in Ask lojo across all companies</li></ul><p class="small">Counts only. lojo staff never see a company’s sources or answers.</p><a class="cta" href="#">Open Companies</a>', STAFF],
+];
+let cur = (location.hash || '#owner-invite').slice(1);
+function render() {
+  const e = EMAILS.find(x => x[0] === cur) || EMAILS[0]; cur = e[0];
+  const groups = [...new Set(EMAILS.map(x => x[1]))];
+  $('elist').innerHTML = groups.map(g => '<h4>' + esc(g) + '</h4>' + EMAILS.filter(x => x[1] === g).map(x => '<a href="#' + x[0] + '"' + (x[0] === cur ? ' aria-current="true"' : '') + '><b>' + esc(x[2]) + '</b><span>' + esc(x[5]) + '</span></a>').join('')).join('');
+  const [, , , to, trig, subj, pre, html, foot] = e;
+  $('epane').innerHTML = '<dl class="meta2"><dt>From</dt><dd>lojo &lt;hello@lojo.ai&gt;</dd><dt>To</dt><dd>' + esc(to) + '</dd><dt>Subject</dt><dd class="subj">' + esc(subj) + '</dd><dt>Preview</dt><dd>' + esc(pre) + '</dd></dl>' +
+    '<div class="why"><span><b>Sent when:</b> ' + esc(trig) + '</span></div>' +
+    '<div class="inbox"><div class="mail2"><div class="mail2__top"><img src="assets/lojo-icon.png" alt=""><b>lojo.ai</b></div><div class="mail2__body">' + html + '</div><div class="mail2__foot">' + foot + '<br>lojo.ai</div></div></div>';
+}
+window.addEventListener('hashchange', () => { cur = location.hash.slice(1); render(); });
+$('epane').addEventListener('click', (e) => { if (e.target.closest('.cta')) { e.preventDefault(); toast('In the real email this opens lojo'); } });
+render();
+""")
+
+PAGES = {'emails': EMAILS_PAGE, 'platform': PLATFORM, 'superadmin': SUPER, 'company': COMPANY, 'auditlog': AUDIT, 'account': ACCOUNT, 'people': PEOPLE, 'settings': SETTINGS, 'states': STATES, 'dashboard': OVERVIEW, 'sources': DOCUMENTS, 'insights': QUESTIONS_PAGE, 'build': REVIEW, 'distribute': APPROVED, 'chat': CHAT, 'knowledge': READOUT, 'activity': ACTIVITY}
 for name, p in PAGES.items():
-    html = page(p['active'], p['title'], p['css'], p['body'], p['js'], p.get('desc', ''))
+    html = page(p['active'], p['title'], p['css'], p['body'], p['js'], p.get('desc', ''), p.get('persona', 'owner'))
     with open(os.path.join(OUT, name + '.html'), 'w') as f:
         f.write(html)
     print('wrote', name + '.html', len(html))

@@ -31,6 +31,15 @@ window.OSLO_PACK = {
     limit: ['lifetime', 'maximum', 'boarding', 'lost pet', 'theft', 'stray', 'vacation', 'death', 'reward', 'limit'],
     insurer: ['underwrit', 'insurer', 'insurance company', 'licen', 'regulat', 'aiaw'],
   },
+  // things the policy mentions but never explains
+  gaps: [
+    { id: 'og1', term: 'Which pre-existing conditions count as curable', src: 'o4', ask: 'Which pre-existing conditions count as curable?',
+      why: 'The summary says curable pre-existing conditions are covered on Favorite and Optimum, but never says what makes a condition curable or who decides.' },
+    { id: 'og2', term: 'How to choose a reimbursement level', src: 'o6', ask: 'How do I choose between 70% and 90% reimbursement?',
+      why: 'Reimbursement runs from 70% up to 90%, but nothing explains how a customer picks a level, or how it changes the premium.' },
+    { id: 'og3', term: 'What routine and wellness care includes', src: 'o9', ask: 'What counts as routine or wellness care?',
+      why: 'Routine, wellness and preventive care are excluded, but the policy never lists what falls under them, such as vaccines, dental cleaning or flea treatment.' },
+  ],
   seeds: [
     { id: 'oq1', q: 'What plans does Oslo offer?', src: ['o2', 'o5'], risk: 'low',
       draft: 'Three plans: Vital (AED 20,000 a year), Favorite (AED 35,000) and Optimum (AED 70,000). Lifetime maximums are 300,000, 500,000 and 700,000.',
