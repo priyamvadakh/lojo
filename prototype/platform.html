@@ -71,6 +71,13 @@
   .side__sub{display:block;color:var(--muted);font-size:.74rem;letter-spacing:.02em}
   .side__org{width:40px;height:40px;border-radius:11px;flex:none}
   .side__org--co{display:grid;place-items:center;background:var(--ink);color:#fff;font-family:var(--display);font-weight:800;font-size:1.05rem}
+  /* avatars everywhere: people are circles, companies and workspaces are rounded squares; colour comes from the name */
+  .avt1{background:linear-gradient(135deg,#E85D75,#FFB199)!important}
+  .avt2{background:linear-gradient(135deg,#7B5CF0,#C4AEFF)!important}
+  .avt3{background:linear-gradient(135deg,#E39A12,#FFD978)!important}
+  .avt4{background:linear-gradient(135deg,#3F8F5F,#9ED8B0)!important}
+  .av--p{border-radius:50%!important}
+  .av--org{border-radius:11px!important}
   .side__org--co svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   .side__chev{width:16px;height:16px;flex:none;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
   .side__ava--me{width:34px;height:34px;border-radius:50%;font-size:.76rem}
@@ -821,6 +828,9 @@
   :root[data-theme="dark"] .fnote{background:rgba(201,162,74,.14);color:#E9CF8E}
   @media (max-width:860px){ .rhead{display:none} .rrow2{grid-template-columns:1fr!important} .rstat{justify-content:flex-start} .fgrid{grid-template-columns:1fr} }
 
+  .hello h1{font-family:var(--display);font-weight:700;font-size:1.55rem;letter-spacing:-.02em;margin:0;color:#8E2F45}
+  .hello p{margin:2px 0 0;font-size:.74rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
   .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px}
   .kpi{padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:var(--panel);text-align:center}
   .kpi small{display:block;font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
@@ -958,7 +968,7 @@
   <main class="wrap">
 
     <div class="head">
-      <div><p class="label">lojo back office</p><h1>Dashboard <i class="htip" tabindex="0" role="note" aria-label="How lojo is doing across every company. Counts only: lojo staff never see a company’s sources, drafts or answers." data-tip="How lojo is doing across every company. Counts only: lojo staff never see a company’s sources, drafts or answers.">i</i></h1></div>
+      <div class="hello"><div><h1 id="pHi">Good morning, Sadaf <span aria-hidden="true">👋</span></h1><p id="pDate"></p></div></div>
       <span class="spacer"></span>
       <a class="btn btn--primary" href="superadmin.html?invite=1">+ Invite company owner</a>
     </div>
@@ -1508,6 +1518,8 @@ function agentIcon(name) {
 }
 document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('[data-agent]').forEach(el => { el.innerHTML = agentIcon(el.dataset.agent); }));
 const $ = (id) => document.getElementById(id);
+// same name, same colour, on every page
+const tone = (n) => 'avt' + ([...String(n || '')].reduce((a, c) => a + c.charCodeAt(0), 0) % 4 + 1);
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 function toast(msg) {
   const t = $('toast');
@@ -1605,6 +1617,8 @@ if (document.body.dataset.persona !== 'super') {
   const full = user.name === 'Eric' ? 'Eric Ouisse' : user.name;
   $('meName').textContent = full;
   $('topAva').textContent = full.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  $('topAva').classList.add('av--p', tone(full));
+  const ot = $('orgTile'); if (ot) ot.classList.add(tone('Oslo'));
   $('meEmail').textContent = user.email;
   if (document.body.dataset.persona !== 'super') roleView(window.LOJO_ROLE);
 
@@ -1850,6 +1864,9 @@ function tabs(el, items, cur, onPick) {
 }
 
 function render() {
+  const hr = new Date().getHours(), me = (ST.staff || []).find(x => x.id === 's1') || { name: 'Sadaf Farman' };
+  $('pHi').innerHTML = (hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening') + ', ' + esc(me.name.split(' ')[0]) + ' <span aria-hidden="true">👋</span>';
+  $('pDate').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
   const act = ST.companies.filter(c => c.status === 'active'), inv = ST.companies.filter(c => c.status === 'invited');
   const sum = (i) => act.reduce((a, c) => a + ((CO_USAGE[c.id] || [])[i] || 0), 0);
   const people = act.reduce((a, c) => a + c.users, 0), ws = act.reduce((a, c) => a + c.ws.length, 0);
@@ -1862,7 +1879,7 @@ function render() {
   ].map(([l, n, sub]) => '<div class="kpi"><small>' + l + '</small><b>' + n + '</b><span>' + sub + '</span></div>').join('');
   $('pTable').innerHTML = '<thead><tr><th>Company</th><th>People</th><th>Documents</th><th>Approved</th><th>Questions</th><th>Cost</th></tr></thead><tbody>' +
     ST.companies.map((c, i) => { const u = CO_USAGE[c.id], p = c.status === 'invited';
-      return '<tr class="is-click" data-open="' + c.id + '"><td><div class="who"><span class="av c' + (i % 4 + 1) + '">' + ini(c.name) + '</span><div><b>' + esc(c.name) + '</b><span>' + (p ? 'Invited ' + esc(c.sent) : esc(c.domain)) + '</span></div></div></td>' +
+      return '<tr class="is-click" data-open="' + c.id + '"><td><div class="who"><span class="av av--org ' + tone(c.name) + '">' + ini(c.name) + '</span><div><b>' + esc(c.name) + '</b><span>' + (p ? 'Invited ' + esc(c.sent) : esc(c.domain)) + '</span></div></div></td>' +
         [p ? '—' : c.users, u ? u[0] : '—', u ? u[2] : '—', u ? u[3] : '—', u ? '$' + (u[0] * 1.84).toFixed(2) : '—'].map(v => '<td>' + v + '</td>').join('') + '</tr>'; }).join('') + '</tbody>';
 }
 document.addEventListener('click', (e) => {

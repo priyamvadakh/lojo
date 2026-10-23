@@ -2331,7 +2331,7 @@ function renderDetail() {
   if (gs.length && d.status !== 'approved') h += '<div class="gapnote">' + gs.map(g => '<div class="g' + (g.id === HL_GAP ? ' is-hl' : '') + '"><span class="badge badge--gap">' + (g.id === HL_GAP ? 'From Insights' : 'Knowledge gap') + '</span><div><b>' + esc(g.term) + '</b>' + esc(g.why) + ' Check this answer doesn’t rely on it.' +
     '<div class="gacts"><button class="btn btn--secondary" type="button" data-senddoc="' + g.id + '">Send a document that explains it</button><button class="btn btn--secondary" type="button" data-gapq="' + g.id + '">Add as a question</button><button class="btn btn--ghost" type="button" data-gap="' + g.id + '">Not needed</button></div></div></div>').join('') + '</div>';
   // G10: someone else decided this draft while it was open here
-  if (other && d.status === 'pending') h += '<div class="other"><span class="av">' + esc(other.by.split(' ').map(x => x[0]).join('')) + '</span><div><b>' + esc(other.by) + ' ' + esc(other.action) + ' this ' + esc(other.when) + '.</b>' +
+  if (other && d.status === 'pending') h += '<div class="other"><span class="av av--p ' + tone(other.by) + '">' + esc(other.by.split(' ').map(x => x[0]).join('')) + '</span><div><b>' + esc(other.by) + ' ' + esc(other.action) + ' this ' + esc(other.when) + '.</b>' +
     'Your screen was out of date, so nothing you do here will change it. Their decision stands.<div class="btns"><button class="btn btn--primary btn--sm" data-a="ackOther">Got it, next draft</button><button class="btn btn--ghost btn--sm" data-a="seeOther">See their version</button></div></div></div>';
   if (d.status === 'approved') h += '<div class="done-note ok">✓ Approved' + (d.by ? ' by ' + esc(d.by) : '') + (d.at ? ' · ' + esc(d.at) : '') + '. It’s in the store and Ask lojo can use it.</div>';
   if (d.status === 'final') h += '<div class="done-note no">' + (d.own ? 'You’re writing this one yourself. Save to approve it, or leave it out.' : 'Sent to a person (' + esc(d.reason) + '). Write the answer yourself, or leave it out.') + '</div>';
@@ -3693,7 +3693,7 @@ function render() {
   $('pHead').hidden = !list.length;
   $('pList').innerHTML = list.length ? list.map((x, i) => {
     const owner = Object.values(x.ws).includes('owner'), pending = x.status === 'invited';
-    return '<div class="rrow2 prow"><div class="who"><span class="av c' + (i % 4 + 1) + (pending ? ' is-pending' : '') + '">' + ini(x.name) + '</span><div><b>' + esc(x.name) + (owner ? ' <span class="badge badge--rose">Owner</span>' : '') + (x.guest ? ' <span class="badge badge--muted">Guest</span>' : '') + '</b><span>' + esc(x.email) + '</span></div></div>' +
+    return '<div class="rrow2 prow"><div class="who"><span class="av av--p ' + (pending ? 'is-pending' : tone(x.name)) + '">' + ini(x.name) + '</span><div><b>' + esc(x.name) + (owner ? ' <span class="badge badge--rose">Owner</span>' : '') + (x.guest ? ' <span class="badge badge--muted">Guest</span>' : '') + '</b><span>' + esc(x.email) + '</span></div></div>' +
       '<div class="cell">' + (pending ? '<span>Adds their position when they accept</span>' : '<b>' + esc(x.title || '') + '</b><span>' + esc(x.about || '') + '</span>') + '</div>' +
       '<div class="wsl">' + chips(x.ws) + '</div>' +
       '<div class="rstat">' + (pending ? '<span class="badge badge--amber">Invited ' + esc(x.sent) + '</span><button class="btn btn--secondary" type="button" data-resend="' + x.id + '">Resend</button><button class="btn btn--ghost" type="button" data-revoke="' + x.id + '">Revoke</button>' : '<button class="btn btn--secondary" type="button" data-access="' + x.id + '">Edit access</button>') + '</div></div>';
@@ -3836,7 +3836,7 @@ function render() {
   $('cList').innerHTML = list.length ? list.map(c => {
     const i = all.indexOf(c), pending = c.status === 'invited';
     return '<div class="rrow2 crow is-click" data-open="' + c.id + '" tabindex="0" role="button" aria-label="Open ' + esc(c.name) + '">' +
-      '<div class="who"><span class="av' + cls(i) + '">' + ini(c.name) + '</span><div><b>' + esc(c.name) + '</b><span>' + esc(c.domain) + '</span></div></div>' +
+      '<div class="who"><span class="av av--org ' + tone(c.name) + '">' + ini(c.name) + '</span><div><b>' + esc(c.name) + '</b><span>' + esc(c.domain) + '</span></div></div>' +
       '<div class="cell"><b>' + esc(c.owner) + '</b><span>' + esc(c.email) + '</span></div>' +
       '<span class="num' + (pending ? ' is-none' : '') + '">' + (pending ? '—' : c.ws.length) + '</span>' +
       '<span class="num' + (pending ? ' is-none' : '') + '">' + (pending ? '—' : c.users) + '</span>' +
@@ -3994,6 +3994,9 @@ render();
 PLATFORM = dict(
   active='pdash', title='Dashboard', persona='super',
   css=ADMIN_CSS + r"""
+  .hello h1{font-family:var(--display);font-weight:700;font-size:1.55rem;letter-spacing:-.02em;margin:0;color:#8E2F45}
+  .hello p{margin:2px 0 0;font-size:.74rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
   .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px}
   .kpi{padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:var(--panel);text-align:center}
   .kpi small{display:block;font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
@@ -4022,7 +4025,7 @@ PLATFORM = dict(
 """,
   body=r"""
     <div class="head">
-      <div><p class="label">lojo back office</p><h1>Dashboard</h1><p>How lojo is doing across every company. Counts only: lojo staff never see a company’s sources, drafts or answers.</p></div>
+      <div class="hello"><div><h1 id="pHi">Good morning, Sadaf <span aria-hidden="true">👋</span></h1><p id="pDate"></p></div></div>
       <span class="spacer"></span>
       <a class="btn btn--primary" href="superadmin.html?invite=1">+ Invite company owner</a>
     </div>
@@ -4031,6 +4034,9 @@ PLATFORM = dict(
 """,
   js=ADMIN_JS + r"""
 function render() {
+  const hr = new Date().getHours(), me = (ST.staff || []).find(x => x.id === 's1') || { name: 'Sadaf Farman' };
+  $('pHi').innerHTML = (hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening') + ', ' + esc(me.name.split(' ')[0]) + ' <span aria-hidden="true">👋</span>';
+  $('pDate').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
   const act = ST.companies.filter(c => c.status === 'active'), inv = ST.companies.filter(c => c.status === 'invited');
   const sum = (i) => act.reduce((a, c) => a + ((CO_USAGE[c.id] || [])[i] || 0), 0);
   const people = act.reduce((a, c) => a + c.users, 0), ws = act.reduce((a, c) => a + c.ws.length, 0);
@@ -4043,7 +4049,7 @@ function render() {
   ].map(([l, n, sub]) => '<div class="kpi"><small>' + l + '</small><b>' + n + '</b><span>' + sub + '</span></div>').join('');
   $('pTable').innerHTML = '<thead><tr><th>Company</th><th>People</th><th>Documents</th><th>Approved</th><th>Questions</th><th>Cost</th></tr></thead><tbody>' +
     ST.companies.map((c, i) => { const u = CO_USAGE[c.id], p = c.status === 'invited';
-      return '<tr class="is-click" data-open="' + c.id + '"><td><div class="who"><span class="av c' + (i % 4 + 1) + '">' + ini(c.name) + '</span><div><b>' + esc(c.name) + '</b><span>' + (p ? 'Invited ' + esc(c.sent) : esc(c.domain)) + '</span></div></div></td>' +
+      return '<tr class="is-click" data-open="' + c.id + '"><td><div class="who"><span class="av av--org ' + tone(c.name) + '">' + ini(c.name) + '</span><div><b>' + esc(c.name) + '</b><span>' + (p ? 'Invited ' + esc(c.sent) : esc(c.domain)) + '</span></div></div></td>' +
         [p ? '—' : c.users, u ? u[0] : '—', u ? u[2] : '—', u ? u[3] : '—', u ? '$' + (u[0] * 1.84).toFixed(2) : '—'].map(v => '<td>' + v + '</td>').join('') + '</tr>'; }).join('') + '</tbody>';
 }
 document.addEventListener('click', (e) => {
@@ -4096,7 +4102,7 @@ function render() {
   $('cBody').innerHTML = (pending ? '<div class="sec"><div class="empty2"><b>Waiting for ' + esc(c.owner) + ' to accept.</b>Workspaces, people and usage show up once they set up ' + esc(c.name) + '. The link works for 7 days.</div></div>' :
     '<div class="kpis" style="margin-bottom:22px">' + [[c.ws.length, 'Workspaces'], [c.users, 'People'], [u[0], 'Documents'], [u[2], 'Approved answers']].map(([n, l]) => '<div class="kpi"><b>' + n + '</b><span>' + l + '</span></div>').join('') + '</div>') +
     '<div class="cgrid"><div>' +
-      '<section class="sec"><h2>Owner</h2><div class="who"><span class="av c1">' + ini(c.owner) + '</span><div><b>' + esc(c.owner) + ' <span class="badge badge--rose">Owner</span></b><span>' + esc(c.email) + '</span></div></div></section>' +
+      '<section class="sec"><h2>Owner</h2><div class="who"><span class="av av--p ' + tone(c.owner) + '">' + ini(c.owner) + '</span><div><b>' + esc(c.owner) + ' <span class="badge badge--rose">Owner</span></b><span>' + esc(c.email) + '</span></div></div></section>' +
       (pending ? '' : '<section class="sec"><h2>Workspaces</h2><div class="wsl">' + c.ws.map(w => '<span class="wsc">' + esc(w) + '</span>').join('') + '</div></section>' +
       '<section class="sec"><h2>Processing cost <span class="rhelp" style="font-weight:500">· lojo only, metered on every model call</span></h2><div>' +
         '<div class="srow"><div><b>Items read</b><span>Documents, emails, pages and calls</span></div><b>' + u[0] + '</b></div>' +

@@ -71,6 +71,13 @@
   .side__sub{display:block;color:var(--muted);font-size:.74rem;letter-spacing:.02em}
   .side__org{width:40px;height:40px;border-radius:11px;flex:none}
   .side__org--co{display:grid;place-items:center;background:var(--ink);color:#fff;font-family:var(--display);font-weight:800;font-size:1.05rem}
+  /* avatars everywhere: people are circles, companies and workspaces are rounded squares; colour comes from the name */
+  .avt1{background:linear-gradient(135deg,#E85D75,#FFB199)!important}
+  .avt2{background:linear-gradient(135deg,#7B5CF0,#C4AEFF)!important}
+  .avt3{background:linear-gradient(135deg,#E39A12,#FFD978)!important}
+  .avt4{background:linear-gradient(135deg,#3F8F5F,#9ED8B0)!important}
+  .av--p{border-radius:50%!important}
+  .av--org{border-radius:11px!important}
   .side__org--co svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   .side__chev{width:16px;height:16px;flex:none;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
   .side__ava--me{width:34px;height:34px;border-radius:50%;font-size:.76rem}
@@ -830,7 +837,7 @@
   <button class="side__collapse" id="collapse" type="button" aria-label="Collapse sidebar" aria-expanded="true"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16M15 10l-2 2 2 2"/></svg></button>
   </div>
   <div class="me">
-    <button class="side__user" id="orgBtn" type="button" aria-expanded="false" aria-haspopup="true"><span class="side__org side__org--co">O</span><span class="side__who"><b id="orgName">Oslo</b><span class="side__sub" id="orgSub">Oslo · 2 workspaces</span></span><svg class="side__chev" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></svg></button>
+    <button class="side__user" id="orgBtn" type="button" aria-expanded="false" aria-haspopup="true"><span class="side__org side__org--co av--org" id="orgTile">O</span><span class="side__who"><b id="orgName">Oslo</b><span class="side__sub" id="orgSub">Oslo · 2 workspaces</span></span><svg class="side__chev" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></svg></button>
     <div class="pop" id="orgPop" hidden>
       <div class="pop__h">Oslo · oslo.com</div>
       <div>
@@ -1452,6 +1459,8 @@ function agentIcon(name) {
 }
 document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('[data-agent]').forEach(el => { el.innerHTML = agentIcon(el.dataset.agent); }));
 const $ = (id) => document.getElementById(id);
+// same name, same colour, on every page
+const tone = (n) => 'avt' + ([...String(n || '')].reduce((a, c) => a + c.charCodeAt(0), 0) % 4 + 1);
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 function toast(msg) {
   const t = $('toast');
@@ -1549,6 +1558,8 @@ if (document.body.dataset.persona !== 'super') {
   const full = user.name === 'Eric' ? 'Eric Ouisse' : user.name;
   $('meName').textContent = full;
   $('topAva').textContent = full.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  $('topAva').classList.add('av--p', tone(full));
+  const ot = $('orgTile'); if (ot) ot.classList.add(tone('Oslo'));
   $('meEmail').textContent = user.email;
   if (document.body.dataset.persona !== 'super') roleView(window.LOJO_ROLE);
 

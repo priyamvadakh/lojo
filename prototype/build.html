@@ -71,6 +71,13 @@
   .side__sub{display:block;color:var(--muted);font-size:.74rem;letter-spacing:.02em}
   .side__org{width:40px;height:40px;border-radius:11px;flex:none}
   .side__org--co{display:grid;place-items:center;background:var(--ink);color:#fff;font-family:var(--display);font-weight:800;font-size:1.05rem}
+  /* avatars everywhere: people are circles, companies and workspaces are rounded squares; colour comes from the name */
+  .avt1{background:linear-gradient(135deg,#E85D75,#FFB199)!important}
+  .avt2{background:linear-gradient(135deg,#7B5CF0,#C4AEFF)!important}
+  .avt3{background:linear-gradient(135deg,#E39A12,#FFD978)!important}
+  .avt4{background:linear-gradient(135deg,#3F8F5F,#9ED8B0)!important}
+  .av--p{border-radius:50%!important}
+  .av--org{border-radius:11px!important}
   .side__org--co svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   .side__chev{width:16px;height:16px;flex:none;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
   .side__ava--me{width:34px;height:34px;border-radius:50%;font-size:.76rem}
@@ -1002,7 +1009,7 @@
   <button class="side__collapse" id="collapse" type="button" aria-label="Collapse sidebar" aria-expanded="true"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16M15 10l-2 2 2 2"/></svg></button>
   </div>
   <div class="me">
-    <button class="side__user" id="orgBtn" type="button" aria-expanded="false" aria-haspopup="true"><span class="side__org side__org--co">O</span><span class="side__who"><b id="orgName">Oslo</b><span class="side__sub" id="orgSub">Oslo · 2 workspaces</span></span><svg class="side__chev" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></svg></button>
+    <button class="side__user" id="orgBtn" type="button" aria-expanded="false" aria-haspopup="true"><span class="side__org side__org--co av--org" id="orgTile">O</span><span class="side__who"><b id="orgName">Oslo</b><span class="side__sub" id="orgSub">Oslo · 2 workspaces</span></span><svg class="side__chev" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></svg></button>
     <div class="pop" id="orgPop" hidden>
       <div class="pop__h">Oslo · oslo.com</div>
       <div>
@@ -1644,6 +1651,8 @@ function agentIcon(name) {
 }
 document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('[data-agent]').forEach(el => { el.innerHTML = agentIcon(el.dataset.agent); }));
 const $ = (id) => document.getElementById(id);
+// same name, same colour, on every page
+const tone = (n) => 'avt' + ([...String(n || '')].reduce((a, c) => a + c.charCodeAt(0), 0) % 4 + 1);
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 function toast(msg) {
   const t = $('toast');
@@ -1741,6 +1750,8 @@ if (document.body.dataset.persona !== 'super') {
   const full = user.name === 'Eric' ? 'Eric Ouisse' : user.name;
   $('meName').textContent = full;
   $('topAva').textContent = full.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  $('topAva').classList.add('av--p', tone(full));
+  const ot = $('orgTile'); if (ot) ot.classList.add(tone('Oslo'));
   $('meEmail').textContent = user.email;
   if (document.body.dataset.persona !== 'super') roleView(window.LOJO_ROLE);
 
@@ -2151,7 +2162,7 @@ function renderDetail() {
   if (gs.length && d.status !== 'approved') h += '<div class="gapnote">' + gs.map(g => '<div class="g' + (g.id === HL_GAP ? ' is-hl' : '') + '"><span class="badge badge--gap">' + (g.id === HL_GAP ? 'From Insights' : 'Knowledge gap') + '</span><div><b>' + esc(g.term) + '</b>' + esc(g.why) + ' Check this answer doesn’t rely on it.' +
     '<div class="gacts"><button class="btn btn--secondary" type="button" data-senddoc="' + g.id + '">Send a document that explains it</button><button class="btn btn--secondary" type="button" data-gapq="' + g.id + '">Add as a question</button><button class="btn btn--ghost" type="button" data-gap="' + g.id + '">Not needed</button></div></div></div>').join('') + '</div>';
   // G10: someone else decided this draft while it was open here
-  if (other && d.status === 'pending') h += '<div class="other"><span class="av">' + esc(other.by.split(' ').map(x => x[0]).join('')) + '</span><div><b>' + esc(other.by) + ' ' + esc(other.action) + ' this ' + esc(other.when) + '.</b>' +
+  if (other && d.status === 'pending') h += '<div class="other"><span class="av av--p ' + tone(other.by) + '">' + esc(other.by.split(' ').map(x => x[0]).join('')) + '</span><div><b>' + esc(other.by) + ' ' + esc(other.action) + ' this ' + esc(other.when) + '.</b>' +
     'Your screen was out of date, so nothing you do here will change it. Their decision stands.<div class="btns"><button class="btn btn--primary btn--sm" data-a="ackOther">Got it, next draft</button><button class="btn btn--ghost btn--sm" data-a="seeOther">See their version</button></div></div></div>';
   if (d.status === 'approved') h += '<div class="done-note ok">✓ Approved' + (d.by ? ' by ' + esc(d.by) : '') + (d.at ? ' · ' + esc(d.at) : '') + '. It’s in the store and Ask lojo can use it.</div>';
   if (d.status === 'final') h += '<div class="done-note no">' + (d.own ? 'You’re writing this one yourself. Save to approve it, or leave it out.' : 'Sent to a person (' + esc(d.reason) + '). Write the answer yourself, or leave it out.') + '</div>';

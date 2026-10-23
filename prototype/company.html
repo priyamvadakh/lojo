@@ -71,6 +71,13 @@
   .side__sub{display:block;color:var(--muted);font-size:.74rem;letter-spacing:.02em}
   .side__org{width:40px;height:40px;border-radius:11px;flex:none}
   .side__org--co{display:grid;place-items:center;background:var(--ink);color:#fff;font-family:var(--display);font-weight:800;font-size:1.05rem}
+  /* avatars everywhere: people are circles, companies and workspaces are rounded squares; colour comes from the name */
+  .avt1{background:linear-gradient(135deg,#E85D75,#FFB199)!important}
+  .avt2{background:linear-gradient(135deg,#7B5CF0,#C4AEFF)!important}
+  .avt3{background:linear-gradient(135deg,#E39A12,#FFD978)!important}
+  .avt4{background:linear-gradient(135deg,#3F8F5F,#9ED8B0)!important}
+  .av--p{border-radius:50%!important}
+  .av--org{border-radius:11px!important}
   .side__org--co svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   .side__chev{width:16px;height:16px;flex:none;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
   .side__ava--me{width:34px;height:34px;border-radius:50%;font-size:.76rem}
@@ -1501,6 +1508,8 @@ function agentIcon(name) {
 }
 document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('[data-agent]').forEach(el => { el.innerHTML = agentIcon(el.dataset.agent); }));
 const $ = (id) => document.getElementById(id);
+// same name, same colour, on every page
+const tone = (n) => 'avt' + ([...String(n || '')].reduce((a, c) => a + c.charCodeAt(0), 0) % 4 + 1);
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 function toast(msg) {
   const t = $('toast');
@@ -1598,6 +1607,8 @@ if (document.body.dataset.persona !== 'super') {
   const full = user.name === 'Eric' ? 'Eric Ouisse' : user.name;
   $('meName').textContent = full;
   $('topAva').textContent = full.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  $('topAva').classList.add('av--p', tone(full));
+  const ot = $('orgTile'); if (ot) ot.classList.add(tone('Oslo'));
   $('meEmail').textContent = user.email;
   if (document.body.dataset.persona !== 'super') roleView(window.LOJO_ROLE);
 
@@ -1854,7 +1865,7 @@ function render() {
   $('cBody').innerHTML = (pending ? '<div class="sec"><div class="empty2"><b>Waiting for ' + esc(c.owner) + ' to accept.</b>Workspaces, people and usage show up once they set up ' + esc(c.name) + '. The link works for 7 days.</div></div>' :
     '<div class="kpis" style="margin-bottom:22px">' + [[c.ws.length, 'Workspaces'], [c.users, 'People'], [u[0], 'Documents'], [u[2], 'Approved answers']].map(([n, l]) => '<div class="kpi"><b>' + n + '</b><span>' + l + '</span></div>').join('') + '</div>') +
     '<div class="cgrid"><div>' +
-      '<section class="sec"><h2>Owner</h2><div class="who"><span class="av c1">' + ini(c.owner) + '</span><div><b>' + esc(c.owner) + ' <span class="badge badge--rose">Owner</span></b><span>' + esc(c.email) + '</span></div></div></section>' +
+      '<section class="sec"><h2>Owner</h2><div class="who"><span class="av av--p ' + tone(c.owner) + '">' + ini(c.owner) + '</span><div><b>' + esc(c.owner) + ' <span class="badge badge--rose">Owner</span></b><span>' + esc(c.email) + '</span></div></div></section>' +
       (pending ? '' : '<section class="sec"><h2>Workspaces</h2><div class="wsl">' + c.ws.map(w => '<span class="wsc">' + esc(w) + '</span>').join('') + '</div></section>' +
       '<section class="sec"><h2>Processing cost <span class="rhelp" style="font-weight:500">· lojo only, metered on every model call</span></h2><div>' +
         '<div class="srow"><div><b>Items read</b><span>Documents, emails, pages and calls</span></div><b>' + u[0] + '</b></div>' +

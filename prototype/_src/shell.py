@@ -48,6 +48,13 @@ CSS = r"""
   .side__sub{display:block;color:var(--muted);font-size:.74rem;letter-spacing:.02em}
   .side__org{width:40px;height:40px;border-radius:11px;flex:none}
   .side__org--co{display:grid;place-items:center;background:var(--ink);color:#fff;font-family:var(--display);font-weight:800;font-size:1.05rem}
+  /* avatars everywhere: people are circles, companies and workspaces are rounded squares; colour comes from the name */
+  .avt1{background:linear-gradient(135deg,#E85D75,#FFB199)!important}
+  .avt2{background:linear-gradient(135deg,#7B5CF0,#C4AEFF)!important}
+  .avt3{background:linear-gradient(135deg,#E39A12,#FFD978)!important}
+  .avt4{background:linear-gradient(135deg,#3F8F5F,#9ED8B0)!important}
+  .av--p{border-radius:50%!important}
+  .av--org{border-radius:11px!important}
   .side__org--co svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   .side__chev{width:16px;height:16px;flex:none;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
   .side__ava--me{width:34px;height:34px;border-radius:50%;font-size:.76rem}
@@ -788,7 +795,7 @@ def sidebar(active, persona='owner'):
     ALL = {'super': PERSONAS['super'], 'owner': PERSONAS['owner'], **PERSONAS_RUNTIME}
     switch = '\n'.join(prow(k, v) for k, v in ALL.items())
     org_tile = ('<span class="side__org side__org--co">' + ICONS['companies'] + '</span>' if persona == 'super'
-                else '<span class="side__org side__org--co">' + me['org_name'][:1] + '</span>')
+                else '<span class="side__org side__org--co av--org" id="orgTile">' + me['org_name'][:1] + '</span>')
     out = ['<aside class="side" aria-label="Main navigation">',
            # lojo's own mark, beside the collapse button (super admin already shows it in the top-left)
            '  <div class="side__top"><a class="side__brand" href="' + ('platform.html' if persona == 'super' else 'dashboard.html') + '" aria-label="lojo.ai home"><img src="assets/lojo-icon.png" alt="" width="26" height="26"><b>lojo.ai</b></a>',
@@ -1381,6 +1388,8 @@ function agentIcon(name) {
 }
 document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('[data-agent]').forEach(el => { el.innerHTML = agentIcon(el.dataset.agent); }));
 const $ = (id) => document.getElementById(id);
+// same name, same colour, on every page
+const tone = (n) => 'avt' + ([...String(n || '')].reduce((a, c) => a + c.charCodeAt(0), 0) % 4 + 1);
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 function toast(msg) {
   const t = $('toast');
@@ -1478,6 +1487,8 @@ if (document.body.dataset.persona !== 'super') {
   const full = user.name === 'Eric' ? 'Eric Ouisse' : user.name;
   $('meName').textContent = full;
   $('topAva').textContent = full.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  $('topAva').classList.add('av--p', tone(full));
+  const ot = $('orgTile'); if (ot) ot.classList.add(tone('Oslo'));
   $('meEmail').textContent = user.email;
   if (document.body.dataset.persona !== 'super') roleView(window.LOJO_ROLE);
 
