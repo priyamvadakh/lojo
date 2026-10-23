@@ -1254,6 +1254,44 @@ if (new URLSearchParams(location.search).get('demo') === 'upload') demoUploadErr
 QUESTIONS_PAGE = dict(
   active='questions', title='Insights',
   css=r"""
+  .fsbtn{gap:6px}
+  .fsbtn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  body.is-fs .side,body.is-fs .mnav,body.is-fs .fab{display:none!important}
+  body.is-fs .main{margin-left:0}
+  body.is-fs .wrap{max-width:none;padding:16px 24px 24px}
+  body.is-fs .head{margin:-16px -24px 16px;padding:12px 24px}
+  body.is-fs .head > div:first-child > p:not(.label),body.is-fs .head .htip{display:none}
+  body.is-fs .head h1{font-size:1.3rem;margin:2px 0 0}
+  body.is-fs .wrap2{grid-template-columns:minmax(380px,32%) minmax(0,1fr)}
+  body.is-fs .owrap{grid-template-columns:minmax(300px,26%) minmax(0,1fr)}
+  body.is-fs .tlist{top:76px;max-height:calc(100vh - 96px);overflow:auto}
+  body.is-fs .fsbtn{background:var(--ink);border-color:var(--ink);color:#fff}
+
+  /* rows like Build: grey cards, avatar, tags, count pill */
+  .tlist{padding-bottom:8px}
+  .titem.is-row{grid-template-columns:32px minmax(0,1fr) auto;column-gap:12px;row-gap:8px;margin:8px 8px 0;width:calc(100% - 16px);padding:14px;border:0;border-radius:12px;background:#F7F6F4;align-items:center}
+  .titem.is-row:hover{background:#F0EEEB}
+  .titem.is-row.is-sel{background:var(--panel);box-shadow:inset 3px 0 0 var(--rose),0 0 0 1px var(--line-2),0 6px 16px -12px rgba(36,26,20,.4)}
+  .titem.is-row.is-sel::before{display:none}
+  .titem.is-row.is-failed{background:rgba(198,69,69,.06)}
+  .titem.is-row.is-failed.is-sel{background:rgba(198,69,69,.12);box-shadow:inset 3px 0 0 var(--error)}
+  .titem.is-row b{grid-column:2;grid-row:1}
+  .titem.is-row .tmeta{grid-column:2;grid-row:2;display:flex;gap:6px;flex-wrap:wrap}
+  .titem.is-row .tside{grid-column:3;grid-row:1/span 2;align-self:center;display:grid;justify-items:end;gap:4px}
+  .titem.is-row .rav{grid-column:1;grid-row:1/span 2;align-self:center}
+  .tfail{font-style:normal;font-size:.76rem;font-weight:600;color:var(--error);white-space:nowrap}
+  .rav{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:.95rem;line-height:1}
+  .rav--question{background:#FFF0E8}
+  .rav--gap{background:rgba(47,116,232,.12)}
+  .rav--failed{background:rgba(198,69,69,.14)}
+  .rav--down{background:rgba(62,111,166,.12)}
+  .srcb{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:999px;background:#FFF0E8;border:1px solid rgba(232,93,117,.22);color:#B73C54;font-size:.72rem;font-weight:700}
+  .srcb svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
+  .badge--q{background:rgba(36,26,20,.06);color:var(--ink)}
+  .badge--gap{background:rgba(47,116,232,.1);color:#2F74E8}
+  .badge--bad{background:rgba(198,69,69,.1);color:var(--error)}
+  :root[data-theme="dark"] .titem.is-row{background:rgba(255,255,255,.04)}
+
   .ico{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
   .utabs{display:flex;gap:8px;margin:0 0 26px;overflow-x:auto;scrollbar-width:none}
   .utab{flex:none;height:36px;padding:0 16px;border:1px solid var(--line-2);border-radius:999px;background:var(--panel);font:inherit;font-size:.9rem;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap}
@@ -1494,6 +1532,8 @@ QUESTIONS_PAGE = dict(
         <h1>Insights</h1>
         <p>What people keep asking, and what you don’t have an answer for yet: from chat, email, calls and your documents.</p>
       </div>
+      <span class="spacer"></span>
+      <button class="btn btn--secondary btn--sm fsbtn" id="fsBtn" type="button" aria-pressed="false" title="Full screen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>Full screen</span></button>
     </div>
     <div class="utabs" role="tablist" aria-label="Insights">
       <button class="utab" role="tab" data-tab="q" aria-selected="true">Recurring questions</button>
@@ -1538,6 +1578,21 @@ QUESTIONS_PAGE = dict(
     </section>
 """,
   js=r"""
+// full screen, as in Build: hides the sidebar and widens both columns; F toggles, Esc leaves
+function setFs(on) {
+  document.body.classList.toggle('is-fs', on); $('fsBtn').setAttribute('aria-pressed', on);
+  $('fsBtn').querySelector('span').textContent = on ? 'Exit full screen' : 'Full screen';
+  $('fsBtn').querySelector('svg').innerHTML = on ? '<path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/>' : '<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>';
+  try { sessionStorage.setItem('lojo-ins-fs', on ? '1' : ''); } catch (err) {}
+}
+$('fsBtn').addEventListener('click', () => setFs(!document.body.classList.contains('is-fs')));
+try { if (sessionStorage.getItem('lojo-ins-fs')) setFs(true); } catch (err) {}
+document.addEventListener('keydown', (e) => {
+  if (e.target.closest('input,textarea,select') || e.metaKey || e.ctrlKey || document.querySelector('dialog[open]')) return;
+  if (e.key.toLowerCase() === 'f') setFs(!document.body.classList.contains('is-fs'));
+  if (e.key === 'Escape' && document.body.classList.contains('is-fs')) setFs(false);
+});
+
 const I = (d) => '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">' + d + '</svg>';
 const IC = {
   c: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
@@ -1629,6 +1684,11 @@ function qRows() {
     .sort((a, b) => b.list.length - a.list.length);
 }
 const qState = (x) => isApproved(x.q) ? 'ok' : matters(x.q) === false ? 'out' : 'todo';
+// list rows follow Build: emoji avatar, title, tag, count pill on the right, plain status text for failures
+const RAV = { q: ['❓', 'rav--question'], gap: ['🧩', 'rav--gap'], fail: ['⚠️', 'rav--failed'], down: ['👎', 'rav--down'] };
+const rav = (k) => '<span class="rav ' + RAV[k][1] + '" aria-hidden="true">' + RAV[k][0] + '</span>';
+const CNT_IC = { ask: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>', doc: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>' };
+const cntPill = (n, ic, label) => '<span class="srcb" title="' + label + '" aria-label="' + label + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + CNT_IC[ic] + '</svg>' + n + '</span>';
 function qLabel(x) {
   const s = qState(x);
   if (s === 'ok') return ['Approved', 'c-green'];
@@ -1642,7 +1702,10 @@ function renderQ() {
   if (!rows.some(x => x.q.id === qSel)) qSel = (todo[0] || rows[0] || {}).q?.id || null;
   const R = RANGES[qRange], n = todo.reduce((a, x) => a + x.list.length, 0);
   const item = (x) => { const [l, c] = qLabel(x);
-    return '<button class="titem' + (x.q.id === qSel ? ' is-sel' : '') + '" data-sel="' + x.q.id + '"><b>' + esc(x.q.q) + '</b><span class="tn">' + x.list.length + '</span><span class="st ' + c + '">' + l + '</span></button>'; };
+    const failed = l === 'Draft failed', n = x.list.length;
+    return '<button class="titem is-row' + (failed ? ' is-failed' : '') + (x.q.id === qSel ? ' is-sel' : '') + '" data-sel="' + x.q.id + '">' + rav(failed ? 'fail' : x.q.gap ? 'gap' : 'q') + '<b>' + esc(x.q.q) + '</b>' +
+      '<span class="tmeta"><span class="badge badge--q">Question</span>' + (failed ? '' : '<span class="badge ' + (c === 'c-amber' ? 'badge--amber' : c === 'c-green' ? 'badge--ok' : 'badge--muted') + '">' + l + '</span>') + '</span>' +
+      '<span class="tside">' + (failed ? '<em class="tfail">Draft failed</em>' : '') + cntPill(n, 'ask', 'Asked ' + n + (n === 1 ? ' time' : ' times')) + '</span></button>'; };
   $('qList').innerHTML = '<div class="th"><span>To handle</span><span>' + todo.length + '</span></div>' + (todo.length ? todo.map(item).join('') : '<div class="tnone">Nothing to handle ' + R.now + '.</div>') +
     listGroup('ok', 'Approved', by('ok'), item, qOpen) + listGroup('out', 'Left out', by('out'), item, qOpen);
   renderQDetail(rows.find(x => x.q.id === qSel));
@@ -1708,8 +1771,10 @@ function renderG() {
   if (!items.some(x => x.id === gSel)) gSel = (todo[0] || items[0] || {}).id || null;
   const cnt = (k) => all.filter(x => x.kind === k).length;
   const item = (x) => { const K = KIND[x.kind];
-    return '<button class="titem has-ic' + (x.id === gSel ? ' is-sel' : '') + '" data-sel="' + x.id + '"><span class="tic bg-' + K.c + ' c-' + K.c + '">' + I(K.ic) + '</span><b>' + esc(x.title) + '</b>' +
-      '<span class="tn">' + x.n + '<small>' + (x.n === 1 ? x.unit : x.unit + 's') + '</small></span><span class="st plain c-' + K.c + '">' + K.label + '</span></button>'; };
+    const u = x.n === 1 ? x.unit : x.unit + 's';
+    return '<button class="titem is-row' + (x.id === gSel ? ' is-sel' : '') + '" data-sel="' + x.id + '">' + rav(x.kind === 'never' ? 'gap' : x.kind === 'wrong' ? 'down' : 'q') + '<b>' + esc(x.title) + '</b>' +
+      '<span class="tmeta"><span class="badge badge--gap">Gap</span><span class="badge badge--' + (K.c === 'amber' ? 'amber' : K.c === 'red' ? 'bad' : 'info') + '">' + K.label + '</span></span>' +
+      '<span class="tside">' + cntPill(x.n, x.unit === 'document' ? 'doc' : 'ask', x.n + ' ' + u) + '</span></button>'; };
   $('gList').innerHTML = '<div class="th"><span>To handle</span><span>' + todo.length + '</span></div>' + (todo.length ? todo.map(item).join('') : '<div class="tnone">Nothing left to handle here.</div>') +
     listGroup('done', 'Handled', items.filter(x => gState(x) === 'done'), item, gOpen);
   renderGDetail(items.find(x => x.id === gSel));
@@ -3003,6 +3068,18 @@ CHAT = dict(
 READOUT = dict(
   active='readout', title='Knowledge',
   css=r"""
+  .head .fsbtn{gap:6px;margin-right:6px}
+  .fsbtn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  body.is-fs .side,body.is-fs .mnav,body.is-fs .fab{display:none!important}
+  body.is-fs .main{margin-left:0}
+  body.is-fs .wrap{max-width:none;padding:16px 24px 24px}
+  body.is-fs .head{margin:-16px -24px 16px;padding:12px 24px}
+  body.is-fs .head > div:first-child > p:not(.label),body.is-fs .head .htip,body.is-fs .rocard{display:none}
+  body.is-fs .head h1{font-size:1.3rem;margin:2px 0 0}
+  body.is-fs .kb{grid-template-columns:minmax(380px,32%) minmax(0,1fr)}
+  body.is-fs .klist{top:76px;max-height:calc(100vh - 96px)}
+  body.is-fs .fsbtn{background:var(--ink);border-color:var(--ink);color:#fff}
+
   body.kview .ktabs,body.kview #exp{display:none!important}
 
   /* simpler Knowledge: the library is the page */
@@ -3260,6 +3337,7 @@ READOUT = dict(
         <p>Every approved answer, with where it came from and who approved it. Search it, or pick a topic.</p>
       </div>
       <span class="spacer"></span>
+      <button class="btn btn--secondary btn--sm fsbtn" id="fsBtn" type="button" aria-pressed="false" title="Full screen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>Full screen</span></button>
       <button class="btn btn--primary" id="exp" type="button"><svg class="i" viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M4 18v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1"/></svg>Export</button>
     </div>
 
@@ -3293,6 +3371,21 @@ READOUT = dict(
     </section>
 """,
   js=r"""
+// full screen, as in Build and Insights: F toggles, Esc leaves
+function setFs(on) {
+  document.body.classList.toggle('is-fs', on); $('fsBtn').setAttribute('aria-pressed', on);
+  $('fsBtn').querySelector('span').textContent = on ? 'Exit full screen' : 'Full screen';
+  $('fsBtn').querySelector('svg').innerHTML = on ? '<path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/>' : '<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>';
+  try { sessionStorage.setItem('lojo-kn-fs', on ? '1' : ''); } catch (err) {}
+}
+$('fsBtn').addEventListener('click', () => setFs(!document.body.classList.contains('is-fs')));
+try { if (sessionStorage.getItem('lojo-kn-fs')) setFs(true); } catch (err) {}
+document.addEventListener('keydown', (e) => {
+  if (e.target.closest('input,textarea,select') || e.metaKey || e.ctrlKey || document.querySelector('dialog[open]')) return;
+  if (e.key.toLowerCase() === 'f') setFs(!document.body.classList.contains('is-fs'));
+  if (e.key === 'Escape' && document.body.classList.contains('is-fs')) setFs(false);
+});
+
 // every piece of company knowledge: drafts with their state, plus reference passages saved from sources
 const IC = {
   layers: '<svg viewBox="0 0 24 24"><path d="M12 3 2 8l10 5 10-5z"/><path d="m2 13 10 5 10-5"/></svg>',

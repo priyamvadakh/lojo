@@ -63,6 +63,7 @@ CSS = r"""
   :root:not([data-agents="on"]) [data-feature="agents"]{display:none!important}
   :root:not([data-agents="on"]) .duo{grid-template-columns:1fr!important}
   .not-owner .ws-del{display:none}
+  .rs__ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--bg-soft);font-size:1.2rem;margin-bottom:12px}
   .noacc{max-width:560px;margin:72px auto;padding:32px;border:1px solid var(--line);border-radius:20px;background:var(--panel);box-shadow:0 16px 30px -28px rgba(36,26,20,.3)}
   .noacc h1{font-family:var(--display);font-weight:700;font-size:1.6rem;margin:6px 0 10px}
   .noacc p{color:var(--muted);margin:0 0 18px}
@@ -343,6 +344,7 @@ CSS = r"""
   .awb{justify-self:start;max-width:85%;padding:12px 15px;border-radius:14px;background:var(--bg-soft);font-size:.92rem;line-height:1.5}
   .askp__foot .chips{gap:6px}
   .askp__foot .chip{height:auto;min-height:32px;padding:6px 12px;border-radius:999px;border:1px solid var(--line-2);background:var(--panel);font-size:.82rem;text-align:left;line-height:1.35}
+  .sugg__lbl{align-self:center;font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-right:2px}
   .askp__foot .chip:hover{border-color:rgba(36,26,20,.3)}
   .cl__find{position:relative;display:block}
   .cl__find svg{position:absolute;left:10px;top:50%;width:15px;height:15px;transform:translateY(-50%);fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round}
@@ -757,7 +759,7 @@ NAV_FLAT = [
   ('overview', 'dashboard.html', 'Dashboard', None, ''),
   ('loop', 'onboarding.html?loop=1', 'My loop', None, ''),
   ('documents', 'sources.html', 'Sources', None, '01'),
-  ('review', 'build.html', 'Build <em class="lbl-sub">(Validate)</em>', 'navReview', ''),
+  ('review', 'build.html', 'Build <em class="lbl-sub">(Review)</em>', 'navReview', ''),
   ('questions', 'insights.html', 'Insights', 'navQuestions', ''),
   ('approved', 'distribute.html', 'Distribute', 'navApproved', ''),
   ('readout', 'knowledge.html', 'Knowledge', None, ''),
@@ -1456,8 +1458,25 @@ function roleView(role) {
     const br = document.querySelector('.side__brand'); if (br) br.href = 'knowledge.html';
     const nav = document.querySelector('.side nav'), ask = nav.querySelector('[data-only="viewer"]'), kn = nav.querySelector('a[href="knowledge.html"]'); if (ask) nav.prepend(ask); if (kn) nav.prepend(kn);
   }
-  const OPEN = { editor: (f) => f !== 'people.html', viewer: (f) => ['chat.html', 'knowledge.html', 'settings.html', 'states.html', 'emails.html'].includes(f) };
+  const OPEN = { editor: (f) => !['people.html', 'readout.html'].includes(f), viewer: (f) => ['chat.html', 'knowledge.html', 'settings.html', 'states.html', 'emails.html'].includes(f) };
   if (OPEN[role] && !OPEN[role](here)) setTimeout(() => noAccess(role, here), 0);
+  // a link to somewhere this role can't go opens a small pop-up instead of leaving the page
+  if (OPEN[role]) document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href]'); if (!a || a.closest('.side')) return;
+    const f = a.getAttribute('href').split(/[?#]/)[0]; if (!f.endsWith('.html') || OPEN[role](f)) return;
+    e.preventDefault(); e.stopPropagation(); restrict(role, f, a.textContent.trim());
+  }, true);
+}
+function restrict(role, f, what) {
+  const NAMES = { 'build.html': 'Build', 'sources.html': 'Sources', 'insights.html': 'Insights', 'distribute.html': 'Distribute', 'people.html': 'Invite and manage people', 'readout.html': 'the Readout', 'dashboard.html': 'the Dashboard', 'activity.html': 'Activity' };
+  const owner = ST.people.find(p => p.id === 'p1') || { name: 'an Owner', email: '' };
+  const why = role === 'viewer' ? 'Viewers ask lojo and read approved answers. Changing answers needs Editor access.' : 'Only Owners can do this.';
+  let d = $('rsDlg'); if (!d) { d = document.createElement('dialog'); d.id = 'rsDlg'; d.className = 'dlg'; document.body.appendChild(d); }
+  d.innerHTML = '<div class="dlg__b"><div class="rs__ic">🔒</div><h3>' + esc(what && what.length < 40 ? what : 'Open ' + (NAMES[f] || 'this')) + ' isn’t available to you</h3>' +
+    '<p>' + why + ' You’re a <b>' + (role === 'viewer' ? 'Viewer' : 'Editor') + '</b> in Oslo.</p></div>' +
+    '<div class="dlg__f"><button class="btn btn--secondary" type="button" data-rs="0">OK</button><a class="btn btn--primary" href="mailto:' + esc(owner.email) + '?subject=' + encodeURIComponent('Access to ' + (NAMES[f] || 'lojo')) + '" data-rs="1">Ask ' + esc(owner.name.split(' ')[0]) + ' for access</a></div>';
+  d.onclick = (e) => { if (e.target === d || e.target.closest('[data-rs="0"]')) d.close(); if (e.target.closest('[data-rs="1"]')) { d.close(); toast('Request sent to ' + owner.name); } };
+  d.showModal();
 }
 function noAccess(role, here) {
   const NAMES = { 'build.html': 'Build', 'sources.html': 'Sources', 'insights.html': 'Insights', 'distribute.html': 'Distribute', 'activity.html': 'Activity', 'people.html': 'People', 'dashboard.html': 'the Dashboard' };
@@ -1601,6 +1620,13 @@ if (document.body.dataset.persona !== 'super') {
     log.appendChild(w);
     $('askSugg').innerHTML = qs.slice(0, 3).map(x => '<button type="button" class="chip">' + esc(x) + '</button>').join('');
   }
+  // related questions from the latest answer move next to the chat box
+  function liftRelated() {
+    const rels = log.querySelectorAll('.related'); if (!rels.length) return;
+    const last = rels[rels.length - 1], qs = [...last.querySelectorAll('[data-ask]')].map(b => b.dataset.ask);
+    rels.forEach(r => r.remove());
+    $('askSugg').innerHTML = qs.length ? '<span class="sugg__lbl">Related</span>' + qs.map(x => '<button type="button" class="chip">' + esc(x) + '</button>').join('') : '';
+  }
   function ask(q) {
     $('askSugg').innerHTML = ''; const w0 = $('askWelcome'); if (w0) w0.remove();
     say('me', esc(q));
@@ -1611,7 +1637,7 @@ if (document.body.dataset.persona !== 'super') {
       const d = window.__askDoc && window.__askDoc(q, store); if (d) { say('bot', d); countChat('answered'); return; }
       let best = null, bs = 0;
       store().forEach(x => { const s = score(q, x.q + ' ' + x.a); if (s.c > 0 && s.s > bs) { best = x; bs = s.s; } });
-      if (best && bs >= 2) { say('bot', answerHTML(q, best.a, best.q, best.r.src.map(([d, loc]) => srcChip(d, loc)).join(''))); countChat('answered'); }
+      if (best && bs >= 2) { setTimeout(liftRelated, 0); say('bot', answerHTML(q, best.a, best.q, best.r.src.map(([d, loc]) => srcChip(d, loc)).join(''))); countChat('answered'); }
       else {
         say('bot am--miss', '<div class="miss"><b>Not in approved knowledge yet</b><p>Nothing approved answers this, so I won’t guess. Send it to Insights and it can be answered and approved.</p>' +
           '<div class="miss__acts"><button type="button" class="btn btn--secondary btn--sm" data-sendq="' + esc(q) + '">Send to Insights</button><button type="button" class="btn btn--ghost btn--sm" data-rephrase="' + esc(q) + '">Rephrase</button></div></div>');
@@ -1625,6 +1651,7 @@ if (document.body.dataset.persona !== 'super') {
     const msgs = askHistory.all();
     if (!msgs.length) welcome();
     msgs.forEach(m => say(m.kind === 'me' ? 'me' : m.kind === 'miss' ? 'bot am--miss' : 'bot', m.html, true));
+    liftRelated();
   }
   function toggle(open) {
     if (isPage) return;
