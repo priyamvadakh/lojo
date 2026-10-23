@@ -1561,7 +1561,7 @@ function roleView(role) {
   document.querySelectorAll('.persona').forEach(a => { const on = a.dataset.persona === role; a.classList.toggle('is-cur', on); if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
   const hide = (sel) => document.querySelectorAll(sel).forEach(el => { el.hidden = true; });
   const here = location.pathname.split('/').pop() || 'dashboard.html';
-  if (role !== 'owner') { hide('.side nav a[href="people.html"]'); hide('#orgInvite'); hide('#wsAdd'); document.body.classList.add('not-owner'); }
+  if (role !== 'owner') { hide('[data-owner-only]'); hide('.side nav a[href="people.html"]'); hide('#orgInvite'); hide('#wsAdd'); document.body.classList.add('not-owner'); }
   if (role === 'viewer') {
     document.querySelectorAll('.side nav a.nav-item').forEach(a => { const f = a.getAttribute('href').split('?')[0]; a.hidden = !['chat.html', 'knowledge.html'].includes(f); a.classList.toggle('is-active', f === here); });
     const br = document.querySelector('.side__brand'); if (br) br.href = 'knowledge.html';
@@ -1856,6 +1856,10 @@ function render() {
     '<div class="cgrid"><div>' +
       '<section class="sec"><h2>Owner</h2><div class="who"><span class="av c1">' + ini(c.owner) + '</span><div><b>' + esc(c.owner) + ' <span class="badge badge--rose">Owner</span></b><span>' + esc(c.email) + '</span></div></div></section>' +
       (pending ? '' : '<section class="sec"><h2>Workspaces</h2><div class="wsl">' + c.ws.map(w => '<span class="wsc">' + esc(w) + '</span>').join('') + '</div></section>' +
+      '<section class="sec"><h2>Processing cost <span class="rhelp" style="font-weight:500">· lojo only, metered on every model call</span></h2><div>' +
+        '<div class="srow"><div><b>Items read</b><span>Documents, emails, pages and calls</span></div><b>' + u[0] + '</b></div>' +
+        '<div class="srow"><div><b>Total so far</b><span>Indexing, question finding, drafting, rewrites and Ask lojo</span></div><b>$' + (u[0] * 1.84).toFixed(2) + '</b></div>' +
+        '<div class="srow"><div><b>Per item read</b><span>Average</span></div><b>$1.84</b></div></div></section>' +
       '<section class="sec"><h2>Usage this month</h2><div>' +
         '<div class="srow"><div><b>Questions found</b><span>From their documents</span></div><b>' + u[1] + '</b></div>' +
         '<div class="srow"><div><b>Approved answers</b><span>Reviewed by a person</span></div><b>' + u[2] + '</b></div>' +

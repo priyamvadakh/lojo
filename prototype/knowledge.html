@@ -752,6 +752,22 @@
   .side .theme-toggle{flex-direction:column;width:30px;height:58px;padding:7px 0}
   :root[data-theme="dark"] .side .theme-toggle::before{transform:translateY(28px)}
 
+  body.kview .ktabs,body.kview #exp{display:none!important}
+
+  /* simpler Knowledge: the library is the page */
+  .ksec,.kover,#fSpace,#fType{display:none!important}
+  .klib{margin-top:0}
+
+  .rocard{display:flex;align-items:center;gap:14px;margin:0 0 18px;padding:16px 20px;border-radius:16px;border:1px solid rgba(232,93,117,.3);background:linear-gradient(90deg,#FFF0E8,#FFFFFF);color:var(--ink);text-decoration:none}
+  .rocard:hover{text-decoration:none;box-shadow:0 12px 26px -20px rgba(232,93,117,.6)}
+  .rocard__ic{width:42px;height:42px;border-radius:12px;flex:none;display:grid;place-items:center;background:#fff;font-size:1.2rem;box-shadow:0 2px 6px -3px rgba(36,26,20,.3)}
+  .rocard__t{flex:1;min-width:0}
+  .rocard__t small{display:block;font-size:.66rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--rose)}
+  .rocard__t b{display:block;font-family:var(--display);font-size:1.05rem}
+  .rocard__t span{font-size:.84rem;color:var(--muted)}
+  .rocard__go{font-weight:700;color:#B73C54;white-space:nowrap}
+  :root[data-theme="dark"] .rocard{background:linear-gradient(90deg,rgba(232,93,117,.12),transparent)}
+
   .kstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:14px}
   .kstat{padding:18px 20px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
   .kstat i{display:block;width:28px;height:4px;border-radius:4px;margin-bottom:10px;background:var(--line-2)}
@@ -1103,12 +1119,17 @@
     <div class="head">
       <div>
         <p class="label">Company knowledge</p>
-        <h1>Knowledge <i class="htip" tabindex="0" role="note" aria-label="Every answer lojo knows, with where it came from and who approved it." data-tip="Every answer lojo knows, with where it came from and who approved it.">i</i></h1>
+        <h1>Knowledge <i class="htip" tabindex="0" role="note" aria-label="Every approved answer, with where it came from and who approved it. Search it, or pick a topic." data-tip="Every approved answer, with where it came from and who approved it. Search it, or pick a topic.">i</i></h1>
       </div>
       <span class="spacer"></span>
       <button class="btn btn--primary" id="exp" type="button"><svg class="i" viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M4 18v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1"/></svg>Export</button>
     </div>
 
+    <a class="rocard" href="readout.html" data-owner-only>
+      <span class="rocard__ic">📋</span>
+      <span class="rocard__t"><small>Week 4 · Owner only</small><b>Your readout is ready</b><span>What four weeks produced, and your decision to continue.</span></span>
+      <span class="rocard__go">Open readout →</span>
+    </a>
     <section class="ksec" aria-labelledby="kH"><div class="ksec__h"><h2 id="kH">Your knowledge</h2><span>· What Oslo has in lojo right now</span></div><div class="kstats" id="kstats"></div></section>
 
     <section class="klib" aria-labelledby="libH">
@@ -1750,7 +1771,7 @@ function roleView(role) {
   document.querySelectorAll('.persona').forEach(a => { const on = a.dataset.persona === role; a.classList.toggle('is-cur', on); if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
   const hide = (sel) => document.querySelectorAll(sel).forEach(el => { el.hidden = true; });
   const here = location.pathname.split('/').pop() || 'dashboard.html';
-  if (role !== 'owner') { hide('.side nav a[href="people.html"]'); hide('#orgInvite'); hide('#wsAdd'); document.body.classList.add('not-owner'); }
+  if (role !== 'owner') { hide('[data-owner-only]'); hide('.side nav a[href="people.html"]'); hide('#orgInvite'); hide('#wsAdd'); document.body.classList.add('not-owner'); }
   if (role === 'viewer') {
     document.querySelectorAll('.side nav a.nav-item').forEach(a => { const f = a.getAttribute('href').split('?')[0]; a.hidden = !['chat.html', 'knowledge.html'].includes(f); a.classList.toggle('is-active', f === here); });
     const br = document.querySelector('.side__brand'); if (br) br.href = 'knowledge.html';
@@ -2020,9 +2041,12 @@ function entries() {
 }
 const stateChip = (s) => '<span class="kc ' + STATE_UI[s][1] + '">' + STATE_UI[s][0] + '</span>';
 let sel = null, ktab = new URLSearchParams(location.search).get('state') || 'answers';
+// Viewers read only what's live in Ask lojo: no other states, no export
+const KVIEW = window.LOJO_ROLE === 'viewer';
+if (KVIEW) { ktab = 'Published'; document.body.classList.add('kview'); }
 // plain-language states
 const STATE_UI = { Published: ['Live in Ask lojo', 'pub'], Draft: ['Waiting for approval', 'drf'], 'Needs review': ['Needs review', 'rev'], Reference: ['Reference', ''] };
-const TABS = [['answers', 'All answers'], ['Published', 'Live in Ask lojo'], ['Draft', 'Waiting for approval'], ['Needs review', 'Needs review'], ['Reference', 'Reference passages']];
+const TABS = [['answers', 'All answers'], ['Published', 'Live in Ask lojo'], ['Draft', 'Waiting for approval']];
 const uniq = (arr) => [...new Set(arr)];
 function opts(id, label, vals) { const keep = $(id).value; $(id).innerHTML = '<option value="">' + label + '</option>' + vals.map(v => '<option value="' + esc(v) + '">' + esc(id === 'fTopic' ? TOPICS[v] || v : v) + '</option>').join(''); $(id).value = vals.includes(keep) ? keep : ''; }
 function filtered(all) {

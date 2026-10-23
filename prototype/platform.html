@@ -821,7 +821,7 @@
   :root[data-theme="dark"] .fnote{background:rgba(201,162,74,.14);color:#E9CF8E}
   @media (max-width:860px){ .rhead{display:none} .rrow2{grid-template-columns:1fr!important} .rstat{justify-content:flex-start} .fgrid{grid-template-columns:1fr} }
 
-  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px}
   .kpi{padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:var(--panel);text-align:center}
   .kpi small{display:block;font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
   .kpi b{display:block;font-family:var(--display);font-size:1.9rem;line-height:1.15;margin:6px 0 2px}
@@ -1568,7 +1568,7 @@ function roleView(role) {
   document.querySelectorAll('.persona').forEach(a => { const on = a.dataset.persona === role; a.classList.toggle('is-cur', on); if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
   const hide = (sel) => document.querySelectorAll(sel).forEach(el => { el.hidden = true; });
   const here = location.pathname.split('/').pop() || 'dashboard.html';
-  if (role !== 'owner') { hide('.side nav a[href="people.html"]'); hide('#orgInvite'); hide('#wsAdd'); document.body.classList.add('not-owner'); }
+  if (role !== 'owner') { hide('[data-owner-only]'); hide('.side nav a[href="people.html"]'); hide('#orgInvite'); hide('#wsAdd'); document.body.classList.add('not-owner'); }
   if (role === 'viewer') {
     document.querySelectorAll('.side nav a.nav-item').forEach(a => { const f = a.getAttribute('href').split('?')[0]; a.hidden = !['chat.html', 'knowledge.html'].includes(f); a.classList.toggle('is-active', f === here); });
     const br = document.querySelector('.side__brand'); if (br) br.href = 'knowledge.html';
@@ -1858,11 +1858,12 @@ function render() {
     ['People', people, 'in ' + ws + ' workspaces'],
     ['Approved answers', sum(2), 'from ' + sum(0) + ' documents'],
     ['Ask lojo questions', sum(3), 'this month'],
+    ['Processing cost', '$' + (sum(0) * 1.84).toFixed(2), '$1.84 per item read · lojo only'],
   ].map(([l, n, sub]) => '<div class="kpi"><small>' + l + '</small><b>' + n + '</b><span>' + sub + '</span></div>').join('');
-  $('pTable').innerHTML = '<thead><tr><th>Company</th><th>People</th><th>Documents</th><th>Approved</th><th>Questions</th></tr></thead><tbody>' +
+  $('pTable').innerHTML = '<thead><tr><th>Company</th><th>People</th><th>Documents</th><th>Approved</th><th>Questions</th><th>Cost</th></tr></thead><tbody>' +
     ST.companies.map((c, i) => { const u = CO_USAGE[c.id], p = c.status === 'invited';
       return '<tr class="is-click" data-open="' + c.id + '"><td><div class="who"><span class="av c' + (i % 4 + 1) + '">' + ini(c.name) + '</span><div><b>' + esc(c.name) + '</b><span>' + (p ? 'Invited ' + esc(c.sent) : esc(c.domain)) + '</span></div></div></td>' +
-        [p ? '—' : c.users, u ? u[0] : '—', u ? u[2] : '—', u ? u[3] : '—'].map(v => '<td>' + v + '</td>').join('') + '</tr>'; }).join('') + '</tbody>';
+        [p ? '—' : c.users, u ? u[0] : '—', u ? u[2] : '—', u ? u[3] : '—', u ? '$' + (u[0] * 1.84).toFixed(2) : '—'].map(v => '<td>' + v + '</td>').join('') + '</tr>'; }).join('') + '</tbody>';
 }
 document.addEventListener('click', (e) => {
   const o = e.target.closest('[data-open]'); if (o) location.href = 'company.html?id=' + o.dataset.open;

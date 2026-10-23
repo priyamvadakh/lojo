@@ -3003,6 +3003,22 @@ CHAT = dict(
 READOUT = dict(
   active='readout', title='Knowledge',
   css=r"""
+  body.kview .ktabs,body.kview #exp{display:none!important}
+
+  /* simpler Knowledge: the library is the page */
+  .ksec,.kover,#fSpace,#fType{display:none!important}
+  .klib{margin-top:0}
+
+  .rocard{display:flex;align-items:center;gap:14px;margin:0 0 18px;padding:16px 20px;border-radius:16px;border:1px solid rgba(232,93,117,.3);background:linear-gradient(90deg,#FFF0E8,#FFFFFF);color:var(--ink);text-decoration:none}
+  .rocard:hover{text-decoration:none;box-shadow:0 12px 26px -20px rgba(232,93,117,.6)}
+  .rocard__ic{width:42px;height:42px;border-radius:12px;flex:none;display:grid;place-items:center;background:#fff;font-size:1.2rem;box-shadow:0 2px 6px -3px rgba(36,26,20,.3)}
+  .rocard__t{flex:1;min-width:0}
+  .rocard__t small{display:block;font-size:.66rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--rose)}
+  .rocard__t b{display:block;font-family:var(--display);font-size:1.05rem}
+  .rocard__t span{font-size:.84rem;color:var(--muted)}
+  .rocard__go{font-weight:700;color:#B73C54;white-space:nowrap}
+  :root[data-theme="dark"] .rocard{background:linear-gradient(90deg,rgba(232,93,117,.12),transparent)}
+
   .kstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:14px}
   .kstat{padding:18px 20px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
   .kstat i{display:block;width:28px;height:4px;border-radius:4px;margin-bottom:10px;background:var(--line-2)}
@@ -3241,12 +3257,17 @@ READOUT = dict(
       <div>
         <p class="label">Company knowledge</p>
         <h1>Knowledge</h1>
-        <p>Every answer lojo knows, with where it came from and who approved it.</p>
+        <p>Every approved answer, with where it came from and who approved it. Search it, or pick a topic.</p>
       </div>
       <span class="spacer"></span>
       <button class="btn btn--primary" id="exp" type="button"><svg class="i" viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M4 18v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1"/></svg>Export</button>
     </div>
 
+    <a class="rocard" href="readout.html" data-owner-only>
+      <span class="rocard__ic">📋</span>
+      <span class="rocard__t"><small>Week 4 · Owner only</small><b>Your readout is ready</b><span>What four weeks produced, and your decision to continue.</span></span>
+      <span class="rocard__go">Open readout →</span>
+    </a>
     <section class="ksec" aria-labelledby="kH"><div class="ksec__h"><h2 id="kH">Your knowledge</h2><span>· What Oslo has in lojo right now</span></div><div class="kstats" id="kstats"></div></section>
 
     <section class="klib" aria-labelledby="libH">
@@ -3303,9 +3324,12 @@ function entries() {
 }
 const stateChip = (s) => '<span class="kc ' + STATE_UI[s][1] + '">' + STATE_UI[s][0] + '</span>';
 let sel = null, ktab = new URLSearchParams(location.search).get('state') || 'answers';
+// Viewers read only what's live in Ask lojo: no other states, no export
+const KVIEW = window.LOJO_ROLE === 'viewer';
+if (KVIEW) { ktab = 'Published'; document.body.classList.add('kview'); }
 // plain-language states
 const STATE_UI = { Published: ['Live in Ask lojo', 'pub'], Draft: ['Waiting for approval', 'drf'], 'Needs review': ['Needs review', 'rev'], Reference: ['Reference', ''] };
-const TABS = [['answers', 'All answers'], ['Published', 'Live in Ask lojo'], ['Draft', 'Waiting for approval'], ['Needs review', 'Needs review'], ['Reference', 'Reference passages']];
+const TABS = [['answers', 'All answers'], ['Published', 'Live in Ask lojo'], ['Draft', 'Waiting for approval']];
 const uniq = (arr) => [...new Set(arr)];
 function opts(id, label, vals) { const keep = $(id).value; $(id).innerHTML = '<option value="">' + label + '</option>' + vals.map(v => '<option value="' + esc(v) + '">' + esc(id === 'fTopic' ? TOPICS[v] || v : v) + '</option>').join(''); $(id).value = vals.includes(keep) ? keep : ''; }
 function filtered(all) {
@@ -3970,7 +3994,7 @@ render();
 PLATFORM = dict(
   active='pdash', title='Dashboard', persona='super',
   css=ADMIN_CSS + r"""
-  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px}
   .kpi{padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:var(--panel);text-align:center}
   .kpi small{display:block;font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
   .kpi b{display:block;font-family:var(--display);font-size:1.9rem;line-height:1.15;margin:6px 0 2px}
@@ -4015,11 +4039,12 @@ function render() {
     ['People', people, 'in ' + ws + ' workspaces'],
     ['Approved answers', sum(2), 'from ' + sum(0) + ' documents'],
     ['Ask lojo questions', sum(3), 'this month'],
+    ['Processing cost', '$' + (sum(0) * 1.84).toFixed(2), '$1.84 per item read · lojo only'],
   ].map(([l, n, sub]) => '<div class="kpi"><small>' + l + '</small><b>' + n + '</b><span>' + sub + '</span></div>').join('');
-  $('pTable').innerHTML = '<thead><tr><th>Company</th><th>People</th><th>Documents</th><th>Approved</th><th>Questions</th></tr></thead><tbody>' +
+  $('pTable').innerHTML = '<thead><tr><th>Company</th><th>People</th><th>Documents</th><th>Approved</th><th>Questions</th><th>Cost</th></tr></thead><tbody>' +
     ST.companies.map((c, i) => { const u = CO_USAGE[c.id], p = c.status === 'invited';
       return '<tr class="is-click" data-open="' + c.id + '"><td><div class="who"><span class="av c' + (i % 4 + 1) + '">' + ini(c.name) + '</span><div><b>' + esc(c.name) + '</b><span>' + (p ? 'Invited ' + esc(c.sent) : esc(c.domain)) + '</span></div></div></td>' +
-        [p ? '—' : c.users, u ? u[0] : '—', u ? u[2] : '—', u ? u[3] : '—'].map(v => '<td>' + v + '</td>').join('') + '</tr>'; }).join('') + '</tbody>';
+        [p ? '—' : c.users, u ? u[0] : '—', u ? u[2] : '—', u ? u[3] : '—', u ? '$' + (u[0] * 1.84).toFixed(2) : '—'].map(v => '<td>' + v + '</td>').join('') + '</tr>'; }).join('') + '</tbody>';
 }
 document.addEventListener('click', (e) => {
   const o = e.target.closest('[data-open]'); if (o) location.href = 'company.html?id=' + o.dataset.open;
@@ -4073,6 +4098,10 @@ function render() {
     '<div class="cgrid"><div>' +
       '<section class="sec"><h2>Owner</h2><div class="who"><span class="av c1">' + ini(c.owner) + '</span><div><b>' + esc(c.owner) + ' <span class="badge badge--rose">Owner</span></b><span>' + esc(c.email) + '</span></div></div></section>' +
       (pending ? '' : '<section class="sec"><h2>Workspaces</h2><div class="wsl">' + c.ws.map(w => '<span class="wsc">' + esc(w) + '</span>').join('') + '</div></section>' +
+      '<section class="sec"><h2>Processing cost <span class="rhelp" style="font-weight:500">· lojo only, metered on every model call</span></h2><div>' +
+        '<div class="srow"><div><b>Items read</b><span>Documents, emails, pages and calls</span></div><b>' + u[0] + '</b></div>' +
+        '<div class="srow"><div><b>Total so far</b><span>Indexing, question finding, drafting, rewrites and Ask lojo</span></div><b>$' + (u[0] * 1.84).toFixed(2) + '</b></div>' +
+        '<div class="srow"><div><b>Per item read</b><span>Average</span></div><b>$1.84</b></div></div></section>' +
       '<section class="sec"><h2>Usage this month</h2><div>' +
         '<div class="srow"><div><b>Questions found</b><span>From their documents</span></div><b>' + u[1] + '</b></div>' +
         '<div class="srow"><div><b>Approved answers</b><span>Reviewed by a person</span></div><b>' + u[2] + '</b></div>' +
@@ -4271,7 +4300,55 @@ $('epane').addEventListener('click', (e) => { if (e.target.closest('.cta')) { e.
 render();
 """)
 
-PAGES = {'emails': EMAILS_PAGE, 'platform': PLATFORM, 'superadmin': SUPER, 'company': COMPANY, 'auditlog': AUDIT, 'account': ACCOUNT, 'people': PEOPLE, 'settings': SETTINGS, 'states': STATES, 'dashboard': OVERVIEW, 'sources': DOCUMENTS, 'insights': QUESTIONS_PAGE, 'build': REVIEW, 'distribute': APPROVED, 'chat': CHAT, 'knowledge': READOUT, 'activity': ACTIVITY}
+RO_PAGE = dict(
+  active='readout', title='Readout',
+  css=r"""
+  .rofind{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}
+  .rofind div{padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+  .rofind b{display:block;font-family:var(--display);font-size:1.8rem;line-height:1.1}
+  .rofind b.hi{color:var(--rose)}
+  .rofind span{font-size:.84rem;color:var(--muted)}
+  .rolist{margin:6px 0 0;padding-left:20px;line-height:1.9;font-size:.92rem}
+  .rodec{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .rodec button{display:grid;gap:4px;padding:18px 20px;border-radius:14px;border:1.5px solid var(--line-2);background:var(--panel);text-align:left;font:inherit;cursor:pointer}
+  .rodec button b{font-family:var(--display);font-size:1.05rem}
+  .rodec button span{font-size:.84rem;color:var(--muted)}
+  .rodec button[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 3px rgba(36,26,20,.08)}
+  .rodone{margin-top:12px;padding:12px 14px;border-radius:12px;background:rgba(63,143,95,.08);color:var(--success);font-weight:600;font-size:.88rem}
+  .sec h2{font-family:var(--display);font-weight:700;font-size:1.15rem;margin:0 0 14px}
+  @media (max-width:900px){ .rofind{grid-template-columns:repeat(2,1fr)} .rodec{grid-template-columns:1fr} }
+  @media print{ .side,.fab,.head .btn,.mnav{display:none!important} .main{margin:0} }
+""",
+  body=r"""
+    <div class="head">
+      <div><p class="label"><a href="knowledge.html">Knowledge</a> › Week 4</p><h1>Readout</h1><p>What four weeks produced, and your decision.</p></div>
+      <span class="spacer"></span>
+      <button class="btn btn--secondary" type="button" id="roPrint">Print</button>
+    </div>
+    <section class="sec"><h2>What we found</h2><div class="rofind" id="roFind"></div><ul class="rolist" id="roList"></ul>
+      <p class="rhelp" style="margin-top:10px"><a href="knowledge.html">See it all in Knowledge →</a></p></section>
+    <section class="sec"><h2>Your decision</h2><div class="rodec" id="roDec">
+      <button type="button" data-dec="go"><b>Continue to the full build</b><span>Keep the approved answers and go on with lojo.</span></button>
+      <button type="button" data-dec="stop"><b>Not now</b><span>Keep an export of everything approved.</span></button>
+    </div><div id="roDone"></div></section>
+""",
+  js=r"""
+if (window.LOJO_ROLE && window.LOJO_ROLE !== 'owner') noAccess(window.LOJO_ROLE, 'readout.html');
+function render() {
+  const c = counts(), human = c.final + allQuestions().filter(q => (!q.docs || !q.docs.length) && matters(q) !== false).length, ch = ST.chat || { asked: 0, answered: 0, declined: 0 };
+  $('roFind').innerHTML = [[c.questions, 'questions your documents answer', 1], [c.gaps, 'gaps: referred to, never explained'], [c.approved + ' / ' + c.drafts, 'answers approved'], [ch.answered + ' / ' + ch.asked, 'Ask lojo questions answered']]
+    .map(([n, l, hi]) => '<div><b' + (hi ? ' class="hi"' : '') + '>' + n + '</b><span>' + l + '</span></div>').join('');
+  $('roList').innerHTML = '<li>Your reviewers approved ' + c.approved + ' drafts.</li><li>Ask lojo was asked ' + ch.asked + ' questions: it answered ' + ch.answered + ' from approved answers and declined ' + ch.declined + ', each recorded as a question.</li>' +
+    '<li>' + human + ' questions have no answer in the sources, or were sent to a person, and wait for someone to write them.</li>';
+  document.querySelectorAll('[data-dec]').forEach(b => b.setAttribute('aria-pressed', ST.decision === b.dataset.dec));
+  $('roDone').innerHTML = ST.decision ? '<div class="rodone">✓ ' + (ST.decision === 'go' ? 'You chose to continue. lojo will be in touch to plan the full build.' : 'You chose not now. Your export of approved answers is ready in Distribute.') + '</div>' : '';
+}
+$('roDec').addEventListener('click', (e) => { const b = e.target.closest('[data-dec]'); if (!b) return; ST.decision = b.dataset.dec; save(); render(); toast('Decision saved'); });
+$('roPrint').addEventListener('click', () => print());
+render();
+""")
+
+PAGES = {'readout': RO_PAGE, 'emails': EMAILS_PAGE, 'platform': PLATFORM, 'superadmin': SUPER, 'company': COMPANY, 'auditlog': AUDIT, 'account': ACCOUNT, 'people': PEOPLE, 'settings': SETTINGS, 'states': STATES, 'dashboard': OVERVIEW, 'sources': DOCUMENTS, 'insights': QUESTIONS_PAGE, 'build': REVIEW, 'distribute': APPROVED, 'chat': CHAT, 'knowledge': READOUT, 'activity': ACTIVITY}
 for name, p in PAGES.items():
     html = page(p['active'], p['title'], p['css'], p['body'], p['js'], p.get('desc', ''), p.get('persona', 'owner'))
     with open(os.path.join(OUT, name + '.html'), 'w') as f:

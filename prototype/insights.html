@@ -1765,7 +1765,7 @@ function roleView(role) {
   document.querySelectorAll('.persona').forEach(a => { const on = a.dataset.persona === role; a.classList.toggle('is-cur', on); if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
   const hide = (sel) => document.querySelectorAll(sel).forEach(el => { el.hidden = true; });
   const here = location.pathname.split('/').pop() || 'dashboard.html';
-  if (role !== 'owner') { hide('.side nav a[href="people.html"]'); hide('#orgInvite'); hide('#wsAdd'); document.body.classList.add('not-owner'); }
+  if (role !== 'owner') { hide('[data-owner-only]'); hide('.side nav a[href="people.html"]'); hide('#orgInvite'); hide('#wsAdd'); document.body.classList.add('not-owner'); }
   if (role === 'viewer') {
     document.querySelectorAll('.side nav a.nav-item').forEach(a => { const f = a.getAttribute('href').split('?')[0]; a.hidden = !['chat.html', 'knowledge.html'].includes(f); a.classList.toggle('is-active', f === here); });
     const br = document.querySelector('.side__brand'); if (br) br.href = 'knowledge.html';
