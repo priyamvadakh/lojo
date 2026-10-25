@@ -954,6 +954,48 @@
   .aref button{border:0;background:none;color:var(--muted);cursor:pointer;width:22px;height:22px;border-radius:6px;font-size:.95rem}
   .aref button:hover{background:var(--panel);color:var(--ink)}
   @media (max-width:1000px){.rv{grid-template-columns:1fr}.list{position:static;max-height:none}}
+  /* Link to SOP: map this answer to a step, or build a new SOP around it */
+  .badge--sop{background:rgba(62,111,166,.1);color:var(--info)}
+  .soplink{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-8px 0 22px;padding:10px 12px;border-radius:10px;background:rgba(62,111,166,.07);font-size:.84rem}
+  .soplink svg,.sopp svg{width:16px;height:16px;flex:none;fill:none;stroke:var(--info);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .soplink .spacer{flex:1}
+  .sid{font:600 .72rem/1 ui-monospace,Menlo,monospace;color:var(--muted);background:var(--bg-soft);border-radius:6px;padding:4px 6px;white-space:nowrap}
+  .sopp{margin-top:16px;border:1.5px solid rgba(62,111,166,.35);border-radius:14px;background:var(--panel);box-shadow:0 18px 40px -30px rgba(36,26,20,.5);animation:askIn .18s ease}
+  .sopp__h{display:flex;align-items:flex-start;gap:10px;padding:14px 16px 10px}
+  .sopp__h > div{flex:1}
+  .sopp__h b{display:block;font-size:.95rem}
+  .sopp__h .sub{font-size:.8rem}
+  .sopp__tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 16px}
+  .sopp__tabs button{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;border:1px solid var(--line-2);background:var(--panel);font:inherit;font-size:.84rem;font-weight:600;color:var(--muted);cursor:pointer;text-align:left}
+  .sopp__tabs button b{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;flex:none;background:var(--bg-soft);font-size:.72rem;color:var(--muted)}
+  .sopp__tabs button em{margin-left:auto;font-style:normal;font-size:.72rem;color:var(--muted)}
+  .sopp__tabs button[aria-selected="true"]{border-color:var(--info);color:var(--ink);background:rgba(62,111,166,.05)}
+  .sopp__tabs button[aria-selected="true"] b{background:var(--info);color:#fff}
+  .sopp__b{padding:14px 16px 16px}
+  .sopm{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+  .sopm li{display:grid;grid-template-columns:minmax(0,1fr) 90px auto;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px}
+  .sopm li.is-top{border-color:rgba(62,111,166,.4);background:rgba(62,111,166,.04)}
+  .sopm .t{display:block;font-size:.88rem;font-weight:600}
+  .sopm .t .sid{margin-right:6px}
+  .sopm small{display:block;color:var(--muted);font-size:.78rem;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pct{display:grid;gap:4px;font-size:.74rem;font-weight:700;color:var(--info);text-align:right}
+  .pct i{display:block;height:4px;border-radius:4px;background:var(--bg-soft);overflow:hidden}
+  .pct i::before{content:"";display:block;height:100%;width:var(--w);background:var(--info);border-radius:4px}
+  .sopnew{display:grid;gap:14px}
+  .sopfmt{display:flex;gap:6px;flex-wrap:wrap}
+  .sopfmt .chip{display:inline-flex;align-items:center;gap:6px}
+  .sopfmt .chip small{font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--success)}
+  .sopfmt .chip[aria-pressed="true"] small{color:#9ED8B0}
+  .sopwhy{font-size:.8rem;color:var(--muted);margin:6px 0 0}
+  .soprel{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+  .soprel label{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:var(--bg-soft);font-size:.84rem;font-weight:500}
+  .soprel input{width:16px;height:16px;accent-color:var(--rose);flex:none}
+  .soprel span:not(.badge){flex:1}
+  .sopp .dx{width:30px;height:30px;border-radius:50%;border:0;background:var(--bg-soft);color:var(--muted);font-size:1.05rem;cursor:pointer;flex:none}
+  .sopp .dx:hover{color:var(--ink)}
+  .sopgo{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .sopgo .sub{flex:1;min-width:200px;font-size:.8rem}
+  @media (max-width:700px){.sopp__tabs{grid-template-columns:1fr}.sopm li{grid-template-columns:1fr auto}.pct{display:none}}
 
   :root[data-theme="dark"]{
     --ink:#F2EBE5; --bg:#15100D; --bg-soft:#231B16; --panel:#1C1612;
@@ -1039,6 +1081,7 @@
     <a class="nav-item" href="insights.html" title="03 Insights"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg><span class="lbl">Insights</span><span class="count" id="navQuestions" hidden></span></a>
     <a class="nav-item" href="distribute.html" title="04 Distribute"><svg class="i" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg><span class="lbl">Distribute</span><span class="count" id="navApproved" hidden></span></a>
     <a class="nav-item" href="knowledge.html" title="Decide"><svg class="i" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="lbl">Knowledge</span></a>
+    <a class="nav-item" href="sops.html" title="Decide"><svg class="i" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10l1.5 1.5L13 9M9 16l1.5 1.5L13 15M15.5 10.5h.01M15.5 16.5h.01"/></svg><span class="lbl">SOPs</span></a>
     <a class="nav-item" href="activity.html" data-feature="agents"><svg class="i" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="lbl">Activity</span></a>
     <a class="nav-item" href="chat.html" title="04 Distribute" data-only="viewer" hidden><svg class="i" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span class="lbl">Ask lojo</span></a>
   </nav>
@@ -1318,6 +1361,79 @@ const PLOG_SEED = () => [
 function plog(msg, kind) { ST.platformLog.unshift({ msg, by: 'Sadaf Farman', at: new Date().toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }), kind: kind || 'change' }); }
 const CO_USAGE = { c1: [10, 24, 7, 48], c2: [6, 15, 11, 120], c3: [42, 88, 61, 930] };
 const ROLES = { admin: ['Admin', 'Everything, plus settings and people'], editor: ['Editor', 'Adds sources and approves answers'], viewer: ['Viewer', 'Asks lojo and reads Knowledge'] };
+// SOPs: approved, owned, versioned procedures. A step links to the approved answer that holds its rule instead of copying it
+const SOP_SECTIONS = [['purpose', 'Purpose'], ['scope', 'Scope'], ['resp', 'Responsibilities'], ['defs', 'Definitions'], ['prereq', 'Prerequisites'], ['steps', 'Procedure'], ['cautions', 'Cautions and exceptions'], ['records', 'Records and QC'], ['refs', 'References'], ['history', 'Revision history']];
+const SOP_STATUS = { draft: ['Draft', 'muted'], review: ['In review', 'info'], approved: ['Approved', 'ok'], due: ['Due for review', 'amber'], retired: ['Retired', 'muted'] };
+const SOP_FORMATS = { steps: 'Step-by-step', check: 'Checklist', tree: 'Hierarchical' };
+const SOP_RISK = { High: 3, Medium: 6, Low: 12, Minimal: 24 };
+// step: t text, who, src [kind, label], ans approved answer it links to, sub sub-steps, br decision branches
+const SOP_SEED = () => [
+  { id: 'SOP-BIL-001', title: 'Refund a cancelled plan', status: 'approved', ver: '1.2', eff: '12 Oct 2026', next: '12 Apr 2027', owner: 'p2', approver: 'p1', risk: 'Medium', fmt: 'steps', from: 'answers',
+    sec: { purpose: 'Refund customers who cancel the same way every time, within the refund policy.', scope: 'Monthly and annual plans cancelled by the customer. Chargebacks follow SOP-PAY-004.', resp: 'Support agent runs the steps. The Support Team Lead approves refunds over €500.', defs: 'Full refund: the whole last payment. Prorated: only whole months not yet used.', prereq: 'Access to Billing in the admin console, and the customer’s purchase date.', cautions: 'A renewal already charged counts as a new purchase: its own 30 days start on the renewal date.', records: 'Log the amount and the step that applied on the ticket. The team lead checks five refunds a week.', refs: 'Returns & refunds policy.docx §2–3 · Billing FAQ.docx §2' },
+    steps: [
+      { t: 'Find the purchase date in Billing.', who: 'Agent', src: ['doc', 'Returns & refunds policy §2'] },
+      { t: 'Check whether the customer is within 30 days of purchase.', who: 'Agent', src: ['answer', 'Refund window'], ans: 'r2', br: [['Within 30 days', 'Refund the whole last payment.'], ['After 30 days', 'Refund whole unused months only.']] },
+      { t: 'For annual plans, check the renewal date.', who: 'Agent', src: ['answer', 'Annual plan refunds'], ans: 'r16', sub: ['Cancelled 14 days or more before renewal: no renewal charge.', 'Already renewed: treat the renewal as a new purchase.'] },
+      { t: 'Issue the refund and confirm it to the customer by email, using the refund template.', who: 'Agent', src: ['mail', 'Refund confirmation, Gmail'] } ],
+    hist: [['1.0', '28 Sep 2026', 'Eric Ouisse', 'First version, drafted from 2 approved answers'], ['1.1', '5 Oct 2026', 'Lena Okafor', 'Added the annual-plan step'], ['1.2', '12 Oct 2026', 'Lena Okafor', 'Confirmation by email template']],
+    diff: [[4, 'Issue the refund and tell the customer.', 'Issue the refund and confirm it to the customer by email, using the refund template.']] },
+  { id: 'SOP-CLM-002', title: 'Reimburse a vet bill', status: 'approved', ver: '1.0', eff: '29 Sep 2026', next: '29 Dec 2026', owner: 'p2', approver: 'p1', risk: 'High', fmt: 'check', from: 'answers',
+    sec: { purpose: 'Explain reimbursement the same way on every call, so customers upload the bill and nothing else.', scope: 'Vet visits anywhere in the UAE on an active Oslo policy.', resp: 'Support and sales agents explain the steps. Claims handles the payout.', defs: 'Reimbursement: the customer pays first and Oslo pays them back. Oslo has no direct billing with clinics.', prereq: 'An active policy and an Oslo account.', cautions: 'Never promise direct billing: clinics will refuse it.', records: 'Tag the call “claims-howto”.', refs: 'ZIWO calls, 19 Aug and 25 Sep · Policy wording, Coverage' },
+    steps: [
+      { t: 'Tell the customer they can use any vet clinic in the UAE.', who: 'Agent', src: ['call', 'ZIWO call, 19 Aug'], ans: 'r18' },
+      { t: 'The customer pays the bill at the clinic.', who: 'Customer', src: ['call', 'ZIWO call, 25 Sep'] },
+      { t: 'The customer uploads the bill in their Oslo account.', who: 'Customer', src: ['call', 'ZIWO call, 25 Sep'] },
+      { t: 'Confirm no form, licence or medical report is needed. The bill is enough.', who: 'Agent', src: ['call', 'ZIWO call, 25 Sep'] } ],
+    hist: [['1.0', '29 Sep 2026', 'Eric Ouisse', 'First version, drafted from 1 approved answer and 2 calls']] },
+  { id: 'SOP-SEC-003', title: 'Set up SSO with Okta', status: 'review', ver: '0.1', eff: '', next: '', owner: 'p3', approver: 'p1', risk: 'Low', fmt: 'steps', from: 'answers', by: 'Maria Eide', sent: '2 hours ago',
+    sec: { purpose: 'Get a customer’s SSO working on the first call.', scope: 'Growth and Scale workspaces using Okta.', resp: 'Support agent guides the customer’s IT admin.', defs: 'ACS URL: the address Okta sends people back to after they sign in.', prereq: 'A Growth or Scale plan, and an Okta admin on the call.', cautions: 'The Help Center still says SSO is Enterprise-only. Follow the linked answer, not that page.', records: null, refs: 'SSO setup guide.pdf pp. 2–4' },
+    steps: [
+      { t: 'Check the customer is on Growth or Scale.', who: 'Agent', src: ['answer', 'SSO on Growth'], ans: 'r1' },
+      { t: 'In Okta, create a SAML 2.0 app.', who: 'Customer IT', src: ['doc', 'SSO setup guide p. 2'], ans: 'r4' },
+      { t: 'Copy the ACS URL from Settings → Security into Okta.', who: 'Customer IT', src: ['doc', 'SSO setup guide p. 3'] },
+      { t: 'Upload Okta’s metadata XML in Settings → Security.', who: 'Customer IT', src: ['doc', 'SSO setup guide p. 4'] } ],
+    hist: [['0.1', 'Today', 'lojo', 'Drafted from 2 answers, sent for review by Maria Eide']] },
+  { id: 'SOP-PAY-004', title: 'Respond to a chargeback', status: 'due', ver: '1.0', eff: '14 Apr 2026', next: '14 Oct 2026', owner: 'p3', approver: 'p1', risk: 'High', fmt: 'steps', from: 'import',
+    sec: { purpose: 'Win disputes by sending the right evidence on time.', scope: 'Card chargebacks on any plan.', resp: 'Billing agent collects evidence. Finance submits it.', defs: 'Dispute notice: the card network’s message that a payment is disputed.', prereq: 'Access to the payment provider dashboard.', cautions: 'Seven days is a hard limit. Late evidence loses the dispute.', records: 'Keep the evidence pack on the ticket for 18 months.', refs: 'Chargebacks process.docx §1–4' },
+    steps: [
+      { t: 'Open the dispute notice and note the deadline: 7 days.', who: 'Billing agent', src: ['doc', 'Chargebacks process §2'], ans: 'r11' },
+      { t: 'Collect the order record, proof of delivery and the messages with the customer.', who: 'Billing agent', src: ['doc', 'Chargebacks process §2'], ans: 'r11' },
+      { t: 'Upload the evidence and tell the customer the network usually decides within 30 to 75 days.', who: 'Finance', src: ['answer', 'Chargeback timing'], ans: 'r12' } ],
+    hist: [['1.0', '14 Apr 2026', 'Maria Eide', 'Imported from Chargebacks process.docx']] },
+  { id: 'SOP-OPS-005', title: 'Escalate a service incident', status: 'approved', ver: '—', eff: '1 Aug 2026', next: '1 Feb 2027', owner: 'p1', approver: 'p1', risk: 'High', from: 'external', ext: { app: 'Notion', url: 'notion.so/oslo/incident-escalation' }, sec: {}, steps: [], hist: [] },
+  { id: 'SOP-BIL-000', title: 'Refund requests (2025)', status: 'retired', ver: '2.1', eff: '3 Feb 2025', next: '', owner: 'p1', approver: 'p1', risk: 'Medium', fmt: 'steps', from: 'import',
+    sec: { purpose: 'Handle refund requests.' }, steps: [{ t: 'Refund within 14 days of purchase.', who: 'Agent', src: ['doc', 'Refund policy 2025'] }], hist: [['2.1', '3 Feb 2025', 'Eric Ouisse', 'Last version before retirement']] },
+];
+const sopById = (id) => ST.sops.find(s => s.id === id);
+const SOP_AREA = { refund: ['BIL', 'Refund a cancelled plan'], annual: ['BIL', 'Cancel an annual plan'], upgrade: ['BIL', 'Change a customer’s plan'], plan: ['BIL', 'Change a customer’s plan'], pay: ['BIL', 'Set up how a customer pays'],
+  sso: ['SEC', 'Set up SSO for a customer'], security: ['SEC', 'Answer a security question'], storage: ['SEC', 'Answer a data location question'], export: ['SEC', 'Export a workspace’s data'],
+  chargeback: ['PAY', 'Respond to a chargeback'], api: ['API', 'Handle an API rate-limit complaint'], onboarding: ['ONB', 'Onboard a Scale customer'], contact: ['SUP', 'Route a customer to support'] };
+const sopArea = (text) => SOP_AREA[conceptsOf(text)[0]] || ['GEN', ''];
+const sopToday = () => new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+function sopPlus(months) { const d = new Date(); d.setMonth(d.getMonth() + months); return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); }
+// the SOP builder agent: one step per sentence of each answer, every step citing the answer it came from
+function draftSop({ title, rids, fmt, from, by, missing, area: pre, sec: given, steps: mapped }) {
+  const rs = rids.map(id => DRAFTS.find(r => r.id === id)).filter(Boolean);
+  const qs = rs.map(r => QUESTIONS.find(q => q.id === r.qid).q);
+  const area = pre ? [pre] : sopArea(title).concat()[0] !== 'GEN' ? sopArea(title) : sopArea(title + ' ' + qs.join(' '));
+  const n = Math.max(0, ...ST.sops.map(x => +x.id.split('-').pop() || 0)) + 1;
+  const id = 'SOP-' + area[0] + '-' + String(n).padStart(3, '0');
+  const steps = [];
+  rs.forEach((r, i) => {
+    const plain = answerOf(r).replace(/^#+ .*$/gm, '').replace(/\*\*/g, '').replace(/^\s*(\d+\.|-)\s*/gm, '').replace(/\s\d\.\s/g, '. ');
+    plain.split(/(?<=\.)\s+|\n+/).map(x => x.trim()).filter(x => x.length > 12).slice(0, 2).forEach(t => steps.push({ t, who: 'Agent', src: ['answer', qs[i].replace(/\?$/, '')], ans: r.id }));
+  });
+  const docs = [...new Set(rs.flatMap(r => r.src.map(x => docShort(x[0]))))];
+  const sec = { purpose: 'Answer “' + (qs[0] || title) + '” the same way every time.', scope: 'Oslo customers who ask about this. Anything else goes to a person.', resp: 'Support agent runs the steps. ' + (by || 'The owner') + ' owns this SOP.',
+    defs: 'None needed yet.', prereq: 'Access to the Oslo admin console.', cautions: 'If a document disagrees with a linked answer, follow the answer and flag the document.', records: 'Note on the ticket which step applied.', refs: docs.join(' · ') || 'Approved answers only' };
+  Object.assign(sec, given || {});
+  (missing || []).forEach(k => { sec[k] = null; });
+  const sop = { id, title: title || area[1] || qs[0], status: 'review', ver: '0.1', eff: '', next: '', owner: ROLE_PERSON[window.LOJO_ROLE] || 'p1', approver: 'p1', risk: 'Medium', fmt: fmt || 'steps', from: from || 'answers', by: by, sent: 'just now', sec, steps: mapped || steps.slice(0, 6),
+    hist: [['0.1', 'Today', 'lojo', (from === 'ask' ? 'Drafted from your request and ' : 'Drafted from ') + rs.length + ' approved answer' + (rs.length === 1 ? '' : 's')]] };
+  ST.sops.unshift(sop);
+  rs.forEach((r, i) => { ST.sopLinks[r.id] = { sop: id, step: Math.max(0, sop.steps.findIndex(x => x.ans === r.id)) }; });
+  return sop;
+}
 const KEY = 'lojo-poc-v2';
 function load() {
   try { const s = JSON.parse(sessionStorage.getItem(KEY)); if (s && s.v === 2) return s; } catch (e) {}
@@ -1328,6 +1444,8 @@ ST.people = ST.people || PEOPLE_SEED();
 ST.companies = ST.companies || COMPANIES_SEED();
 ST.staff = ST.staff || STAFF_SEED();
 ST.platformLog = ST.platformLog || PLOG_SEED();
+ST.sops = ST.sops || SOP_SEED();
+ST.sopLinks = ST.sopLinks || { r2: { sop: 'SOP-BIL-001', step: 1 }, r18: { sop: 'SOP-CLM-002', step: 0 } };
 // the position and description someone gave when they joined (auth.html?s=profile)
 try { const pf = JSON.parse(sessionStorage.getItem('lojo-profile')); const me = pf && ST.people.find(p => p.email === pf.email); if (me) { me.title = pf.title; me.about = pf.about; } } catch (e) {}
 function save() { try { sessionStorage.setItem(KEY, JSON.stringify(ST)); } catch (e) {} refreshNav(); }
@@ -1722,11 +1840,11 @@ function roleView(role) {
   // everyone sees who's in the workspace; only Admins invite and change access
   if (role !== 'admin') { hide('[data-admin-only]'); hide('#wsAdd'); document.body.classList.add('not-admin'); const oi = $('orgInvite'); if (oi) oi.textContent = 'People'; }
   if (role === 'viewer') {
-    document.querySelectorAll('.side nav a.nav-item').forEach(a => { const f = a.getAttribute('href').split('?')[0]; a.hidden = !['chat.html', 'knowledge.html'].includes(f); a.classList.toggle('is-active', f === here); });
+    document.querySelectorAll('.side nav a.nav-item').forEach(a => { const f = a.getAttribute('href').split('?')[0]; a.hidden = !['chat.html', 'knowledge.html', 'sops.html'].includes(f); a.classList.toggle('is-active', f === here); });
     const br = document.querySelector('.side__brand'); if (br) br.href = 'knowledge.html';
     const nav = document.querySelector('.side nav'), ask = nav.querySelector('[data-only="viewer"]'), kn = nav.querySelector('a[href="knowledge.html"]'); if (ask) nav.prepend(ask); if (kn) nav.prepend(kn);
   }
-  const OPEN = { editor: (f) => !['readout.html'].includes(f), viewer: (f) => ['chat.html', 'knowledge.html', 'people.html', 'settings.html', 'states.html', 'emails.html'].includes(f) };
+  const OPEN = { editor: (f) => !['readout.html'].includes(f), viewer: (f) => ['chat.html', 'knowledge.html', 'sops.html', 'people.html', 'settings.html', 'states.html', 'emails.html'].includes(f) };
   if (OPEN[role] && !OPEN[role](here)) setTimeout(() => noAccess(role, here), 0);
   // a link to somewhere this role can't go opens a small pop-up instead of leaving the page
   if (OPEN[role]) document.addEventListener('click', (e) => {
@@ -1918,6 +2036,17 @@ if (document.body.dataset.persona !== 'super') {
     setTimeout(() => {
       tp.remove();
       if (SMALLTALK.test(q)) { say('bot', esc(smalltalkReply(q))); countChat('smalltalk'); return; }
+      // "Write the SOP for X": the SOP builder drafts it from approved answers and sends it to review
+      const ws = q.match(/write (?:the |an? )?sop (?:for|on|about) (.+)/i);
+      if (ws && window.LOJO_ROLE !== 'viewer') {
+        const t = ws[1].replace(/[.?!]+$/, '');
+        const rids = DRAFTS.filter(r => decision(r).status === 'approved').map(r => [r.id, score(t, QUESTIONS.find(x => x.id === r.qid).q + ' ' + answerOf(r)).c]).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]).slice(0, 3).map(x => x[0]);
+        if (!rids.length) { say('bot am--miss', '<div class="miss"><b>No approved answer covers “' + esc(t) + '” yet</b><p>Every step of an SOP needs a source. Approve an answer about it in Build first.</p></div>'); return; }
+        const me = ST.people.find(p => p.id === ROLE_PERSON[window.LOJO_ROLE || 'admin']);
+        const sop = draftSop({ title: t.charAt(0).toUpperCase() + t.slice(1), rids, from: 'ask', by: me ? me.name : 'You' }); save();
+        say('bot', 'I drafted <b>' + esc(sop.title) + '</b> (' + sop.id + ') from ' + rids.length + ' approved answer' + (rids.length === 1 ? '' : 's') + ', in the 10-section template, with a source for every step. It’s in review: nobody sees it until it’s approved.<p style="margin:10px 0 0"><a class="btn btn--secondary btn--sm" href="sops.html?id=' + sop.id + '">Open the draft</a></p>');
+        return;
+      }
       const d = window.__askDoc && window.__askDoc(q, store); if (d) { say('bot', d); countChat('answered'); return; }
       let best = null, bs = 0;
       store().forEach(x => { const s = score(q, x.q + ' ' + x.a); if (s.c > 0 && s.s > bs) { best = x; bs = s.s; } });
@@ -2003,6 +2132,7 @@ if (document.body.dataset.persona !== 'super') {
 
 
 let tab = 'pending', sel = null, mode = 'view', linking = false, refs = [];
+let sopOpen = false, sopTab = 'map', sopFmt = null, sopTitle = null, sopRel = null;
 const AIC = {
   doc: '<svg viewBox="0 0 24 24"><path d="m21 12-8.6 8.6a6 6 0 0 1-8.5-8.5l8.6-8.6a4 4 0 0 1 5.7 5.7l-8.6 8.6a2 2 0 0 1-2.8-2.8l7.9-7.9"/></svg>',
   link: '<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>',
@@ -2082,6 +2212,7 @@ function badges(r, inList) {
   if (!inList) b += '<span class="badge badge--muted">' + nsrc(r.src.length) + '</span>';
   if (d.by) b += '<span class="badge badge--muted">By ' + esc(d.by.split(' ')[0]) + '</span>';
   if (d.edited) b += '<span class="badge badge--muted">Edited</span>';
+  if (ST.sopLinks[r.id]) b += '<span class="badge badge--sop" title="Linked to ' + ST.sopLinks[r.id].sop + '">SOP</span>';
   return b;
 }
 function renderList() {
@@ -2227,6 +2358,8 @@ function renderDetail() {
       '<div style="height:22px"></div>';
   } else {
     h += '<p class="seclbl">' + (d.redrafted ? 'Rewritten draft' : 'Draft answer') + '</p><div class="answer">' + md(ans) + '</div>';
+    const ln = ST.sopLinks[r.id], ls = ln && sopById(ln.sop);
+    if (ls) h += '<div class="soplink">' + SOPIC + '<span>Step ' + (ln.step + 1) + ' of <a href="sops.html?id=' + ls.id + '&amp;step=' + ln.step + '">' + esc(ls.title) + '</a></span><span class="sid">' + ls.id + '</span></div>';
   }
   // G14: a draft rewritten more than once keeps its history
   if (d.history && d.history.length) h += '<details class="hist"><summary>Earlier drafts (' + d.history.length + ')</summary><ol>' + d.history.map(x => '<li>' + esc(x.text) + '<span>Rejected · ' + esc(x.reason) + '</span></li>').join('') + '</ol></details>';
@@ -2254,14 +2387,68 @@ function renderDetail() {
   else if (mode === 'edit') acts = '<button class="btn btn--primary" data-a="save">' + (d.status === 'approved' ? 'Save changes' : 'Save &amp; approve') + '</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
   else if (mode === 'reject') acts = '<button class="btn btn--danger" data-a="confirm">Reject &amp; rewrite</button><button class="btn btn--secondary" data-a="tohuman">Send to Human</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
   else if (d.status === 'pending' && ST.others && ST.others[r.id]) acts = '';
-  else if (d.status === 'pending') acts = '<button class="btn btn--primary" data-a="approve">Approve <kbd>A</kbd></button><button class="btn btn--secondary" data-a="edit">Edit &amp; approve <kbd>E</kbd></button><button class="btn btn--danger" data-a="reject">Reject <kbd>R</kbd></button><button class="btn btn--ghost" data-a="own">Write my own answer</button><span class="spacer"></span><span class="sub"><kbd>J</kbd> <kbd>K</kbd> to move</span>';
+  else if (d.status === 'pending') acts = '<button class="btn btn--primary" data-a="approve">Approve <kbd>A</kbd></button><button class="btn btn--secondary" data-a="edit">Edit &amp; approve <kbd>E</kbd></button><button class="btn btn--danger" data-a="reject">Reject <kbd>R</kbd></button><button class="btn btn--secondary" data-a="sop" aria-expanded="' + sopOpen + '">Link to SOP <kbd>L</kbd></button><button class="btn btn--ghost" data-a="own">Write my own answer</button><span class="spacer"></span><span class="sub"><kbd>J</kbd> <kbd>K</kbd> to move</span>';
   else if (d.status === 'final') acts = '<button class="btn btn--primary" data-a="edit">Write the answer</button><button class="btn btn--ghost" data-a="undo">Back to review</button>';
-  else acts = '<button class="btn btn--primary" data-a="edit">Edit answer</button><button class="btn btn--ghost" data-a="undo">Undo approval</button><span class="spacer"></span><span class="sub">Edits go live in Ask lojo as soon as you save.</span>';
+  else acts = '<button class="btn btn--primary" data-a="edit">Edit answer</button><button class="btn btn--secondary" data-a="sop" aria-expanded="' + sopOpen + '">Link to SOP <kbd>L</kbd></button><button class="btn btn--ghost" data-a="undo">Undo approval</button><span class="spacer"></span><span class="sub">Edits go live in Ask lojo as soon as you save.</span>';
   if (acts) h += '<div class="acts">' + acts + '</div>';
+  if (sopOpen && mode === 'view' && (d.status === 'pending' || d.status === 'approved')) h += sopPanel(r);
   $('detail').innerHTML = h;
+  if (sopOpen && sopFocus) { sopFocus = false; const p = $('sopp'); if (p) { p.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); const f = p.querySelector('[data-sopl], #sopT'); if (f) f.focus({ preventScroll: true }); } }
   if (mode === 'edit') { const t = $('editBox'); if (typed !== null) { t.value = typed; typed = null; } t.focus(); t.setSelectionRange(t.value.length, t.value.length); }
 }
 function render() { renderList(); renderDetail(); }
+const SOPIC = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10l1.5 1.5L13 9M9 16l1.5 1.5L13 15"/></svg>';
+let sopFocus = false;
+// ranked by meaning: the step this answer fits best in each SOP
+function sopMatches(r) {
+  const text = Q(r) + ' ' + answerOf(r);
+  return ST.sops.filter(s => s.from !== 'external' && s.status !== 'retired').map(s => {
+    let step = -1, best = 0;
+    s.steps.forEach((st, i) => { const lk = st.ans && DRAFTS.find(x => x.id === st.ans); const v = (st.ans === r.id ? 9 : 0) + score(text, s.title + ' ' + st.t + (lk ? ' ' + Q(lk) : '')).s; if (v > best) { best = v; step = i; } });
+    return { s, step, pct: Math.min(97, Math.round(50 + best * 6)) };
+  }).filter(m => m.step >= 0 && m.pct >= 62).sort((a, b) => b.pct - a.pct).slice(0, 3);
+}
+// the question says what it's about; the answer only adds detail
+const sopTopics = (r) => { const c = conceptsOf(Q(r)); return c.length ? c : conceptsOf(answerOf(r)); };
+function sopRelated(r) {
+  const cs = sopTopics(r);
+  return DRAFTS.filter(x => x.id !== r.id && ['approved', 'pending'].includes(decision(x).status) && conceptsOf(Q(x)).some(c => cs.includes(c))).slice(0, 2);
+}
+function sopSuggest(r, rel) {
+  const all = [r].concat(rel.filter(x => sopRel.has(x.id)));
+  const n = all.reduce((a, x) => a + Math.min(2, answerOf(x).split(/(?<=\.)\s+|\n+/).filter(t => t.trim().length > 12).length), 0);
+  const listy = all.some(x => /(^|\s)(1\.|-)\s/m.test(answerOf(x)));
+  return listy || n > 3 ? ['steps', n + ' linear steps, one actor, no branches'] : ['check', n + ' short check' + (n === 1 ? '' : 's') + ', done in any order'];
+}
+function sopPanel(r) {
+  const ms = sopMatches(r), ln = ST.sopLinks[r.id], rel = sopRelated(r);
+  if (sopRel === null) sopRel = new Set(rel.map(x => x.id));
+  const sug = sopSuggest(r, rel); if (!sopFmt) sopFmt = sug[0];
+  if (sopTitle === null) sopTitle = (SOP_AREA[sopTopics(r)[0]] || [])[1] || Q(r).replace(/\?$/, '');
+  let b;
+  if (sopTab === 'map') b = ms.length ? '<ul class="sopm">' + ms.map((m, i) => { const on = ln && ln.sop === m.s.id;
+      return '<li' + (i === 0 ? ' class="is-top"' : '') + '><span><span class="t"><span class="sid">' + m.s.id + '</span>' + esc(m.s.title) + '</span><small>Step ' + (m.step + 1) + ' · ' + esc(m.s.steps[m.step].t) + '</small></span>' +
+        '<span class="pct" style="--w:' + m.pct + '%">' + m.pct + '% match<i></i></span>' +
+        (on ? '<span class="badge badge--ok">Linked</span>' : '<button class="btn ' + (i === 0 ? 'btn--primary' : 'btn--secondary') + ' btn--sm" type="button" data-sopl="' + m.s.id + '|' + m.step + '">Link</button>') + '</li>'; }).join('') + '</ul>' +
+      '<p class="sub" style="margin:12px 0 0">None of these? <a href="#" data-st="new">Build a new SOP</a></p>'
+    : '<div class="empty" style="padding:18px"><b>No SOP covers this yet.</b>Build one around this answer.<div style="margin-top:12px"><button class="btn btn--primary btn--sm" type="button" data-st="new">Build a new SOP</button></div></div>';
+  else {
+    const n = 1 + rel.filter(x => sopRel.has(x.id)).length;
+    b = '<div class="sopnew"><div class="fld"><label class="seclbl" for="sopT" style="margin:0">Title</label><input class="text" id="sopT" value="' + esc(sopTitle) + '"></div>' +
+      '<div><p class="seclbl">Format</p><div class="sopfmt">' + Object.keys(SOP_FORMATS).map(f => '<button class="chip" type="button" data-fmt="' + f + '" aria-pressed="' + (sopFmt === f) + '">' + SOP_FORMATS[f] + (f === sug[0] ? '<small>Suggested</small>' : '') + '</button>').join('') + '</div><p class="sopwhy">' + esc(sug[1]) + '. You can switch views later.</p></div>' +
+      '<div><p class="seclbl">From these answers</p><ul class="soprel"><li><label><span>' + esc(Q(r)) + '</span><span class="badge badge--muted">This one</span></label></li>' +
+      rel.map(x => '<li><label><span>' + esc(Q(x)) + '</span>' + (decision(x).status === 'approved' ? '' : '<span class="badge badge--amber">In review</span>') + '</label></li>').join('') + '</ul></div>' +
+      '<div class="sopgo"><button class="btn btn--grad" type="button" data-a="sopdraft">Draft SOP from ' + n + ' related answer' + (n === 1 ? '' : 's') + '</button><span class="sub">lojo fills the 10-section template and cites every step. It goes to review like any draft.</span></div></div>';
+  }
+  return '<div class="sopp" id="sopp" role="region" aria-label="Link to SOP"><div class="sopp__h">' + SOPIC + '<div><b>Link to SOP</b><span class="sub">This answer becomes a step. Its rule stays in the answer and isn’t copied.</span></div><button class="dx" type="button" data-a="sopx" aria-label="Close">×</button></div>' +
+    '<div class="sopp__tabs" role="tablist"><button type="button" role="tab" data-st="map" aria-selected="' + (sopTab === 'map') + '"><b>A</b>Add to an existing SOP<em>' + (ms.length || 'none') + '</em></button><button type="button" role="tab" data-st="new" aria-selected="' + (sopTab === 'new') + '"><b>B</b>Build a new SOP</button></div>' +
+    '<div class="sopp__b">' + b + '</div></div>';
+}
+function sopToggle(r) {
+  sopOpen = !sopOpen; sopFmt = null; sopTitle = null; sopRel = null;
+  if (sopOpen) { sopTab = sopMatches(r).length ? 'map' : 'new'; sopFocus = true; }
+  renderDetail();
+}
 // keep what's typed when the editor re-renders
 let typed = null;
 function keepText() { const t = $('editBox'); if (t) typed = t.value; }
@@ -2313,6 +2500,14 @@ function act(a) {
   if (a === 'nolink') { linking = false; keepText(); renderDetail(); return; }
   if (a === 'addlink') { const v = $('linkIn').value.trim(); if (!/^https?:\/\/\S+\.\S+/.test(v)) { $('linkIn').focus(); toast('Paste a full link'); return; } refs.push({ kind: 'link', name: v.replace(/^https?:\/\//, '') }); linking = false; keepText(); renderDetail(); return; }
   if (a === 'ai') { draftWithAI(r); return; }
+  if (a === 'sop') { sopToggle(r); return; }
+  if (a === 'sopx') { sopOpen = false; renderDetail(); return; }
+  if (a === 'sopdraft') {
+    const t = $('sopT').value.trim(); if (!t) { $('sopT').focus(); return; }
+    const me = ST.people.find(p => p.id === ROLE_PERSON[window.LOJO_ROLE || 'admin']);
+    const s = draftSop({ title: t, rids: [r.id].concat([...sopRel]), fmt: sopFmt, from: 'answers', by: me ? me.name : 'You' });
+    save(); location.href = 'sops.html?id=' + s.id + '&new=1'; return;
+  }
   if (a === 'leave') { d.status = 'left'; mode = 'view'; save(); toast('Left out. It won’t be answered.'); next(); render(); return; }
   if (a === 'reject') mode = 'reject';
   if (a === 'cancel') mode = 'view';
@@ -2356,12 +2551,15 @@ $('detail').addEventListener('click', (e) => {
   const gb = e.target.closest('[data-gap]'); if (gb) { ST.gaps[gb.dataset.gap] = true; save(); toast('Marked not needed'); render(); return; }
   // turn the gap into a question someone answers
   const gq = e.target.closest('[data-gapq]'); if (gq) { const g = GAPS.find(x => x.id === gq.dataset.gapq); ST.extra.push({ id: 'qx' + Date.now(), q: 'What is ' + g.term.replace(/^The /, 'the ') + '?', origin: 'you', docs: [], gap: g.id }); ST.gaps[g.id] = true; save(); toast('Added as a question in Insights'); render(); return; }
+  const st = e.target.closest('[data-st]'); if (st) { e.preventDefault(); if ($('sopT')) sopTitle = $('sopT').value; sopTab = st.dataset.st; sopFocus = true; renderDetail(); return; }
+  const fm = e.target.closest('[data-fmt]'); if (fm) { sopTitle = $('sopT').value; sopFmt = fm.dataset.fmt; renderDetail(); return; }
+  const sl = e.target.closest('[data-sopl]'); if (sl) { const [sid, step] = sl.dataset.sopl.split('|'); ST.sopLinks[sel] = { sop: sid, step: +step }; sopOpen = false; save(); render(); toast('Linked to ' + sid + ', step ' + (+step + 1)); return; }
   const b = e.target.closest('[data-a]'); if (b) act(b.dataset.a);
 });
 $('items').addEventListener('click', (e) => {
   const gi = e.target.closest('[data-gapid]'); if (gi) { gsel = gi.dataset.gapid; render(); return; }
   const fq = e.target.closest('[data-fq]'); if (fq) { fsel = fq.dataset.fq; fwrite = false; render(); return; }
-  const li = e.target.closest('[data-id]'); if (li) { fsel = null; sel = li.dataset.id; mode = 'view'; render(); }
+  const li = e.target.closest('[data-id]'); if (li) { fsel = null; sel = li.dataset.id; mode = 'view'; sopOpen = false; render(); }
 });
 const todayStr = () => new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }).replace(',', '');
 $('lq').addEventListener('input', (e) => { lq = e.target.value.trim().toLowerCase(); sel = null; render(); });
@@ -2390,11 +2588,13 @@ document.addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase(), r = DRAFTS.find(x => x.id === sel);
   if (k === 'j' || k === 'k') {
     const list = DRAFTS.filter(inTab), i = list.findIndex(x => x.id === sel);
-    const n = list[Math.max(0, Math.min(list.length - 1, i + (k === 'j' ? 1 : -1)))]; if (n) { sel = n.id; mode = 'view'; render(); }
+    const n = list[Math.max(0, Math.min(list.length - 1, i + (k === 'j' ? 1 : -1)))]; if (n) { sel = n.id; mode = 'view'; sopOpen = false; render(); }
   }
   if (r && decision(r).status === 'pending' && mode === 'view') {
     if (k === 'a') act('approve'); if (k === 'e') act('edit'); if (k === 'r') act('reject');
   }
+  if (r && ['pending', 'approved'].includes(decision(r).status) && mode === 'view' && k === 'l') act('sop');
+  if (k === 'escape' && sopOpen) { sopOpen = false; renderDetail(); }
   if (k === 'escape' && mode !== 'view') act('cancel');
 });
 const RP = new URLSearchParams(location.search);
@@ -2416,6 +2616,11 @@ if (['pending', 'approved', 'final'].includes(RP.get('tab'))) { tab = RP.get('ta
 if (RP.get('gap') && !RP.get('sel')) { const gr = DRAFTS.find(r => decision(r).status === 'pending' && gapsOf(r).some(g => g.id === RP.get('gap'))); if (gr) sel = gr.id; }
 if (RP.get('sel')) { sel = RP.get('sel'); const sr = DRAFTS.find(x => x.id === sel); if (sr) { const s = decision(sr).status; tab = s === 'redrafting' ? 'pending' : (s === 'approved' || s === 'final') ? s : 'pending'; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === tab)); } if (RP.get('full')) { const r = DRAFTS.find(x => x.id === sel); if (r) openFull.add(r.src[0][0] + '|' + r.src[0][1]); } }
 if (HL_GAP) setTimeout(() => { const it = document.querySelector('.item.is-sel.is-hl') || document.querySelector('.item.is-hl'); if (it) it.scrollIntoView({ block: 'nearest' }); const n = document.querySelector('.gapnote .g.is-hl'); if (n) n.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 300);
+if (RP.get('sop') === 'new' && !RP.get('sel')) {
+  const ok = (x) => decision(x).status === 'approved' && !ST.sopLinks[x.id];
+  const fr = [DRAFTS.find(x => x.id === 'r9')].filter(x => x && ok(x))[0] || DRAFTS.filter(x => decision(x).status === 'approved' && !ST.sopLinks[x.id]).sort((a, b) => (sopRelated(b).length - sopRelated(a).length) || (sopMatches(a).length - sopMatches(b).length))[0];
+  if (fr) { sel = fr.id; sopOpen = true; sopTab = 'new'; sopFocus = true; }
+}
 // a rewrite cut short by leaving the page finishes when you come back
 Object.keys(ST.decisions).forEach(id => { if (ST.decisions[id].status === 'redrafting') finishRewrite(id); });
 render();

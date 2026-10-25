@@ -2153,6 +2153,48 @@ REVIEW = dict(
   .aref button{border:0;background:none;color:var(--muted);cursor:pointer;width:22px;height:22px;border-radius:6px;font-size:.95rem}
   .aref button:hover{background:var(--panel);color:var(--ink)}
   @media (max-width:1000px){.rv{grid-template-columns:1fr}.list{position:static;max-height:none}}
+  /* Link to SOP: map this answer to a step, or build a new SOP around it */
+  .badge--sop{background:rgba(62,111,166,.1);color:var(--info)}
+  .soplink{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-8px 0 22px;padding:10px 12px;border-radius:10px;background:rgba(62,111,166,.07);font-size:.84rem}
+  .soplink svg,.sopp svg{width:16px;height:16px;flex:none;fill:none;stroke:var(--info);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .soplink .spacer{flex:1}
+  .sid{font:600 .72rem/1 ui-monospace,Menlo,monospace;color:var(--muted);background:var(--bg-soft);border-radius:6px;padding:4px 6px;white-space:nowrap}
+  .sopp{margin-top:16px;border:1.5px solid rgba(62,111,166,.35);border-radius:14px;background:var(--panel);box-shadow:0 18px 40px -30px rgba(36,26,20,.5);animation:askIn .18s ease}
+  .sopp__h{display:flex;align-items:flex-start;gap:10px;padding:14px 16px 10px}
+  .sopp__h > div{flex:1}
+  .sopp__h b{display:block;font-size:.95rem}
+  .sopp__h .sub{font-size:.8rem}
+  .sopp__tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 16px}
+  .sopp__tabs button{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;border:1px solid var(--line-2);background:var(--panel);font:inherit;font-size:.84rem;font-weight:600;color:var(--muted);cursor:pointer;text-align:left}
+  .sopp__tabs button b{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;flex:none;background:var(--bg-soft);font-size:.72rem;color:var(--muted)}
+  .sopp__tabs button em{margin-left:auto;font-style:normal;font-size:.72rem;color:var(--muted)}
+  .sopp__tabs button[aria-selected="true"]{border-color:var(--info);color:var(--ink);background:rgba(62,111,166,.05)}
+  .sopp__tabs button[aria-selected="true"] b{background:var(--info);color:#fff}
+  .sopp__b{padding:14px 16px 16px}
+  .sopm{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+  .sopm li{display:grid;grid-template-columns:minmax(0,1fr) 90px auto;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px}
+  .sopm li.is-top{border-color:rgba(62,111,166,.4);background:rgba(62,111,166,.04)}
+  .sopm .t{display:block;font-size:.88rem;font-weight:600}
+  .sopm .t .sid{margin-right:6px}
+  .sopm small{display:block;color:var(--muted);font-size:.78rem;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pct{display:grid;gap:4px;font-size:.74rem;font-weight:700;color:var(--info);text-align:right}
+  .pct i{display:block;height:4px;border-radius:4px;background:var(--bg-soft);overflow:hidden}
+  .pct i::before{content:"";display:block;height:100%;width:var(--w);background:var(--info);border-radius:4px}
+  .sopnew{display:grid;gap:14px}
+  .sopfmt{display:flex;gap:6px;flex-wrap:wrap}
+  .sopfmt .chip{display:inline-flex;align-items:center;gap:6px}
+  .sopfmt .chip small{font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--success)}
+  .sopfmt .chip[aria-pressed="true"] small{color:#9ED8B0}
+  .sopwhy{font-size:.8rem;color:var(--muted);margin:6px 0 0}
+  .soprel{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+  .soprel label{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:var(--bg-soft);font-size:.84rem;font-weight:500}
+  .soprel input{width:16px;height:16px;accent-color:var(--rose);flex:none}
+  .soprel span:not(.badge){flex:1}
+  .sopp .dx{width:30px;height:30px;border-radius:50%;border:0;background:var(--bg-soft);color:var(--muted);font-size:1.05rem;cursor:pointer;flex:none}
+  .sopp .dx:hover{color:var(--ink)}
+  .sopgo{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .sopgo .sub{flex:1;min-width:200px;font-size:.8rem}
+  @media (max-width:700px){.sopp__tabs{grid-template-columns:1fr}.sopm li{grid-template-columns:1fr auto}.pct{display:none}}
 """,
   body=r"""
     <div class="head">
@@ -2190,6 +2232,7 @@ REVIEW = dict(
 """,
   js=r"""
 let tab = 'pending', sel = null, mode = 'view', linking = false, refs = [];
+let sopOpen = false, sopTab = 'map', sopFmt = null, sopTitle = null, sopRel = null;
 const AIC = {
   doc: '<svg viewBox="0 0 24 24"><path d="m21 12-8.6 8.6a6 6 0 0 1-8.5-8.5l8.6-8.6a4 4 0 0 1 5.7 5.7l-8.6 8.6a2 2 0 0 1-2.8-2.8l7.9-7.9"/></svg>',
   link: '<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>',
@@ -2269,6 +2312,7 @@ function badges(r, inList) {
   if (!inList) b += '<span class="badge badge--muted">' + nsrc(r.src.length) + '</span>';
   if (d.by) b += '<span class="badge badge--muted">By ' + esc(d.by.split(' ')[0]) + '</span>';
   if (d.edited) b += '<span class="badge badge--muted">Edited</span>';
+  if (ST.sopLinks[r.id]) b += '<span class="badge badge--sop" title="Linked to ' + ST.sopLinks[r.id].sop + '">SOP</span>';
   return b;
 }
 function renderList() {
@@ -2414,6 +2458,8 @@ function renderDetail() {
       '<div style="height:22px"></div>';
   } else {
     h += '<p class="seclbl">' + (d.redrafted ? 'Rewritten draft' : 'Draft answer') + '</p><div class="answer">' + md(ans) + '</div>';
+    const ln = ST.sopLinks[r.id], ls = ln && sopById(ln.sop);
+    if (ls) h += '<div class="soplink">' + SOPIC + '<span>Step ' + (ln.step + 1) + ' of <a href="sops.html?id=' + ls.id + '&amp;step=' + ln.step + '">' + esc(ls.title) + '</a></span><span class="sid">' + ls.id + '</span></div>';
   }
   // G14: a draft rewritten more than once keeps its history
   if (d.history && d.history.length) h += '<details class="hist"><summary>Earlier drafts (' + d.history.length + ')</summary><ol>' + d.history.map(x => '<li>' + esc(x.text) + '<span>Rejected · ' + esc(x.reason) + '</span></li>').join('') + '</ol></details>';
@@ -2441,14 +2487,68 @@ function renderDetail() {
   else if (mode === 'edit') acts = '<button class="btn btn--primary" data-a="save">' + (d.status === 'approved' ? 'Save changes' : 'Save &amp; approve') + '</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
   else if (mode === 'reject') acts = '<button class="btn btn--danger" data-a="confirm">Reject &amp; rewrite</button><button class="btn btn--secondary" data-a="tohuman">Send to Human</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
   else if (d.status === 'pending' && ST.others && ST.others[r.id]) acts = '';
-  else if (d.status === 'pending') acts = '<button class="btn btn--primary" data-a="approve">Approve <kbd>A</kbd></button><button class="btn btn--secondary" data-a="edit">Edit &amp; approve <kbd>E</kbd></button><button class="btn btn--danger" data-a="reject">Reject <kbd>R</kbd></button><button class="btn btn--ghost" data-a="own">Write my own answer</button><span class="spacer"></span><span class="sub"><kbd>J</kbd> <kbd>K</kbd> to move</span>';
+  else if (d.status === 'pending') acts = '<button class="btn btn--primary" data-a="approve">Approve <kbd>A</kbd></button><button class="btn btn--secondary" data-a="edit">Edit &amp; approve <kbd>E</kbd></button><button class="btn btn--danger" data-a="reject">Reject <kbd>R</kbd></button><button class="btn btn--secondary" data-a="sop" aria-expanded="' + sopOpen + '">Link to SOP <kbd>L</kbd></button><button class="btn btn--ghost" data-a="own">Write my own answer</button><span class="spacer"></span><span class="sub"><kbd>J</kbd> <kbd>K</kbd> to move</span>';
   else if (d.status === 'final') acts = '<button class="btn btn--primary" data-a="edit">Write the answer</button><button class="btn btn--ghost" data-a="undo">Back to review</button>';
-  else acts = '<button class="btn btn--primary" data-a="edit">Edit answer</button><button class="btn btn--ghost" data-a="undo">Undo approval</button><span class="spacer"></span><span class="sub">Edits go live in Ask lojo as soon as you save.</span>';
+  else acts = '<button class="btn btn--primary" data-a="edit">Edit answer</button><button class="btn btn--secondary" data-a="sop" aria-expanded="' + sopOpen + '">Link to SOP <kbd>L</kbd></button><button class="btn btn--ghost" data-a="undo">Undo approval</button><span class="spacer"></span><span class="sub">Edits go live in Ask lojo as soon as you save.</span>';
   if (acts) h += '<div class="acts">' + acts + '</div>';
+  if (sopOpen && mode === 'view' && (d.status === 'pending' || d.status === 'approved')) h += sopPanel(r);
   $('detail').innerHTML = h;
+  if (sopOpen && sopFocus) { sopFocus = false; const p = $('sopp'); if (p) { p.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); const f = p.querySelector('[data-sopl], #sopT'); if (f) f.focus({ preventScroll: true }); } }
   if (mode === 'edit') { const t = $('editBox'); if (typed !== null) { t.value = typed; typed = null; } t.focus(); t.setSelectionRange(t.value.length, t.value.length); }
 }
 function render() { renderList(); renderDetail(); }
+const SOPIC = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10l1.5 1.5L13 9M9 16l1.5 1.5L13 15"/></svg>';
+let sopFocus = false;
+// ranked by meaning: the step this answer fits best in each SOP
+function sopMatches(r) {
+  const text = Q(r) + ' ' + answerOf(r);
+  return ST.sops.filter(s => s.from !== 'external' && s.status !== 'retired').map(s => {
+    let step = -1, best = 0;
+    s.steps.forEach((st, i) => { const lk = st.ans && DRAFTS.find(x => x.id === st.ans); const v = (st.ans === r.id ? 9 : 0) + score(text, s.title + ' ' + st.t + (lk ? ' ' + Q(lk) : '')).s; if (v > best) { best = v; step = i; } });
+    return { s, step, pct: Math.min(97, Math.round(50 + best * 6)) };
+  }).filter(m => m.step >= 0 && m.pct >= 62).sort((a, b) => b.pct - a.pct).slice(0, 3);
+}
+// the question says what it's about; the answer only adds detail
+const sopTopics = (r) => { const c = conceptsOf(Q(r)); return c.length ? c : conceptsOf(answerOf(r)); };
+function sopRelated(r) {
+  const cs = sopTopics(r);
+  return DRAFTS.filter(x => x.id !== r.id && ['approved', 'pending'].includes(decision(x).status) && conceptsOf(Q(x)).some(c => cs.includes(c))).slice(0, 2);
+}
+function sopSuggest(r, rel) {
+  const all = [r].concat(rel.filter(x => sopRel.has(x.id)));
+  const n = all.reduce((a, x) => a + Math.min(2, answerOf(x).split(/(?<=\.)\s+|\n+/).filter(t => t.trim().length > 12).length), 0);
+  const listy = all.some(x => /(^|\s)(1\.|-)\s/m.test(answerOf(x)));
+  return listy || n > 3 ? ['steps', n + ' linear steps, one actor, no branches'] : ['check', n + ' short check' + (n === 1 ? '' : 's') + ', done in any order'];
+}
+function sopPanel(r) {
+  const ms = sopMatches(r), ln = ST.sopLinks[r.id], rel = sopRelated(r);
+  if (sopRel === null) sopRel = new Set(rel.map(x => x.id));
+  const sug = sopSuggest(r, rel); if (!sopFmt) sopFmt = sug[0];
+  if (sopTitle === null) sopTitle = (SOP_AREA[sopTopics(r)[0]] || [])[1] || Q(r).replace(/\?$/, '');
+  let b;
+  if (sopTab === 'map') b = ms.length ? '<ul class="sopm">' + ms.map((m, i) => { const on = ln && ln.sop === m.s.id;
+      return '<li' + (i === 0 ? ' class="is-top"' : '') + '><span><span class="t"><span class="sid">' + m.s.id + '</span>' + esc(m.s.title) + '</span><small>Step ' + (m.step + 1) + ' · ' + esc(m.s.steps[m.step].t) + '</small></span>' +
+        '<span class="pct" style="--w:' + m.pct + '%">' + m.pct + '% match<i></i></span>' +
+        (on ? '<span class="badge badge--ok">Linked</span>' : '<button class="btn ' + (i === 0 ? 'btn--primary' : 'btn--secondary') + ' btn--sm" type="button" data-sopl="' + m.s.id + '|' + m.step + '">Link</button>') + '</li>'; }).join('') + '</ul>' +
+      '<p class="sub" style="margin:12px 0 0">None of these? <a href="#" data-st="new">Build a new SOP</a></p>'
+    : '<div class="empty" style="padding:18px"><b>No SOP covers this yet.</b>Build one around this answer.<div style="margin-top:12px"><button class="btn btn--primary btn--sm" type="button" data-st="new">Build a new SOP</button></div></div>';
+  else {
+    const n = 1 + rel.filter(x => sopRel.has(x.id)).length;
+    b = '<div class="sopnew"><div class="fld"><label class="seclbl" for="sopT" style="margin:0">Title</label><input class="text" id="sopT" value="' + esc(sopTitle) + '"></div>' +
+      '<div><p class="seclbl">Format</p><div class="sopfmt">' + Object.keys(SOP_FORMATS).map(f => '<button class="chip" type="button" data-fmt="' + f + '" aria-pressed="' + (sopFmt === f) + '">' + SOP_FORMATS[f] + (f === sug[0] ? '<small>Suggested</small>' : '') + '</button>').join('') + '</div><p class="sopwhy">' + esc(sug[1]) + '. You can switch views later.</p></div>' +
+      '<div><p class="seclbl">From these answers</p><ul class="soprel"><li><label><span>' + esc(Q(r)) + '</span><span class="badge badge--muted">This one</span></label></li>' +
+      rel.map(x => '<li><label><span>' + esc(Q(x)) + '</span>' + (decision(x).status === 'approved' ? '' : '<span class="badge badge--amber">In review</span>') + '</label></li>').join('') + '</ul></div>' +
+      '<div class="sopgo"><button class="btn btn--grad" type="button" data-a="sopdraft">Draft SOP from ' + n + ' related answer' + (n === 1 ? '' : 's') + '</button><span class="sub">lojo fills the 10-section template and cites every step. It goes to review like any draft.</span></div></div>';
+  }
+  return '<div class="sopp" id="sopp" role="region" aria-label="Link to SOP"><div class="sopp__h">' + SOPIC + '<div><b>Link to SOP</b><span class="sub">This answer becomes a step. Its rule stays in the answer and isn’t copied.</span></div><button class="dx" type="button" data-a="sopx" aria-label="Close">×</button></div>' +
+    '<div class="sopp__tabs" role="tablist"><button type="button" role="tab" data-st="map" aria-selected="' + (sopTab === 'map') + '"><b>A</b>Add to an existing SOP<em>' + (ms.length || 'none') + '</em></button><button type="button" role="tab" data-st="new" aria-selected="' + (sopTab === 'new') + '"><b>B</b>Build a new SOP</button></div>' +
+    '<div class="sopp__b">' + b + '</div></div>';
+}
+function sopToggle(r) {
+  sopOpen = !sopOpen; sopFmt = null; sopTitle = null; sopRel = null;
+  if (sopOpen) { sopTab = sopMatches(r).length ? 'map' : 'new'; sopFocus = true; }
+  renderDetail();
+}
 // keep what's typed when the editor re-renders
 let typed = null;
 function keepText() { const t = $('editBox'); if (t) typed = t.value; }
@@ -2500,6 +2600,14 @@ function act(a) {
   if (a === 'nolink') { linking = false; keepText(); renderDetail(); return; }
   if (a === 'addlink') { const v = $('linkIn').value.trim(); if (!/^https?:\/\/\S+\.\S+/.test(v)) { $('linkIn').focus(); toast('Paste a full link'); return; } refs.push({ kind: 'link', name: v.replace(/^https?:\/\//, '') }); linking = false; keepText(); renderDetail(); return; }
   if (a === 'ai') { draftWithAI(r); return; }
+  if (a === 'sop') { sopToggle(r); return; }
+  if (a === 'sopx') { sopOpen = false; renderDetail(); return; }
+  if (a === 'sopdraft') {
+    const t = $('sopT').value.trim(); if (!t) { $('sopT').focus(); return; }
+    const me = ST.people.find(p => p.id === ROLE_PERSON[window.LOJO_ROLE || 'admin']);
+    const s = draftSop({ title: t, rids: [r.id].concat([...sopRel]), fmt: sopFmt, from: 'answers', by: me ? me.name : 'You' });
+    save(); location.href = 'sops.html?id=' + s.id + '&new=1'; return;
+  }
   if (a === 'leave') { d.status = 'left'; mode = 'view'; save(); toast('Left out. It won’t be answered.'); next(); render(); return; }
   if (a === 'reject') mode = 'reject';
   if (a === 'cancel') mode = 'view';
@@ -2543,12 +2651,15 @@ $('detail').addEventListener('click', (e) => {
   const gb = e.target.closest('[data-gap]'); if (gb) { ST.gaps[gb.dataset.gap] = true; save(); toast('Marked not needed'); render(); return; }
   // turn the gap into a question someone answers
   const gq = e.target.closest('[data-gapq]'); if (gq) { const g = GAPS.find(x => x.id === gq.dataset.gapq); ST.extra.push({ id: 'qx' + Date.now(), q: 'What is ' + g.term.replace(/^The /, 'the ') + '?', origin: 'you', docs: [], gap: g.id }); ST.gaps[g.id] = true; save(); toast('Added as a question in Insights'); render(); return; }
+  const st = e.target.closest('[data-st]'); if (st) { e.preventDefault(); if ($('sopT')) sopTitle = $('sopT').value; sopTab = st.dataset.st; sopFocus = true; renderDetail(); return; }
+  const fm = e.target.closest('[data-fmt]'); if (fm) { sopTitle = $('sopT').value; sopFmt = fm.dataset.fmt; renderDetail(); return; }
+  const sl = e.target.closest('[data-sopl]'); if (sl) { const [sid, step] = sl.dataset.sopl.split('|'); ST.sopLinks[sel] = { sop: sid, step: +step }; sopOpen = false; save(); render(); toast('Linked to ' + sid + ', step ' + (+step + 1)); return; }
   const b = e.target.closest('[data-a]'); if (b) act(b.dataset.a);
 });
 $('items').addEventListener('click', (e) => {
   const gi = e.target.closest('[data-gapid]'); if (gi) { gsel = gi.dataset.gapid; render(); return; }
   const fq = e.target.closest('[data-fq]'); if (fq) { fsel = fq.dataset.fq; fwrite = false; render(); return; }
-  const li = e.target.closest('[data-id]'); if (li) { fsel = null; sel = li.dataset.id; mode = 'view'; render(); }
+  const li = e.target.closest('[data-id]'); if (li) { fsel = null; sel = li.dataset.id; mode = 'view'; sopOpen = false; render(); }
 });
 const todayStr = () => new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }).replace(',', '');
 $('lq').addEventListener('input', (e) => { lq = e.target.value.trim().toLowerCase(); sel = null; render(); });
@@ -2577,11 +2688,13 @@ document.addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase(), r = DRAFTS.find(x => x.id === sel);
   if (k === 'j' || k === 'k') {
     const list = DRAFTS.filter(inTab), i = list.findIndex(x => x.id === sel);
-    const n = list[Math.max(0, Math.min(list.length - 1, i + (k === 'j' ? 1 : -1)))]; if (n) { sel = n.id; mode = 'view'; render(); }
+    const n = list[Math.max(0, Math.min(list.length - 1, i + (k === 'j' ? 1 : -1)))]; if (n) { sel = n.id; mode = 'view'; sopOpen = false; render(); }
   }
   if (r && decision(r).status === 'pending' && mode === 'view') {
     if (k === 'a') act('approve'); if (k === 'e') act('edit'); if (k === 'r') act('reject');
   }
+  if (r && ['pending', 'approved'].includes(decision(r).status) && mode === 'view' && k === 'l') act('sop');
+  if (k === 'escape' && sopOpen) { sopOpen = false; renderDetail(); }
   if (k === 'escape' && mode !== 'view') act('cancel');
 });
 const RP = new URLSearchParams(location.search);
@@ -2603,6 +2716,11 @@ if (['pending', 'approved', 'final'].includes(RP.get('tab'))) { tab = RP.get('ta
 if (RP.get('gap') && !RP.get('sel')) { const gr = DRAFTS.find(r => decision(r).status === 'pending' && gapsOf(r).some(g => g.id === RP.get('gap'))); if (gr) sel = gr.id; }
 if (RP.get('sel')) { sel = RP.get('sel'); const sr = DRAFTS.find(x => x.id === sel); if (sr) { const s = decision(sr).status; tab = s === 'redrafting' ? 'pending' : (s === 'approved' || s === 'final') ? s : 'pending'; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === tab)); } if (RP.get('full')) { const r = DRAFTS.find(x => x.id === sel); if (r) openFull.add(r.src[0][0] + '|' + r.src[0][1]); } }
 if (HL_GAP) setTimeout(() => { const it = document.querySelector('.item.is-sel.is-hl') || document.querySelector('.item.is-hl'); if (it) it.scrollIntoView({ block: 'nearest' }); const n = document.querySelector('.gapnote .g.is-hl'); if (n) n.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 300);
+if (RP.get('sop') === 'new' && !RP.get('sel')) {
+  const ok = (x) => decision(x).status === 'approved' && !ST.sopLinks[x.id];
+  const fr = [DRAFTS.find(x => x.id === 'r9')].filter(x => x && ok(x))[0] || DRAFTS.filter(x => decision(x).status === 'approved' && !ST.sopLinks[x.id]).sort((a, b) => (sopRelated(b).length - sopRelated(a).length) || (sopMatches(a).length - sopMatches(b).length))[0];
+  if (fr) { sel = fr.id; sopOpen = true; sopTab = 'new'; sopFocus = true; }
+}
 // a rewrite cut short by leaving the page finishes when you come back
 Object.keys(ST.decisions).forEach(id => { if (ST.decisions[id].status === 'redrafting') finishRewrite(id); });
 render();
@@ -4504,7 +4622,492 @@ $('roPrint').addEventListener('click', () => print());
 render();
 """)
 
-PAGES = {'readout': RO_PAGE, 'emails': EMAILS_PAGE, 'platform': PLATFORM, 'superadmin': SUPER, 'company': COMPANY, 'auditlog': AUDIT, 'account': ACCOUNT, 'people': PEOPLE, 'settings': SETTINGS, 'states': STATES, 'dashboard': OVERVIEW, 'sources': DOCUMENTS, 'insights': QUESTIONS_PAGE, 'build': REVIEW, 'distribute': APPROVED, 'chat': CHAT, 'knowledge': READOUT, 'activity': ACTIVITY}
+# ============================================================ SOPs (LOJ-29, R1)
+SOPS = dict(
+  active='sops', title='SOPs',
+  css=r"""
+  .seclbl{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+  /* four ways in, one click each */
+  .starts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 26px}
+  .st{display:grid;grid-template-columns:38px minmax(0,1fr);gap:4px 12px;align-items:start;padding:16px;border-radius:14px;border:1px solid var(--line-2);background:var(--panel);color:var(--ink);font:inherit;text-align:left;cursor:pointer;text-decoration:none;transition:border-color .15s ease,box-shadow .15s ease}
+  .st:hover{border-color:rgba(232,93,117,.5);box-shadow:0 10px 24px -18px rgba(232,93,117,.8);text-decoration:none}
+  .st__ic{grid-row:span 2;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:#FFF0E8;color:#8A4B2F}
+  .st__ic svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .st b{font-size:.92rem;line-height:1.3}
+  .st span:last-child{font-size:.8rem;color:var(--muted);line-height:1.4;font-weight:500}
+  .st.is-main{border-color:rgba(232,93,117,.4);background:linear-gradient(135deg,#FFF5F1,#FFFFFF)}
+  .st.is-main .st__ic{background:var(--brand-gradient);color:#fff}
+  /* the lifecycle doubles as the filter */
+  .flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 0 14px}
+  .flow button{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line-2);background:var(--panel);font:inherit;font-size:.84rem;font-weight:600;color:var(--ink);cursor:pointer}
+  .flow button:hover{border-color:rgba(36,26,20,.3)}
+  .flow button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .flow button em{font-style:normal;font-size:.72rem;font-weight:700;min-width:20px;height:20px;padding:0 6px;border-radius:999px;display:grid;place-items:center;background:var(--bg-soft);color:var(--muted)}
+  .flow button[aria-pressed="true"] em{background:rgba(255,255,255,.18);color:#fff}
+  .flow i{width:8px;height:8px;border-radius:50%;flex:none}
+  .flow .arr{color:var(--line-2);font-size:.9rem}
+  .flow .sep{width:1px;height:22px;background:var(--line-2);margin:0 6px}
+  .dot-draft{background:#B9ADA6}.dot-review{background:var(--info)}.dot-approved{background:var(--success)}.dot-due{background:var(--warning)}.dot-retired{background:#D8D0CB}
+  .stbl{width:100%;border-collapse:collapse}
+  .stbl th{text-align:left;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:12px 16px;border-bottom:1px solid var(--line)}
+  .stbl td{padding:14px 16px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:.86rem}
+  .stbl tr:last-child td{border-bottom:0}
+  .stbl tbody tr{cursor:pointer}
+  .stbl tbody tr:hover td{background:var(--bg-soft)}
+  .stbl tbody tr:focus-visible{outline:2px solid var(--rose);outline-offset:-2px}
+  .stbl .t b{display:block;font-size:.94rem}
+  .stbl .t small{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:.78rem;margin-top:2px}
+  .stbl tr.is-retired .t b{color:var(--muted);text-decoration:line-through}
+  .sid{font:600 .72rem/1 ui-monospace,Menlo,monospace;color:var(--muted);background:var(--bg-soft);border-radius:6px;padding:4px 6px;white-space:nowrap}
+  .who{display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .avs{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font:800 .62rem var(--display)}
+  .late{color:var(--error);font-weight:700}
+  .ext{display:inline-flex;align-items:center;gap:4px}
+  .ext svg,.ic14{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  /* ---------- one SOP ---------- */
+  body.is-detail #sopHead,body.is-detail #sopList{display:none}
+  .back{display:inline-flex;gap:6px;align-items:center;font-size:.84rem;color:var(--muted);margin:0 0 12px}
+  .dhead{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+  .dhead__t{flex:1 1 380px;min-width:0}
+  .dhead__m{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .dhead h1{font-family:var(--display);font-weight:700;font-size:1.75rem;letter-spacing:-.02em;margin:8px 0 4px}
+  .dhead .orig{margin:0;color:var(--muted);font-size:.86rem}
+  .dhead__a{display:flex;gap:8px;flex-wrap:wrap;align-items:center;position:relative}
+  .ver{font-weight:700;font-size:.82rem}
+  /* lifecycle: where this SOP is, and what comes next */
+  .life{display:flex;list-style:none;margin:0 0 16px;padding:0;border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden}
+  .life li{flex:1;position:relative;display:flex;align-items:center;gap:8px;padding:12px 14px 12px 22px;font-size:.8rem;font-weight:600;color:var(--muted);white-space:nowrap}
+  .life li:first-child{padding-left:16px}
+  .life li + li::before{content:"";position:absolute;left:-7px;top:50%;width:12px;height:12px;border-top:1px solid var(--line-2);border-right:1px solid var(--line-2);transform:translateY(-50%) rotate(45deg);background:inherit}
+  .life b{width:20px;height:20px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:.66rem;background:var(--bg-soft);color:var(--muted)}
+  .life .is-done{color:var(--ink)}
+  .life .is-done b{background:rgba(63,143,95,.14);color:var(--success)}
+  .life .is-cur{background:#FFF0E8;color:#8A4B2F}
+  .life .is-cur b{background:var(--rose);color:#fff}
+  .life small{display:block;font-weight:500;font-size:.72rem;opacity:.8}
+  .banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border-radius:12px;margin:0 0 16px;font-size:.88rem}
+  .banner > span{flex:1;min-width:220px}
+  .banner--info{background:rgba(62,111,166,.08);color:#2D5482}
+  .banner--warn{background:var(--amber-soft);color:#7A560F}
+  .banner--ok{background:rgba(63,143,95,.09);color:#2F6E48}
+  .banner--muted{background:var(--bg-soft);color:var(--muted)}
+  .dgrid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
+  .doc{padding:6px 26px 26px}
+  .ctl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;margin:20px 0 6px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--line)}
+  .ctl div{background:var(--panel);padding:10px 12px;min-width:0}
+  .ctl dt{font-size:.64rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .ctl dd{margin:2px 0 0;font-size:.86rem;font-weight:600}
+  .ctl .ctl__t{grid-column:span 2}
+  .ssec{padding:20px 0 4px;border-top:1px solid var(--line);margin-top:16px;scroll-margin-top:20px}
+  .ssec:first-of-type{border-top:0}
+  .ssec h2{display:flex;align-items:center;gap:10px;margin:0 0 8px;font-family:var(--display);font-weight:700;font-size:1.02rem}
+  .ssec h2 .n{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;background:var(--bg-soft);font-size:.7rem;color:var(--muted)}
+  .ssec p{margin:0;font-size:.92rem;line-height:1.6}
+  .ssec.is-miss{border:1.5px dashed rgba(217,154,43,.6);border-radius:12px;padding:14px 16px;margin-top:16px;background:rgba(217,154,43,.05)}
+  .ssec.is-miss p{color:#8A6212}
+  .ssec textarea{width:100%}
+  .views{display:inline-flex;margin-left:auto;padding:3px;border-radius:999px;background:var(--bg-soft);gap:2px}
+  .views button{height:28px;padding:0 12px;border:0;border-radius:999px;background:none;font:inherit;font-size:.76rem;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap}
+  .views button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:0 1px 3px rgba(36,26,20,.15)}
+  .views button[disabled]{cursor:not-allowed;opacity:.55}
+  .views button small{font-size:.62rem;font-weight:700;margin-left:4px}
+  /* step-by-step */
+  .steps{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:10px;counter-reset:s}
+  .step{display:grid;grid-template-columns:30px minmax(0,1fr);gap:4px 12px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--panel);counter-increment:s}
+  .step::before{content:counter(s);grid-row:span 3;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:#fff;font:700 .8rem var(--display)}
+  .step.is-hl{border-color:rgba(232,93,117,.55);box-shadow:0 0 0 3px rgba(232,93,117,.12)}
+  .step__t{font-size:.94rem;font-weight:600;line-height:1.45}
+  .step__t[contenteditable="true"]{outline:1.5px dashed var(--line-2);border-radius:6px;padding:2px 4px;margin:-2px -4px}
+  .step__m{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .role{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .cite{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 8px;border-radius:7px;border:1px solid var(--line-2);font-size:.72rem;font-weight:600;color:var(--ink);background:var(--panel);white-space:nowrap;text-decoration:none}
+  a.cite:hover{border-color:var(--rose);text-decoration:none}
+  .cite svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;color:var(--muted)}
+  .cite--rule{border-color:rgba(63,143,95,.35);background:rgba(63,143,95,.06);color:#2F6E48}
+  .cite--rule svg{color:var(--success)}
+  .brs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+  .br{padding:10px 12px;border-radius:10px;background:var(--bg-soft);font-size:.86rem}
+  .br b{display:block;font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--info);margin-bottom:2px}
+  .subs{margin:4px 0 0;padding-left:18px;font-size:.86rem;color:var(--muted);display:grid;gap:2px}
+  /* checklist */
+  .chk{list-style:none;margin:6px 0 0;padding:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .chk li{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:12px;align-items:start;padding:12px 16px;border-top:1px solid var(--line)}
+  .chk li:first-child{border-top:0}
+  .chk .box{width:18px;height:18px;margin-top:2px;border:1.5px solid var(--line-2);border-radius:5px}
+  .chk small{display:block;color:var(--muted);font-size:.8rem}
+  /* hierarchical */
+  .tree,.tree ul{list-style:none;margin:0;padding:0}
+  .tree{margin-top:6px;font-size:.9rem}
+  .tree > li{padding:8px 0 8px 18px;border-left:2px solid var(--line-2);position:relative}
+  .tree > li::before{content:"";position:absolute;left:-2px;top:20px;width:12px;border-top:2px solid var(--line-2)}
+  .tree > li > b{font-weight:700}
+  .tree ul{margin:6px 0 0 14px;padding-left:14px;border-left:1px dashed var(--line-2);display:grid;gap:4px;color:var(--muted)}
+  .tree em{font-style:normal;font-weight:700;color:var(--info)}
+  /* right rail */
+  .rail{position:sticky;top:20px;display:grid;gap:14px}
+  .rbox{padding:16px 18px}
+  .rbox h3{margin:0 0 10px;font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center}
+  .rbox h3 span{margin-left:auto;letter-spacing:0;text-transform:none;font-weight:600;font-size:.76rem}
+  .toc{list-style:none;margin:0;padding:0;display:grid;gap:1px}
+  .toc a{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:8px;font-size:.84rem;font-weight:500;color:var(--ink)}
+  .toc a:hover{background:var(--bg-soft);text-decoration:none}
+  .toc i{width:16px;height:16px;border-radius:50%;flex:none;display:grid;place-items:center;font-style:normal;font-size:.6rem;font-weight:800;background:rgba(63,143,95,.14);color:var(--success)}
+  .toc .is-miss i{background:var(--amber-soft);color:#8A6212}
+  .toc .is-miss{color:#8A6212}
+  .rlist{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:.84rem}
+  .rlist a{color:var(--ink);font-weight:600}
+  .rlist small{display:block;color:var(--muted);font-size:.76rem}
+  .vers li{display:grid;grid-template-columns:auto 1fr;gap:0 10px}
+  .vers b{font:700 .78rem ui-monospace,Menlo,monospace}
+  .live{display:grid;gap:6px;font-size:.84rem}
+  .live div{display:flex;align-items:center;gap:8px}
+  .live i{width:8px;height:8px;border-radius:50%;background:var(--line-2)}
+  .live.is-on i{background:var(--success)}
+  .live span{margin-left:auto;color:var(--muted);font-size:.76rem}
+  .editbar{position:sticky;bottom:16px;z-index:20;display:flex;gap:10px;align-items:center;margin-top:18px;padding:12px 14px;border-radius:14px;background:var(--ink);color:#fff;box-shadow:0 20px 40px -20px rgba(36,26,20,.6)}
+  .editbar span{flex:1;font-size:.86rem}
+  .editbar .btn--secondary{background:transparent;color:#fff;border-color:rgba(255,255,255,.3)}
+  .xpop{position:absolute;right:0;top:calc(100% + 6px);z-index:30;width:200px;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 24px 50px -24px rgba(36,26,20,.45);padding:6px}
+  /* drafting: the template fills in, one section at a time */
+  .drafting{max-width:560px;margin:40px auto;padding:28px}
+  .drafting h2{font-family:var(--display);font-size:1.3rem;margin:0 0 4px}
+  .drafting ol{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:6px}
+  .drafting li{display:flex;align-items:center;gap:10px;font-size:.9rem;color:var(--muted)}
+  .drafting li i{width:18px;height:18px;border-radius:50%;flex:none;display:grid;place-items:center;font-style:normal;font-size:.62rem;font-weight:800;background:var(--bg-soft)}
+  .drafting li.is-done{color:var(--ink)}
+  .drafting li.is-done i{background:rgba(63,143,95,.14);color:var(--success)}
+  .drafting li.is-miss i{background:var(--amber-soft);color:#8A6212}
+  .drafting li.is-now i{border:2px solid var(--rose);border-right-color:transparent;animation:spin .7s linear infinite}
+  /* dialogs */
+  .dlg--xl{width:min(680px,calc(100vw - 32px))}
+  .impl{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+  .impl li{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:12px}
+  .impl .mono{width:36px;height:36px;border-radius:10px;font-size:.66rem;color:var(--muted);background:var(--bg-soft)}
+  .impl b{display:block;font-size:.9rem}
+  .impl small{display:block;color:var(--muted);font-size:.78rem}
+  .impl .acts2{display:flex;gap:6px}
+  .askin{display:flex;gap:8px;align-items:center}
+  .askin span{font-weight:600;white-space:nowrap}
+  .sugg{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .diff{display:grid;gap:8px;font-size:.88rem}
+  .diff del,.diff ins{display:block;padding:8px 10px;border-radius:8px;text-decoration:none}
+  .diff del{background:rgba(198,69,69,.08);color:#9A3333}
+  .diff del::before{content:"− ";font-weight:800}
+  .diff ins{background:rgba(63,143,95,.1);color:#2F6E48}
+  .diff ins::before{content:"+ ";font-weight:800}
+  .diff small{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  :root[data-theme="dark"] .st.is-main{background:rgba(232,93,117,.08)}
+  :root[data-theme="dark"] .st__ic,:root[data-theme="dark"] .life .is-cur{background:rgba(232,93,117,.14);color:#FFB199}
+  :root[data-theme="dark"] .banner--info{color:#9FC0E6}
+  :root[data-theme="dark"] .banner--warn,:root[data-theme="dark"] .ssec.is-miss p{color:#E8C27A}
+  :root[data-theme="dark"] .banner--ok,:root[data-theme="dark"] .cite--rule{color:#8FD1A8}
+  .ssec h2{flex-wrap:wrap}
+  @media (max-width:1100px){.starts{grid-template-columns:1fr 1fr}.dgrid{grid-template-columns:minmax(0,1fr)}.rail{position:static}}
+  @media (max-width:760px){.starts{grid-template-columns:1fr}.ctl{grid-template-columns:1fr 1fr}.life{flex-wrap:wrap}.life li{flex:1 1 45%;white-space:normal;padding-left:14px}.life li + li::before{display:none}.brs{grid-template-columns:1fr}.stbl .hide-s{display:none}.doc{padding:4px 16px 18px}.views{margin-left:0;overflow-x:auto;max-width:100%}.back{margin-left:56px;margin-top:8px}}
+  @media print{.side,.fab,.mnav,.dhead__a,.rail,.life,.banner,.back,.views,.toast{display:none!important}.main{margin:0}.dgrid{display:block}.doc{border:0;padding:0}}
+""",
+  body=r"""
+    <div class="head" id="sopHead">
+      <div>
+        <p class="label">Decide</p>
+        <h1>SOPs</h1>
+        <p>Approved, owned procedures your team follows. Every step cites where it came from, and rules link to approved answers instead of being copied.</p>
+      </div>
+    </div>
+    <div id="sopList">
+      <section id="starts" aria-labelledby="startH">
+        <p class="seclbl" id="startH">Start an SOP</p>
+        <div class="starts">
+          <a class="st is-main" href="build.html?tab=approved&amp;sop=new"><span class="st__ic"><svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg></span><b>From approved answers</b><span>Pick an answer in Build and press Link to SOP</span></a>
+          <button class="st" type="button" data-start="import"><span class="st__ic"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></span><b>Import a document</b><span id="impHint">Documents lojo marked as procedures</span></button>
+          <button class="st" type="button" data-start="ask"><span class="st__ic"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><b>Ask lojo to write one</b><span>In Ask lojo: “Write the SOP for refund escalations”</span></button>
+          <button class="st" type="button" data-start="ext"><span class="st__ic"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></span><b>Link an external SOP</b><span>Keep it in Notion or Drive, with an owner and review date</span></button>
+        </div>
+      </section>
+      <div class="flow" id="flow" aria-label="Filter by stage"></div>
+      <section class="card" style="overflow:auto"><table class="stbl">
+        <thead><tr><th>SOP</th><th>Stage</th><th class="hide-s">Version</th><th class="hide-s">Owner</th><th>Next review</th><th class="hide-s">Steps</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table></section>
+    </div>
+    <div id="sopDetail" hidden></div>
+    <dialog class="dlg dlg--wide" id="sDlg" aria-labelledby="sDlgH"></dialog>
+""",
+  js=r"""
+const P = new URLSearchParams(location.search);
+const ROLE = window.LOJO_ROLE || 'admin', ME = ROLE_PERSON[ROLE] || 'p1';
+const VIEWER = ROLE === 'viewer';
+const person = (id) => ST.people.find(p => p.id === id) || { name: 'Someone' };
+const inits = (n) => n.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+const avatar = (id) => { const n = person(id).name; return '<span class="avs ' + tone(n) + '">' + inits(n) + '</span>'; };
+const statusBadge = (s) => '<span class="badge badge--' + SOP_STATUS[s.status][1] + '">' + SOP_STATUS[s.status][0] + '</span>';
+const IC = {
+  call: '<svg viewBox="0 0 24 24"><path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 6 6L15 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>',
+  mail: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
+  doc: '<svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>',
+  answer: '<svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>',
+  out: '<svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
+};
+const FROM = { answers: 'Built from approved answers', import: 'Imported from a document', ask: 'Written by lojo on request', external: 'External' };
+const missingOf = (s) => s.from === 'external' ? [] : SOP_SECTIONS.filter(([k]) => k === 'steps' ? !s.steps.length : k !== 'history' && !s.sec[k]).map(x => x[0]);
+const visible = () => ST.sops.filter(s => !VIEWER || ['approved', 'due'].includes(s.status));
+const linkedAnswers = (s) => [...new Set(s.steps.filter(x => x.ans).map(x => x.ans).concat(Object.keys(ST.sopLinks).filter(r => ST.sopLinks[r].sop === s.id)))];
+const isLate = (s) => s.status === 'due';
+let filter = 'all', view = null, editing = false, xOpen = false;
+
+/* ---------------- list ---------------- */
+const STAGES = ['draft', 'review', 'approved', 'due', 'retired'];
+function renderList() {
+  const all = visible(), n = (k) => all.filter(s => s.status === k).length;
+  const stages = VIEWER ? ['approved', 'due'] : STAGES;
+  $('flow').innerHTML = '<button type="button" data-f="all" aria-pressed="' + (filter === 'all') + '">All <em>' + all.length + '</em></button><span class="sep"></span>' +
+    stages.map((k, i) => (k === 'retired' ? '<span class="sep"></span>' : i ? '<span class="arr" aria-hidden="true">→</span>' : '') +
+      '<button type="button" data-f="' + k + '" aria-pressed="' + (filter === k) + '"><i class="dot-' + k + '"></i>' + SOP_STATUS[k][0] + ' <em>' + n(k) + '</em></button>').join('');
+  const list = all.filter(s => filter === 'all' || s.status === filter);
+  $('rows').innerHTML = list.length ? list.map(s => {
+    const ext = s.from === 'external';
+    return '<tr tabindex="0" data-id="' + s.id + '"' + (s.status === 'retired' ? ' class="is-retired"' : '') + '><td class="t"><b>' + esc(s.title) + '</b><small><span class="sid">' + s.id + '</span>' +
+      (ext ? '<span class="ext">' + IC.out + 'External · ' + esc(s.ext.app) + '</span>' : esc(FROM[s.from])) + '</small></td>' +
+      '<td>' + statusBadge(s) + (s.status !== 'retired' && missingOf(s).length ? ' <span class="badge badge--amber">' + missingOf(s).length + ' missing</span>' : '') + '</td>' +
+      '<td class="hide-s ver">' + (ext ? '—' : 'v' + s.ver) + '</td><td class="hide-s"><span class="who">' + avatar(s.owner) + esc(person(s.owner).name) + '</span></td>' +
+      '<td>' + (s.status === 'retired' ? '<span class="sub">—</span>' : s.next ? '<span' + (isLate(s) ? ' class="late"' : '') + '>' + esc(s.next) + (isLate(s) ? ' · overdue' : '') + '</span>' : '<span class="sub">After approval</span>') + '</td>' +
+      '<td class="hide-s">' + (ext ? '<span class="sub">In ' + esc(s.ext.app) + '</span>' : s.steps.length) + '</td></tr>';
+  }).join('') : '<tr><td colspan="6"><div class="empty"><b>No SOPs at this stage.</b>Pick another stage, or start one above.</div></td></tr>';
+}
+$('flow').addEventListener('click', (e) => { const b = e.target.closest('[data-f]'); if (b) { filter = b.dataset.f; renderList(); } });
+$('rows').addEventListener('click', (e) => { const r = e.target.closest('tr[data-id]'); if (r) openSop(r.dataset.id); });
+$('rows').addEventListener('keydown', (e) => { const r = e.target.closest('tr[data-id]'); if (r && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openSop(r.dataset.id); } });
+
+/* ---------------- one SOP ---------------- */
+function openSop(id, push = true) {
+  view = id; editing = false; xOpen = false;
+  if (push) history.pushState({ id }, '', 'sops.html?id=' + encodeURIComponent(id));
+  render(); scrollTo(0, 0);
+}
+window.addEventListener('popstate', () => { view = new URLSearchParams(location.search).get('id'); editing = false; render(); });
+const LIFE = [['draft', 'Draft'], ['review', 'In review'], ['approved', 'Approved'], ['due', 'Due for review'], ['end', 'Revised or retired']];
+function lifeHtml(s) {
+  const at = s.status === 'retired' ? 4 : LIFE.findIndex(x => x[0] === s.status);
+  const note = { draft: 'Being written', review: 'Waiting for the approver', approved: 'In use · v' + s.ver, due: 'Was due ' + s.next, end: s.status === 'retired' ? 'Retired' : 'Any change goes back to review' };
+  return '<ol class="life" aria-label="Lifecycle">' + LIFE.map(([k, l], i) => '<li class="' + (i < at ? 'is-done' : i === at ? 'is-cur' : '') + '"' + (i === at ? ' aria-current="step"' : '') + '><b>' + (i < at ? '✓' : i + 1) + '</b><span>' + l + (i === at ? '<small>' + esc(note[k]) + '</small>' : '') + '</span></li>').join('') + '</ol>';
+}
+function cite(st) {
+  const src = '<span class="cite" title="Source">' + IC[st.src[0]] + esc(st.src[1]) + '</span>';
+  if (!st.ans) return src;
+  return '<a class="cite cite--rule" href="build.html?tab=approved&amp;sel=' + st.ans + '" title="The rule lives in this approved answer. It isn’t copied here.">' + IC.answer + 'Rule · ' + esc(st.src[0] === 'answer' ? st.src[1] : QUESTIONS.find(q => q.id === DRAFTS.find(x => x.id === st.ans).qid).q.replace(/\?$/, '')) + '</a>' + (st.src[0] === 'answer' ? '' : src);
+}
+function stepsHtml(s) {
+  const hl = P.get('step') !== null && P.get('id') === s.id ? +P.get('step') : -1;
+  if (s.fmt === 'check') return '<ul class="chk">' + s.steps.map((st, i) => '<li><i class="box" aria-hidden="true"></i><span><span class="step__t" data-i="' + i + '"' + (editing ? ' contenteditable="true"' : '') + '>' + esc(st.t) + '</span><small>' + esc(st.who) + '</small></span><span class="step__m">' + cite(st) + '</span></li>').join('') + '</ul>';
+  if (s.fmt === 'tree') return '<ul class="tree">' + s.steps.map((st, i) => '<li><b class="step__t" data-i="' + i + '"' + (editing ? ' contenteditable="true"' : '') + '>' + (i + 1) + '. ' + esc(st.t) + '</b> <span class="role">· ' + esc(st.who) + '</span>' +
+    ((st.br || st.sub) ? '<ul>' + (st.br || []).map(b => '<li><em>' + esc(b[0]) + ':</em> ' + esc(b[1]) + '</li>').join('') + (st.sub || []).map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '') + '</li>').join('') + '</ul>';
+  return '<ol class="steps">' + s.steps.map((st, i) => '<li class="step' + (i === hl ? ' is-hl' : '') + '"><span class="step__t" data-i="' + i + '"' + (editing ? ' contenteditable="true"' : '') + '>' + esc(st.t) + '</span>' +
+    '<span class="step__m"><span class="role">' + esc(st.who) + '</span>' + cite(st) + '</span>' +
+    (st.br ? '<div class="brs">' + st.br.map(b => '<div class="br"><b>' + esc(b[0]) + '</b>' + esc(b[1]) + '</div>').join('') + '</div>' : '') +
+    (st.sub ? '<ul class="subs">' + st.sub.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '') + '</li>').join('') + '</ol>';
+}
+function canApprove(s) { return ME === s.approver; }
+function actionsHtml(s) {
+  if (VIEWER) return exportBtn(s);
+  if (editing) return '';
+  const ext = s.from === 'external';
+  const b = (a, l, cls) => '<button class="btn ' + (cls || 'btn--secondary') + '" type="button" data-a="' + a + '">' + l + '</button>';
+  if (s.status === 'review') return (canApprove(s) ? '<button class="btn btn--primary" type="button" data-a="approve">Approve and publish v' + nextVer(s, true) + '</button>' : '') + b('edit', 'Edit');
+  if (s.status === 'draft') return b('submit', 'Send for review', 'btn--primary') + b('edit', 'Edit');
+  if (s.status === 'due') return (ext ? '' : b('revise', 'Revise · starts v' + nextVer(s), 'btn--primary')) + exportBtn(s) + b('retire', 'Retire', ext ? 'btn--secondary' : 'btn--ghost');
+  if (s.status === 'approved') return (ext ? '<a class="btn btn--primary" href="https://' + esc(s.ext.url) + '" target="_blank" rel="noopener">' + IC.out.replace('<svg', '<svg class="ic14"') + 'Open in ' + esc(s.ext.app) + '</a>' : b('revise', 'Edit · starts v' + nextVer(s))) + exportBtn(s) + b('retire', 'Retire', 'btn--ghost');
+  return exportBtn(s);
+}
+function exportBtn(s) {
+  if (s.from === 'external') return '';
+  return '<button class="btn btn--secondary" type="button" data-a="export" aria-expanded="' + xOpen + '">Export</button>' +
+    (xOpen ? '<div class="xpop" role="menu"><button class="pop__row" type="button" data-a="pdf" role="menuitem">PDF</button><button class="pop__row" type="button" data-a="word" role="menuitem">Word (.doc)</button></div>' : '');
+}
+function nextVer(s, publish) {
+  if (publish) return s.ver.startsWith('0.') ? '1.0' : s.ver;
+  const [a, b] = s.ver.split('.').map(Number); return a + '.' + (b + 1);
+}
+function bannerHtml(s) {
+  const miss = missingOf(s), names = miss.map(k => SOP_SECTIONS.find(x => x[0] === k)[1]);
+  let h = '';
+  if (s.status === 'review') h += '<div class="banner banner--info"><span>' + (canApprove(s) ? '<b>Your approval is needed.</b> ' : '<b>Waiting for ' + esc(person(s.approver).name) + ' to approve.</b> ') + (s.by ? 'Sent by ' + esc(s.by) + ' ' + esc(s.sent || '') + '. ' : '') + 'Nobody sees it in Ask lojo until it’s approved.</span></div>';
+  if (miss.length && s.status !== 'retired') h += '<div class="banner banner--warn"><span><b>' + miss.length + ' section' + (miss.length === 1 ? '' : 's') + ' missing:</b> ' + esc(names.join(', ')) + '. The document didn’t cover ' + (miss.length === 1 ? 'it' : 'them') + '.</span></div>';
+  if (s.status === 'due') h += '<div class="banner banner--warn"><span><b>Review was due ' + esc(s.next) + '.</b> Revise it or retire it. It stays in use meanwhile.</span></div>';
+  if (s.status === 'retired') h += '<div class="banner banner--muted"><span>Retired. Archived, never deleted.</span></div>';
+  if (s.from === 'external' && s.status !== 'retired') h += '<div class="banner banner--muted"><span>This SOP lives in ' + esc(s.ext.app) + '. lojo keeps its owner and review date, and approved answers can link to it.</span></div>';
+  return h;
+}
+function render() {
+  document.body.classList.toggle('is-detail', !!view);
+  $('sopDetail').hidden = !view;
+  if (!view) { renderList(); return; }
+  const s = sopById(view);
+  if (!s || (VIEWER && !['approved', 'due'].includes(s.status))) { $('sopDetail').innerHTML = '<a class="back" href="sops.html" data-back>← SOPs</a><div class="card empty"><b>This SOP isn’t available.</b>It may be waiting for approval.</div>'; return; }
+  const ext = s.from === 'external', miss = missingOf(s), ans = linkedAnswers(s);
+  let h = '<a class="back" href="sops.html" data-back>← SOPs</a>' +
+    '<div class="dhead"><div class="dhead__t"><div class="dhead__m"><span class="sid">' + s.id + '</span>' + statusBadge(s) + (ext ? '' : '<span class="ver">v' + s.ver + '</span>') + '</div><h1>' + esc(s.title) + '</h1>' +
+    '<p class="orig">' + (ext ? 'External · ' + esc(s.ext.app) : esc(FROM[s.from])) + ' · owned by ' + esc(person(s.owner).name) + '</p></div><div class="dhead__a">' + actionsHtml(s) + '</div></div>' +
+    lifeHtml(s) + bannerHtml(s);
+  const ctl = [['Title', s.title, 'ctl__t'], ['ID', s.id], ['Version', ext ? '—' : 'v' + s.ver], ['Effective', s.eff || 'On approval'], ['Owner', person(s.owner).name], ['Approver', person(s.approver).name], ['Next review', (s.next || 'On approval') + ' · every ' + SOP_RISK[s.risk] + ' mo, ' + s.risk.toLowerCase() + ' risk']];
+  let doc = '<dl class="ctl" aria-label="Control header">' + ctl.map(([k, v, c]) => '<div' + (c ? ' class="' + c + '"' : '') + '><dt>' + k + '</dt><dd title="' + esc(v) + '">' + esc(v) + '</dd></div>').join('') + '</dl>';
+  if (ext) doc += '<section class="ssec"><h2>Where it lives</h2><p><a href="https://' + esc(s.ext.url) + '" target="_blank" rel="noopener">' + esc(s.ext.url) + '</a></p></section>';
+  else SOP_SECTIONS.forEach(([k, l], i) => {
+    const m = miss.includes(k);
+    let inner;
+    if (k === 'steps') inner = s.steps.length ? stepsHtml(s) : '<p>No steps yet.</p>';
+    else if (k === 'history') inner = '<ul class="rlist vers">' + s.hist.slice().reverse().map(x => '<li><b>v' + x[0] + '</b><span>' + esc(x[3]) + '<small>' + esc(x[2]) + ' · ' + esc(x[1]) + '</small></span></li>').join('') + '</ul>';
+    else if (editing) inner = '<textarea class="text" data-sec="' + k + '" rows="2" placeholder="Write the ' + l.toLowerCase() + '">' + esc(s.sec[k] || '') + '</textarea>';
+    else inner = '<p>' + (m ? 'Missing. The document didn’t say.' : esc(s.sec[k])) + '</p>';
+    const vw = k === 'steps' && s.steps.length ? '<span class="views" role="group" aria-label="Show the procedure as">' + Object.keys(SOP_FORMATS).map(f => '<button type="button" data-fmt="' + f + '" aria-pressed="' + (s.fmt === f) + '">' + SOP_FORMATS[f] + '</button>').join('') + '</span>' : '';
+    doc += '<section class="ssec' + (m ? ' is-miss' : '') + '" id="s-' + k + '"><h2><span class="n">' + (i + 1) + '</span>' + l + vw + '</h2>' + inner + '</section>';
+  });
+  if (editing) doc += '<div class="editbar"><span>' + (s.status === 'approved' || s.status === 'due' ? 'Saving starts v' + nextVer(s) + ' and sends it for review. v' + s.ver + ' stays in use until then.' : 'Edit the sections and steps, then save.') + '</span><button class="btn btn--secondary" type="button" data-a="cancel">Cancel</button><button class="btn btn--grad" type="button" data-a="save">' + (s.status === 'approved' || s.status === 'due' ? 'Save as v' + nextVer(s) + ' and send for review' : 'Save changes') + '</button></div>';
+  const isLive = ['approved', 'due'].includes(s.status);
+  const rail = (ext ? '' : '<div class="card rbox"><h3>Sections <span>' + (10 - miss.length) + ' of 10</span></h3><ol class="toc">' + SOP_SECTIONS.map(([k, l]) => '<li' + (miss.includes(k) ? ' class="is-miss"' : '') + '><a href="#s-' + k + '"><i>' + (miss.includes(k) ? '!' : '✓') + '</i>' + l + '</a></li>').join('') + '</ol></div>') +
+    (ans.length ? '<div class="card rbox"><h3>Linked answers <span>' + ans.length + '</span></h3><ul class="rlist">' + ans.map(r => { const d = DRAFTS.find(x => x.id === r); const st = decision(d).status;
+      return '<li><a href="build.html?sel=' + r + '">' + esc(QUESTIONS.find(q => q.id === d.qid).q) + '</a><small>' + (st === 'approved' ? 'Approved answer' : 'In review in Build') + '</small></li>'; }).join('') + '</ul><p class="sub" style="margin-top:10px">Rules stay in these answers and aren’t copied into the SOP.</p></div>' : '') +
+    (s.hist.length > 1 || s.diff ? '<div class="card rbox"><h3>Versions <span>' + s.hist.length + '</span></h3><ul class="rlist vers">' + s.hist.slice().reverse().slice(0, 3).map((x, i) => '<li><b>v' + x[0] + '</b><span>' + esc(x[3]) + '<small>' + esc(x[1]) + (i === 0 && isLive ? ' · current' : '') + '</small></span></li>').join('') + '</ul>' +
+      (s.diff ? '<button class="btn btn--secondary btn--sm" type="button" data-a="diff" style="margin-top:12px">Compare v' + s.hist[s.hist.length - 2][0] + ' → v' + s.hist[s.hist.length - 1][0] + '</button>' : '') + '</div>' : '') +
+    '<div class="card rbox"><h3>Available in</h3><div class="live' + (isLive ? ' is-on' : '') + '">' + ['Ask lojo', 'Brain API', 'MCP'].map(x => '<div><i></i>' + x + '<span>' + (isLive ? 'Live' : 'After approval') + '</span></div>').join('') + '</div></div>';
+  h += '<div class="dgrid"><article class="card doc">' + doc + '</article><aside class="rail">' + rail + '</aside></div>';
+  $('sopDetail').innerHTML = h;
+  if (P.get('step') !== null) { const el = document.querySelector('.step.is-hl'); if (el) el.scrollIntoView({ block: 'center' }); }
+}
+function readEdits(s) {
+  document.querySelectorAll('#sopDetail [data-sec]').forEach(t => { s.sec[t.dataset.sec] = t.value.trim() || null; });
+  document.querySelectorAll('#sopDetail .step__t[data-i]').forEach(t => { s.steps[+t.dataset.i].t = t.textContent.replace(/^\d+\.\s*/, '').trim(); });
+}
+function act(a) {
+  const s = sopById(view); if (!s) return;
+  if (a === 'export') { xOpen = !xOpen; render(); return; }
+  xOpen = false;
+  if (a === 'pdf') { render(); setTimeout(print, 50); return; }
+  if (a === 'word') { exportWord(s); render(); return; }
+  if (a === 'edit' || a === 'revise') { editing = true; render(); const t = document.querySelector('#sopDetail [contenteditable], #sopDetail textarea'); if (t) t.focus(); return; }
+  if (a === 'cancel') { editing = false; render(); return; }
+  if (a === 'save') {
+    const before = s.steps.map(x => x.t);
+    readEdits(s); editing = false;
+    if (s.status === 'approved' || s.status === 'due') {
+      const v = nextVer(s), changed = s.steps.map((x, i) => [i + 1, before[i], x.t]).filter(x => x[1] !== x[2]);
+      s.diff = changed.length ? changed : null;
+      s.ver = v; s.status = 'review'; s.by = person(ME).name; s.sent = 'just now'; s.hist.push([v, 'Today', person(ME).name, 'Revision sent for review']);
+      toast('Saved as v' + v + '. It’s waiting for ' + person(s.approver).name.split(' ')[0] + '’s approval.');
+    } else toast('Saved');
+    save(); render(); return;
+  }
+  if (a === 'approve') {
+    const v = nextVer(s, true); s.ver = v; s.status = 'approved'; s.eff = sopToday(); s.next = sopPlus(SOP_RISK[s.risk]);
+    const last = s.hist[s.hist.length - 1]; if (last && last[0] !== v) s.hist.push([v, 'Today', person(ME).name, 'Approved and published']); else if (last) last[3] += ', approved by ' + person(ME).name;
+    save(); render(); toast('Published v' + v + '. Ask lojo, the Brain API and MCP use it now.'); return;
+  }
+  if (a === 'submit') { s.status = 'review'; s.by = person(ME).name; s.sent = 'just now'; save(); render(); toast('Sent to ' + person(s.approver).name + ' for approval'); return; }
+  if (a === 'diff') return openDiff(s);
+  if (a === 'retire') return openRetire(s);
+}
+$('sopDetail').addEventListener('click', (e) => {
+  const bk = e.target.closest('[data-back]'); if (bk) { e.preventDefault(); view = null; history.pushState({}, '', 'sops.html'); render(); return; }
+  const f = e.target.closest('[data-fmt]'); if (f) { const s = sopById(view); if (editing) readEdits(s); s.fmt = f.dataset.fmt; save(); render(); return; }
+  const b = e.target.closest('[data-a]'); if (b) act(b.dataset.a);
+});
+document.addEventListener('click', (e) => { if (xOpen && !e.target.closest('.dhead__a')) { xOpen = false; render(); } });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && xOpen) { xOpen = false; render(); } });
+function exportWord(s) {
+  const secs = SOP_SECTIONS.map(([k, l], i) => '<h2>' + (i + 1) + '. ' + l + '</h2>' + (k === 'steps' ? '<ol>' + s.steps.map(x => '<li>' + esc(x.t) + ' <i>(' + esc(x.who) + ' · ' + esc(x.src[1]) + ')</i></li>').join('') + '</ol>'
+    : k === 'history' ? '<ul>' + s.hist.map(x => '<li>v' + x[0] + ' · ' + esc(x[1]) + ' · ' + esc(x[2]) + ': ' + esc(x[3]) + '</li>').join('') + '</ul>' : '<p>' + esc(s.sec[k] || '—') + '</p>')).join('');
+  const html = '<html><head><meta charset="utf-8"><title>' + esc(s.title) + '</title></head><body><h1>' + s.id + ' · ' + esc(s.title) + '</h1><p>Version ' + s.ver + ' · Effective ' + esc(s.eff || '—') + ' · Owner ' + esc(person(s.owner).name) + ' · Approver ' + esc(person(s.approver).name) + ' · Next review ' + esc(s.next || '—') + '</p>' + secs + '</body></html>';
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([html], { type: 'application/msword' })); a.download = s.id + ' v' + s.ver + '.doc'; a.click();
+  toast('Downloaded ' + s.id + ' v' + s.ver + '.doc');
+}
+
+/* ---------------- dialogs ---------------- */
+const dlg = $('sDlg');
+const shut = () => dlg.close();
+dlg.addEventListener('close', () => dlg.classList.remove('dlg--xl'));
+dlg.addEventListener('click', (e) => { if (e.target === dlg || e.target.closest('[data-close]')) shut(); });
+const foot = (go, label, cls) => '<div class="dlg__f"><button class="btn btn--secondary" type="button" data-close>Cancel</button>' + (go ? '<button class="btn ' + (cls || 'btn--primary') + '" type="button" id="' + go + '">' + label + '</button>' : '') + '</div>';
+function openDiff(s) {
+  const a = s.hist[s.hist.length - 2], b = s.hist[s.hist.length - 1];
+  dlg.innerHTML = '<div class="dlg__b"><p class="label">' + s.id + '</p><h3 id="sDlgH">v' + a[0] + ' → v' + b[0] + '</h3><p>' + esc(b[3]) + ' · ' + esc(b[2]) + ', ' + esc(b[1]) + '</p><div class="diff">' +
+    s.diff.map(([n, o, x]) => '<small>Step ' + n + '</small>' + (o ? '<del>' + esc(o) + '</del>' : '') + '<ins>' + esc(x) + '</ins>').join('') + '</div></div><div class="dlg__f"><button class="btn btn--primary" type="button" data-close>Close</button></div>';
+  dlg.showModal();
+}
+function openRetire(s) {
+  dlg.innerHTML = '<div class="dlg__b"><h3 id="sDlgH">Retire ' + esc(s.title) + '?</h3><p style="margin:0">It stops being used in Ask lojo, the Brain API and MCP. Old versions are archived, never deleted.</p></div>' + foot('rtGo', 'Retire', 'btn--danger');
+  dlg.showModal();
+  $('rtGo').addEventListener('click', () => { s.status = 'retired'; s.hist.push([s.ver, 'Today', person(ME).name, 'Retired']); save(); shut(); render(); toast('Retired'); });
+}
+// documents lojo has marked as procedures; a person can correct the mark
+const IMPORTS = [
+  { id: 'i1', name: 'Customer onboarding playbook', app: 'Notion', why: 'Numbered steps, roles and a checklist', title: 'Onboard a Scale customer', area: 'ONB', missing: ['defs', 'records'], rids: ['r6'],
+    sec: { purpose: 'Get every Scale customer live in their first 30 days.', scope: 'New Scale customers, from signature to go-live.', resp: 'The onboarding manager runs the steps. The Head of Support Operations owns this SOP.', prereq: 'A signed Scale contract and a named onboarding manager.', cautions: 'Don’t book training before SSO works.', refs: 'Customer onboarding playbook (Notion) · Onboarding checklist.pdf' },
+    steps: [['Name an onboarding manager within one working day of signature.', 'Sales lead'], ['Book the 60-minute kickoff with the customer’s admins.', 'Onboarding manager', 'r6'], ['Set up SSO before any training.', 'Customer IT'], ['Run two admin training sessions.', 'Onboarding manager', 'r6'], ['Confirm go-live with the customer by email.', 'Onboarding manager']] },
+  { id: 'i2', name: 'Refund escalations (Ops wiki)', app: 'Notion', why: 'Steps with an approval over a limit', title: 'Escalate a large refund', area: 'BIL', missing: ['cautions'], rids: ['r2'],
+    sec: { purpose: 'Get refunds over €500 approved within one working day.', scope: 'Refunds over €500 on any plan.', resp: 'Agent requests, Support Team Lead approves, Finance pays.', defs: 'Large refund: over €500 in one payment.', prereq: 'The refund worked out with SOP-BIL-001.', records: 'Approval and payout date on the ticket.', refs: 'Refund escalations (Notion)' },
+    steps: [['Work out the refund with SOP-BIL-001.', 'Agent', 'r2'], ['If it’s over €500, ask the Support Team Lead in #refunds.', 'Agent'], ['The lead approves or declines within one working day.', 'Support Team Lead'], ['Finance pays and the agent confirms to the customer.', 'Finance']] },
+  { id: 'i3', name: 'Security overview.pdf', app: 'Upload', why: 'Mostly facts, one short procedure', title: 'Export a workspace’s data', area: 'SEC', missing: ['resp', 'prereq', 'records'], rids: ['r15'],
+    sec: { purpose: 'Give customers their data when they ask.', scope: 'Any workspace, on request from one of its admins.', defs: 'Export: all workspace data as one JSON file.', cautions: 'Only an admin of that workspace can ask for it.', refs: 'Security overview.pdf p. 8' },
+    steps: [['Check the person asking is an admin of the workspace.', 'Agent'], ['Point them to Settings → Data → Export.', 'Agent', 'r15'], ['They download the JSON file.', 'Customer']] },
+];
+const impLeft = () => IMPORTS.filter(x => !(ST.sopImp || {})[x.id]);
+function openImport() {
+  const L = impLeft();
+  dlg.classList.add('dlg--xl');
+  dlg.innerHTML = '<div class="dlg__b"><h3 id="sDlgH">Import a document as an SOP</h3><p>lojo read your sources and marked these as procedures. It maps each into the 10 sections and flags what’s missing.</p>' +
+    (L.length ? '<ul class="impl">' + L.map(x => '<li><span class="mono">' + (x.app === 'Notion' ? 'N' : 'PDF') + '</span><span><b>' + esc(x.name) + '</b><small>' + esc(x.app) + ' · ' + esc(x.why) + '</small></span><span class="acts2"><button class="btn btn--ghost btn--sm" type="button" title="lojo stops suggesting it" data-notproc="' + x.id + '">Not a procedure</button><button class="btn btn--primary btn--sm" type="button" data-imp="' + x.id + '">Import</button></span></li>').join('') + '</ul>'
+      : '<div class="empty"><b>Nothing left to import.</b>New procedures show up here as lojo reads your sources.</div>') +
+    '<p class="sub" style="margin:14px 0 0">Not listed? <a href="sources.html?src=upload">Upload it in Sources</a> and it shows up here.</p></div><div class="dlg__f"><button class="btn btn--secondary" type="button" data-close>Close</button></div>';
+  dlg.showModal();
+}
+dlg.addEventListener('click', (e) => {
+  const np = e.target.closest('[data-notproc]'); if (np) { ST.sopImp = ST.sopImp || {}; ST.sopImp[np.dataset.notproc] = 'no'; save(); openImport(); toast('Marked as not a procedure'); updImpHint(); return; }
+  const im = e.target.closest('[data-imp]'); if (!im) return;
+  const x = IMPORTS.find(y => y.id === im.dataset.imp); ST.sopImp = ST.sopImp || {}; ST.sopImp[x.id] = 'yes';
+  const s = draftSop({ title: x.title, rids: x.rids, fmt: 'steps', from: 'import', by: person(ME).name, missing: x.missing, area: x.area, sec: x.sec,
+    steps: x.steps.map(([t, who, ans]) => ({ t, who, ans, src: ['doc', x.name] })) });
+  s.hist = [['0.1', 'Today', 'lojo', 'Imported from ' + x.name + ' (' + x.app + ')']];
+  save(); shut(); drafting(s, 'Mapping ' + x.name + ' into the 10 sections');
+});
+function openExt() {
+  dlg.innerHTML = '<div class="dlg__b" style="display:grid;gap:14px"><div><h3 id="sDlgH">Link an external SOP</h3><p style="margin:0">It stays where it is. lojo tracks its owner and review date, and approved answers can link to it.</p></div>' +
+    '<div class="fld"><label for="exT">Title</label><input class="text" id="exT" placeholder="Handle a data breach"></div>' +
+    '<div class="fld"><label for="exU">Link</label><input class="text" id="exU" placeholder="https://notion.so/…"></div>' +
+    '<div class="fgrid"><div class="fld"><label for="exO">Owner</label><select class="text" id="exO">' + ST.people.filter(p => p.status === 'member').map(p => '<option value="' + p.id + '"' + (p.id === ME ? ' selected' : '') + '>' + esc(p.name) + '</option>').join('') + '</select></div>' +
+    '<div class="fld"><label for="exR">Review every</label><select class="text" id="exR">' + Object.keys(SOP_RISK).map(k => '<option value="' + k + '"' + (k === 'Medium' ? ' selected' : '') + '>' + SOP_RISK[k] + ' months · ' + k.toLowerCase() + ' risk</option>').join('') + '</select></div></div></div>' + foot('exGo', 'Add SOP');
+  dlg.showModal(); $('exT').focus();
+  $('exGo').addEventListener('click', () => {
+    const t = $('exT').value.trim(), u = $('exU').value.trim();
+    if (!t) { $('exT').focus(); return; } if (!/^https?:\/\/\S+\.\S+/.test(u)) { $('exU').focus(); toast('Paste a full link'); return; }
+    const host = u.replace(/^https?:\/\//, ''), app = /notion/.test(host) ? 'Notion' : /google|drive|docs\./.test(host) ? 'Google Drive' : /sharepoint|office/.test(host) ? 'SharePoint' : 'the web';
+    const s = { id: 'SOP-EXT-' + String(Math.max(0, ...ST.sops.map(x => +x.id.split('-').pop() || 0)) + 1).padStart(3, '0'), title: t, status: 'approved', ver: '—', eff: sopToday(), next: sopPlus(SOP_RISK[$('exR').value]), owner: $('exO').value, approver: 'p1', risk: $('exR').value, from: 'external', ext: { app, url: host }, sec: {}, steps: [], hist: [] };
+    ST.sops.unshift(s); save(); shut(); openSop(s.id); toast('External SOP added');
+  });
+}
+$('starts').addEventListener('click', (e) => { const b = e.target.closest('[data-start]'); if (!b) return; ({ import: openImport, ask: askLojo, ext: openExt })[b.dataset.start](); });
+// the doc puts "write the SOP for X" in Companion, so the card opens Ask lojo with the sentence started
+function askLojo() { window.__openAsk(); const t = $('askIn'); t.value = 'Write the SOP for '; t.dispatchEvent(new Event('input')); t.focus(); t.setSelectionRange(t.value.length, t.value.length); }
+function updImpHint() { const n = impLeft().length; $('impHint').textContent = n ? n + ' document' + (n === 1 ? '' : 's') + ' look like procedures' : 'Nothing new to import'; }
+// the agent fills the template, one section at a time, then the SOP opens in review
+function drafting(s, line) {
+  view = s.id; history.pushState({ id: s.id }, '', 'sops.html?id=' + s.id);
+  document.body.classList.add('is-detail'); $('sopDetail').hidden = false;
+  const miss = missingOf(s);
+  $('sopDetail').innerHTML = '<div class="card drafting" role="status"><p class="label">SOP builder agent</p><h2>' + esc(line || 'Drafting ' + s.title) + '</h2><p class="sub">Every step cites its source. It goes to review like any draft.</p><ol>' +
+    SOP_SECTIONS.map(([k, l]) => '<li data-k="' + k + '"><i></i>' + l + '</li>').join('') + '</ol></div>';
+  const lis = [...document.querySelectorAll('.drafting li')];
+  lis.forEach((li, i) => setTimeout(() => { if (i) { const p = lis[i - 1], m = miss.includes(p.dataset.k); p.className = m ? 'is-miss' : 'is-done'; p.querySelector('i').textContent = m ? '!' : '✓'; } li.className = 'is-now'; }, i * 160));
+  setTimeout(() => { editing = false; render(); scrollTo(0, 0); toast(miss.length ? 'Drafted. ' + miss.length + ' section' + (miss.length === 1 ? '' : 's') + ' missing' : 'Drafted and sent to review'); }, SOP_SECTIONS.length * 160 + 300);
+}
+
+/* ---------------- start ---------------- */
+if (VIEWER) $('starts').hidden = true;
+updImpHint();
+view = P.get('id');
+if (view && P.get('new')) { const s = sopById(view); history.replaceState({ id: view }, '', 'sops.html?id=' + view); if (s) drafting(s, 'Drafting ' + s.title + ' from ' + linkedAnswers(s).length + ' related answers'); else render(); }
+else render();
+""")
+
+PAGES = {'readout': RO_PAGE, 'emails': EMAILS_PAGE, 'platform': PLATFORM, 'superadmin': SUPER, 'company': COMPANY, 'auditlog': AUDIT, 'account': ACCOUNT, 'people': PEOPLE, 'settings': SETTINGS, 'states': STATES, 'dashboard': OVERVIEW, 'sources': DOCUMENTS, 'insights': QUESTIONS_PAGE, 'build': REVIEW, 'distribute': APPROVED, 'chat': CHAT, 'knowledge': READOUT, 'sops': SOPS, 'activity': ACTIVITY}
 for name, p in PAGES.items():
     html = page(p['active'], p['title'], p['css'], p['body'], p['js'], p.get('desc', ''), p.get('persona', 'admin'))
     with open(os.path.join(OUT, name + '.html'), 'w') as f:
