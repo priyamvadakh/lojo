@@ -133,6 +133,13 @@
   .input input:hover{border-color:rgba(36,26,20,.28)}
   .input input:focus{outline:none;border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,93,117,.16)}
   .input--pw input{padding-right:64px}
+  .input textarea{width:100%;min-height:84px;padding:11px 14px;border-radius:12px;border:1px solid var(--line-2);background:var(--panel);color:var(--ink);font:inherit;font-size:.95rem;line-height:1.45;resize:vertical}
+  .input textarea:focus{outline:none;border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,93,117,.16)}
+  .field .opt{font-weight:500;color:var(--muted)}
+  .input select{width:100%;height:44px;padding:0 40px 0 14px;border-radius:12px;border:1px solid var(--line-2);background:var(--panel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236E5A4E' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E") no-repeat right 12px center/18px;color:var(--ink);font:inherit;font-size:.95rem;appearance:none;cursor:pointer}
+  .input select:focus{outline:none;border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,93,117,.16)}
+  .field.has-error select{border-color:var(--error)}
+  #posOther{margin-top:8px}
   .reveal{
     position:absolute;right:6px;top:50%;transform:translateY(-50%);
     border:0;background:none;color:var(--muted);font-size:.8rem;font-weight:600;padding:8px 10px;border-radius:8px;cursor:pointer;
@@ -236,6 +243,18 @@
   .region input{margin:3px 0 0;accent-color:var(--rose);width:16px;height:16px}
   .region b{display:block;font-size:.92rem}
   .region span{display:block;color:var(--muted);font-size:.8rem;margin-top:2px}
+  .personas{display:grid;gap:10px;text-align:left}
+  .pcard{width:100%;border:1px solid var(--line-2);border-radius:14px;background:var(--panel);color:inherit;font:inherit;text-align:left}
+  .pcard__av--lg{width:52px;height:52px;margin:0 auto 14px;font-size:.95rem}
+  .back--btn{width:100%;border:0;background:none;font-family:inherit;color:var(--rose);font-weight:600;cursor:pointer}
+  .pcard:hover{border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,93,117,.14)}
+  .pcard__row{display:grid;grid-template-columns:40px 1fr auto;gap:12px;align-items:center;padding:14px 16px;cursor:pointer;list-style:none;color:inherit;text-decoration:none}
+  a.pcard__row:hover{text-decoration:none}
+  .pcard__av{display:grid;width:40px;height:40px;border-radius:12px;place-items:center;background:rgba(232,93,117,.1);color:#B73C54;font-weight:800;font-size:.8rem}
+  .pcard__row > div{min-width:0}
+  .pcard b{display:block;font-size:.95rem}
+  .pcard__row > div span{display:block;color:var(--muted);font-size:.8rem;font-weight:400;margin-top:2px}
+  .pcard i{font-style:normal;color:var(--muted);font-size:1.1rem}
   .check{display:flex;gap:8px;align-items:center;font-size:.84rem;color:var(--muted);cursor:pointer}
   .check input{accent-color:var(--rose)}
   .ref{display:block;text-align:center;margin-top:14px;font-size:.74rem;color:var(--muted);font-family:ui-monospace,Menlo,monospace}
@@ -280,6 +299,29 @@
   const back = '<a class="back" href="login.html">← Back to sign in</a>';
   const go = (s, extra) => { location.href = 'auth.html?s=' + s + (extra || ''); };
   const SCREENS = {
+    // prototype only: the first screen. Pick a persona, then whether it's their first time: a new user starts from their invitation email, a returning one signs in
+    persona: () => ({ title: 'Choose a persona', html: '<div id="pstep"></div>',
+      init: () => {
+        try { sessionStorage.removeItem('lojo-journey'); sessionStorage.removeItem('lojo-persona'); } catch (e) {}
+        const PER = [
+          ['super', 'SF', 'Super admin', 'Sadaf Farman · lojo staff'],
+          ['admin', 'EO', 'Admin', 'Eric Ouisse · Oslo', 'emails.html?journey=admin#admin-invite', 'Invitation email → set password → your profile → create workspace → Dashboard', 'Dashboard'],
+          ['editor', 'LO', 'Editor', 'Lena Okafor · Oslo', 'emails.html?journey=editor#team-invite', 'Invitation email → set password → your profile → loop where the Admin left it → Dashboard', 'Dashboard'],
+          ['viewer', 'JL', 'Viewer', 'Jonas Lie · Oslo', 'emails.html?journey=viewer#viewer-invite', 'Invitation email → set password → your profile → Knowledge', 'Knowledge']];
+        const row = (tag, attrs, ini, b, sub) => '<' + tag + ' class="pcard pcard__row" ' + attrs + '><span class="pcard__av">' + ini + '</span><div><b>' + b + '</b><span>' + sub + '</span></div><i aria-hidden="true">→</i></' + tag + '>';
+        const pick = () => {
+          $('pstep').innerHTML = '<h2>Choose a persona</h2><p class="lead">Who are you in this prototype?</p><div class="personas">' +
+            PER.map(([k, ini, role, who]) => k === 'super' ? row('a', 'href="login.html?as=super"', ini, role, who + '. Signs in → Platform') : row('button', 'type="button" data-k="' + k + '"', ini, role, who)).join('') + '</div>';
+        };
+        const type = (k) => {
+          const [, ini, role, who, first, path, home] = PER.find(p => p[0] === k);
+          $('pstep').innerHTML = '<div class="pcard__av pcard__av--lg">' + ini + '</div><h2>' + role + '</h2><p class="lead">' + who + '. Is this their first time in lojo?</p><div class="personas">' +
+            row('a', 'href="' + first + '"', '1', 'New user', path) + row('a', 'href="login.html?as=' + k + '&journey=' + k + '-return"', '↻', 'Returning user', 'Sign in → ' + home) + '</div>' +
+            '<button class="back back--btn" type="button" data-back>← Choose another persona</button>';
+        };
+        $('pstep').addEventListener('click', (e) => { const b = e.target.closest('[data-k]'); if (b) type(b.dataset.k); if (e.target.closest('[data-back]')) pick(); });
+        pick();
+      } }),
     // G26
     forgot: () => ({ title: 'Reset your password', html: icon('key') + '<h2>Reset your password</h2><p class="lead">Enter your work email and we’ll send you a link to set a new password.</p>' +
       '<form id="f" class="stack" novalidate><div class="field" id="fe"><label for="em">Work email</label><div class="input"><input id="em" type="email" autocomplete="email" value="' + esc(P.get('email') || '') + '" placeholder="eric@oslo.com"></div><span class="err">Enter a valid email, like eric@oslo.com.</span></div>' +
@@ -288,23 +330,48 @@
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) { $('fe').classList.add('has-error'); $('em').focus(); return; }
         const b = e.submitter || $('f').querySelector('button'); b.classList.add('is-loading'); b.disabled = true;
         setTimeout(() => go('sent', '&email=' + encodeURIComponent(v)), 800); }; } }),
-    sent: () => ({ title: 'Check your email', html: icon('mail', 'is-ok') + '<h2>Check your email</h2><p class="lead">If <b>' + esc(email) + '</b> has a lojo account, a link to set a new password is on its way. It works once, for 30 minutes.</p>' +
+    sent: () => ({ title: 'Check your email', html: icon('mail', 'is-ok') + '<h2>Check your email</h2><p class="lead">If <b>' + esc(email) + '</b> has a lojo account, a link to set a new password is on its way. It works once, for 1 hour.</p>' +
       '<div class="row-btns"><button class="btn btn--secondary" id="resend" type="button">Resend link</button><a class="btn btn--primary" href="auth.html?s=set&from=reset">Open the link (demo)</a></div>' + back,
       init: () => { const r = $('resend'); r.onclick = () => { let n = 30; r.disabled = true; const t = setInterval(() => { r.textContent = 'Resend in ' + n-- + 's'; if (n < 0) { clearInterval(t); r.disabled = false; r.textContent = 'Resend link'; } }, 1000); }; } }),
     // G27
-    set: () => { const invite = P.get('from') === 'invite';
-      return { title: invite ? 'Join Oslo' : 'Set a new password', html: icon(invite ? 'user' : 'key') +
-        '<h2>' + (invite ? 'Join Oslo on lojo' : 'Set a new password') + '</h2><p class="lead">' + (invite ? 'Lena Okafor invited you. Set a password to finish creating your account.' : 'Choose a new password for your lojo account.') + '</p>' +
+    set: () => { const invite = P.get('from') === 'invite', admin = invite && P.get('journey') === 'admin';
+      // an Admin invitation comes from lojo and leads to creating the first workspace; a teammate's lands in the workspace they were invited to
+      const INV = admin ? { h: 'Set up Oslo on lojo', lead: 'Sadaf Farman from lojo invited you to be the Admin of Oslo. Set a password, then create your first workspace.', btn: 'Create account', name: 'Eric Ouisse', role: 'admin', next: 'onboarding.html' }
+        : P.get('journey') === 'viewer' ? { h: 'Join Oslo on lojo', lead: 'Eric Ouisse invited you to Oslo as a Viewer. Set a password to finish creating your account.', btn: 'Join workspace', name: 'Jonas Lie', role: 'viewer', next: 'knowledge.html?as=viewer' }
+        : { h: 'Join Oslo on lojo', lead: 'Eric Ouisse invited you to Oslo as an Editor. Set a password to finish creating your account.', btn: 'Join workspace', name: 'Lena Okafor', role: 'editor', next: 'onboarding.html?loop=1' };
+      return { title: invite ? INV.h : 'Set a new password', html: icon(invite ? 'user' : 'key') +
+        '<h2>' + (invite ? INV.h : 'Set a new password') + '</h2><p class="lead">' + (invite ? INV.lead : 'Choose a new password for your lojo account.') + '</p>' +
         '<div class="who"><span class="av">' + esc(email[0].toUpperCase()) + '</span><b>' + esc(email) + '</b></div>' +
         '<form id="f" class="stack" novalidate><div class="field"><label for="p1">New password</label><div class="input input--pw"><input id="p1" type="password" autocomplete="new-password"><button class="reveal" type="button" id="rv">Show</button></div>' +
         '<ul class="rules" id="rules"><li data-r="len">At least 8 characters</li><li data-r="num">At least one number</li><li data-r="match">Both passwords match</li></ul></div>' +
         '<div class="field"><label for="p2">Type it again</label><div class="input"><input id="p2" type="password" autocomplete="new-password"></div></div>' +
-        '<button class="btn btn--primary" type="submit" id="sb" disabled><span class="spin"></span><span class="txt">' + (invite ? 'Join workspace' : 'Set password') + '</span></button></form>' + back,
+        '<button class="btn btn--primary" type="submit" id="sb" disabled><span class="spin"></span><span class="txt">' + (invite ? INV.btn : 'Set password') + '</span></button></form>' + back,
         init: () => { const chk = () => { const a = $('p1').value, b = $('p2').value, r = { len: a.length >= 8, num: /\d/.test(a), match: a.length > 0 && a === b };
             document.querySelectorAll('#rules li').forEach(li => li.classList.toggle('ok', r[li.dataset.r])); $('sb').disabled = !(r.len && r.num && r.match); };
-          ['p1', 'p2'].forEach(id => $(id).addEventListener('input', chk)); $('p1').focus();
+          ['p1', 'p2'].forEach(id => { $(id).addEventListener('input', chk); $(id).value = 'lojo2026'; }); chk(); $('sb').focus();
           $('rv').onclick = () => { const s = $('p1').type === 'password'; $('p1').type = $('p2').type = s ? 'text' : 'password'; $('rv').textContent = s ? 'Hide' : 'Show'; };
-          $('f').onsubmit = (e) => { e.preventDefault(); $('sb').classList.add('is-loading'); setTimeout(() => go('loading', invite ? '&next=dashboard.html' : ''), 700); }; } }; },
+          $('f').onsubmit = (e) => { e.preventDefault(); $('sb').classList.add('is-loading');
+            if (invite) try { sessionStorage.setItem('lojo-user', JSON.stringify({ name: INV.name, email })); sessionStorage.setItem('lojo-persona', INV.role); } catch (err) {}
+            setTimeout(() => invite ? go('profile', '&email=' + encodeURIComponent(email) + '&next=' + encodeURIComponent(INV.next)) : go('loading'), 700); }; } }; },
+    // after joining: position and a short description, shown on People and next to answers they approve
+    profile: () => {
+      const POSITIONS = ['Head of Support Operations', 'Support Team Lead', 'Support Agent', 'Customer Success Manager', 'Knowledge Manager', 'Operations Manager', 'Product Manager', 'Account Executive', 'Sales Manager', 'Engineer'];
+      const ME = { 'eric@oslo.com': ['Head of Support Operations', 'Owns the lojo rollout and approves answers.'], 'lena@oslo.com': ['Support Team Lead', 'Reviews drafts in Build every week.'], 'jonas@oslo.com': ['Account Executive', 'Uses Ask lojo before customer calls.'] }[email] || ['', ''];
+      return { title: 'Your profile', html: icon('user') + '<h2>Tell your team who you are</h2><p class="lead">Your position and a short description show on People and next to answers you approve.</p>' +
+        '<form id="f" class="stack" novalidate><div class="field" id="fp"><label for="pos">Position</label><div class="input"><select id="pos"><option value="">Choose your position</option>' +
+        POSITIONS.map(p => '<option' + (p === ME[0] ? ' selected' : '') + '>' + esc(p) + '</option>').join('') + '<option value="other">Other (type your own)</option></select>' +
+        '<input id="posOther" autocomplete="organization-title" placeholder="Your position" aria-label="Your position" hidden></div><span class="err">Choose or type your position to continue.</span></div>' +
+        '<div class="field"><label for="about">Short description <span class="opt">· optional</span></label><div class="input"><textarea id="about" maxlength="140" placeholder="What you do with lojo">' + esc(ME[1]) + '</textarea></div></div>' +
+        '<button class="btn btn--primary" type="submit"><span class="spin"></span><span class="txt">Continue</span></button></form>',
+        init: () => {
+          $('pos').onchange = () => { $('fp').classList.remove('has-error'); $('posOther').hidden = $('pos').value !== 'other'; if (!$('posOther').hidden) $('posOther').focus(); };
+          $('posOther').oninput = () => $('fp').classList.remove('has-error');
+          $('f').onsubmit = (e) => { e.preventDefault(); const other = $('pos').value === 'other', pos = (other ? $('posOther').value : $('pos').value).trim();
+          if (!pos) { $('fp').classList.add('has-error'); (other ? $('posOther') : $('pos')).focus(); return; }
+          try { sessionStorage.setItem('lojo-profile', JSON.stringify({ email, title: pos, about: $('about').value.trim() })); } catch (err) {}
+          (e.submitter || $('f').querySelector('button')).classList.add('is-loading');
+          setTimeout(() => go('loading', '&next=' + encodeURIComponent(P.get('next') || 'dashboard.html')), 600); }; } };
+    },
     // G24
     details: () => ({ title: 'Your details', html: icon('user') + '<h2>Your details</h2><p class="lead">First time here. Add your last name so your team can see who approved what.</p>' +
       '<form id="f" class="stack" novalidate><div class="field"><label for="fn">First name</label><div class="input"><input id="fn" value="' + esc(user.name.split(' ')[0] || '') + '" autocomplete="given-name"></div></div>' +
@@ -316,7 +383,7 @@
         user.name = ($('fn').value.trim() + ' ' + ln).trim(); try { sessionStorage.setItem('lojo-user', JSON.stringify(user)); } catch (err) {}
         go('loading'); }; } }),
     // G28
-    expired: () => ({ title: 'Link expired', html: icon('clock', 'is-warn') + '<h2>This link has expired</h2><p class="lead">Links in lojo emails work once, for 30 minutes. Ask for a new one and use the newest email.</p>' +
+    expired: () => ({ title: 'Link expired', html: icon('clock', 'is-warn') + '<h2>This link has expired</h2><p class="lead">Password reset links work once, for 1 hour. Ask for a new one and use the newest email.</p>' +
       '<div class="row-btns"><a class="btn btn--primary" href="auth.html?s=forgot">Send a new link</a></div>' + back }),
     error: () => ({ title: 'Couldn’t sign in', html: icon('alert', 'is-err') + '<h2>We couldn’t sign you in</h2><p class="lead">Something went wrong on our side. Nothing was lost. Try again; if it keeps happening, email hello@lojo.ai with the reference below.</p>' +
       '<div class="row-btns"><a class="btn btn--primary" href="login.html">Try again</a></div><span class="ref">' + ref() + '</span>' }),
@@ -335,16 +402,17 @@
     unreachable: () => ({ title: 'Can’t reach the region', html: icon('cloud', 'is-warn') + '<h2>We can’t reach United States · Virginia</h2><p class="lead">Your workspaces and data there are safe. The region isn’t answering right now; this usually clears in a few minutes.</p>' +
       '<div class="row-btns"><button class="btn btn--primary" id="retry" type="button"><span class="spin"></span><span class="txt">Try again</span></button><a class="btn btn--secondary" href="auth.html?s=region">Choose another region</a></div>' + back,
       init: () => { $('retry').onclick = () => { $('retry').classList.add('is-loading'); setTimeout(() => go('loading'), 1400); }; } }),
-    noaccess: () => ({ title: 'No access', html: icon('lock', 'is-err') + '<h2>No access in this region</h2><p class="lead">' + esc(email) + ' isn’t a member of any workspace in Asia Pacific · Singapore. Ask a workspace Owner to invite you, or choose another region.</p>' +
+    noaccess: () => ({ title: 'No access', html: icon('lock', 'is-err') + '<h2>No access in this region</h2><p class="lead">' + esc(email) + ' isn’t a member of any workspace in Asia Pacific · Singapore. Ask a workspace Admin to invite you, or choose another region.</p>' +
       '<div class="row-btns"><a class="btn btn--primary" href="auth.html?s=region">Choose another region</a></div>' + back }),
     // G16
     loading: () => ({ title: 'Signing in…', html: '<div class="loader" role="status" aria-label="Signing in"></div>',
-      init: () => { $('card').classList.add('is-bare'); setTimeout(() => location.href = P.get('next') || 'onboarding.html', 1200); } }),
+      init: () => { $('card').classList.add('is-bare'); let next = P.get('next'); try { next = next || sessionStorage.getItem('lojo-next'); sessionStorage.removeItem('lojo-next'); } catch (e) {}
+        setTimeout(() => location.href = next || 'onboarding.html', 1200); } }),
     failed: () => ({ title: 'lojo couldn’t start', html: icon('alert', 'is-err') + '<h2>lojo couldn’t start</h2><p class="lead">The app didn’t finish loading. This is often a blocked script or a dropped connection. Reload the page; if it keeps happening, try another browser.</p>' +
       '<div class="row-btns"><button class="btn btn--primary" type="button" onclick="location.href=\'auth.html?s=loading\'">Reload</button><a class="btn btn--secondary" href="login.html">Back to sign in</a></div><span class="ref">Error APP_START_TIMEOUT · ' + ref() + '</span>' }),
     // G12
     '404': () => ({ title: 'Page not found', html: '<div class="code404">404</div><h2>Page not found</h2><p class="lead">This page isn’t here. The link may be wrong, or the page has moved.</p><div class="row-btns"><a class="btn btn--primary" href="dashboard.html">Go to the dashboard</a></div>' }),
-    '403': () => ({ title: 'No access', html: '<div class="code404">403</div><h2>You don’t have access to this page</h2><p class="lead">You’re signed in as ' + esc(email) + '. Ask a workspace Owner to give you access, or switch account.</p><div class="row-btns"><a class="btn btn--primary" href="dashboard.html">Go to the dashboard</a><a class="btn btn--secondary" href="login.html">Switch account</a></div>' }),
+    '403': () => ({ title: 'No access', html: '<div class="code404">403</div><h2>You don’t have access to this page</h2><p class="lead">You’re signed in as ' + esc(email) + '. Ask a workspace Admin to give you access, or switch account.</p><div class="row-btns"><a class="btn btn--primary" href="dashboard.html">Go to the dashboard</a><a class="btn btn--secondary" href="login.html">Switch account</a></div>' }),
     '500': () => ({ title: 'Something went wrong', html: '<div class="code404">500</div><h2>Something went wrong</h2><p class="lead">That’s on us, not you. Your work is saved. Try again in a moment.</p><div class="row-btns"><button class="btn btn--primary" type="button" onclick="location.reload()">Try again</button><a class="btn btn--secondary" href="dashboard.html">Go to the dashboard</a></div><span class="ref">' + ref() + '</span>' }),
   };
   const s = SCREENS[P.get('s')] ? P.get('s') : '404';
@@ -371,5 +439,6 @@
   });
 })();
 </script>
+<script src="assets/journey.js"></script>
 </body>
 </html>

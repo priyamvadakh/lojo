@@ -351,7 +351,7 @@ OVERVIEW = dict(
       <button class="btn btn--ghost btn--sm" id="scopeToggle" aria-expanded="false">Details</button>
     </div>
     <div class="scope-more" id="scopeMore" hidden>
-      <div><h4>In scope</h4><ul><li>10 documents you sent us, on one lojo-run server</li><li>One fixed model, called through our proxy</li><li>Personal details are not removed automatically</li><li>Three fixed roles: Owner, Editor, Viewer</li></ul></div>
+      <div><h4>In scope</h4><ul><li>10 documents you sent us, on one lojo-run server</li><li>One fixed model, called through our proxy</li><li>Personal details are not removed automatically</li><li>Three fixed roles: Admin, Editor, Viewer</li></ul></div>
       <div><h4>Not in this phase</h4><ul><li>Publishing to a help centre or widget</li><li>Live sources such as mail and calls</li><li>Dashboards, billing and uptime guarantees</li></ul></div>
     </div>
 """,
@@ -496,7 +496,8 @@ const TOUR = [
 ];
 // shown when you land on the dashboard: once per visit (sign-in session), and whenever ?tour=1
 const startTour = () => runTour(TOUR, (done) => { try { sessionStorage.setItem('lojo-toured', '1'); } catch (e) {} if (done) location.href = 'build.html'; });
-let toured = null; try { toured = sessionStorage.getItem('lojo-toured'); } catch (e) {}
+// lojo support in a company's workspace never gets the welcome tour
+let toured = null; try { toured = sessionStorage.getItem('lojo-toured') || sessionStorage.getItem('lojo-imp'); } catch (e) {}
 if (new URLSearchParams(location.search).get('tour') || !toured) setTimeout(startTour, 700);
 // already here: start it in place
 document.addEventListener('click', (e) => { const a = e.target.closest('#tourAgain'); if (!a) return; e.preventDefault(); const p = $('mePop'); if (p) p.hidden = true; startTour(); });
@@ -665,10 +666,10 @@ DOCUMENTS = dict(
   .sh__top p{margin:2px 0 0;color:var(--muted);font-size:.86rem}
   .sh__top .spacer{flex:1}
   .sh__top .btn{height:36px}
-  .owner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0 12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);font-size:.84rem}
-  .owner .ava3d,.owner .ava3d > svg{width:28px;height:28px}
-  .owner a{font-weight:700;color:var(--ink);text-decoration:underline;text-underline-offset:3px}
-  .owner em{font-style:normal;color:var(--muted)}
+  .admin{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0 12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);font-size:.84rem}
+  .admin .ava3d,.admin .ava3d > svg{width:28px;height:28px}
+  .admin a{font-weight:700;color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+  .admin em{font-style:normal;color:var(--muted)}
   .health{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
   .hcard{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
   .hcard small{display:flex;justify-content:space-between;align-items:center;font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
@@ -2197,12 +2198,12 @@ const AIC = {
 const REASONS = ['Wrong answer', 'Outdated source', 'Missing detail', 'Not a question we answer'];
 const openFull = new Set();
 const CONTEXT = {
-  'd1|p. 4': ['Plans and features. Every plan includes the help centre, the chat and email support. ', ' Starter workspaces sign in with email or with Google. An Owner turns single sign-on on under Settings → Security.'],
+  'd1|p. 4': ['Plans and features. Every plan includes the help centre, the chat and email support. ', ' Starter workspaces sign in with email or with Google. An Admin turns single sign-on on under Settings → Security.'],
   'd5|Brightline call, 12 Aug': ['Brightline asked about access for their 40-person support team. ', ' They want to roll it out before their October audit. Follow-up: send the SSO setup guide.'],
   'd2|Security & login · 9 months old': ['Security & login. Every account is protected by two-step verification. ', ' Contact sales to enable it. Last updated 14 January.'],
-  'd4|§2': ['§2 Cancelling a subscription. A workspace Owner can cancel at any time from Billing. ', ' Refunds go back to the original payment method within 10 working days.'],
+  'd4|§2': ['§2 Cancelling a subscription. A workspace Admin can cancel at any time from Billing. ', ' Refunds go back to the original payment method within 10 working days.'],
   'd1|p. 2': ['Starter is for small teams getting started. ', ' Teams that need more move to Growth, which includes 15 seats and 25,000 transactions a month.'],
-  'd3|pp. 2–4': ['Before you start, make sure you are a workspace Owner and are on Growth or Scale. ', ' Test the connection by signing in from a private window before you turn it on for everyone.'],
+  'd3|pp. 2–4': ['Before you start, make sure you are a workspace Admin and are on Growth or Scale. ', ' Test the connection by signing in from a private window before you turn it on for everyone.'],
   'd1|p. 6': ['Changing plans. You can change plan at any time from Billing. ', ' Your invoice shows the change on its own line.'],
   'd6|p. 1': ['Welcome to Oslo. Here is what happens in your first month. ', ' Growth customers get a 30-minute kickoff and our onboarding guides.'],
   'd9|§1': ['§1 Paying for Oslo. ', ' Prices are shown in euros and charged in your local currency.'],
@@ -2211,11 +2212,11 @@ const CONTEXT = {
   'd8|Rate limits': ['Rate limits keep the API fast for everyone. ', ' Limits apply per workspace, not per API key.'],
   'd8|429 responses': ['When you go over the limit. ', ' Retry after the number of seconds given, and back off further if it happens again.'],
   'd10|§2': ['§2 Responding to a dispute. ', ' Late evidence can’t be added once the card network has started its review.'],
-  'd10|§4': ['§4 After you respond. ', ' We email the outcome to the workspace Owner as soon as we hear back.'],
+  'd10|§4': ['§4 After you respond. ', ' We email the outcome to the workspace Admin as soon as we hear back.'],
   'd7|p. 3': ['Encryption. Data in transit is encrypted with TLS 1.2 or higher. ', ' Encryption keys are rotated every 90 days.'],
   'd7|p. 2': ['Where your data lives. ', ' Backups stay in the same region and are kept for 35 days.'],
   'd7|p. 8': ['Your data, your choice. ', ' Exports include documents, questions and approved answers.'],
-  'd2|Exporting your data': ['Exporting your data. Only Owners and Admins can export. ', ' Large exports are emailed to you as a download link.'],
+  'd2|Exporting your data': ['Exporting your data. Only Admins can export. ', ' Large exports are emailed to you as a download link.'],
   'd4|§3': ['§3 Annual plans. ', ' Monthly plans are not refunded after the first 30 days.'],
   'd9|§2': ['§2 Renewals. ', ' We email a reminder 30 days before each renewal.'],
 };
@@ -2823,13 +2824,13 @@ function dtab(t) {
 }
 $('dTabs').addEventListener('click', (e) => { const b = e.target.closest('[data-dtab]'); if (b) dtab(b.dataset.dtab); });
 
-// ---------- API & MCP: the Owner sets the mode and makes keys; everyone connects their own assistant
+// ---------- API & MCP: the Admin sets the mode and makes keys; everyone connects their own assistant
 ST.api = ST.api || { mode: 'signin', apps: [
   { id: 'a1', app: 'claude.ai', pid: 'p1', on: '22 Oct 2026', used: '22 Oct 2026' },
   { id: 'a2', app: 'claude.ai', pid: 'p2', on: '22 Oct 2026', used: '22 Oct 2026' },
 ], keys: [] };
-const APIROLE = window.LOJO_ROLE || 'owner', OWNS = APIROLE === 'owner';
-const ME_ID = ({ owner: 'p1', editor: 'p2', viewer: 'p4' })[APIROLE];
+const APIROLE = window.LOJO_ROLE || 'admin', OWNS = APIROLE === 'admin';
+const ME_ID = ({ admin: 'p1', editor: 'p2', viewer: 'p4' })[APIROLE];
 const SCOPES = [['adddoc', 'Add documents'], ['addq', 'Add questions'], ['ask', 'Ask'], ['read', 'Read approved answers'], ['readq', 'Read questions']];
 let pick = { ask: true, read: true }, fresh = null;
 const MODES = { off: ['Off', 'No AI assistant can connect.'], public: ['Public', 'Anyone with the address can read Oslo’s approved answers, without signing in.'], signin: ['Sign-in', 'People of this workspace sign in with lojo and connect their AI assistant.'] };
@@ -2838,7 +2839,7 @@ const who = (pid) => (ST.people.find(p => p.id === pid) || { name: 'Someone' }).
 function renderApi() {
   const m = ST.api.mode;
   $('mcpCard').innerHTML = '<div class="modes" role="group" aria-label="MCP connector">' + Object.keys(MODES).map(k => '<button type="button" data-mode="' + k + '" aria-pressed="' + (m === k) + '"' + (OWNS ? '' : ' disabled') + '>' + MODES[k][0] + '</button>').join('') + '</div>' +
-    '<p>' + MODES[m][1] + (OWNS ? '' : ' Only Owners change this.') + '</p>' +
+    '<p>' + MODES[m][1] + (OWNS ? '' : ' Only Admins change this.') + '</p>' +
     (m === 'off' ? '' : '<div class="addr"><code>' + ADDR + '</code><button class="btn btn--secondary btn--sm" type="button" data-copy="' + ADDR + '">Copy</button></div>' +
       '<p>Add it as a custom connector in your AI assistant, and paste the address.' + (m === 'signin' ? ' You then sign in with lojo and choose this workspace.' : '') + '</p>');
   const apps = ST.api.apps.filter(a => OWNS || a.pid === ME_ID);
@@ -2848,7 +2849,7 @@ function renderApi() {
   if (!OWNS) return;
   $('keyMake').innerHTML = '<div class="keyrow"><input class="text" id="keyName" placeholder="Name the key, such as Voicebot" autocomplete="off"><button class="btn btn--primary" type="button" data-make>Make key</button></div>' +
     '<div class="scopes" role="group" aria-label="What the key can do">' + SCOPES.map(([k, l, warn]) => '<button type="button" data-scope="' + k + '" aria-pressed="' + !!pick[k] + '" title="' + (warn ? 'This key can ' + warn : '') + '">' + l + (warn ? '<em>· ' + warn + '</em>' : '') + '</button>').join('') + '</div>' +
-    '<p>As Owner, you can give a key any of these.</p>' +
+    '<p>As Admin, you can give a key any of these.</p>' +
     (fresh ? '<div class="newkey"><b>Copy your key for “' + esc(fresh.name) + '” now. You won’t see it again.</b><div class="addr"><code>' + fresh.secret + '</code><button class="btn btn--secondary btn--sm" type="button" data-copy="' + fresh.secret + '">Copy</button></div></div>' : '');
   $('keyList').innerHTML = ST.api.keys.length ? ST.api.keys.map(k => '<div class="apirow"><div><b>' + esc(k.name) + '</b><span>Made by ' + esc(who(k.pid)) + ' on ' + esc(k.on) + ' · ' + esc(k.hint) + '</span><div class="kchips">' + k.scopes.map(x => '<i>' + (SCOPES.find(s => s[0] === x) || [, x])[1] + '</i>').join('') + '</div></div><button class="btn btn--secondary btn--sm" type="button" data-revoke-key="' + k.id + '">Revoke</button></div>').join('')
     : '<div class="apiempty"><b>No keys yet.</b>Make one above to call lojo from your systems.</div>';
@@ -3341,9 +3342,9 @@ READOUT = dict(
       <button class="btn btn--primary" id="exp" type="button"><svg class="i" viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M4 18v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1"/></svg>Export</button>
     </div>
 
-    <a class="rocard" href="readout.html" data-owner-only>
+    <a class="rocard" href="readout.html" data-admin-only>
       <span class="rocard__ic">📋</span>
-      <span class="rocard__t"><small>Week 4 · Owner only</small><b>Your readout is ready</b><span>What four weeks produced, and your decision to continue.</span></span>
+      <span class="rocard__t"><small>Week 4 · Admin only</small><b>Your readout is ready</b><span>What four weeks produced, and your decision to continue.</span></span>
       <span class="rocard__go">Open readout →</span>
     </a>
     <section class="ksec" aria-labelledby="kH"><div class="ksec__h"><h2 id="kH">Your knowledge</h2><span>· What Oslo has in lojo right now</span></div><div class="kstats" id="kstats"></div></section>
@@ -3587,19 +3588,19 @@ const GROUPS = [
     ['—', 'Knowledge', 'Every entry with its state, provenance and governance; filter by space, state, source and topic.', [L('knowledge.html', 'Open knowledge')]],
   ]],
   ['Emails', [
-    ['E1', 'Company owner invitation', 'From the super admin. The future Owner sets up the company.', [L('emails.html#owner-invite', 'Open')]],
-    ['E2', 'Teammate invitation', 'From an Owner, with each workspace and role.', [L('emails.html#team-invite', 'Open')]],
+    ['E1', 'Company admin invitation', 'From the super admin. The future Admin sets up the company.', [L('emails.html#admin-invite', 'Open')]],
+    ['E2', 'Teammate invitation', 'From an Admin, with each workspace and role.', [L('emails.html#team-invite', 'Open')]],
     ['E3', 'Confirm your email', 'First sign-in with email.', [L('emails.html#verify', 'Open')]],
     ['E4', 'Reset password', 'From “Forgot password?” on sign-in.', [L('emails.html#reset', 'Open')]],
-    ['E5', 'Your role changed', 'When an Owner changes someone’s role.', [L('emails.html#role', 'Open')]],
-    ['E6', 'Removed from a workspace', 'When an Owner removes someone.', [L('emails.html#removed', 'Open')]],
+    ['E5', 'Your role changed', 'When an Admin changes someone’s role.', [L('emails.html#role', 'Open')]],
+    ['E6', 'Removed from a workspace', 'When an Admin removes someone.', [L('emails.html#removed', 'Open')]],
     ['E7', 'Workspace deleted', 'To everyone in a deleted workspace.', [L('emails.html#deleted', 'Open')]],
-    ['E8', 'Drafts waiting', 'A new batch lands in Build. Owners and Editors.', [L('emails.html#drafts', 'Open')]],
+    ['E8', 'Drafts waiting', 'A new batch lands in Build. Admins and Editors.', [L('emails.html#drafts', 'Open')]],
     ['E9', 'Friday review reminder', 'How many of the week’s drafts are done.', [L('emails.html#weekly', 'Open')]],
     ['E10', 'New gaps found', 'Things the documents mention but never explain.', [L('emails.html#gaps', 'Open')]],
     ['E11', 'Ask lojo declined a question', 'Nothing approved answers it yet.', [L('emails.html#declined', 'Open')]],
-    ['E12', 'Owner accepted', 'To super admins when a company becomes active.', [L('emails.html#accepted', 'Open')]],
-    ['E13', 'Invitation about to expire', 'To super admins, a day before the link runs out.', [L('emails.html#expiring', 'Open')]],
+    ['E12', 'Admin accepted', 'To super admins when a company becomes active.', [L('emails.html#accepted', 'Open')]],
+    ['E13', 'Invitation about to expire', 'To super admins, 4 hours before the link runs out.', [L('emails.html#expiring', 'Open')]],
     ['E14', 'Weekly platform summary', 'To super admins, counts only.', [L('emails.html#summary', 'Open')]],
   ]],
   ['Everywhere', [
@@ -3617,7 +3618,7 @@ $('groups').addEventListener('click', (e) => { const b = e.target.closest('[data
 """)
 
 # ============================================================ PEOPLE + COMPANIES
-# shared by the owner's People page and the super admin's Companies page
+# shared by the admin's People page and the super admin's Companies page
 ADMIN_CSS = r"""
   .roster{display:grid;gap:8px}
   .rrow2{display:grid;align-items:center;gap:6px 18px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--panel);transition:border-color .15s ease,box-shadow .15s ease}
@@ -3695,13 +3696,13 @@ const CAPS = [
   ['Approve, edit and reject drafts', 1, 1, 0], ['Export approved answers', 1, 1, 0], ['Change workspace settings', 1, 0, 0],
   ['Invite people and change roles', 1, 0, 0], ['Delete the workspace', 1, 0, 0],
 ];
-const owners = (wsId) => ST.people.filter(p => p.ws[wsId] === 'owner' && p.status === 'member');
+const admins = (wsId) => ST.people.filter(p => p.ws[wsId] === 'admin' && p.status === 'member');
 function roleLog(msg) { ST.roleLog = ST.roleLog || []; ST.roleLog.unshift({ msg, by: 'Eric Ouisse', at: new Date().toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) }); ST.roleLog = ST.roleLog.slice(0, 8); }
 // change one person's role in one workspace; null removes access. Returns an error or ''.
 function setRole(person, wsId, role) {
   const was = person.ws[wsId];
   if (was === role) return '';
-  if (was === 'owner' && person.status === 'member' && owners(wsId).length === 1) return 'Every workspace needs at least one Owner. Make someone else Owner first.';
+  if (was === 'admin' && person.status === 'member' && admins(wsId).length === 1) return 'Every workspace needs at least one Admin. Make someone else Admin first.';
   const wn = (ST.workspaces.find(w => w.id === wsId) || {}).name;
   if (role) person.ws[wsId] = role; else delete person.ws[wsId];
   roleLog(role ? person.name + ' is now ' + ROLES[role][0] + ' in ' + wn + (was ? ' (was ' + ROLES[was][0] + ')' : '') : person.name + ' removed from ' + wn);
@@ -3753,10 +3754,10 @@ PEOPLE = dict(
       <div class="dlg__b" style="display:grid;gap:14px">
         <div class="dtop"><div><h3 id="accTitle">Access</h3><span class="rhelp" id="accSub"></span></div><span class="spacer"></span><button class="dx" type="button" data-close aria-label="Close">×</button></div>
         <div class="wsp"><p class="label">Workspace access</p><div class="wsp" id="accWs"></div><span class="ferr" id="accErr"></span>
-          <p class="rhelp"><b>Owner</b> everything, plus settings and people · <b>Editor</b> adds sources and approves answers · <b>Viewer</b> asks lojo and reads Knowledge.</p></div>
-        <p class="rhelp">Untick every workspace to remove them from Oslo. Changes are logged.</p>
+          <p class="rhelp"><b>Admin</b> everything, plus settings and people · <b>Editor</b> adds sources and approves answers · <b>Viewer</b> asks lojo and reads Knowledge.</p></div>
+        <p class="rhelp" id="accNote">Untick every workspace to remove them from Oslo. Changes are logged.</p>
       </div>
-      <div class="dlg__f"><button class="btn btn--secondary" type="button" data-close>Cancel</button><button class="btn btn--primary" type="button" data-accsave>Save access</button></div>
+      <div class="dlg__f"><button class="btn btn--secondary" type="button" data-close id="accCancel">Cancel</button><button class="btn btn--primary" type="button" data-accsave>Save access</button></div>
     </dialog>
 
     <dialog class="dlg drawer" id="invDlg" aria-labelledby="invTitle">
@@ -3767,7 +3768,7 @@ PEOPLE = dict(
         <div class="fld"><label for="invName">Name</label><input class="text" id="invName" autocomplete="off" placeholder="First and last name"><span class="ferr"></span></div>
         <div class="fnote" id="invGuest" hidden><span>!</span><span>This email isn’t on <b>oslo.com</b>. They’ll join as a guest and only see the workspaces you pick.</span></div>
         <div class="wsp"><p class="label">Workspace access</p><div class="wsp" id="invWs"></div><span class="ferr" id="invWsErr"></span>
-          <p class="rhelp"><b>Owner</b> everything, plus settings and people · <b>Editor</b> adds sources and approves answers · <b>Viewer</b> asks lojo and reads Knowledge</p></div>
+          <p class="rhelp"><b>Admin</b> everything, plus settings and people · <b>Editor</b> adds sources and approves answers · <b>Viewer</b> asks lojo and reads Knowledge</p></div>
         <div class="wsp"><p class="label">What they’ll receive</p><div class="mail" id="invMail"></div></div>
       </div>
       <div class="dlg__f"><button class="btn btn--secondary" type="button" data-close>Cancel</button><button class="btn btn--primary" type="submit">Send invitation</button></div>
@@ -3778,6 +3779,15 @@ PEOPLE = dict(
 const ORG = 'oslo.com';
 let pTab = location.hash === '#invited' ? 'invited' : 'member';
 const wsName = (id) => (ST.workspaces.find(w => w.id === id) || { name: id }).name;
+// Editors and Viewers see the same list, without inviting or changing access
+const MANAGE = window.LOJO_ROLE === 'admin';
+if (!MANAGE) {
+  $('inviteBtn').hidden = true;
+  const h = document.querySelector('.head h1'), tip = h.querySelector('.htip');
+  h.firstChild.textContent = 'People ';
+  document.title = document.title.replace('Invite and manage people', 'People');
+  if (tip) { tip.dataset.tip = 'Who’s in Oslo and what they can do. Only Admins invite people and change access.'; tip.setAttribute('aria-label', tip.dataset.tip); }
+}
 const chips = (ws) => Object.keys(ws).map(id => '<span class="wsc">' + esc(wsName(id)) + ' <em>· ' + ROLES[ws[id]][0] + '</em></span>').join('');
 function render() {
   const mem = ST.people.filter(x => x.status === 'member'), inv = ST.people.filter(x => x.status === 'invited');
@@ -3785,18 +3795,19 @@ function render() {
   const list = pTab === 'member' ? mem : inv;
   $('pHead').hidden = !list.length;
   $('pList').innerHTML = list.length ? list.map((x, i) => {
-    const owner = Object.values(x.ws).includes('owner'), pending = x.status === 'invited';
-    return '<div class="rrow2 prow"><div class="who"><span class="av av--p ' + (pending ? 'is-pending' : tone(x.name)) + '">' + ini(x.name) + '</span><div><b>' + esc(x.name) + (owner ? ' <span class="badge badge--rose">Owner</span>' : '') + (x.guest ? ' <span class="badge badge--muted">Guest</span>' : '') + '</b><span>' + esc(x.email) + '</span></div></div>' +
+    const admin = Object.values(x.ws).includes('admin'), pending = x.status === 'invited';
+    return '<div class="rrow2 prow"><div class="who"><span class="av av--p ' + (pending ? 'is-pending' : tone(x.name)) + '">' + ini(x.name) + '</span><div><b>' + esc(x.name) + (admin ? ' <span class="badge badge--rose">Admin</span>' : '') + (x.guest ? ' <span class="badge badge--muted">Guest</span>' : '') + '</b><span>' + esc(x.email) + '</span></div></div>' +
       '<div class="cell">' + (pending ? '<span>Adds their position when they accept</span>' : '<b>' + esc(x.title || '') + '</b><span>' + esc(x.about || '') + '</span>') + '</div>' +
       '<div class="wsl">' + chips(x.ws) + '</div>' +
-      '<div class="rstat">' + (pending ? '<span class="badge badge--amber">Invited ' + esc(x.sent) + '</span><button class="btn btn--secondary" type="button" data-resend="' + x.id + '">Resend</button><button class="btn btn--ghost" type="button" data-revoke="' + x.id + '">Revoke</button>' : '<button class="btn btn--secondary" type="button" data-access="' + x.id + '">Edit access</button>') + '</div></div>';
-  }).join('') : '<div class="empty2"><b>' + (pTab === 'invited' ? 'No open invitations.' : 'No members yet.') + '</b>Invite a teammate to share the work.</div>';
+      '<div class="rstat">' + (pending ? '<span class="badge badge--amber">Invited ' + esc(x.sent) + '</span>' + (MANAGE ? '<button class="btn btn--secondary" type="button" data-resend="' + x.id + '">Resend</button><button class="btn btn--ghost" type="button" data-revoke="' + x.id + '">Revoke</button>' : '') : '<button class="btn btn--secondary" type="button" data-access="' + x.id + '">' + (MANAGE ? 'Edit access' : 'View access') + '</button>') + '</div></div>';
+  }).join('') : '<div class="empty2"><b>' + (pTab === 'invited' ? 'No open invitations.' : 'No members yet.') + '</b>' + (MANAGE ? 'Invite a teammate to share the work.' : 'An Admin invites people to Oslo.') + '</div>';
 }
 $('pList').addEventListener('click', (e) => {
+  const a = e.target.closest('[data-access]'); if (a) return openAccess(ST.people.find(p => p.id === a.dataset.access));
+  if (!MANAGE) return;
   const r = e.target.closest('[data-resend]'), v = e.target.closest('[data-revoke]');
-  if (r) { const x = ST.people.find(p => p.id === r.dataset.resend); x.sent = 'just now'; save(); render(); toast('Invitation resent to ' + x.email + '. The link works for 7 days.'); }
+  if (r) { const x = ST.people.find(p => p.id === r.dataset.resend); x.sent = 'just now'; save(); render(); toast('Invitation resent to ' + x.email + '. The link works for 1 day.'); }
   if (v) { const i = ST.people.findIndex(p => p.id === v.dataset.revoke), x = ST.people[i]; ST.people.splice(i, 1); save(); render(); toast('Invitation to ' + x.email + ' revoked'); }
-  const a = e.target.closest('[data-access]'); if (a) openAccess(ST.people.find(p => p.id === a.dataset.access));
 });
 
 // ---------- edit a member's access: a role per workspace, or none
@@ -3804,14 +3815,17 @@ const acc = $('accDlg'); let accP = null, accPick = {};
 function renderAcc() {
   $('accWs').innerHTML = ST.workspaces.map(w => {
     const on = w.id in accPick;
-    return '<div class="wso' + (on ? ' is-on' : '') + '"><input type="checkbox" id="acc_' + w.id + '" data-aws="' + w.id + '"' + (on ? ' checked' : '') + '>' +
+    return '<div class="wso' + (on ? ' is-on' : '') + '"><input type="checkbox" id="acc_' + w.id + '" data-aws="' + w.id + '"' + (on ? ' checked' : '') + (MANAGE ? '' : ' disabled') + '>' +
       '<label class="n" for="acc_' + w.id + '"><b>' + esc(w.name) + '</b><span>' + esc(w.region) + '</span></label>' +
-      '<span class="rseg">' + Object.keys(ROLES).map(k => '<button type="button" data-arole="' + k + '" data-for="' + w.id + '" aria-pressed="' + (accPick[w.id] === k) + '"' + (on ? '' : ' disabled') + '>' + ROLES[k][0] + '</button>').join('') + '</span></div>';
+      '<span class="rseg">' + Object.keys(ROLES).map(k => '<button type="button" data-arole="' + k + '" data-for="' + w.id + '" aria-pressed="' + (accPick[w.id] === k) + '"' + (on && MANAGE ? '' : ' disabled') + '>' + ROLES[k][0] + '</button>').join('') + '</span></div>';
   }).join('');
 }
 function openAccess(p) {
   accP = p; accPick = { ...p.ws }; $('accErr').textContent = '';
   $('accTitle').textContent = 'Access for ' + p.name; $('accSub').textContent = p.email + (p.title ? ' · ' + p.title : '');
+  // Editors and Viewers see someone's access but can't change it
+  acc.querySelector('[data-accsave]').hidden = !MANAGE; $('accCancel').textContent = MANAGE ? 'Cancel' : 'Close';
+  $('accNote').textContent = MANAGE ? 'Untick every workspace to remove them from Oslo. Changes are logged.' : 'Only Admins change access.';
   renderAcc(); acc.showModal();
 }
 acc.addEventListener('click', async (e) => {
@@ -3819,7 +3833,7 @@ acc.addEventListener('click', async (e) => {
   const r = e.target.closest('[data-arole]'); if (r && !r.disabled) { accPick[r.dataset.for] = r.dataset.arole; $('accErr').textContent = ''; renderAcc(); }
   if (e.target.closest('[data-accsave]')) {
     const ids = new Set([...Object.keys(accP.ws), ...Object.keys(accPick)]);
-    for (const id of ids) if (accP.ws[id] === 'owner' && accPick[id] !== 'owner' && owners(id).length === 1) { $('accErr').textContent = 'Every workspace needs at least one Owner. Make someone else Owner of ' + wsName(id) + ' first.'; return; }
+    for (const id of ids) if (accP.ws[id] === 'admin' && accPick[id] !== 'admin' && admins(id).length === 1) { $('accErr').textContent = 'Every workspace needs at least one Admin. Make someone else Admin of ' + wsName(id) + ' first.'; return; }
     if (!Object.keys(accPick).length && !(await confirmDlg('Remove ' + esc(accP.name) + ' from Oslo?', 'They lose access to every workspace straight away. Their approved answers stay. This is logged.', 'Remove', true))) return;
     ids.forEach(id => setRole(accP, id, accPick[id] || null));
     if (!Object.keys(accP.ws).length) { ST.people.splice(ST.people.indexOf(accP), 1); }
@@ -3827,7 +3841,7 @@ acc.addEventListener('click', async (e) => {
   }
 });
 $('accWs').addEventListener('change', (e) => {
-  const c = e.target.closest('[data-aws]'); if (!c) return;
+  const c = e.target.closest('[data-aws]'); if (!c || !MANAGE) return;
   if (c.checked) accPick[c.dataset.aws] = 'viewer'; else delete accPick[c.dataset.aws];
   renderAcc();
 });
@@ -3847,7 +3861,7 @@ function renderMail() {
   const name = $('invName').value.trim(), ids = Object.keys(pick);
   $('invMail').innerHTML = '<b>Eric Ouisse invited ' + (name ? esc(name.split(' ')[0]) : 'you') + ' to join Oslo on lojo</b>' +
     (ids.length ? '<div class="wsl">' + chips(pick) + '</div>' : '<p>Pick at least one workspace.</p>') +
-    '<p>They add their position and a short description when they accept. The link works for 7 days.</p>';
+    '<p>They add their position and a short description when they accept. The link works for 1 day.</p>';
   const em = $('invEmail').value.trim();
   $('invGuest').hidden = !(validEmail(em) && domainOf(em) !== ORG);
 }
@@ -3879,7 +3893,7 @@ $('invForm').addEventListener('submit', (e) => {
   save(); dlg.close(); pTab = 'invited'; history.replaceState(null, '', '#invited'); render();
   toast('Invitation sent to ' + em);
 });
-if (new URLSearchParams(location.search).get('invite')) openInvite();
+if (MANAGE && new URLSearchParams(location.search).get('invite')) openInvite();
 render();
 """)
 
@@ -3888,29 +3902,31 @@ SUPER = dict(
   css=ADMIN_CSS + r"""
   .crow{grid-template-columns:minmax(150px,1.2fr) minmax(0,1.4fr) 96px 64px 270px;gap:6px 14px}
   .crow .num{text-align:left}
+  .lin{position:relative}
+  .lin .pop{left:auto;right:0;width:250px}
 """,
   body=r"""
     <div class="head">
-      <div><p class="label">lojo back office</p><h1>Companies</h1><p>Every company on lojo, who owns it, and invitations still waiting. You can’t see any company’s sources or answers.</p></div>
+      <div><p class="label">lojo back office</p><h1>Companies</h1><p>Every company on lojo, who owns it, and invitations still waiting. Log in to a workspace to help its team. Every login goes in the audit log.</p></div>
       <span class="spacer"></span>
-      <button class="btn btn--primary" id="inviteBtn" type="button">+ Invite company owner</button>
+      <button class="btn btn--primary" id="inviteBtn" type="button">+ Invite company admin</button>
     </div>
     <section class="sec">
       <div class="ptabs" id="cTabs" role="tablist" aria-label="Companies"></div>
-      <div class="rhead crow" id="cHead"><span>Company</span><span>Owner</span><span>Workspaces</span><span>Users</span><span style="text-align:right">Status</span></div>
+      <div class="rhead crow" id="cHead"><span>Company</span><span>Admin</span><span>Workspaces</span><span>Users</span><span style="text-align:right">Status</span></div>
       <div class="roster" id="cList"></div>
     </section>
 
     <dialog class="dlg dlg--wide" id="invDlg" aria-labelledby="invTitle">
       <form id="invForm" novalidate>
       <div class="dlg__b" style="display:grid;gap:14px">
-        <div class="dtop"><div><p class="label">New company</p><h3 id="invTitle">Invite a company owner</h3></div><span class="spacer"></span><button class="dx" type="button" data-close aria-label="Close">×</button></div>
+        <div class="dtop"><div><p class="label">New company</p><h3 id="invTitle">Invite a company admin</h3></div><span class="spacer"></span><button class="dx" type="button" data-close aria-label="Close">×</button></div>
         <p style="margin:0">They set up the company, create workspaces and invite their team.</p>
         <div class="fgrid">
           <div class="fld"><label for="cName">Company name</label><input class="text" id="cName" autocomplete="off" placeholder="Skagen Maritime"><span class="ferr"></span></div>
           <div class="fld"><label for="cDomain">Email domain</label><input class="text" id="cDomain" autocomplete="off" placeholder="skagenmaritime.no"><span class="ferr"></span></div>
-          <div class="fld"><label for="oName">Owner name</label><input class="text" id="oName" autocomplete="off" placeholder="Tone Skagen"><span class="ferr"></span></div>
-          <div class="fld"><label for="oEmail">Owner email</label><input class="text" id="oEmail" type="email" autocomplete="off" placeholder="tone@skagenmaritime.no"><span class="ferr"></span></div>
+          <div class="fld"><label for="oName">Admin name</label><input class="text" id="oName" autocomplete="off" placeholder="Tone Skagen"><span class="ferr"></span></div>
+          <div class="fld"><label for="oEmail">Admin email</label><input class="text" id="oEmail" type="email" autocomplete="off" placeholder="tone@skagenmaritime.no"><span class="ferr"></span></div>
         </div>
       </div>
       <div class="dlg__f"><button class="btn btn--secondary" type="button" data-close>Cancel</button><button class="btn btn--primary" type="submit">Send invitation</button></div>
@@ -3930,30 +3946,49 @@ function render() {
     const i = all.indexOf(c), pending = c.status === 'invited';
     return '<div class="rrow2 crow is-click" data-open="' + c.id + '" tabindex="0" role="button" aria-label="Open ' + esc(c.name) + '">' +
       '<div class="who"><span class="av av--org ' + tone(c.name) + '">' + ini(c.name) + '</span><div><b>' + esc(c.name) + '</b><span>' + esc(c.domain) + '</span></div></div>' +
-      '<div class="cell"><b>' + esc(c.owner) + '</b><span>' + esc(c.email) + '</span></div>' +
+      '<div class="cell"><b>' + esc(c.admin) + '</b><span>' + esc(c.email) + '</span></div>' +
       '<span class="num' + (pending ? ' is-none' : '') + '">' + (pending ? '—' : c.ws.length) + '</span>' +
       '<span class="num' + (pending ? ' is-none' : '') + '">' + (pending ? '—' : c.users) + '</span>' +
-      '<div class="rstat">' + (pending ? '<span class="badge badge--amber">Invited ' + esc(c.sent) + '</span><button class="btn btn--secondary" type="button" data-resend="' + c.id + '">Resend</button><button class="btn btn--ghost" type="button" data-revoke="' + c.id + '">Revoke</button>' : '<span class="badge badge--ok">Active</span>') + '</div></div>';
-  }).join('') : '<div class="empty2"><b>Nothing here.</b>' + (cTab === 'invited' ? 'Every invited owner has accepted.' : 'Invite a company owner to get started.') + '</div>';
+      '<div class="rstat">' + (pending ? '<span class="badge badge--amber">Invited ' + esc(c.sent) + '</span><button class="btn btn--secondary" type="button" data-resend="' + c.id + '">Resend</button><button class="btn btn--ghost" type="button" data-revoke="' + c.id + '">Revoke</button>' : '<span class="badge badge--ok">Active</span>' + loginBtn(c)) + '</div></div>';
+  }).join('') : '<div class="empty2"><b>Nothing here.</b>' + (cTab === 'invited' ? 'Every invited admin has accepted.' : 'Invite a company admin to get started.') + '</div>';
 }
-function resend(c) { c.sent = 'just now'; plog('Resent the invitation to ' + c.owner + ' (' + c.name + ')', 'invite'); save(); render(); toast('Invitation resent to ' + c.email + '. The link works for 7 days.'); }
+// support access: the super admin opens a workspace as its admin; every login is logged
+function loginBtn(c) {
+  if (!c.ws.length) return '';
+  return '<div class="lin"><button class="btn btn--secondary btn--sm" type="button" data-login="' + c.id + '" aria-haspopup="true" aria-expanded="false">Log in</button>' +
+    '<div class="pop" hidden><div class="pop__h">Log in to a ' + esc(c.name) + ' workspace</div>' +
+    c.ws.map(w => '<button class="pop__row" type="button" data-ws-login="' + esc(w) + '">' + esc(w) + '</button>').join('') + '</div></div>';
+}
+function shutLogin(keep) { $('cList').querySelectorAll('.lin .pop').forEach(p => { if (p !== keep) { p.hidden = true; p.previousElementSibling.setAttribute('aria-expanded', 'false'); } }); }
+function loginTo(c, ws) {
+  plog('Logged in to ' + ws + ' (' + c.name + ')', 'login'); save();
+  try { sessionStorage.setItem('lojo-imp', JSON.stringify({ company: c.name, ws })); } catch (e) {}
+  location.href = 'dashboard.html?as=admin';
+}
+document.addEventListener('click', (e) => { if (!e.target.closest('.lin')) shutLogin(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') shutLogin(); });
+function resend(c) { c.sent = 'just now'; plog('Resent the invitation to ' + c.admin + ' (' + c.name + ')', 'invite'); save(); render(); toast('Invitation resent to ' + c.email + '. The link works for 1 day.'); }
 function revoke(c) { ST.companies.splice(ST.companies.indexOf(c), 1); plog('Revoked the invitation for ' + c.name, 'revoke'); save(); render(); toast('Invitation to ' + c.name + ' revoked'); }
 $('cList').addEventListener('click', (e) => {
   const r = e.target.closest('[data-resend]'), v = e.target.closest('[data-revoke]'), o = e.target.closest('[data-open]');
+  const lb = e.target.closest('[data-login]'), lw = e.target.closest('[data-ws-login]');
+  if (lw) return loginTo(ST.companies.find(c => c.id === lw.closest('.lin').querySelector('[data-login]').dataset.login), lw.dataset.wsLogin);
+  if (lb) { const c = ST.companies.find(x => x.id === lb.dataset.login), p = lb.nextElementSibling; if (c.ws.length === 1) return loginTo(c, c.ws[0]); shutLogin(p); p.hidden = !p.hidden; lb.setAttribute('aria-expanded', !p.hidden); return; }
+  if (e.target.closest('.lin')) return;
   if (r) return resend(ST.companies.find(c => c.id === r.dataset.resend));
   if (v) return revoke(ST.companies.find(c => c.id === v.dataset.revoke));
   if (o) location.href = 'company.html?id=' + o.dataset.open;
 });
-$('cList').addEventListener('keydown', (e) => { const o = e.target.closest('[data-open]'); if (o && (e.key === 'Enter' || e.key === ' ') && e.target === o) { e.preventDefault(); location.href = 'company.html?id=' + o.dataset.open; } });
+$('cList').addEventListener('keydown', (e) => { const o = e.target.closest('[data-open]'); if (o && e.target === o && (e.key === 'Enter' || e.key === ' ') && e.target === o) { e.preventDefault(); location.href = 'company.html?id=' + o.dataset.open; } });
 
-// ---------- invite a company owner
+// ---------- invite a company admin
 const dlg = $('invDlg'), F = ['cName', 'cDomain', 'oName', 'oEmail'];
 const openInv = () => { $('invForm').reset(); F.forEach(id => fieldErr($(id), '')); dlg.showModal(); $('cName').focus(); };
 $('inviteBtn').addEventListener('click', openInv);
 if (new URLSearchParams(location.search).get('invite')) openInv();
 dlg.addEventListener('click', (e) => { if (e.target === dlg || e.target.closest('[data-close]')) dlg.close(); });
 F.forEach(id => $(id).addEventListener('input', (e) => fieldErr(e.target, '')));
-// the domain fills in from the owner's email if left empty
+// the domain fills in from the admin's email if left empty
 $('oEmail').addEventListener('blur', () => { const d = domainOf($('oEmail').value.trim()); if (d && !$('cDomain').value.trim()) $('cDomain').value = d; });
 $('invForm').addEventListener('submit', (e) => {
   e.preventDefault();
@@ -3962,11 +3997,11 @@ $('invForm').addEventListener('submit', (e) => {
   const onLojo = ST.companies.find(c => c.domain === dom);
   let ok = fieldErr($('cName'), v.cName ? '' : 'Enter the company name.');
   ok = fieldErr($('cDomain'), !dom ? 'Enter the email domain.' : !/^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(dom) ? 'Use a domain like company.com.' : onLojo ? onLojo.name + ' already uses this domain.' : '') && ok;
-  ok = fieldErr($('oName'), v.oName ? '' : 'Enter the owner’s name.') && ok;
-  ok = fieldErr($('oEmail'), !em ? 'Enter the owner’s email.' : !validEmail(em) ? 'That doesn’t look like an email address.' : dom && domainOf(em) !== dom ? 'The email should end in @' + dom + '.' : '') && ok;
+  ok = fieldErr($('oName'), v.oName ? '' : 'Enter the admin’s name.') && ok;
+  ok = fieldErr($('oEmail'), !em ? 'Enter the admin’s email.' : !validEmail(em) ? 'That doesn’t look like an email address.' : dom && domainOf(em) !== dom ? 'The email should end in @' + dom + '.' : '') && ok;
   if (!ok) { document.querySelector('#invForm .is-bad').focus(); return; }
-  ST.companies.push({ id: 'c' + Date.now(), name: v.cName, domain: dom, owner: v.oName, email: em, ws: [], users: 0, status: 'invited', sent: 'just now' });
-  plog('Invited ' + v.oName + ' as owner of ' + v.cName, 'invite');
+  ST.companies.push({ id: 'c' + Date.now(), name: v.cName, domain: dom, admin: v.oName, email: em, ws: [], users: 0, status: 'invited', sent: 'just now' });
+  plog('Invited ' + v.oName + ' as admin of ' + v.cName, 'invite');
   save(); dlg.close(); cTab = 'invited'; render();
   toast('Invitation sent to ' + em);
 });
@@ -4038,7 +4073,7 @@ SETTINGS = dict(
   js=ADMIN_JS + r"""
 ST.prefs = ST.prefs || { drafts: true, weekly: true, gaps: false, declined: false, target: 20, suggest: true };
 const ROLE = window.LOJO_ROLE;
-const ME = ST.people.find(p => p.id === ({ owner: 'p1', editor: 'p2', viewer: 'p4' })[ROLE]);
+const ME = ST.people.find(p => p.id === ({ admin: 'p1', editor: 'p2', viewer: 'p4' })[ROLE]);
 // [id, label, group, later?]
 const NAVS = [
   ['YOU', [['profile', 'Profile']]],
@@ -4120,7 +4155,7 @@ PLATFORM = dict(
     <div class="head">
       <div class="hello"><div><h1 id="pHi">Good morning, Sadaf <span aria-hidden="true">👋</span></h1><p id="pDate"></p></div></div>
       <span class="spacer"></span>
-      <a class="btn btn--primary" href="superadmin.html?invite=1">+ Invite company owner</a>
+      <a class="btn btn--primary" href="superadmin.html?invite=1">+ Invite company admin</a>
     </div>
     <div class="kpis" id="pKpis"></div>
     <section class="sec"><h2>Companies <a href="superadmin.html">All companies →</a></h2><table class="ctab" id="pTable"></table></section>
@@ -4192,10 +4227,10 @@ function render() {
   $('cName').textContent = c.name;
   $('cSub').innerHTML = esc(c.domain) + ' · ' + (pending ? '<span class="badge badge--amber">Invited ' + esc(c.sent) + '</span>' : '<span class="badge badge--ok">Active</span> since ' + esc(c.since));
   $('cActs').innerHTML = pending ? '<button class="btn btn--ghost" type="button" data-act="revoke">Revoke</button><button class="btn btn--secondary" type="button" data-act="resend">Resend invitation</button>' : '';
-  $('cBody').innerHTML = (pending ? '<div class="sec"><div class="empty2"><b>Waiting for ' + esc(c.owner) + ' to accept.</b>Workspaces, people and usage show up once they set up ' + esc(c.name) + '. The link works for 7 days.</div></div>' :
+  $('cBody').innerHTML = (pending ? '<div class="sec"><div class="empty2"><b>Waiting for ' + esc(c.admin) + ' to accept.</b>Workspaces, people and usage show up once they set up ' + esc(c.name) + '. The link works for 1 day.</div></div>' :
     '<div class="kpis" style="margin-bottom:22px">' + [[c.ws.length, 'Workspaces'], [c.users, 'People'], [u[0], 'Documents'], [u[2], 'Approved answers']].map(([n, l]) => '<div class="kpi"><b>' + n + '</b><span>' + l + '</span></div>').join('') + '</div>') +
     '<div class="cgrid"><div>' +
-      '<section class="sec"><h2>Owner</h2><div class="who"><span class="av av--p ' + tone(c.owner) + '">' + ini(c.owner) + '</span><div><b>' + esc(c.owner) + ' <span class="badge badge--rose">Owner</span></b><span>' + esc(c.email) + '</span></div></div></section>' +
+      '<section class="sec"><h2>Admin</h2><div class="who"><span class="av av--p ' + tone(c.admin) + '">' + ini(c.admin) + '</span><div><b>' + esc(c.admin) + ' <span class="badge badge--rose">Admin</span></b><span>' + esc(c.email) + '</span></div></div></section>' +
       (pending ? '' : '<section class="sec"><h2>Workspaces</h2><div class="wsl">' + c.ws.map(w => '<span class="wsc">' + esc(w) + '</span>').join('') + '</div></section>' +
       '<section class="sec"><h2>Processing cost <span class="rhelp" style="font-weight:500">· lojo only, metered on every model call</span></h2><div>' +
         '<div class="srow"><div><b>Items read</b><span>Documents, emails, pages and calls</span></div><b>' + u[0] + '</b></div>' +
@@ -4216,7 +4251,7 @@ function hist() {
 }
 $('cActs').addEventListener('click', async (e) => {
   const a = e.target.closest('[data-act]'); if (!a) return;
-  if (a.dataset.act === 'resend') { c.sent = 'just now'; plog('Resent the invitation to ' + c.owner + ' (' + c.name + ')', 'invite'); save(); render(); toast('Invitation resent to ' + c.email); }
+  if (a.dataset.act === 'resend') { c.sent = 'just now'; plog('Resent the invitation to ' + c.admin + ' (' + c.name + ')', 'invite'); save(); render(); toast('Invitation resent to ' + c.email); }
   if (a.dataset.act === 'revoke' && await confirmDlg('Revoke the invitation for ' + esc(c.name) + '?', 'The link stops working and ' + esc(c.name) + ' leaves the list. This is logged.', 'Revoke', true)) {
     ST.companies.splice(ST.companies.indexOf(c), 1); plog('Revoked the invitation for ' + c.name, 'revoke'); save(); location.href = 'superadmin.html';
   }
@@ -4242,7 +4277,7 @@ AUDIT = dict(
     </section>
 """,
   js=ADMIN_JS + r"""
-const KINDS = { all: 'All', invite: 'Invitations', accept: 'Accepted', revoke: 'Revoked' };
+const KINDS = { all: 'All', invite: 'Invitations', accept: 'Accepted', revoke: 'Revoked', login: 'Workspace logins' };
 let f = 'all';
 function render() {
   const L = ST.platformLog;
@@ -4255,7 +4290,7 @@ render();
 """)
 
 ACCOUNT = dict(
-  active='psettings', title='Settings', persona='super',
+  active='', title='Profile', persona='super',
   css=ADMIN_CSS + r"""
   .srow{display:flex;align-items:center;gap:16px;padding:14px 0;border-top:1px solid var(--line)}
   .srow:first-of-type{border-top:0}
@@ -4274,7 +4309,7 @@ ACCOUNT = dict(
 """,
   body=r"""
     <div class="head">
-      <div><p class="label">lojo back office</p><h1>Settings</h1><p>Your lojo staff account.</p></div>
+      <div><p class="label">lojo back office</p><h1>Profile</h1><p>Your lojo staff account.</p></div>
     </div>
     <section class="sec" id="aProfile"></section>
 """,
@@ -4337,6 +4372,13 @@ EMAILS_PAGE = dict(
   .mail2 .small{font-size:.78rem;color:#6E5A4E}
   .mail2__foot{padding:16px 28px;border-top:1px solid rgba(36,26,20,.08);font-size:.74rem;color:#6E5A4E;line-height:1.5}
   :root[data-theme="dark"] .inbox{background:#1E1714}
+  /* on a persona's journey the invitation shows on its own, like opening it in a mail app */
+  body.mailonly .side,body.mailonly .mnav,body.mailonly .mscrim,body.mailonly .fab,body.mailonly .head,body.mailonly #elist,body.mailonly .why{display:none}
+  body.mailonly .main{margin-left:0}
+  body.mailonly .wrap{max-width:760px;margin:0 auto;padding-top:28px}
+  body.mailonly .egrid{grid-template-columns:1fr}
+  .eback{display:inline-flex;align-items:center;gap:6px;margin:0 0 14px;font-weight:600;font-size:.88rem;color:var(--muted);text-decoration:none}
+  .eback:hover{color:var(--ink)}
   @media (max-width:900px){ .egrid{grid-template-columns:1fr} .elist{position:static;max-height:none} }
 """,
   body=r"""
@@ -4352,50 +4394,65 @@ EMAILS_PAGE = dict(
 const OFF = 'You get this because you review answers in Oslo.';
 const ACC = 'You get this because of a change to your lojo account. If you didn’t expect it, reply and we’ll look into it.';
 const STAFF = 'Sent to lojo staff only.';
-const chip = (w, r) => '<span class="chip2">' + w + '<em>· ' + r + '</em></span>';
+// invitations name the person, never the company or workspace
+const invite = (name) => '<h2>Hello ' + name + ',</h2><p>You have been invited to join lojo.ai. Please click on the link below to accept the invitation and set up your password.</p><a class="cta" href="#">Let’s set up</a><p>If you have any questions, please contact <a href="mailto:support@lojo.ai">support@lojo.ai</a>.</p><p>Best,<br>The lojo Team</p>';
 // key, group, list label, to, trigger, subject, preheader, body html, footer
 const EMAILS = [
-  ['owner-invite', 'Joining lojo', 'Company owner invitation', 'The future company owner', 'Super admin sends “Invite a company owner”, or resends it', 'Sadaf Farman invited you to set up Oslo on lojo', 'Accept to create your workspace and invite your team.',
-    '<h2>Set up Oslo on lojo</h2><p>Hi Eric, Sadaf Farman from lojo invited you to be the <b>Owner</b> of Oslo.</p><p>As Owner you create workspaces, add your documents and invite your team. lojo drafts the answers your team keeps asking for, and only shares an answer once a person has approved it.</p><a class="cta" href="#">Accept and set up Oslo</a><p class="small">This link works for 7 days. It’s for eric@oslo.com only.</p>', ACC],
-  ['team-invite', 'Joining lojo', 'Teammate invitation', 'A new teammate', 'An Owner sends an invitation from People, or resends it', 'Eric Ouisse invited you to join Oslo on lojo', 'Your access: Oslo · Editor.',
-    '<h2>Join Oslo on lojo</h2><p>Hi Henrik, Eric Ouisse invited you to join Oslo. Here’s what you’ll have access to:</p><div class="chips">' + chip('Oslo', 'Editor') + chip('Oslo — Sandbox', 'Viewer') + '</div><p>When you accept, you add your position and a short description. They show next to answers you approve.</p><a class="cta" href="#">Accept invitation</a><p class="small">This link works for 7 days. It’s for henrik@oslo.com only.</p>', ACC],
+  ['admin-invite', 'Joining lojo', 'Company admin invitation', 'The future company admin', 'Super admin sends “Invite a company admin”, or resends it', 'You’re invited to join lojo.ai', 'Accept the invitation and set up your password.',
+    invite('Eric Ouisse'), ''],
+  ['team-invite', 'Joining lojo', 'Teammate invitation', 'A new teammate', 'An Admin sends an invitation from People, or resends it', 'You’re invited to join lojo.ai', 'Accept the invitation and set up your password.',
+    invite('Lena Okafor'), ''],
+  ['viewer-invite', 'Joining lojo', 'Teammate invitation (Viewer)', 'A new teammate', 'An Admin sends an invitation from People, or resends it', 'You’re invited to join lojo.ai', 'Accept the invitation and set up your password.',
+    invite('Jonas Lie'), ''],
   ['verify', 'Joining lojo', 'Confirm your email', 'Someone signing in with email', 'Signing in with email for the first time', 'Confirm your email for lojo', 'One click and you’re in.',
     '<h2>Confirm your email</h2><p>Click below to confirm eric@oslo.com and finish signing in.</p><a class="cta" href="#">Confirm email</a><p class="small">This link works for 24 hours. If you didn’t try to sign in, you can ignore this email.</p>', ACC],
   ['reset', 'Your account', 'Reset password', 'Anyone who signs in with email', '“Forgot password?” on the sign-in page', 'Reset your lojo password', 'The link works for 1 hour.',
     '<h2>Reset your password</h2><p>Someone asked to reset the password for eric@oslo.com. If that was you, choose a new one below.</p><a class="cta" href="#">Choose a new password</a><p class="small">This link works for 1 hour. If you didn’t ask, ignore this email and your password stays the same.</p>', ACC],
-  ['role', 'Your account', 'Your role changed', 'The person whose role changed', 'An Owner changes their role in Members and roles or Edit access', 'Your role in Oslo is now Viewer', 'Eric Ouisse changed your access.',
-    '<h2>Your role in Oslo changed</h2><p>Hi Lena, Eric Ouisse changed your role in Oslo from <b>Editor</b> to <b>Viewer</b>.</p><div class="box"><b>As a Viewer you can</b>Ask lojo and read approved answers in Knowledge.</div><p>You can no longer add sources or review drafts. Answers you already approved stay as they are.</p><a class="cta" href="#">Open lojo</a><p class="small">Questions? Ask Eric Ouisse, an Owner of Oslo.</p>', ACC],
-  ['removed', 'Your account', 'Removed from a workspace', 'The person removed', 'An Owner removes them in Members and roles or Edit access', 'You no longer have access to Oslo', 'Eric Ouisse removed your access.',
+  ['role', 'Your account', 'Your role changed', 'The person whose role changed', 'An Admin changes their role in Members and roles or Edit access', 'Your role in Oslo is now Viewer', 'Eric Ouisse changed your access.',
+    '<h2>Your role in Oslo changed</h2><p>Hi Lena, Eric Ouisse changed your role in Oslo from <b>Editor</b> to <b>Viewer</b>.</p><div class="box"><b>As a Viewer you can</b>Ask lojo and read approved answers in Knowledge.</div><p>You can no longer add sources or review drafts. Answers you already approved stay as they are.</p><a class="cta" href="#">Open lojo</a><p class="small">Questions? Ask Eric Ouisse, an Admin of Oslo.</p>', ACC],
+  ['removed', 'Your account', 'Removed from a workspace', 'The person removed', 'An Admin removes them in Members and roles or Edit access', 'You no longer have access to Oslo', 'Eric Ouisse removed your access.',
     '<h2>You no longer have access to Oslo</h2><p>Hi Jonas, Eric Ouisse removed you from Oslo on lojo. You can’t sign in to it any more.</p><p>Answers you approved stay in Oslo’s knowledge, with your name on them.</p><p class="small">If you think this is a mistake, ask Eric Ouisse.</p>', ACC],
-  ['deleted', 'Your account', 'Workspace deleted', 'Everyone in the workspace', 'An Owner deletes a workspace in Data and export', 'Oslo — Sandbox was deleted', 'Its documents, drafts and answers are gone.',
+  ['deleted', 'Your account', 'Workspace deleted', 'Everyone in the workspace', 'An Admin deletes a workspace in Data and export', 'Oslo — Sandbox was deleted', 'Its documents, drafts and answers are gone.',
     '<h2>Oslo — Sandbox was deleted</h2><p>Eric Ouisse deleted the workspace Oslo — Sandbox. Its documents, questions, drafts and approved answers were deleted for everyone.</p><p>Your other workspaces aren’t affected.</p><a class="cta" href="#">Open lojo</a>', ACC],
-  ['drafts', 'Review', 'Drafts waiting', 'Owners and Editors', 'A new batch of drafts lands in Build', '10 drafts are ready for review', 'Approve, edit or reject them in Build.',
+  ['drafts', 'Review', 'Drafts waiting', 'Admins and Editors', 'A new batch of drafts lands in Build', '10 drafts are ready for review', 'Approve, edit or reject them in Build.',
     '<h2>10 drafts are ready for review</h2><p>lojo drafted answers to questions your team keeps asking. Each one shows the sources it came from.</p><ul><li>Is SSO included on the Growth plan? <span class="small">· sources disagree</span></li><li>How long do refunds take?</li><li>What are the API rate limits?</li></ul><a class="cta" href="#">Review in Build</a>', OFF],
-  ['weekly', 'Review', 'Friday review reminder', 'Owners and Editors', 'Fridays, while the week’s target isn’t met', 'Friday review: 7 of 20 drafts done', '13 drafts left this week.',
+  ['weekly', 'Review', 'Friday review reminder', 'Admins and Editors', 'Fridays, while the week’s target isn’t met', 'Friday review: 7 of 20 drafts done', '13 drafts left this week.',
     '<h2>13 drafts left this week</h2><p>Your team reviewed <b>7 of 20</b> drafts so far. Approved answers go straight to Ask lojo.</p><div class="box"><b>Waiting the longest</b>Is SSO included on the Growth plan? · 4 days</div><a class="cta" href="#">Review now</a>', OFF],
-  ['gaps', 'Review', 'New gaps found', 'Owners and Editors', 'lojo finds things the documents mention but never explain', 'lojo found 3 gaps in your documents', 'Send a document or explain them yourself.',
+  ['gaps', 'Review', 'New gaps found', 'Admins and Editors', 'lojo finds things the documents mention but never explain', 'lojo found 3 gaps in your documents', 'Send a document or explain them yourself.',
     '<h2>3 things your documents never explain</h2><p>They’re mentioned, but no document says what they are. Answers that rely on them can’t be approved yet.</p><ul><li>The Enterprise plan</li><li>Chargeback fee</li><li>Data retention period</li></ul><a class="cta" href="#">See gaps in Insights</a>', OFF],
-  ['declined', 'Review', 'Ask lojo declined a question', 'Owners and Editors', 'Ask lojo couldn’t answer from approved knowledge', 'Ask lojo couldn’t answer a question', 'Decide whether it matters.',
+  ['declined', 'Review', 'Ask lojo declined a question', 'Admins and Editors', 'Ask lojo couldn’t answer from approved knowledge', 'Ask lojo couldn’t answer a question', 'Decide whether it matters.',
     '<h2>Ask lojo couldn’t answer this</h2><div class="box"><b>“Do we support Apple Pay in Germany?”</b>Asked by Jonas Lie · today</div><p>Nothing approved answers it yet, so lojo said so instead of guessing. It’s now a question in Insights.</p><a class="cta" href="#">Decide in Insights</a>', OFF],
-  ['accepted', 'lojo staff', 'Owner accepted', 'Super admins', 'A company owner accepts their invitation', 'Oslo is active on lojo', 'Eric Ouisse accepted the invitation.',
+  ['accepted', 'lojo staff', 'Admin accepted', 'Super admins', 'A company admin accepts their invitation', 'Oslo is active on lojo', 'Eric Ouisse accepted the invitation.',
     '<h2>Oslo is active</h2><p>Eric Ouisse accepted the invitation and set up Oslo. You’ll see its numbers on the company page.</p><a class="cta" href="#">Open Oslo in Companies</a>', STAFF],
-  ['expiring', 'lojo staff', 'Invitation about to expire', 'Super admins', 'One day before a company owner’s 7-day link runs out', 'The invitation to Halvorsen Legal expires tomorrow', 'Martin Halvorsen hasn’t accepted yet.',
-    '<h2>Halvorsen Legal hasn’t joined yet</h2><p>Martin Halvorsen’s invitation expires tomorrow. Resend it for another 7 days, or revoke it.</p><a class="cta" href="#">Open Companies</a>', STAFF],
+  ['expiring', 'lojo staff', 'Invitation about to expire', 'Super admins', '4 hours before a company admin’s 1-day link runs out', 'The invitation to Halvorsen Legal expires in 4 hours', 'Martin Halvorsen hasn’t accepted yet.',
+    '<h2>Halvorsen Legal hasn’t joined yet</h2><p>Martin Halvorsen’s invitation expires in 4 hours. Resend it for another day, or revoke it.</p><a class="cta" href="#">Open Companies</a>', STAFF],
   ['summary', 'lojo staff', 'Weekly platform summary', 'Super admins', 'Mondays', 'lojo this week: 1 new company, 1 open invitation', 'Usage across all companies.',
     '<h2>lojo this week</h2><ul><li>1 company became active: Oslo</li><li>1 invitation is still open: Halvorsen Legal</li><li>48 questions asked in Ask lojo across all companies</li></ul><p class="small">Counts only. lojo staff never see a company’s sources or answers.</p><a class="cta" href="#">Open Companies</a>', STAFF],
 ];
-let cur = (location.hash || '#owner-invite').slice(1);
+let cur = (location.hash || '#admin-invite').slice(1);
+const JOIN = { 'admin-invite': ['admin', 'eric@oslo.com', 'Eric Ouisse'], 'team-invite': ['editor', 'lena@oslo.com', 'Lena Okafor'], 'viewer-invite': ['viewer', 'jonas@oslo.com', 'Jonas Lie'] };
+const MAILONLY = new URLSearchParams(location.search).has('journey');
+document.body.classList.toggle('mailonly', MAILONLY);
+if (MAILONLY) document.querySelector('.egrid').insertAdjacentHTML('beforebegin', '<a class="eback" href="auth.html?s=persona">← Back</a>');
 function render() {
   const e = EMAILS.find(x => x[0] === cur) || EMAILS[0]; cur = e[0];
   const groups = [...new Set(EMAILS.map(x => x[1]))];
   $('elist').innerHTML = groups.map(g => '<h4>' + esc(g) + '</h4>' + EMAILS.filter(x => x[1] === g).map(x => '<a href="#' + x[0] + '"' + (x[0] === cur ? ' aria-current="true"' : '') + '><b>' + esc(x[2]) + '</b><span>' + esc(x[5]) + '</span></a>').join('')).join('');
   const [, , , to, trig, subj, pre, html, foot] = e;
-  $('epane').innerHTML = '<dl class="meta2"><dt>From</dt><dd>lojo &lt;hello@lojo.ai&gt;</dd><dt>To</dt><dd>' + esc(to) + '</dd><dt>Subject</dt><dd class="subj">' + esc(subj) + '</dd><dt>Preview</dt><dd>' + esc(pre) + '</dd></dl>' +
+  const j = MAILONLY && JOIN[cur];
+  $('epane').innerHTML = '<dl class="meta2"><dt>From</dt><dd>lojo &lt;hello@lojo.ai&gt;</dd><dt>To</dt><dd>' + esc(j ? j[2] + ' <' + j[1] + '>' : to) + '</dd><dt>Subject</dt><dd class="subj">' + esc(subj) + '</dd>' + (MAILONLY ? '' : '<dt>Preview</dt><dd>' + esc(pre) + '</dd>') + '</dl>' +
     '<div class="why"><span><b>Sent when:</b> ' + esc(trig) + '</span></div>' +
-    '<div class="inbox"><div class="mail2"><div class="mail2__top"><img src="assets/lojo-icon.png" alt=""><b>lojo.ai</b></div><div class="mail2__body">' + html + '</div><div class="mail2__foot">' + foot + '<br>lojo.ai</div></div></div>';
+    '<div class="inbox"><div class="mail2"><div class="mail2__top"><img src="assets/lojo-icon.png" alt=""><b>lojo.ai</b></div><div class="mail2__body">' + html + '</div><div class="mail2__foot">' + (foot ? foot + '<br>' : '') + '© 2026 lojo.ai. All rights reserved.</div></div></div>';
 }
 window.addEventListener('hashchange', () => { cur = location.hash.slice(1); render(); });
-$('epane').addEventListener('click', (e) => { if (e.target.closest('.cta')) { e.preventDefault(); toast('In the real email this opens lojo'); } });
+// on a persona's journey the invitation's button carries on to setting a password
+$('epane').addEventListener('click', (e) => {
+  if (!e.target.closest('.cta')) return;
+  e.preventDefault();
+  const j = JOIN[cur];
+  if (j && window.LOJO_JOURNEY === j[0]) location.href = 'auth.html?s=set&from=invite&journey=' + j[0] + '&email=' + encodeURIComponent(j[1]);
+  else toast('In the real email this opens lojo');
+});
 render();
 """)
 
@@ -4432,7 +4489,7 @@ RO_PAGE = dict(
     </div><div id="roDone"></div></section>
 """,
   js=r"""
-if (window.LOJO_ROLE && window.LOJO_ROLE !== 'owner') noAccess(window.LOJO_ROLE, 'readout.html');
+if (window.LOJO_ROLE && window.LOJO_ROLE !== 'admin') noAccess(window.LOJO_ROLE, 'readout.html');
 function render() {
   const c = counts(), human = c.final + allQuestions().filter(q => (!q.docs || !q.docs.length) && matters(q) !== false).length, ch = ST.chat || { asked: 0, answered: 0, declined: 0 };
   $('roFind').innerHTML = [[c.questions, 'questions your documents answer', 1], [c.gaps, 'gaps: referred to, never explained'], [c.approved + ' / ' + c.drafts, 'answers approved'], [ch.answered + ' / ' + ch.asked, 'Ask lojo questions answered']]
@@ -4449,7 +4506,7 @@ render();
 
 PAGES = {'readout': RO_PAGE, 'emails': EMAILS_PAGE, 'platform': PLATFORM, 'superadmin': SUPER, 'company': COMPANY, 'auditlog': AUDIT, 'account': ACCOUNT, 'people': PEOPLE, 'settings': SETTINGS, 'states': STATES, 'dashboard': OVERVIEW, 'sources': DOCUMENTS, 'insights': QUESTIONS_PAGE, 'build': REVIEW, 'distribute': APPROVED, 'chat': CHAT, 'knowledge': READOUT, 'activity': ACTIVITY}
 for name, p in PAGES.items():
-    html = page(p['active'], p['title'], p['css'], p['body'], p['js'], p.get('desc', ''), p.get('persona', 'owner'))
+    html = page(p['active'], p['title'], p['css'], p['body'], p['js'], p.get('desc', ''), p.get('persona', 'admin'))
     with open(os.path.join(OUT, name + '.html'), 'w') as f:
         f.write(html)
     print('wrote', name + '.html', len(html))

@@ -226,6 +226,7 @@
       <h2 id="title">Sign in to lojo</h2>
       <p class="lead" id="lead">Use your work account to continue.</p>
 
+
       <div class="sso">
         <button class="btn btn--sso" type="button" data-sso="Google">
           <span class="spin" aria-hidden="true"></span>
@@ -258,7 +259,7 @@
 
         <div class="field" id="f-email">
           <label for="email">Work email</label>
-          <div class="input"><input id="email" name="email" type="email" autocomplete="email" placeholder="eric@oslo.com"></div>
+          <div class="input"><input id="email" name="email" type="email" autocomplete="email" placeholder="eric@oslo.com" value="eric@oslo.com"></div>
           <span class="err">Enter a valid email, like eric@oslo.com.</span>
         </div>
 
@@ -269,7 +270,7 @@
             <a href="#" class="forgot" id="forgot">Forgot password?</a>
           </div>
           <div class="input input--pw">
-            <input id="pw" name="password" type="password" autocomplete="current-password" placeholder="••••••••">
+            <input id="pw" name="password" type="password" autocomplete="current-password" placeholder="••••••••" value="lojo2026">
             <button class="reveal" type="button" id="reveal" aria-label="Show password">Show</button>
           </div>
           <span class="err">Passwords are at least 8 characters.</span>
@@ -293,6 +294,15 @@
   const $ = (id) => document.getElementById(id);
   const card = $('card'), form = $('form');
   let signup = new URLSearchParams(location.search).get('mode') === 'signup';
+  // prototype only: the persona screen (auth.html?s=persona) comes first; a returning persona signs in here with their own details and lands on their home
+  const PER = {
+    super: { name: 'Sadaf Farman', email: 'sadaf@lojo.ai', home: 'platform.html' },
+    admin: { name: 'Eric Ouisse', email: 'eric@oslo.com', home: 'dashboard.html?as=admin' },
+    editor: { name: 'Lena Okafor', email: 'lena@oslo.com', home: 'dashboard.html?as=editor' },
+    viewer: { name: 'Jonas Lie', email: 'jonas@oslo.com', home: 'knowledge.html?as=viewer' },
+  };
+  const ppRole = new URLSearchParams(location.search).get('as');
+  if (!PER[ppRole] && !signup) location.replace('auth.html?s=persona');
 
   function setMode(isSignup) {
     signup = isSignup;
@@ -334,6 +344,7 @@
   $('changeEm').addEventListener('click', () => setStep(1));
   form.addEventListener('keydown', (e) => { if (e.key === 'Enter' && form.dataset.step === '1') { e.preventDefault(); $('next').click(); } });
   $('emailBtn').addEventListener('click', showEmail);
+  if (!signup && PER[ppRole]) { $('email').value = PER[ppRole].email; showEmail(); setStep(2); }
 
   $('reveal').addEventListener('click', () => {
     const show = $('pw').type === 'password';
@@ -356,10 +367,17 @@
     return local.charAt(0).toUpperCase() + local.slice(1);
   }
 
-  // signing in goes through the loading screen (G16); email users pick a region (G15); Microsoft users may need a last name (G24)
-  function enter(user, route) {
-    try { sessionStorage.setItem('lojo-user', JSON.stringify(user)); } catch (e) {}
-    location.href = 'auth.html?s=' + (route || 'loading');
+  // signing up goes through loading (G16) to creating a workspace; signing in follows the persona picked above
+  function enter(user) {
+    const p = PER[ppRole];
+    if (!signup && p) user = { name: p.name, email: p.email, via: user.via };
+    try {
+      sessionStorage.setItem('lojo-user', JSON.stringify(user));
+      sessionStorage.removeItem('lojo-persona');
+      if (signup || !p) { sessionStorage.removeItem('lojo-next'); sessionStorage.removeItem('lojo-journey'); }
+      else { sessionStorage.setItem('lojo-next', p.home); if (ppRole !== 'super') sessionStorage.setItem('lojo-journey', ppRole + '-return'); }
+    } catch (e) {}
+    location.href = 'auth.html?s=loading';
   }
 
   function busy(btn, label) {
@@ -378,7 +396,7 @@
     if (pw.length < 8) { $('f-pw').classList.add('has-error'); ok = false; }
     if (!ok) { form.querySelector('.has-error input').focus(); return; }
     busy($('submit'), signup ? 'Creating workspace…' : 'Signing in…');
-    setTimeout(() => enter({ name: signup ? name : nameFromEmail(email), email, via: 'password' }, signup ? 'loading' : 'region'), 900);
+    setTimeout(() => enter({ name: signup ? name : nameFromEmail(email), email, via: 'password' }), 900);
   });
 
   document.querySelectorAll('[data-sso]').forEach(btn => {
@@ -386,7 +404,7 @@
       const provider = btn.dataset.sso;
       busy(btn, provider + '…');
       // ASSUMPTION: SSO returns Eric's Oslo identity for the demo. check with Eric
-      setTimeout(() => enter({ name: 'Eric', email: 'eric@oslo.com', via: provider }, provider === 'Microsoft' ? 'details' : 'loading'), 1100);
+      setTimeout(() => enter({ name: 'Eric', email: 'eric@oslo.com', via: provider }), 1100);
     });
   });
 
@@ -409,5 +427,6 @@
   });
 })();
 </script>
+<script src="assets/journey.js"></script>
 </body>
 </html>

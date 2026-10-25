@@ -62,7 +62,7 @@ CSS = r"""
   .pop.pop--up{top:auto;bottom:calc(100% + 6px)}
   :root:not([data-agents="on"]) [data-feature="agents"]{display:none!important}
   :root:not([data-agents="on"]) .duo{grid-template-columns:1fr!important}
-  .not-owner .ws-del{display:none}
+  .not-admin .ws-del{display:none}
   .rs__ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--bg-soft);font-size:1.2rem;margin-bottom:12px}
   .noacc{max-width:560px;margin:72px auto;padding:32px;border:1px solid var(--line);border-radius:20px;background:var(--panel);box-shadow:0 16px 30px -28px rgba(36,26,20,.3)}
   .noacc h1{font-family:var(--display);font-weight:700;font-size:1.6rem;margin:6px 0 10px}
@@ -101,11 +101,6 @@ CSS = r"""
   .pop__h{padding:8px 10px;font-size:.78rem;color:var(--muted)}
   .pop__row{display:block;width:100%;padding:9px 10px;border:0;background:none;border-radius:9px;text-align:left;cursor:pointer;font-size:.88rem;font-weight:500;color:var(--ink)}
   .pop__row:hover{background:var(--bg-soft);text-decoration:none}
-  .persona{display:flex;align-items:center;gap:10px}
-  .persona__ava{width:30px;height:30px;border-radius:9px;flex:none;display:grid;place-items:center;background:var(--bg-soft);color:var(--muted);font-family:var(--display);font-weight:800;font-size:.72rem}
-  .persona b{display:block;font-size:.86rem;line-height:1.2}
-  .persona em{display:block;font-style:normal;font-size:.74rem;color:var(--muted);font-weight:500}
-  .persona.is-cur .persona__ava{background:var(--brand-gradient);color:#fff}
   /* collapsed */
   body.is-collapsed{--side:76px}
   body.is-collapsed .side__who,body.is-collapsed .nav-item .lbl,body.is-collapsed .nav-item .count,body.is-collapsed .nav-item .step,body.is-collapsed .product div{display:none}
@@ -711,6 +706,17 @@ CSS = r"""
   .toast button{border:0;background:none;color:inherit;font-weight:700;text-decoration:underline;cursor:pointer;padding:0;font-size:.86rem}
   :root[data-theme="dark"] .toast.is-err{background:#3A1A1A;color:#FFB4B4}
   /* ---------- connection badge (G18) ---------- */
+  /* support mode: a super admin inside a company workspace */
+  .imp{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 16px 10px 18px;margin:12px 12px 0 0;border:1px solid rgba(201,162,74,.45);border-radius:14px;background:var(--amber-soft);color:#5E4310;font-size:.85rem}
+  .imp svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .imp > span{flex:1;min-width:220px}
+  .imp b{font-weight:700}
+  .imp em{font-style:normal;opacity:.8}
+  .imp button{height:32px;padding:0 14px;border:0;border-radius:999px;background:#5E4310;color:#fff;font:700 .8rem var(--body);cursor:pointer;white-space:nowrap}
+  .imp button:hover{background:#463209}
+  body.is-support .head{top:66px}
+  :root[data-theme="dark"] .imp{background:rgba(201,162,74,.14);border-color:rgba(201,162,74,.4);color:#EBD39A}
+  :root[data-theme="dark"] .imp button{background:#EBD39A;color:#2A1F08}
   .conn{position:fixed;top:12px;left:50%;transform:translate(-50%,-140%);z-index:70;display:flex;align-items:center;gap:8px;height:30px;padding:0 14px;border-radius:999px;font-size:.78rem;font-weight:600;background:var(--panel);border:1px solid var(--line-2);box-shadow:0 10px 24px -14px rgba(36,26,20,.5);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
   .conn.show{transform:translate(-50%,0)}
   .conn i{width:8px;height:8px;border-radius:50%;background:var(--amber);animation:pulse 1s ease-in-out infinite}
@@ -771,31 +777,24 @@ NAV_SUPER = [
   ('pdash', 'platform.html', 'Dashboard', None, ''),
   ('companies', 'superadmin.html', 'Companies', 'navCompanies', ''),
   ('auditlog', 'auditlog.html', 'Audit log', None, ''),
-  ('psettings', 'account.html', 'Settings', None, ''),
 ]
-# who the prototype can be viewed as; switch in the account menu
+# who the prototype can be viewed as; picked on the first screen (auth.html?s=persona)
 PERSONAS = {
   'super': dict(name='Sadaf Farman', ini='SF', role='Super admin', email='sadaf@lojo.ai', home='platform.html', note='lojo staff · all companies',
                 org_name='Platform', org_sub='lojo back office', org_note='lojo back office · every company on lojo'),
-  'owner': dict(name='Eric Ouisse', ini='EO', role='Owner', email='eric@oslo.com', home='dashboard.html?as=owner', note='Oslo · sources, answers, people',
+  'admin': dict(name='Eric Ouisse', ini='EO', role='Admin', email='eric@oslo.com', home='emails.html?journey=admin#admin-invite', note='Invite email → password → new workspace',
                 org_name='Oslo', org_sub='Oslo · 2 workspaces', org_note='Oslo · oslo.com'),
 }
-# Editor and Viewer use the Owner's pages; the role is picked at runtime from View as
+# Editor and Viewer use the Admin's pages; the role is picked at runtime from View as
 PERSONAS_RUNTIME = {
-  'editor': dict(ini='LO', role='Editor', home='dashboard.html?as=editor', note='Oslo · sources, review, read-only settings'),
-  'viewer': dict(ini='JL', role='Viewer', home='knowledge.html?as=viewer', note='Oslo · Knowledge and Ask lojo'),
+  'editor': dict(ini='LO', role='Editor', home='emails.html?journey=editor#team-invite', note='Invite email → password → Dashboard'),
+  'viewer': dict(ini='JL', role='Viewer', home='login.html?journey=viewer', note='Sign in → Knowledge'),
 }
 CHEV = '<svg class="side__chev" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></svg>'
 LOOP_STAGE = {'documents': '01 Source', 'questions': '03 Insights', 'review': '02 Build · Validation', 'approved': '04 Distribute', 'chat': '04 Distribute', 'readout': 'Decide'}
 
-def sidebar(active, persona='owner'):
+def sidebar(active, persona='admin'):
     me = PERSONAS[persona]
-    def prow(k, v):
-        cur = k == persona
-        return ('      <a class="pop__row persona' + (' is-cur' if cur else '') + '" data-persona="' + k + '" href="' + v['home'] + '"' + (' aria-current="true"' if cur else '') + '>'
-                '<span class="persona__ava">' + v['ini'] + '</span><span><b>' + v['role'] + '</b><em>' + v['note'] + '</em></span></a>')
-    ALL = {'super': PERSONAS['super'], 'owner': PERSONAS['owner'], **PERSONAS_RUNTIME}
-    switch = '\n'.join(prow(k, v) for k, v in ALL.items())
     org_tile = ('<span class="side__org side__org--co">' + ICONS['companies'] + '</span>' if persona == 'super'
                 else '<span class="side__org side__org--co av--org" id="orgTile">' + me['org_name'][:1] + '</span>')
     out = ['<aside class="side" aria-label="Main navigation">',
@@ -839,7 +838,7 @@ def sidebar(active, persona='owner'):
             '        <a class="pop__row" href="login.html" id="signOut">Sign out</a>',
             '        <div class="pop__sep"></div>',
             '        <div class="ws-h">Prototype only</div>',
-            switch,
+            '        <a class="pop__row" href="auth.html?s=persona" id="switchPersona">Switch persona</a>',
             '        <a class="pop__row" href="dashboard.html?tour=1" id="tourAgain">Take the tour</a>',
             '        <a class="pop__row" href="states.html">Design use cases</a>',
             '        <button class="pop__row" id="resetDemo" type="button">Reset demo data</button>',
@@ -1023,19 +1022,19 @@ const SEED = () => ({
   scope: { signed: true, by: 'Eric Ouisse', at: '9 Sep' },
   decision: null,
 });
-// People (owner) and Companies (super admin). ws: workspace id -> role
+// People (admin) and Companies (super admin). ws: workspace id -> role
 const PEOPLE_SEED = () => [
-  { id: 'p1', name: 'Eric Ouisse', email: 'eric@oslo.com', title: 'Head of Support Operations', about: 'Owns the lojo rollout and approves answers.', ws: { w1: 'owner', w2: 'owner' }, status: 'member' },
+  { id: 'p1', name: 'Eric Ouisse', email: 'eric@oslo.com', title: 'Head of Support Operations', about: 'Owns the lojo rollout and approves answers.', ws: { w1: 'admin', w2: 'admin' }, status: 'member' },
   { id: 'p2', name: 'Lena Okafor', email: 'lena@oslo.com', title: 'Support Team Lead', about: 'Reviews drafts in Build every week.', ws: { w1: 'editor' }, status: 'member' },
   { id: 'p3', name: 'Maria Eide', email: 'maria@oslo.com', title: 'Product Manager', about: 'Keeps product and pricing documents current.', ws: { w1: 'editor', w2: 'editor' }, status: 'member' },
   { id: 'p4', name: 'Jonas Lie', email: 'jonas@oslo.com', title: 'Account Executive', about: 'Uses Ask lojo before customer calls.', ws: { w1: 'viewer' }, status: 'member' },
-  { id: 'p5', name: 'Erik Nilsen', email: 'erik@oslo.com', ws: { w1: 'viewer' }, status: 'invited', sent: '2 days ago' },
+  { id: 'p5', name: 'Erik Nilsen', email: 'erik@oslo.com', ws: { w1: 'viewer' }, status: 'invited', sent: '5 hours ago' },
 ];
 const COMPANIES_SEED = () => [
-  { id: 'c1', name: 'Oslo', domain: 'oslo.com', owner: 'Eric Ouisse', email: 'eric@oslo.com', ws: ['Oslo', 'Oslo — Sandbox'], users: 5, status: 'active', since: '9 Sep' },
-  { id: 'c2', name: 'Fjord Health', domain: 'fjordhealth.no', owner: 'Ingrid Solberg', email: 'ingrid@fjordhealth.no', ws: ['Clinics', 'Patient services'], users: 9, status: 'active', since: '21 Aug' },
-  { id: 'c3', name: 'Aurora Energy', domain: 'auroraenergy.no', owner: 'Lena Berg', email: 'lena.berg@auroraenergy.no', ws: ['Customer care', 'Field', 'Billing', 'Trading', 'HR'], users: 31, status: 'active', since: '2 Jul' },
-  { id: 'c4', name: 'Halvorsen Legal', domain: 'halvorsen.law', owner: 'Martin Halvorsen', email: 'martin@halvorsen.law', ws: [], users: 0, status: 'invited', sent: '2 days ago' },
+  { id: 'c1', name: 'Oslo', domain: 'oslo.com', admin: 'Eric Ouisse', email: 'eric@oslo.com', ws: ['Oslo', 'Oslo — Sandbox'], users: 5, status: 'active', since: '9 Sep' },
+  { id: 'c2', name: 'Fjord Health', domain: 'fjordhealth.no', admin: 'Ingrid Solberg', email: 'ingrid@fjordhealth.no', ws: ['Clinics', 'Patient services'], users: 9, status: 'active', since: '21 Aug' },
+  { id: 'c3', name: 'Aurora Energy', domain: 'auroraenergy.no', admin: 'Lena Berg', email: 'lena.berg@auroraenergy.no', ws: ['Customer care', 'Field', 'Billing', 'Trading', 'HR'], users: 31, status: 'active', since: '2 Jul' },
+  { id: 'c4', name: 'Halvorsen Legal', domain: 'halvorsen.law', admin: 'Martin Halvorsen', email: 'martin@halvorsen.law', ws: [], users: 0, status: 'invited', sent: '20 hours ago' },
 ];
 // the super admin's own account and what happened on the platform
 const STAFF_SEED = () => [
@@ -1043,14 +1042,14 @@ const STAFF_SEED = () => [
 ];
 const STAFF_ROLES = { super: ['Super admin', 'Every company on lojo, counts only'] };
 const PLOG_SEED = () => [
-  { msg: 'Invited Martin Halvorsen as owner of Halvorsen Legal', by: 'Sadaf Farman', at: '20 Oct, 10:12', kind: 'invite' },
+  { msg: 'Invited Martin Halvorsen as admin of Halvorsen Legal', by: 'Sadaf Farman', at: '20 Oct, 10:12', kind: 'invite' },
   { msg: 'Eric Ouisse accepted, Oslo is active', by: 'System', at: '9 Sep, 09:03', kind: 'accept' },
   { msg: 'Ingrid Solberg accepted, Fjord Health is active', by: 'System', at: '21 Aug, 14:22', kind: 'accept' },
-  { msg: 'Invited Ingrid Solberg as owner of Fjord Health', by: 'Sadaf Farman', at: '19 Aug, 11:05', kind: 'invite' },
+  { msg: 'Invited Ingrid Solberg as admin of Fjord Health', by: 'Sadaf Farman', at: '19 Aug, 11:05', kind: 'invite' },
 ];
 function plog(msg, kind) { ST.platformLog.unshift({ msg, by: 'Sadaf Farman', at: new Date().toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }), kind: kind || 'change' }); }
 const CO_USAGE = { c1: [10, 24, 7, 48], c2: [6, 15, 11, 120], c3: [42, 88, 61, 930] };
-const ROLES = { owner: ['Owner', 'Everything, plus settings and people'], editor: ['Editor', 'Adds sources and approves answers'], viewer: ['Viewer', 'Asks lojo and reads Knowledge'] };
+const ROLES = { admin: ['Admin', 'Everything, plus settings and people'], editor: ['Editor', 'Adds sources and approves answers'], viewer: ['Viewer', 'Asks lojo and reads Knowledge'] };
 const KEY = 'lojo-poc-v2';
 function load() {
   try { const s = JSON.parse(sessionStorage.getItem(KEY)); if (s && s.v === 2) return s; } catch (e) {}
@@ -1061,6 +1060,8 @@ ST.people = ST.people || PEOPLE_SEED();
 ST.companies = ST.companies || COMPANIES_SEED();
 ST.staff = ST.staff || STAFF_SEED();
 ST.platformLog = ST.platformLog || PLOG_SEED();
+// the position and description someone gave when they joined (auth.html?s=profile)
+try { const pf = JSON.parse(sessionStorage.getItem('lojo-profile')); const me = pf && ST.people.find(p => p.email === pf.email); if (me) { me.title = pf.title; me.about = pf.about; } } catch (e) {}
 function save() { try { sessionStorage.setItem(KEY, JSON.stringify(ST)); } catch (e) {} refreshNav(); }
 
 function decision(r) { return ST.decisions[r.id] || { status: 'pending' }; }
@@ -1447,18 +1448,18 @@ function refreshNav() {
 }
 // what an Editor or Viewer can't see: hidden, or a "you can't open this" page
 function roleView(role) {
-  const ROLE_NAME = { owner: 'Owner', editor: 'Editor', viewer: 'Viewer' };
+  const ROLE_NAME = { admin: 'Admin', editor: 'Editor', viewer: 'Viewer' };
   $('meRole').textContent = ROLE_NAME[role];
-  document.querySelectorAll('.persona').forEach(a => { const on = a.dataset.persona === role; a.classList.toggle('is-cur', on); if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
   const hide = (sel) => document.querySelectorAll(sel).forEach(el => { el.hidden = true; });
   const here = location.pathname.split('/').pop() || 'dashboard.html';
-  if (role !== 'owner') { hide('[data-owner-only]'); hide('.side nav a[href="people.html"]'); hide('#orgInvite'); hide('#wsAdd'); document.body.classList.add('not-owner'); }
+  // everyone sees who's in the workspace; only Admins invite and change access
+  if (role !== 'admin') { hide('[data-admin-only]'); hide('#wsAdd'); document.body.classList.add('not-admin'); const oi = $('orgInvite'); if (oi) oi.textContent = 'People'; }
   if (role === 'viewer') {
     document.querySelectorAll('.side nav a.nav-item').forEach(a => { const f = a.getAttribute('href').split('?')[0]; a.hidden = !['chat.html', 'knowledge.html'].includes(f); a.classList.toggle('is-active', f === here); });
     const br = document.querySelector('.side__brand'); if (br) br.href = 'knowledge.html';
     const nav = document.querySelector('.side nav'), ask = nav.querySelector('[data-only="viewer"]'), kn = nav.querySelector('a[href="knowledge.html"]'); if (ask) nav.prepend(ask); if (kn) nav.prepend(kn);
   }
-  const OPEN = { editor: (f) => !['people.html', 'readout.html'].includes(f), viewer: (f) => ['chat.html', 'knowledge.html', 'settings.html', 'states.html', 'emails.html'].includes(f) };
+  const OPEN = { editor: (f) => !['readout.html'].includes(f), viewer: (f) => ['chat.html', 'knowledge.html', 'people.html', 'settings.html', 'states.html', 'emails.html'].includes(f) };
   if (OPEN[role] && !OPEN[role](here)) setTimeout(() => noAccess(role, here), 0);
   // a link to somewhere this role can't go opens a small pop-up instead of leaving the page
   if (OPEN[role]) document.addEventListener('click', (e) => {
@@ -1469,29 +1470,29 @@ function roleView(role) {
 }
 function restrict(role, f, what) {
   const NAMES = { 'build.html': 'Build', 'sources.html': 'Sources', 'insights.html': 'Insights', 'distribute.html': 'Distribute', 'people.html': 'Invite and manage people', 'readout.html': 'the Readout', 'dashboard.html': 'the Dashboard', 'activity.html': 'Activity' };
-  const owner = ST.people.find(p => p.id === 'p1') || { name: 'an Owner', email: '' };
-  const why = role === 'viewer' ? 'Viewers ask lojo and read approved answers. Changing answers needs Editor access.' : 'Only Owners can do this.';
+  const admin = ST.people.find(p => p.id === 'p1') || { name: 'an Admin', email: '' };
+  const why = role === 'viewer' ? 'Viewers ask lojo and read approved answers. Changing answers needs Editor access.' : 'Only Admins can do this.';
   let d = $('rsDlg'); if (!d) { d = document.createElement('dialog'); d.id = 'rsDlg'; d.className = 'dlg'; document.body.appendChild(d); }
   d.innerHTML = '<div class="dlg__b"><div class="rs__ic">🔒</div><h3>' + esc(what && what.length < 40 ? what : 'Open ' + (NAMES[f] || 'this')) + ' isn’t available to you</h3>' +
     '<p>' + why + ' You’re a <b>' + (role === 'viewer' ? 'Viewer' : 'Editor') + '</b> in Oslo.</p></div>' +
-    '<div class="dlg__f"><button class="btn btn--secondary" type="button" data-rs="0">OK</button><a class="btn btn--primary" href="mailto:' + esc(owner.email) + '?subject=' + encodeURIComponent('Access to ' + (NAMES[f] || 'lojo')) + '" data-rs="1">Ask ' + esc(owner.name.split(' ')[0]) + ' for access</a></div>';
-  d.onclick = (e) => { if (e.target === d || e.target.closest('[data-rs="0"]')) d.close(); if (e.target.closest('[data-rs="1"]')) { d.close(); toast('Request sent to ' + owner.name); } };
+    '<div class="dlg__f"><button class="btn btn--secondary" type="button" data-rs="0">OK</button><a class="btn btn--primary" href="mailto:' + esc(admin.email) + '?subject=' + encodeURIComponent('Access to ' + (NAMES[f] || 'lojo')) + '" data-rs="1">Ask ' + esc(admin.name.split(' ')[0]) + ' for access</a></div>';
+  d.onclick = (e) => { if (e.target === d || e.target.closest('[data-rs="0"]')) d.close(); if (e.target.closest('[data-rs="1"]')) { d.close(); toast('Request sent to ' + admin.name); } };
   d.showModal();
 }
 function noAccess(role, here) {
   const NAMES = { 'build.html': 'Build', 'sources.html': 'Sources', 'insights.html': 'Insights', 'distribute.html': 'Distribute', 'activity.html': 'Activity', 'people.html': 'People', 'dashboard.html': 'the Dashboard' };
-  const owner = (ST.people.find(p => p.id === 'p1') || { name: 'an Owner', email: '' });
+  const admin = (ST.people.find(p => p.id === 'p1') || { name: 'an Admin', email: '' });
   const viewer = role === 'viewer';
   document.querySelector('main.wrap').innerHTML = '<section class="noacc"><p class="label">Oslo</p><h1>You can’t open ' + esc(NAMES[here] || 'this page') + '</h1>' +
-    '<p>' + (viewer ? 'Viewers ask lojo and read approved answers in Knowledge. Reviewing drafts and adding sources needs Editor access.' : 'Only Owners invite people and change roles.') + ' Ask ' + esc(owner.name) + ', an Owner of Oslo, if you need more.</p>' +
-    '<div class="noacc__b"><a class="btn btn--primary" href="' + (viewer ? 'knowledge.html' : 'dashboard.html') + '">Go to ' + (viewer ? 'Knowledge' : 'Dashboard') + '</a><a class="btn btn--secondary" href="mailto:' + esc(owner.email) + '">Ask ' + esc(owner.name.split(' ')[0]) + ' for access</a></div></section>';
+    '<p>' + (viewer ? 'Viewers ask lojo and read approved answers in Knowledge. Reviewing drafts and adding sources needs Editor access.' : 'Only Admins invite people and change roles.') + ' Ask ' + esc(admin.name) + ', an Admin of Oslo, if you need more.</p>' +
+    '<div class="noacc__b"><a class="btn btn--primary" href="' + (viewer ? 'knowledge.html' : 'dashboard.html') + '">Go to ' + (viewer ? 'Knowledge' : 'Dashboard') + '</a><a class="btn btn--secondary" href="mailto:' + esc(admin.email) + '">Ask ' + esc(admin.name.split(' ')[0]) + ' for access</a></div></section>';
 }
 function srcChip(docId, loc, warn) {
   return '<span class="src' + (warn ? ' src--warn' : '') + '">' + esc(docShort(docId)) + ' <em>' + esc(loc) + '</em>' + (warn ? ' <em>· conflicts</em>' : '') + '</span>';
 }
-// prototype only: who the Owner's pages are viewed as (Owner, Editor or Viewer), from View as
-const ROLE_PERSON = { owner: 'p1', editor: 'p2', viewer: 'p4' };
-window.LOJO_ROLE = 'owner';
+// prototype only: who the Admin's pages are viewed as (Admin, Editor or Viewer), from View as
+const ROLE_PERSON = { admin: 'p1', editor: 'p2', viewer: 'p4' };
+window.LOJO_ROLE = 'admin';
 if (document.body.dataset.persona !== 'super') {
   try {
     const as = new URLSearchParams(location.search).get('as');
@@ -1566,6 +1567,22 @@ if (document.body.dataset.persona !== 'super') {
       if (w.current) setTimeout(() => location.href = 'onboarding.html', 800);
     });
   });
+  // super admin logged in to a company workspace from Companies
+  let imp = null; try { imp = JSON.parse(sessionStorage.getItem('lojo-imp')); } catch (e) {}
+  if (imp && document.body.dataset.persona !== 'super') {
+    const bar = document.createElement('div'); bar.className = 'imp'; bar.setAttribute('role', 'status');
+    bar.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="M12 9v4M12 16h.01"/></svg>' +
+      '<span><b>Support mode</b> · You’re in <b>' + esc(imp.ws) + '</b> at ' + esc(imp.company) + ' as Sadaf Farman, lojo support. <em>Everything you do here is logged and visible to the company’s Admins.</em></span>' +
+      '<button type="button">Exit support mode</button>';
+    bar.querySelector('button').addEventListener('click', () => {
+      plog('Left support mode in ' + imp.ws + ' (' + imp.company + ')', 'login'); save();
+      try { sessionStorage.removeItem('lojo-imp'); } catch (e) {} location.href = 'superadmin.html';
+    });
+    document.querySelector('.main').prepend(bar); document.body.classList.add('is-support');
+    // the account menu shows who is really signed in
+    if ($('meName')) { $('meName').textContent = 'Sadaf Farman'; $('meRole').textContent = 'lojo support'; $('topAva').textContent = 'SF'; }
+    $('orgName').textContent = imp.ws; $('orgSub').textContent = imp.company; if ($('orgTile')) $('orgTile').textContent = imp.company[0];
+  } else if (imp) { try { sessionStorage.removeItem('lojo-imp'); } catch (e) {} }
   // G18: connection badge
   let conn = document.createElement('div'); conn.className = 'conn'; conn.setAttribute('role', 'status'); document.body.appendChild(conn);
   window.lojoConn = (state) => {
@@ -1724,7 +1741,7 @@ def head_tips(body):
         body, count=1)
 
 
-def page(active, title, css, body, js, desc='', persona='owner'):
+def page(active, title, css, body, js, desc='', persona='admin'):
     # super admin never sees a company's answers, so no Ask lojo
     FAB = '' if persona == 'super' else FAB_HTML
     body = head_tips(body)
@@ -1765,6 +1782,7 @@ def page(active, title, css, body, js, desc='', persona='owner'):
 {SEG_JS}
 {js}
 </script>
+<script src="assets/journey.js"></script>
 </body>
 </html>
 """
