@@ -7,9 +7,9 @@ HEAD_JS = """<script>
     var dark = pref === 'dark' || (pref === 'system' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme-pref', pref);
-    // agents and Activity are hidden for now; ?agents=on brings them back, ?agents=off hides them again
-    var ag = 'off';
-    try { var q = new URLSearchParams(location.search).get('agents'); if (q === 'on' || q === 'off') localStorage.setItem('lojo-agents', q); ag = localStorage.getItem('lojo-agents') || 'off'; } catch (e) {}
+    // agents and Activity are shown; ?agents=off hides them, ?agents=on brings them back
+    var ag = 'on';
+    try { var q = new URLSearchParams(location.search).get('agents'); if (q === 'on' || q === 'off') localStorage.setItem('lojo-agents', q); ag = localStorage.getItem('lojo-agents') || 'on'; } catch (e) {}
     document.documentElement.setAttribute('data-agents', ag);
   })();
 </script>"""
