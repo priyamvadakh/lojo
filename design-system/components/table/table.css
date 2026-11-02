@@ -1,0 +1,16 @@
+.dscroll{overflow-x:auto}
+.dtable{width:100%;border-collapse:collapse;font-size:var(--text-92)}
+.dtable th{text-align:left;font-size:var(--text-70);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--muted);font-weight:var(--weight-bold);padding:var(--space-14) var(--space-20);border-bottom:var(--border-width) solid var(--line);white-space:nowrap}
+.dtable td{padding:var(--space-14) var(--space-20);border-bottom:var(--border-width) solid var(--line);vertical-align:middle}
+.dtable tbody tr:last-child td{border-bottom:0}
+.dtable .num{text-align:right;font-variant-numeric:tabular-nums;width:var(--col-num)}
+.dtable .tacts{width:var(--col-actions);text-align:right;white-space:nowrap}
+.tacts .btn{height:var(--size-control-xs);padding:0 var(--space-10);font-size:var(--text-76);margin-left:var(--space-4)}
+.dname{display:flex;align-items:center;gap:var(--space-14);font-weight:var(--weight-medium)}
+.dname .ext{width:var(--size-ext);height:var(--size-ext);border-radius:var(--radius-xs);background:var(--bg-soft);display:grid;place-items:center;font-size:var(--text-62);font-weight:var(--weight-bold);color:var(--muted);text-transform:uppercase;flex:none}
+.dst{display:inline-flex;align-items:center;gap:var(--space-6);font-size:var(--text-88);font-weight:var(--weight-medium);white-space:nowrap}
+.dst.ok{color:var(--success)} .dst.run{color:var(--info)} .dst.fail{color:var(--error)} .dst.wait{color:var(--muted)}
+tr.is-row{cursor:pointer}
+tr.is-row:hover td,tr.is-open td{background:var(--bg-soft)}
+.table-card{overflow:hidden}
+.table-empty{text-align:center;padding:var(--space-38) var(--space-20);color:var(--muted)}

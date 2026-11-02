@@ -1,0 +1,9 @@
+/* Page base, matching the prototype pages. Uses tokens only. */
+*,*::before,*::after{box-sizing:border-box}
+html{font-size:var(--text-root)}
+body{margin:0;color:var(--ink);font-family:var(--body);font-size:var(--text-body);line-height:var(--leading-body);-webkit-font-smoothing:antialiased;background-color:var(--canvas);background-image:radial-gradient(var(--canvas-dot) 1px,transparent 1.3px);background-size:var(--canvas-grid) var(--canvas-grid)}
+a{color:var(--accent-text);font-weight:var(--weight-semibold);text-decoration:none}
+a:hover{text-decoration:underline}
+button,input,select,textarea{font:inherit;color:inherit}
+[hidden]{display:none!important}
+svg.i{width:var(--size-icon);height:var(--size-icon);flex:none;fill:none;stroke:currentColor;stroke-width:var(--icon-stroke);stroke-linecap:round;stroke-linejoin:round}

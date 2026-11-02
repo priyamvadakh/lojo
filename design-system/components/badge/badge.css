@@ -1,0 +1,7 @@
+.badge{display:inline-flex;align-items:center;gap:var(--space-5);height:var(--size-badge);padding:0 var(--space-8);border-radius:var(--radius-pill);font-size:var(--text-64);font-weight:var(--weight-bold);letter-spacing:var(--tracking-badge);text-transform:uppercase;white-space:nowrap}
+.badge--rose{background:var(--rose-tint);color:var(--accent-text)}
+.badge--amber{background:var(--amber-soft);color:var(--amber-ink)}
+.badge--ok{background:var(--success-tint);color:var(--success)}
+.badge--err{background:var(--error-tint);color:var(--error)}
+.badge--info{background:var(--info-tint);color:var(--info)}
+.badge--muted{background:var(--neutral-tint);color:var(--muted)}

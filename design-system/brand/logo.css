@@ -1,0 +1,14 @@
+.logo-mark{display:block;border-radius:24%}
+.logo-lockup{display:inline-flex;align-items:center;gap:var(--space-8);color:var(--ink);text-decoration:none}
+.logo-lockup b{font-family:var(--display);font-weight:var(--weight-heavy);font-size:var(--text-160);letter-spacing:var(--tracking-tight);line-height:1}
+.logo-row{display:flex;align-items:flex-end;gap:var(--space-22);flex-wrap:wrap}
+.logo-row figure{margin:0;display:grid;justify-items:center;gap:var(--space-8)}
+.logo-row figcaption{font-size:var(--text-76);color:var(--muted)}
+.logo-tile{display:grid;place-items:center;min-width:220px;min-height:120px;padding:var(--space-22);border-radius:var(--radius-xl);border:var(--border-width) solid var(--line)}
+.logo-tile--light{background:var(--panel)}
+.logo-tile--soft{background:var(--cream)}
+.logo-tile--dark{background:var(--surface-dark)}
+.logo-tile--dark .logo-lockup{color:var(--ink-on-dark)}
+.logo-tile--brand{background:var(--brand-gradient)}
+.logo-space{position:relative;display:inline-grid;place-items:center;padding:var(--space-22);outline:var(--border-width) dashed var(--rose);outline-offset:0;background:repeating-linear-gradient(45deg,var(--rose-tint) 0 6px,transparent 6px 12px)}
+.logo-space > *{background:var(--panel)}

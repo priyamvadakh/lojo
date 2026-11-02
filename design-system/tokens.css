@@ -1,0 +1,251 @@
+/* lojo design tokens
+   Every value here is taken from the prototype's shared CSS (prototype/_src/shell.py and theme.py),
+   so components built on these tokens render the same as the existing pages.
+   Light values sit on :root; dark values override them under :root[data-theme="dark"]. */
+
+:root{
+  /* ---------- colour: brand ---------- */
+  --rose:#E85D75;
+  --peach:#FFB199;
+  --brand-gradient:linear-gradient(135deg,#E85D75,#FFB199);
+  --cta-gradient:linear-gradient(135deg,#C7385B,#DE5A70);   /* .btn--grad */
+  --rose-ink:#B73C54;          /* rose text on light surfaces (chip hover) */
+  --accent-text:#B73C54;       /* links, rose badge text */
+  --heading-accent:#8E2F45;    /* section headings */
+  --accent-soft:#FFF0E8;       /* active nav background */
+  --accent-ink:#8A4B2F;        /* active nav text and icon */
+
+  /* ---------- colour: neutrals ---------- */
+  --ink:#241A14;
+  --on-ink:#FFFFFF;            /* text on an ink fill (primary button, pressed chip, toast) */
+  --on-brand:#FFFFFF;          /* text on a brand gradient */
+  --bg:#FFFFFF;
+  --bg-soft:#F7F4F1;
+  --panel:#FFFFFF;
+  --canvas:#FDFCFB;
+  --canvas-dot:rgba(36,26,20,.07);
+  --cream:#F6EEE6;
+  --muted:#6E5A4E;
+  --line:rgba(36,26,20,.08);
+  --line-2:rgba(36,26,20,.16);
+  --line-3:rgba(36,26,20,.3);  /* hover border */
+  --neutral-tint:rgba(36,26,20,.06);
+  --on-ink-tint:rgba(255,255,255,.18);   /* remove button inside an ink chip */
+  --head-glass:rgba(251,250,249,.9);
+  --surface-dark:#15100D;      /* always-dark surface (logo on dark) */
+  --ink-on-dark:#F2EBE5;
+
+  /* ---------- colour: status ---------- */
+  --amber:#C9A24A;
+  --amber-soft:#F4EAD3;
+  --amber-ink:#8A6212;
+  --success:#3F8F5F;
+  --success-tint:rgba(63,143,95,.12);
+  --warning:#D99A2B;
+  --error:#C64545;
+  --error-tint:rgba(198,69,69,.1);
+  --error-tint-soft:rgba(198,69,69,.06);
+  --error-line:rgba(198,69,69,.35);
+  --info:#3E6FA6;
+  --info-tint:rgba(62,111,166,.1);
+  --rose-tint:rgba(232,93,117,.1);
+
+  /* ---------- colour: controls ---------- */
+  --input-bg:var(--panel);
+  --input-placeholder:#757575;
+  --danger-bg:var(--panel);
+  --select-chevron:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A6C66' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+
+  /* ---------- colour: avatars (picked from the name, see avatar.js) ---------- */
+  --avatar-1:linear-gradient(135deg,#E85D75,#FFB199);
+  --avatar-2:linear-gradient(135deg,#7B5CF0,#C4AEFF);
+  --avatar-3:linear-gradient(135deg,#E39A12,#FFD978);
+  --avatar-4:linear-gradient(135deg,#3F8F5F,#9ED8B0);
+  --avatar-text-shadow:0 1px 2px rgba(142,47,69,.25);
+  /* agent avatars: one deep/light pair per agent */
+  --agent-sync-deep:#F2683C;      --agent-sync-light:#FFC08F;
+  --agent-indexer-deep:#E39A12;   --agent-indexer-light:#FFD978;
+  --agent-questions-deep:#7B5CF0; --agent-questions-light:#C4AEFF;
+  --agent-gaps-deep:#2F74E8;      --agent-gaps-light:#9CC8FF;
+  --agent-drafting-deep:#2E9E5B;  --agent-drafting-light:#9BE3B4;
+  --agent-rewrite-deep:#B8357A;   --agent-rewrite-light:#F6A3CB;
+  --agent-chat-deep:#E85D75;      --agent-chat-light:#FFB199;
+  --agent-publisher-deep:#5B6B82; --agent-publisher-light:#BAC5D4;
+  --agent-gloss:linear-gradient(160deg,rgba(255,255,255,.4),rgba(255,255,255,0) 45%);
+  --agent-run-ring:rgba(63,143,95,.55);
+
+  /* ---------- typography ---------- */
+  --display:"Outfit",system-ui,sans-serif;
+  --body:"Manrope",system-ui,sans-serif;
+  --text-root:15px;            /* html font-size, so 1rem = 15px */
+  --text-body:13.5px;
+  /* sizes: the number is hundredths of a rem (--text-86 = .86rem) */
+  --text-62:.62rem;
+  --text-64:.64rem;
+  --text-70:.7rem;
+  --text-72:.72rem;
+  --text-74:.74rem;
+  --text-76:.76rem;
+  --text-78:.78rem;
+  --text-80:.8rem;
+  --text-82:.82rem;
+  --text-84:.84rem;
+  --text-85:.85rem;
+  --text-86:.86rem;
+  --text-88:.88rem;
+  --text-90:.9rem;
+  --text-92:.92rem;
+  --text-95:.95rem;
+  --text-105:1.05rem;
+  --text-160:1.6rem;
+  --text-175:1.75rem;
+  --text-300:3rem;
+  --weight-medium:500;
+  --weight-semibold:600;
+  --weight-bold:700;
+  --weight-heavy:800;
+  --leading-snug:1.1;
+  --leading-tight:1.15;
+  --leading-body:1.55;
+  --leading-field:1.5;
+  --leading-name:1.3;
+  --tracking-tight:-.02em;
+  --tracking-badge:.05em;
+  --tracking-label:.12em;
+  --tracking-overline:.14em;
+
+  /* ---------- spacing: the number is pixels ---------- */
+  --space-0:0;
+  --space-2:2px;
+  --space-3:3px;
+  --space-4:4px;
+  --space-5:5px;
+  --space-6:6px;
+  --space-7:7px;
+  --space-8:8px;
+  --space-10:10px;
+  --space-11:11px;
+  --space-12:12px;
+  --space-13:13px;
+  --space-14:14px;
+  --space-16:16px;
+  --space-34:34px;
+  --space-18:18px;
+  --space-20:20px;
+  --space-22:22px;
+  --space-38:38px;
+
+  /* ---------- sizing ---------- */
+  --size-spinner:14px;
+  --size-chevron:16px;
+  --size-icon-sm:15px;
+  --size-dot:7px;
+  --size-icon:18px;
+  --size-badge:21px;
+  --size-count:22px;
+  --size-tab-count:20px;
+  --size-count-min:24px;
+  --size-avatar-xs:26px;
+  --size-avatar-sm:30px;
+  --size-avatar-me:34px;
+  --size-avatar-md:40px;
+  --size-avatar-lg:44px;
+  --size-agent-job:20px;
+  --size-agent-job-icon:12px;
+  --size-chip-sm:28px;
+  --size-control-xs:30px;
+  --size-control-sm:32px;
+  --size-menu-item:34px;
+  --size-control-md:36px;
+  --size-segment:38px;
+  --size-control:40px;
+  --size-ext:42px;
+  --size-nav-item:44px;
+  --size-textarea-min:90px;
+  --size-menu:230px;
+  --size-cover-mark:96px;
+  --size-cover-demo:120px;
+  --size-side:252px;
+  --size-side-collapsed:76px;
+  --col-num:110px;
+  --col-actions:170px;
+  --canvas-grid:22px;
+  --border-width:1px;
+  --border-width-thick:2px;
+  --border-width-dashed:1.5px;
+  --icon-stroke:1.8;
+  --icon-stroke-bold:2.2;
+
+  /* ---------- radius ---------- */
+  --radius-3xs:8px;            /* menu items */
+  --radius-2xs:9px;            /* small company avatars */
+  --radius-xs:10px;            /* file-type tiles */
+  --radius-sm:11px;            /* inputs */
+  --radius-md:12px;            /* nav items, toasts */
+  --radius-lg:14px;            /* popovers */
+  --radius-xl:16px;            /* cards */
+  --radius-2xl:18px;           /* sidebar */
+  --radius-3xl:20px;           /* sections */
+  --radius-pill:999px;         /* buttons, badges, chips */
+  --radius-round:50%;          /* spinners, people avatars */
+  --radius-agent:24%;          /* agent avatars, app icon */
+
+  /* ---------- shadow ---------- */
+  --shadow-none:none;
+  --shadow-card:none;
+  --shadow-section:0 16px 30px -28px rgba(36,26,20,.3);
+  --shadow-side:0 20px 40px -32px rgba(36,26,20,.35);
+  --shadow-pop:0 24px 50px -24px rgba(36,26,20,.45);
+  --shadow-primary-hover:0 10px 22px -14px rgba(36,26,20,.8);
+  --shadow-cta-hover:0 12px 26px -12px rgba(232,93,117,.7);
+  --shadow-toast:0 16px 40px -20px rgba(36,26,20,.7);
+  --shadow-menu:0 18px 40px -20px rgba(36,26,20,.45);
+  --shadow-segment:0 1px 3px rgba(36,26,20,.15);
+  --shadow-agent:0 8px 14px -8px rgba(36,26,20,.45),inset 0 -3px 6px rgba(0,0,0,.12);
+  --shadow-agent-job:0 2px 6px rgba(36,26,20,.22);
+  --logo-drop-shadow:drop-shadow(0 2px 3px rgba(150,40,60,.25));
+  --focus-ring:0 0 0 3px rgba(232,93,117,.16);
+
+  /* ---------- motion and state ---------- */
+  --duration-fast:.15s;
+  --ease:ease;
+  --duration-spin:.7s;
+  --opacity-disabled:.45;
+  --opacity-off:.5;
+  --opacity-soft:.85;
+  --duration-breathe:2.4s;
+  --duration-pulse:1.4s;
+}
+
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ink:#F2EBE5;
+  --on-ink:#15100D;
+  --bg:#15100D;
+  --bg-soft:#231B16;
+  --panel:#1C1612;
+  --canvas:#120E0B;
+  --canvas-dot:rgba(255,236,222,.06);
+  --muted:#B3A398;
+  --line:rgba(255,236,222,.08);
+  --line-2:rgba(255,236,222,.16);
+  --neutral-tint:rgba(255,236,222,.08);
+  --on-ink-tint:rgba(21,16,13,.12);
+  --head-glass:rgba(18,14,11,.88);
+  --accent-text:#F29BAA;
+  --heading-accent:#F29BAA;
+  --accent-soft:rgba(255,177,153,.14);
+  --accent-ink:#FFC7B2;
+  --rose-tint:rgba(232,93,117,.18);
+  --amber-soft:#3B2F1A;
+  --amber-ink:#E3C27A;
+  --success:#6BC08F;
+  --error:#EC7B7B;
+  --info:#86AEDD;
+  --input-bg:var(--bg-soft);
+  --input-placeholder:#7F7068;
+  --danger-bg:transparent;
+  --shadow-card:0 16px 30px -28px rgba(0,0,0,.7);
+  --shadow-section:0 16px 30px -28px rgba(0,0,0,.7);
+  --shadow-side:0 20px 40px -24px rgba(0,0,0,.7);
+}

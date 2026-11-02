@@ -1,0 +1,35 @@
+/* Initials avatar: people are circles, companies and workspaces are rounded squares */
+.av{width:var(--size-avatar-md);height:var(--size-avatar-md);border-radius:var(--radius-md);flex:none;display:grid;place-items:center;color:var(--on-brand);font-family:var(--display);font-weight:var(--weight-heavy);font-size:var(--text-82);background:var(--avatar-1);text-shadow:var(--avatar-text-shadow)}
+.av--p{border-radius:var(--radius-round)}
+.av--org{border-radius:var(--radius-sm)}
+.av--xs{width:var(--size-avatar-xs);height:var(--size-avatar-xs);font-size:var(--text-62)}
+.av--sm{width:var(--size-avatar-sm);height:var(--size-avatar-sm);font-size:var(--text-70)}
+.av--sm.av--org{border-radius:var(--radius-2xs)}
+.av--me{width:var(--size-avatar-me);height:var(--size-avatar-me);font-size:var(--text-76)}
+.av--lg{width:var(--size-avatar-lg);height:var(--size-avatar-lg);font-size:var(--text-95)}
+.av.avt1{background:var(--avatar-1)}
+.av.avt2{background:var(--avatar-2)}
+.av.avt3{background:var(--avatar-3)}
+.av.avt4{background:var(--avatar-4)}
+.av.av--ink{background:var(--ink);color:var(--on-ink);text-shadow:none}
+.av.is-pending{background:var(--bg-soft);color:var(--muted);border:var(--border-width-dashed) dashed var(--line-2);text-shadow:none}
+.av svg{width:var(--space-20);height:var(--space-20);fill:none;stroke:currentColor;stroke-width:var(--icon-stroke);stroke-linecap:round;stroke-linejoin:round}
+
+/* Avatar with name and detail */
+.who{display:flex;align-items:center;gap:var(--space-12);min-width:0}
+.who > div{min-width:0}
+.who b{display:flex;align-items:center;gap:var(--space-4) var(--space-8);flex-wrap:wrap;font-size:var(--text-92);line-height:var(--leading-name)}
+.who span.who__sub{display:block;color:var(--muted);font-size:var(--text-80);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Agent avatar: the lojo cloud on the agent's colour, with a badge for its job */
+.ava3d{position:relative;width:var(--size-avatar-lg);height:var(--size-avatar-lg);display:block;flex:none;border-radius:var(--radius-agent);box-shadow:var(--shadow-agent)}
+.ava3d > svg{width:var(--size-avatar-lg);height:var(--size-avatar-lg);display:block;border-radius:var(--radius-agent)}
+.ava3d::after{content:"";position:absolute;inset:0;border-radius:var(--radius-agent);background:var(--agent-gloss);pointer-events:none}
+.ava3d__job{position:absolute;right:calc(var(--space-5) * -1);bottom:calc(var(--space-5) * -1);width:var(--size-agent-job);height:var(--size-agent-job);border-radius:var(--radius-round);background:var(--panel);display:grid;place-items:center;box-shadow:var(--shadow-agent-job);z-index:1}
+.ava3d__job svg{width:var(--size-agent-job-icon);height:var(--size-agent-job-icon);fill:none;stroke:currentColor;stroke-width:var(--icon-stroke-bold);stroke-linecap:round;stroke-linejoin:round}
+.ava3d.is-run{animation:breathe var(--duration-breathe) ease-in-out infinite}
+.ava3d.is-run::before{content:"";position:absolute;inset:calc(var(--space-4) * -1);border-radius:30%;border:var(--border-width-thick) solid var(--agent-run-ring);animation:ring var(--duration-breathe) ease-out infinite}
+.ava3d.is-off{filter:grayscale(1);opacity:var(--opacity-off)}
+@keyframes breathe{50%{transform:translateY(-1.5px)}}
+@keyframes ring{0%{opacity:.9;transform:scale(.96)}100%{opacity:0;transform:scale(1.18)}}
+@media (prefers-reduced-motion:reduce){.ava3d.is-run,.ava3d.is-run::before{animation:none}}

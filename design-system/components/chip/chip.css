@@ -1,0 +1,5 @@
+.chips{display:flex;flex-wrap:wrap;gap:var(--space-8)}
+.chip{border:var(--border-width) solid var(--line-2);background:var(--panel);color:var(--ink);border-radius:var(--radius-pill);padding:var(--space-5) var(--space-12);font-size:var(--text-80);cursor:pointer}
+.chip:hover,.chip.is-hover{border-color:var(--rose);color:var(--rose-ink)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+.chip:disabled{opacity:var(--opacity-disabled);cursor:not-allowed}
