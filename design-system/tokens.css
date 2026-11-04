@@ -205,6 +205,9 @@
   --shadow-agent-job:0 2px 6px rgba(36,26,20,.22);
   --logo-drop-shadow:drop-shadow(0 2px 3px rgba(150,40,60,.25));
   --focus-ring:0 0 0 3px rgba(232,93,117,.16);
+  /* glowing border, as on selected cards (.q.is-picked, .app.is-on) */
+  --glow-border:rgba(232,93,117,.45);
+  --shadow-glow:0 0 0 3px rgba(232,93,117,.08),0 8px 24px -12px rgba(232,93,117,.45);
 
   /* ---------- motion and state ---------- */
   --duration-fast:.15s;

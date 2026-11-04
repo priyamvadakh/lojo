@@ -19,6 +19,7 @@ export const FiltersApplied = { args: { selected: ['Claims', 'Coverage'], query:
 
 export const Parts = {
   render: () => label('Search') + wrap(Search({ placeholder: 'Search sources' }), 360) +
+    label('Search, focused (glowing border)') + wrap(Search({ placeholder: 'Search sources', glow: true }), 360) +
     label('Filter menu') + FilterMenu({ options: OPTS, selected: ['Billing'], staticMenu: true }) +
     label('Active filters') + ActiveFilters({ selected: ['Claims', 'Coverage', 'Last 7 days'] }),
 };

@@ -7,8 +7,8 @@ const SEARCH = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="
 const FUNNEL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 8v5l-4 2v-7z"/></svg>';
 
 /** Search field with an icon */
-export const Search = ({ placeholder = 'Search', value = '' } = {}) =>
-  `<label class="lfsearch">${SEARCH}<input class="text" type="search" placeholder="${placeholder}" aria-label="${placeholder}" value="${value}" autocomplete="off"></label>`;
+export const Search = ({ placeholder = 'Search', value = '', glow = false } = {}) =>
+  `<label class="lfsearch${glow ? ' is-glow' : ''}">${SEARCH}<input class="text" type="search" placeholder="${placeholder}" aria-label="${placeholder}" value="${value}" autocomplete="off"></label>`;
 
 /** The Filter menu: checkboxes with counts, and Clear */
 export const FilterMenu = ({ options = [], selected = [], staticMenu = false } = {}) =>

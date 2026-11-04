@@ -3,7 +3,11 @@
 .lfrow{display:flex;gap:var(--space-8);align-items:flex-start}
 .lfsearch{position:relative;flex:1;min-width:0;display:block}
 .lfsearch svg{position:absolute;left:var(--space-11);top:50%;width:var(--size-chevron);height:var(--size-chevron);transform:translateY(-50%);fill:none;stroke:var(--muted);stroke-width:var(--border-width-thick);stroke-linecap:round;pointer-events:none}
-.lfsearch .text{height:var(--size-control-md);padding-left:var(--space-34)}
+.lfsearch .text{height:var(--size-control-md);padding-left:var(--space-34);transition:border-color var(--duration-fast) var(--ease),box-shadow var(--duration-fast) var(--ease)}
+/* glowing border on focus, matching selected cards */
+.lfsearch .text:focus,.lfsearch.is-glow .text{border-color:var(--glow-border);box-shadow:var(--shadow-glow)}
+.lfsearch .text:focus + svg,.lfsearch.is-glow svg{stroke:var(--rose)}
+.lfsearch:has(.text:focus) svg{stroke:var(--rose)}
 .lfdrop{position:relative}
 .lfbtn{height:var(--size-control-md);padding:0 var(--space-13);font-size:var(--text-80);gap:var(--space-6)}
 .lfbtn svg{width:var(--size-icon-sm);height:var(--size-icon-sm);fill:none;stroke:currentColor;stroke-width:var(--icon-stroke);stroke-linejoin:round}

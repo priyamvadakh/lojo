@@ -695,7 +695,23 @@
   .ws-h{display:flex;align-items:center;justify-content:space-between;padding:8px 10px 4px;font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
   .ws-add{width:24px;height:24px;border-radius:7px;border:1px solid var(--line-2);background:var(--panel);color:var(--ink);font-size:1rem;line-height:1;cursor:pointer;display:grid;place-items:center}
   .ws-add:hover{border-color:var(--rose);color:#B73C54}
-  .ws-list{list-style:none;margin:0;padding:0}
+  .ws-h em{font-style:normal;margin-left:6px;padding:1px 7px;border-radius:999px;background:var(--bg-soft);color:var(--muted);letter-spacing:0}
+  /* long lists: capped height, fades top and bottom, and a hint, so it's clear the list scrolls */
+  .ws-find{padding:2px 8px 6px}
+  .ws-find input{width:100%;height:30px;border-radius:9px;border:1px solid var(--line-2);background:var(--panel);padding:0 10px;font-size:.8rem;color:var(--ink)}
+  .ws-find input:focus{outline:none;border-color:var(--rose)}
+  .ws-wrap{position:relative}
+  .ws-wrap::before,.ws-wrap::after{content:"";position:absolute;left:0;right:6px;height:22px;pointer-events:none;opacity:0;transition:opacity .15s ease;z-index:1}
+  .ws-wrap::before{top:0;background:linear-gradient(var(--panel),transparent)}
+  .ws-wrap::after{bottom:0;background:linear-gradient(transparent,var(--panel))}
+  .ws-wrap.can-up::before,.ws-wrap.can-down::after{opacity:1}
+  .ws-list{list-style:none;margin:0;padding:0;max-height:222px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
+  .ws-list::-webkit-scrollbar{width:6px}
+  .ws-list::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:6px}
+  .ws-more{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin:2px 0 0;padding:5px 8px;border:0;border-radius:8px;background:none;font:inherit;font-size:.74rem;font-weight:600;color:var(--muted);cursor:pointer}
+  .ws-more:hover{background:var(--bg-soft);color:var(--ink)}
+  .ws-more svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .ws-none{padding:10px;font-size:.8rem;color:var(--muted)}
   .ws-item{display:flex;align-items:center;gap:10px;padding:7px 8px 7px 10px;border-radius:9px;font-size:.86rem}
   .ws-item:hover{background:var(--bg-soft)}
   .ws-item .ws-dot{width:26px;height:26px;border-radius:8px;flex:none;display:grid;place-items:center;font-size:.66rem;font-weight:800;color:#fff;background:var(--brand-gradient)}
@@ -708,7 +724,12 @@
   .ws-item:hover .ws-del,.ws-del:focus-visible{opacity:1}
   .ws-del:hover{background:rgba(198,69,69,.1);color:var(--error)}
   .ws-del svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-  .ws-new{display:flex;gap:6px;padding:4px 8px 8px}
+  .ws-new{display:flex;flex-wrap:wrap;gap:6px;padding:4px 8px 8px}
+  .ws-new.is-dup input{border-color:var(--warning);box-shadow:0 0 0 3px rgba(217,154,43,.14)}
+  .ws-warn{flex-basis:100%;margin:2px 0 0;padding:8px 10px;border-radius:9px;background:rgba(217,154,43,.1);color:#8A6212;font-size:.76rem;line-height:1.4}
+  .ws-warn b{font-weight:700}
+  .ws-warn button{display:inline;margin:4px 0 0;padding:0;border:0;background:none;font:inherit;font-weight:700;color:#8A6212;text-decoration:underline;cursor:pointer}
+  :root[data-theme="dark"] .ws-warn,:root[data-theme="dark"] .ws-warn button{color:#E3C27A}
   .ws-new input{flex:1;min-width:0;height:32px;border-radius:9px;border:1px solid var(--line-2);background:var(--panel);padding:0 10px;font-size:.84rem;color:var(--ink)}
   .ws-new input:focus{outline:none;border-color:var(--rose)}
   .ws-new .btn{height:32px;padding:0 12px;font-size:.78rem}
@@ -1106,9 +1127,11 @@
       <div class="pop__h">Oslo · oslo.com</div>
       <div>
       <div class="pop__sep"></div>
-      <div class="ws-h">Workspaces <button class="ws-add" id="wsAdd" type="button" aria-label="New workspace" title="New workspace">+</button></div>
-      <form class="ws-new" id="wsNew" hidden><input id="wsNewName" placeholder="Workspace name" aria-label="New workspace name"><button class="btn btn--primary" type="submit">Create</button></form>
-      <ul class="ws-list" id="wsList"></ul>
+      <div class="ws-h"><span>Workspaces<em id="wsCount"></em></span><button class="ws-add" id="wsAdd" type="button" aria-label="New workspace" title="New workspace">+</button></div>
+      <form class="ws-new" id="wsNew" hidden><input id="wsNewName" placeholder="Workspace name" aria-label="New workspace name" aria-describedby="wsWarn" autocomplete="off"><button class="btn btn--primary" id="wsCreate" type="submit">Create</button><p class="ws-warn" id="wsWarn" role="status" hidden></p></form>
+      <div class="ws-find" id="wsFindWrap" hidden><input id="wsFind" type="search" placeholder="Find a workspace" aria-label="Find a workspace" autocomplete="off"></div>
+      <div class="ws-wrap" id="wsWrap"><ul class="ws-list" id="wsList" aria-label="Workspaces"></ul></div>
+      <button class="ws-more" id="wsMore" type="button" hidden></button>
       <div class="pop__sep"></div>
       <a class="pop__row" id="orgInvite" href="people.html">Invite and manage people</a>
       </div>
@@ -1386,7 +1409,7 @@ function score(query, text) {
 
 const SEED = () => ({
   v: 2,
-  workspaces: [{ id: 'w1', name: 'Oslo', slug: 'oslo', region: 'Europe · Frankfurt', current: true }, { id: 'w2', name: 'Oslo — Sandbox', slug: 'oslo-sandbox', region: 'Europe · Frankfurt' }],
+  workspaces: [{ id: 'w2', name: 'Oslo — Sandbox', slug: 'oslo-sandbox', region: 'Europe · Frankfurt' }, { id: 'w3', name: 'Oslo — Claims', slug: 'oslo-claims', region: 'Europe · Frankfurt' }, { id: 'w4', name: 'Oslo — Sales', slug: 'oslo-sales', region: 'Europe · Frankfurt' }, { id: 'w5', name: 'Oslo — Support UAE', slug: 'oslo-support-uae', region: 'Middle East · Dubai' }, { id: 'w6', name: 'Oslo — Vet partners', slug: 'oslo-vet-partners', region: 'Middle East · Dubai' }, { id: 'w7', name: 'Oslo — Archive 2025', slug: 'oslo-archive-2025', region: 'Europe · Frankfurt' }, { id: 'w1', name: 'Oslo', slug: 'oslo', region: 'Europe · Frankfurt', current: true }],
   chat: { asked: 48, answered: 37, declined: 8, smalltalk: 3 },
   decisions: {
     r2: { status: 'approved', at: 'Mon 28 Sep' }, r3: { status: 'approved', at: 'Mon 28 Sep' }, r5: { status: 'approved', at: 'Mon 28 Sep' },
@@ -1997,19 +2020,61 @@ if (document.body.dataset.persona !== 'super') {
   $('resetDemo').addEventListener('click', () => { try { sessionStorage.removeItem(KEY); } catch (e) {} location.reload(); });
   // G21 / G23: workspaces in the account menu
   const TRASH = '<svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>';
+  const DOWN = '<svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>';
+  const norm = (v) => String(v || '').trim().replace(/\s+/g, ' ').toLowerCase();
+  function wsScroll() {
+    const l = $('wsList'), w = $('wsWrap'), more = $('wsMore');
+    const up = l.scrollTop > 2, down = l.scrollTop + l.clientHeight < l.scrollHeight - 2;
+    w.classList.toggle('can-up', up); w.classList.toggle('can-down', down);
+    // how many rows are still below the fold
+    const rows = [...l.children], bottom = l.scrollTop + l.clientHeight;
+    const hidden = rows.filter(r => r.offsetTop + r.offsetHeight / 2 > bottom).length;
+    more.hidden = !down || !hidden;
+    if (!more.hidden) more.innerHTML = 'Scroll for ' + hidden + ' more ' + DOWN;
+  }
   function renderWs() {
     const wss = ST.workspaces || [];
-    $('wsList').innerHTML = wss.map((w, i) => '<li class="ws-item"><span class="ws-dot' + (i % 2 ? ' alt' : '') + '">' + esc(w.name.split(/\s+/).map(x => x[0]).join('').slice(0, 2).toUpperCase()) + '</span>' +
+    // the one you're in goes first, so it's never lost at the bottom of a long list
+    const sorted = [...wss].sort((a, b) => (b.current ? 1 : 0) - (a.current ? 1 : 0));
+    const q = norm($('wsFind').value);
+    const shown = q ? sorted.filter(w => norm(w.name).includes(q)) : sorted;
+    $('wsCount').textContent = wss.length;
+    $('wsFindWrap').hidden = wss.length <= 5;
+    $('wsList').innerHTML = shown.length ? shown.map((w) => '<li class="ws-item"><span class="ws-dot' + (wss.indexOf(w) % 2 ? ' alt' : '') + '">' + esc(w.name.split(/\s+/).filter(x => /[\p{L}\p{N}]/u.test(x)).map(x => x[0]).join('').slice(0, 2).toUpperCase()) + '</span>' +
       '<span class="ws-n"><b>' + esc(w.name) + '</b><span>' + esc(w.region) + '</span></span>' + (w.current ? '<span class="ws-cur">Current</span>' : '') +
-      '<button class="ws-del" type="button" data-del="' + w.id + '" aria-label="Delete ' + esc(w.name) + '" title="Delete workspace">' + TRASH + '</button></li>').join('');
+      '<button class="ws-del" type="button" data-del="' + w.id + '" aria-label="Delete ' + esc(w.name) + '" title="Delete workspace">' + TRASH + '</button></li>').join('')
+      : '<li class="ws-none">No workspace matches “' + esc($('wsFind').value.trim()) + '”.</li>';
+    $('wsList').scrollTop = 0;
+    requestAnimationFrame(wsScroll);
     // the top-left shows the workspace you're in, with its company underneath
     const cur = wss.find(w => w.current);
     if (cur && document.body.dataset.persona !== 'super') { $('orgName').textContent = cur.name; $('orgSub').textContent = 'Oslo · ' + wss.length + ' workspace' + (wss.length === 1 ? '' : 's'); }
   }
   renderWs();
-  $('wsAdd').addEventListener('click', (e) => { e.stopPropagation(); $('wsNew').hidden = !$('wsNew').hidden; if (!$('wsNew').hidden) $('wsNewName').focus(); });
+  $('wsList').addEventListener('scroll', wsScroll, { passive: true });
+  $('wsMore').addEventListener('click', () => $('wsList').scrollBy({ top: 132, behavior: 'smooth' }));
+  $('wsFind').addEventListener('input', renderWs);
+  $('orgBtn').addEventListener('click', () => requestAnimationFrame(wsScroll));
+  // a second workspace with the same name is hard to tell apart, so warn and suggest a free name
+  const freeName = (v) => { let n = 2; while ((ST.workspaces || []).some(w => norm(w.name) === norm(v + ' ' + n))) n++; return v + ' ' + n; };
+  function wsDupCheck() {
+    const v = $('wsNewName').value.trim();
+    const dup = v && (ST.workspaces || []).find(w => norm(w.name) === norm(v));
+    $('wsNew').classList.toggle('is-dup', !!dup);
+    $('wsCreate').disabled = !!dup;
+    $('wsWarn').hidden = !dup;
+    if (dup) {
+      const alt = freeName(dup.name);
+      $('wsWarn').innerHTML = 'You already have a workspace called <b>' + esc(dup.name) + '</b>' + (dup.current ? ' (the one you’re in)' : '') + '. Use a different name so people can tell them apart.<br><button type="button" id="wsUseAlt">Use “' + esc(alt) + '”</button>';
+      $('wsUseAlt').addEventListener('click', () => { $('wsNewName').value = alt; wsDupCheck(); $('wsNewName').focus(); });
+    }
+    return !!dup;
+  }
+  $('wsNewName').addEventListener('input', wsDupCheck);
+  $('wsAdd').addEventListener('click', (e) => { e.stopPropagation(); $('wsNew').hidden = !$('wsNew').hidden; if (!$('wsNew').hidden) { $('wsNewName').focus(); wsDupCheck(); } });
   $('wsNew').addEventListener('submit', (e) => {
     e.preventDefault(); const v = $('wsNewName').value.trim(); if (!v) { $('wsNewName').focus(); return; }
+    if (wsDupCheck()) { $('wsNewName').focus(); return; }
     toast('Creating ' + v + '…'); setTimeout(() => location.href = 'onboarding.html', 700);
   });
   $('mePop').addEventListener('click', (e) => e.stopPropagation());
