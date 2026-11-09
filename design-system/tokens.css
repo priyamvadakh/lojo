@@ -71,6 +71,9 @@
   --agent-rewrite-deep:#B8357A;   --agent-rewrite-light:#F6A3CB;
   --agent-chat-deep:#E85D75;      --agent-chat-light:#FFB199;
   --agent-publisher-deep:#5B6B82; --agent-publisher-light:#BAC5D4;
+  --agent-sop-deep:#0E8F99;       --agent-sop-light:#8FE0E6;
+  --agent-topics-deep:#5E8C2A;    --agent-topics-light:#C3E39A;
+  --agent-opportunity-deep:#9A5B34; --agent-opportunity-light:#E9B892;
   --agent-gloss:linear-gradient(160deg,rgba(255,255,255,.4),rgba(255,255,255,0) 45%);
   --agent-run-ring:rgba(63,143,95,.55);
 

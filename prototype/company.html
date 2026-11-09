@@ -51,6 +51,31 @@
   .side__collapse:hover{background:var(--bg-soft);color:var(--ink)}
   .side__top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 4px 14px;padding:0 0 12px;border-bottom:1px solid var(--line)}
   .side__top .side__collapse{margin:0 0 0 auto}
+  /* notifications: bell beside the logo, panel opens to the right of the sidebar */
+  .nwrap{margin-left:auto}
+  .nwrap + .side__collapse,.side__top .nwrap + .side__collapse{margin:0}
+  .side__bell{position:relative;width:34px;height:34px;border-radius:9px;border:0;background:none;color:var(--muted);display:grid;place-items:center;cursor:pointer}
+  .side__bell:hover,.side__bell[aria-expanded="true"]{background:var(--bg-soft);color:var(--ink)}
+  .side__belln{position:absolute;top:1px;right:0;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:var(--rose);color:#fff;font-style:normal;font-size:.62rem;font-weight:800;line-height:17px;text-align:center;box-shadow:0 0 0 2px var(--panel)}
+  .pop.npop{position:fixed;left:calc(var(--side) + 22px);top:12px;width:380px;max-height:calc(100vh - 24px);display:flex;flex-direction:column;padding:0;overflow:hidden;z-index:45}
+  .npop__h{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid var(--line)}
+  .npop__h b{font-family:var(--display);font-size:1rem}
+  .npop__h button{border:0;background:none;color:#B73C54;font:inherit;font-size:.8rem;font-weight:600;cursor:pointer;padding:0}
+  .npop__h button:disabled{color:var(--muted);cursor:default}
+  .npop__list{list-style:none;margin:0;padding:6px;overflow:auto}
+  .npop__list a{display:grid;grid-template-columns:10px 1fr;gap:2px 12px;padding:10px 12px;border-radius:10px;color:var(--ink);text-decoration:none}
+  .npop__list a:hover,.npop__list a:focus-visible{background:var(--bg-soft);outline:none}
+  .npop__list a::before{content:"";width:8px;height:8px;margin-top:6px;border-radius:50%;background:var(--rose)}
+  .npop__list a.is-read::before{background:transparent}
+  .npop__list b{font-size:.88rem;font-weight:600}
+  .npop__list a.is-read b{font-weight:500}
+  .npop__list a.is-err b{color:#B73C54}
+  .npop__list span{grid-column:2;font-size:.76rem;color:var(--muted)}
+  .npop__empty{padding:28px 18px;text-align:center;font-size:.84rem;color:var(--muted)}
+  .npop__f{display:grid;gap:8px;padding:12px 18px 14px;border-top:1px solid var(--line);font-size:.8rem}
+  .npop__f label{display:flex;align-items:center;gap:10px;cursor:pointer}
+  .npop__f input{width:16px;height:16px;accent-color:var(--rose);margin:0}
+  body.is-collapsed .nwrap{margin:0}
   .side__brand{display:flex;align-items:center;gap:8px;height:34px;padding:0 6px;margin-left:-2px;border-radius:9px;color:var(--ink);text-decoration:none}
   .side__brand b{font-family:var(--display);font-weight:700;font-size:.95rem;letter-spacing:-.01em}
   .side__brand:hover{background:var(--bg-soft)}
@@ -688,6 +713,7 @@
     .askp{right:12px;left:12px;width:auto;bottom:84px}
     .toast{left:50%}
   }
+  @media (max-width:520px){.pop.npop{width:calc(100vw - 24px)}}
   @media (max-width:440px){.tiles,.stats,.kpis,.adds{grid-template-columns:1fr!important}}
 
   /* ---------- account menu: workspaces (G21, G23) ---------- */
@@ -936,6 +962,7 @@
 
 <aside class="side" aria-label="Main navigation">
   <div class="side__top"><a class="side__brand" href="platform.html" aria-label="lojo.ai home"><img src="assets/lojo-icon.png" alt="" width="26" height="26"><b>lojo.ai</b></a>
+
   <button class="side__collapse" id="collapse" type="button" aria-label="Collapse sidebar" aria-expanded="true"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16M15 10l-2 2 2 2"/></svg></button>
   </div>
   <div class="me">
@@ -1312,8 +1339,11 @@ const AGENTS = [
   ['src', 'Indexer', 6, 'Indexed Security overview · 51 passages', 'Splits documents into passages and indexes them by meaning'],
   ['bld', 'Drafting agent', 75, 'Drafted 3 answers with sources', 'Drafts each answer with its sources for review'],
   ['bld', 'Rewrite agent', 600, 'Rewrote 2 rejected drafts using your reasons', 'Writes a rejected draft again using your reason'],
+  ['bld', 'SOP builder', 120, 'Drafted “Set up SSO with Okta” for review', 'Writes SOPs from approved answers, with a source for every step'],
   ['ins', 'Question finder', 42, 'Found 4 new questions', 'Finds the questions your sources answer'],
   ['ins', 'Gap finder', 180, 'Flagged 1 contradiction', 'Detects gaps and contradictions between sources'],
+  ['ins', 'Topic grouper', 45, 'Grouped this week’s questions by topic and channel', 'Groups questions into topics and shows which ones are rising'],
+  ['ins', 'Opportunity finder', 240, 'Found 10 opportunities in 4 themes', 'Spots questions that point to something to build or sell'],
   ['dis', 'Chat agent', 11, 'Answered “How fast can we call the API?”', 'Answers questions from approved answers only'],
   ['dis', 'Publisher', null, 'Publishing to your help centre comes with the full build', 'Publishes approved answers to your help centre and Slack'],
 ];
@@ -1323,6 +1353,7 @@ const agAgo = (m) => m === null ? '—' : m < 1 ? 'Now' : m < 60 ? m + ' min ago
 const AVA_COL = {
   'Sync agent': ['#F2683C', '#FFC08F'], 'Indexer': ['#E39A12', '#FFD978'], 'Question finder': ['#7B5CF0', '#C4AEFF'], 'Gap finder': ['#2F74E8', '#9CC8FF'],
   'Drafting agent': ['#2E9E5B', '#9BE3B4'], 'Rewrite agent': ['#B8357A', '#F6A3CB'], 'Chat agent': ['#E85D75', '#FFB199'], 'Publisher': ['#5B6B82', '#BAC5D4'],
+  'SOP builder': ['#0E8F99', '#8FE0E6'], 'Topic grouper': ['#5E8C2A', '#C3E39A'], 'Opportunity finder': ['#9A5B34', '#E9B892'],
 };
 // the white cloud cut from the lojo logo
 const CLOUD_BIG = '<image href="assets/lojo-cloud.png" x="6" y="6" width="32" height="32"/>';
@@ -1336,6 +1367,9 @@ const AVA_JOB = {
   'Rewrite agent': '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
   'Chat agent': '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
   'Publisher': '<path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/>',
+  'SOP builder': '<path d="M9 6h11M9 12h11M9 18h11"/><path d="m3 6 1 1 2-2M3 12l1 1 2-2M3 18l1 1 2-2"/>',
+  'Topic grouper': '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  'Opportunity finder': '<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2z"/>',
 };
 function ava3d(k, name, min) {
   const [deep, light] = AVA_COL[name] || ['#E0486A', '#FFB199'], id = 'ag' + name.replace(/\W/g, '');
@@ -1743,11 +1777,56 @@ if (document.body.dataset.persona !== 'super') {
   });
 
   // two menus: the company/workspace at the top, you at the bottom
-  const MENUS = [['orgBtn', 'orgPop'], ['meBtn', 'mePop']].map(([b, p]) => [$(b), $(p)]);
+  const MENUS = [['orgBtn', 'orgPop'], ['meBtn', 'mePop'], ['bellBtn', 'notifPop']].filter(([b]) => $(b)).map(([b, p]) => [$(b), $(p)]);
   const shut = (keep) => MENUS.forEach(([b, p]) => { if (p !== keep) { p.hidden = true; b.setAttribute('aria-expanded', 'false'); } });
   MENUS.forEach(([b, p]) => b.addEventListener('click', (e) => { e.stopPropagation(); shut(p); p.hidden = !p.hidden; b.setAttribute('aria-expanded', !p.hidden); }));
   document.addEventListener('click', (e) => { const m = e.target.closest('.me'); shut(m && m.querySelector('.pop')); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') shut(); });
+
+  // notifications: what lojo did and what needs you, newest first. Read state is kept per browser
+  if ($('bellBtn')) {
+    const NK = 'lojo-notif-read', PK = 'lojo-notif-prefs';
+    const ls = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
+    const ago = (m) => m < 1 ? 'Just now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' d ago';
+    function notes() {
+      const c = counts(), role = window.LOJO_ROLE || 'admin';
+      // [id, text, minutes ago, link, error?, who sees it]
+      const all = [
+        ['sync-fail', 'Confluence failed to sync', 25, 'sources.html', 1, 'admin'],
+        ['review', c.pending + ' drafts waiting in Review', 40, 'build.html', 0, 'admin editor'],
+        ['build-done', 'Build stage finished', 95, 'activity.html', 0, 'admin editor'],
+        ['questions', c.questions + ' new questions found', 180, 'insights.html', 0, 'admin editor'],
+        ['opps', 'Opportunity finder found 10 opportunities in 4 themes', 240, 'insights.html', 0, 'admin editor'],
+        ['indexed', c.docs + ' documents read and indexed', 360, 'sources.html', 0, 'admin editor'],
+        ['approved', c.approved + ' answers approved and ready to ask', 720, 'chat.html', 0, 'admin editor viewer'],
+        ['source-done', 'Source stage finished', 1500, 'activity.html', 0, 'admin editor'],
+      ];
+      return all.filter(n => n[5].split(' ').includes(role) && !/^0 /.test(n[1]));
+    }
+    function drawNotes() {
+      const read = ls(NK, []), list = notes(), unread = list.filter(n => !read.includes(n[0])).length;
+      $('bellN').textContent = unread > 9 ? '9+' : unread; $('bellN').hidden = !unread;
+      $('bellBtn').setAttribute('aria-label', 'Notifications' + (unread ? ', ' + unread + ' unread' : ''));
+      $('notifAll').disabled = !unread;
+      $('notifList').innerHTML = list.length ? list.map(n => '<li><a href="' + n[3] + '" data-nid="' + n[0] + '" class="' + (read.includes(n[0]) ? 'is-read' : '') + (n[4] ? ' is-err' : '') + '"><b>' + esc(n[1]) + '</b><span>' + ago(n[2]) + '</span></a></li>').join('')
+        : '<li class="npop__empty">You’re all caught up.</li>';
+    }
+    const markRead = (ids) => { const r = ls(NK, []); ids.forEach(i => { if (!r.includes(i)) r.push(i); }); try { localStorage.setItem(NK, JSON.stringify(r)); } catch (e) {} drawNotes(); };
+    $('notifPop').addEventListener('click', (e) => { e.stopPropagation(); const a = e.target.closest('[data-nid]'); if (a) markRead([a.dataset.nid]); });
+    $('notifAll').addEventListener('click', () => markRead(notes().map(n => n[0])));
+    const prefs = ls(PK, { mail: true, push: false });
+    $('notifMail').checked = prefs.mail; $('notifPush').checked = prefs.push && !!window.Notification && Notification.permission === 'granted';
+    const savePrefs = () => { try { localStorage.setItem(PK, JSON.stringify({ mail: $('notifMail').checked, push: $('notifPush').checked })); } catch (e) {} };
+    $('notifMail').addEventListener('change', () => { savePrefs(); toast($('notifMail').checked ? 'You’ll get a daily summary by email.' : 'Daily summary email turned off.'); });
+    $('notifPush').addEventListener('change', async () => {
+      if ($('notifPush').checked) {
+        if (!window.Notification) { $('notifPush').checked = false; toast('This browser doesn’t support notifications.'); }
+        else if ((await Notification.requestPermission()) !== 'granted') { $('notifPush').checked = false; toast('Notifications are blocked. Allow them in your browser settings.'); }
+      }
+      savePrefs();
+    });
+    drawNotes();
+  }
 
   $('resetDemo').addEventListener('click', () => { try { sessionStorage.removeItem(KEY); } catch (e) {} location.reload(); });
   // G21 / G23: workspaces in the account menu

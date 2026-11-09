@@ -51,6 +51,31 @@
   .side__collapse:hover{background:var(--bg-soft);color:var(--ink)}
   .side__top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 4px 14px;padding:0 0 12px;border-bottom:1px solid var(--line)}
   .side__top .side__collapse{margin:0 0 0 auto}
+  /* notifications: bell beside the logo, panel opens to the right of the sidebar */
+  .nwrap{margin-left:auto}
+  .nwrap + .side__collapse,.side__top .nwrap + .side__collapse{margin:0}
+  .side__bell{position:relative;width:34px;height:34px;border-radius:9px;border:0;background:none;color:var(--muted);display:grid;place-items:center;cursor:pointer}
+  .side__bell:hover,.side__bell[aria-expanded="true"]{background:var(--bg-soft);color:var(--ink)}
+  .side__belln{position:absolute;top:1px;right:0;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:var(--rose);color:#fff;font-style:normal;font-size:.62rem;font-weight:800;line-height:17px;text-align:center;box-shadow:0 0 0 2px var(--panel)}
+  .pop.npop{position:fixed;left:calc(var(--side) + 22px);top:12px;width:380px;max-height:calc(100vh - 24px);display:flex;flex-direction:column;padding:0;overflow:hidden;z-index:45}
+  .npop__h{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid var(--line)}
+  .npop__h b{font-family:var(--display);font-size:1rem}
+  .npop__h button{border:0;background:none;color:#B73C54;font:inherit;font-size:.8rem;font-weight:600;cursor:pointer;padding:0}
+  .npop__h button:disabled{color:var(--muted);cursor:default}
+  .npop__list{list-style:none;margin:0;padding:6px;overflow:auto}
+  .npop__list a{display:grid;grid-template-columns:10px 1fr;gap:2px 12px;padding:10px 12px;border-radius:10px;color:var(--ink);text-decoration:none}
+  .npop__list a:hover,.npop__list a:focus-visible{background:var(--bg-soft);outline:none}
+  .npop__list a::before{content:"";width:8px;height:8px;margin-top:6px;border-radius:50%;background:var(--rose)}
+  .npop__list a.is-read::before{background:transparent}
+  .npop__list b{font-size:.88rem;font-weight:600}
+  .npop__list a.is-read b{font-weight:500}
+  .npop__list a.is-err b{color:#B73C54}
+  .npop__list span{grid-column:2;font-size:.76rem;color:var(--muted)}
+  .npop__empty{padding:28px 18px;text-align:center;font-size:.84rem;color:var(--muted)}
+  .npop__f{display:grid;gap:8px;padding:12px 18px 14px;border-top:1px solid var(--line);font-size:.8rem}
+  .npop__f label{display:flex;align-items:center;gap:10px;cursor:pointer}
+  .npop__f input{width:16px;height:16px;accent-color:var(--rose);margin:0}
+  body.is-collapsed .nwrap{margin:0}
   .side__brand{display:flex;align-items:center;gap:8px;height:34px;padding:0 6px;margin-left:-2px;border-radius:9px;color:var(--ink);text-decoration:none}
   .side__brand b{font-family:var(--display);font-weight:700;font-size:.95rem;letter-spacing:-.01em}
   .side__brand:hover{background:var(--bg-soft)}
@@ -688,6 +713,7 @@
     .askp{right:12px;left:12px;width:auto;bottom:84px}
     .toast{left:50%}
   }
+  @media (max-width:520px){.pop.npop{width:calc(100vw - 24px)}}
   @media (max-width:440px){.tiles,.stats,.kpis,.adds{grid-template-columns:1fr!important}}
 
   /* ---------- account menu: workspaces (G21, G23) ---------- */
@@ -841,8 +867,14 @@
   .acardx__last b{color:var(--success)}
   .acardx__last .ld{width:7px;height:7px;border-radius:50%;background:var(--success);flex:none;animation:livePulse 1.4s ease-in-out infinite}
   .llist{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:10px}
-  .lrow{display:grid;grid-template-columns:44px minmax(150px,200px) minmax(0,1fr) 150px 92px 80px 14px;gap:14px;align-items:center;padding:10px 16px;color:inherit;text-decoration:none;transition:background-color .15s ease}
-  .lrow + .lrow{border-top:1px solid var(--line)}
+  .lrow{display:grid;grid-template-columns:44px minmax(150px,190px) minmax(0,1fr) 140px 230px 92px 80px 14px;gap:14px;align-items:center;padding:10px 16px;color:inherit;text-decoration:none;transition:background-color .15s ease}
+  .lgrp + .lgrp{border-top:1px solid var(--line)}
+  .lrow{position:relative}
+  .lrow__link{color:inherit;text-decoration:none}
+  .lrow__link::after{content:"";position:absolute;inset:0;border-radius:inherit}
+  .lrow__link:focus-visible{outline:none}
+  .lrow__link:focus-visible::after{box-shadow:inset 0 0 0 3px rgba(232,93,117,.3)}
+  .lrow__m{position:relative;z-index:1}
   .lrow:hover{background:var(--bg-soft);text-decoration:none}
   .lrow.is-off{opacity:.6}
   .lrow .ava3d,.lrow .ava3d img,.lrow .ava3d > svg{width:36px;height:36px}
@@ -854,8 +886,180 @@
   .lrow .apill{justify-self:start;grid-column:auto;grid-row:auto;align-self:center}
   .lrow time{font-size:.76rem;color:var(--muted);text-align:right;white-space:nowrap}
   .lrow__go{color:var(--muted)}
-  @media (max-width:900px){.lrow{grid-template-columns:40px minmax(0,1fr) auto}.lrow__w,.lrow__k,.lrow time,.lrow__go{display:none}}
+  @media (max-width:1180px){.lrow{grid-template-columns:44px minmax(140px,180px) minmax(0,1fr) 230px 92px 80px 14px}.lrow__k{display:none}}
+  @media (max-width:900px){.lrow{grid-template-columns:40px minmax(0,1fr) auto}.lrow__w,.lrow__k,.lrow time,.lrow__go,.lrow__m{display:none}}
   @media (max-width:640px){.arow{grid-template-columns:44px minmax(0,1fr)}.apill{grid-column:2;grid-row:auto;justify-self:start}.anums{gap:20px}}
+  /* models: the hosting badge is the Storybook badge plus an icon, so colour never carries the meaning alone */
+  .hb svg{width:11px;height:11px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .hbi{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;flex:none;background:rgba(63,143,95,.12);color:var(--success)}
+  .hbi svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .mrow .hbi{margin-left:auto}
+  .mname{font-family:ui-monospace,Menlo,monospace;font-size:.76rem;color:var(--ink);overflow-wrap:anywhere}
+  /* ---------- 1. data boundary: where text goes, drawn ---------- */
+  .dbx{margin:0 0 18px;padding:16px 18px 18px;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:0 16px 30px -28px rgba(36,26,20,.3)}
+  .dbx__head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .dbx__head p{flex:1;min-width:240px;margin:0;font-size:.88rem;color:var(--ink)}
+  .dbx__head .btn{height:32px;font-size:.8rem}
+  .dbx__hint{font-size:.74rem;color:var(--muted)}
+  .dbx--one{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:12px 16px}
+  .dbx--one p{flex:1;min-width:240px;margin:0;font-size:.88rem;color:var(--ink)}
+  .dbx--one .btn{height:32px;font-size:.8rem}
+  .dbx__st{display:inline-flex;align-items:center;gap:7px;font-size:.76rem;font-weight:600;color:var(--muted);white-space:nowrap}
+  .dbx__st .zst{margin:0}
+  .dbx__flow{display:grid;grid-template-columns:minmax(120px,150px) 34px minmax(0,1fr) 34px minmax(120px,150px);align-items:center}
+  .dbx__end{display:grid;gap:4px;justify-items:start;padding:12px 14px;border-radius:14px;background:var(--bg-soft)}
+  .dbx__end i{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--panel);color:var(--muted);box-shadow:0 1px 3px rgba(36,26,20,.12)}
+  .dbx__end svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .dbx__end b{font-size:.84rem}
+  .dbx__end span{font-size:.72rem;color:var(--muted);line-height:1.35}
+  .dbx__arr{position:relative;height:2px;margin:0 4px;background:repeating-linear-gradient(90deg,var(--line-3,rgba(36,26,20,.3)) 0 5px,transparent 5px 9px)}
+  .dbx__arr::after{content:"";position:absolute;right:-2px;top:-4px;border:5px solid transparent;border-left:7px solid rgba(36,26,20,.35);border-right:0}
+  .dbx__arr i{position:absolute;top:50%;left:0;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:var(--success);animation:dbxFlow 2.2s linear infinite}
+  @keyframes dbxFlow{0%{left:0;opacity:0}15%{opacity:1}85%{opacity:1}100%{left:calc(100% - 6px);opacity:0}}
+  /* the boundary itself: lojo's machines */
+  .dbx__in{position:relative;padding:22px 14px 14px;border:2px dashed rgba(63,143,95,.55);border-radius:16px;background:rgba(63,143,95,.04)}
+  .dbx__tag{position:absolute;top:-11px;left:14px;display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 10px;border-radius:999px;background:var(--panel);border:1px solid rgba(63,143,95,.45);font-size:.66rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--success)}
+  .dbx__tag svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .dbx__boxes{display:flex;flex-wrap:wrap;gap:10px}
+  .dbx__box{flex:1 1 180px;padding:10px 12px;border-radius:12px;background:var(--panel);border:1px solid var(--line)}
+  .dbx__box b{display:flex;align-items:center;gap:7px;font-size:.8rem}
+  .dbx__box b svg{width:14px;height:14px;fill:none;stroke:var(--muted);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .dbx__box small{font-size:.7rem;font-weight:500;color:var(--muted)}
+  .dbx__chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .dbx__chip{display:inline-flex;flex-direction:column;align-items:flex-start;gap:1px;padding:6px 11px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg-soft);font:inherit;text-align:left;color:var(--ink);cursor:pointer}
+  .dbx__chip b{font-size:.78rem;font-weight:700;line-height:1.25}
+  .dbx__chip small{font-size:.68rem;color:var(--muted);line-height:1.25}
+  .dbx__chip:hover,.dbx__chip:focus-visible{border-color:var(--rose);outline:none;box-shadow:0 0 0 3px rgba(232,93,117,.14)}
+  /* outside the boundary: third-party vendors */
+  .dbx__out{display:grid;grid-template-columns:minmax(120px,150px) 34px minmax(0,1fr) 34px minmax(120px,150px);margin-top:4px}
+  .dbx__cross{grid-column:3;display:flex;align-items:center;gap:8px;padding:6px 0 6px 22px;margin-left:22px;border-left:2px dashed rgba(201,162,74,.8);font-size:.74rem;font-weight:700;color:#8A6212}
+  .dbx__cross svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .dbx__ven{grid-column:3;position:relative;padding:22px 14px 14px;border:2px solid rgba(201,162,74,.6);border-radius:16px;background:var(--amber-soft)}
+  .dbx__ven .dbx__tag{border-color:rgba(201,162,74,.7);color:#8A6212}
+  .dbx__ven .dbx__box{border-color:rgba(201,162,74,.35)}
+  .dbx.is-unk .dbx__arr i{display:none}
+  /* status of each setup */
+  .zst{margin-left:6px;padding:2px 8px;border-radius:999px;font-style:normal;font-size:.6rem;font-weight:800;letter-spacing:.06em}
+  .zst--on{background:rgba(63,143,95,.14);color:var(--success)}
+  .zst--ven{background:rgba(201,162,74,.22);color:#8A6212}
+  .zst--off{background:rgba(36,26,20,.07);color:var(--muted)}
+  .dbx__cap{margin:10px 2px 0;font-size:.72rem;color:var(--muted)}
+  .dbx__out.is-off .dbx__cross{border-left-color:var(--line-2);color:var(--muted)}
+  .dbx__ven.is-off{border:2px dashed var(--line-2);background:var(--bg-soft)}
+  .dbx__ven.is-off .dbx__tag{border-color:var(--line-2);color:var(--muted)}
+  .dbx__ven.is-off .dbx__box{border-color:var(--line)}
+  .dbx__ven.is-off .dbx__box > b,.dbx__ven.is-off .dbx__chip > b,.dbx__ven.is-off .dbx__chip > small{opacity:.6}
+  .dbx__ven.is-off .dbx__chip{background:transparent;border-style:dashed}
+  .dbx__offnote{margin:0 0 10px;font-size:.78rem;color:var(--muted)}
+  .ctip__off{font-weight:700;color:var(--ink)}
+  .ctip .ctip__if{margin:12px 0 -6px;font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .dbx--lite{display:flex;align-items:center;gap:12px;padding:12px 16px;border-color:rgba(63,143,95,.28);background:rgba(63,143,95,.06);box-shadow:none}
+  .dbx--lite.is-ven{border-color:rgba(201,162,74,.5);background:var(--amber-soft)}
+  .dbx--lite.is-unk{border-color:var(--line-2);background:var(--bg-soft)}
+  .dbx--lite p{margin:0;font-size:.88rem;color:var(--ink)}
+  .dbx--lite p b{font-weight:700}
+  .dbx__ic{display:grid;place-items:center;width:32px;height:32px;flex:none;border-radius:10px;background:var(--panel);color:var(--success);box-shadow:0 1px 3px rgba(36,26,20,.12)}
+  .dbx--lite.is-ven .dbx__ic{color:#8A6212} .dbx--lite.is-unk .dbx__ic{color:var(--muted)}
+  .dbx__ic svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  body.ml-lite .lrow{grid-template-columns:44px minmax(150px,200px) minmax(0,1fr) 150px 92px 80px 14px}
+  @media (max-width:900px){body.ml-lite .lrow{grid-template-columns:40px minmax(0,1fr) auto}}
+  .dbx.is-unk .dbx__in{border-color:var(--line-2);background:var(--bg-soft)}
+  .dbx.is-unk .dbx__tag{border-color:var(--line-2);color:var(--muted)}
+  .dbx__q{margin:0;font-size:.82rem;color:var(--muted)}
+  @media (max-width:900px){
+    .dbx__flow,.dbx__out{grid-template-columns:1fr}
+    .dbx__arr{width:2px;height:22px;margin:4px 0 4px 26px;background:repeating-linear-gradient(180deg,rgba(36,26,20,.3) 0 5px,transparent 5px 9px)}
+    .dbx__arr::after,.dbx__arr i{display:none}
+    .dbx__cross,.dbx__ven{grid-column:1}
+    .dbx__body{display:flex;flex-direction:column}
+    .dbx__flow,.dbx__out{display:contents}
+    .o1{order:1}.o2{order:2}.o3{order:3}.o4{order:4}.o5{order:5}.o6{order:6}.o7{order:7}
+    .dbx__cross{margin:0 0 0 26px;padding-top:10px}
+    .dbx__ven{margin-bottom:4px}
+  }
+  :root[data-theme="dark"] .dbx__ven .dbx__tag,:root[data-theme="dark"] .dbx__cross{color:#E3C27A}
+
+  /* model chip hover card: the facts for that one model, where the model is */
+  .dbx__chip{position:relative;cursor:help;outline:none}
+  .ctip{position:absolute;left:0;top:calc(100% + 8px);z-index:30;width:300px;padding:16px 18px 14px;border-radius:16px;background:var(--panel);border:1px solid var(--line);color:var(--ink);box-shadow:0 24px 50px -20px rgba(36,26,20,.45);
+    opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .15s ease,transform .15s ease,visibility .15s;pointer-events:none;text-align:left;font-weight:400}
+  .ctip::before{content:"";position:absolute;left:22px;bottom:100%;width:12px;height:12px;margin-bottom:-6px;background:var(--panel);border-left:1px solid var(--line);border-top:1px solid var(--line);transform:rotate(45deg)}
+  .dbx__chip:hover .ctip,.dbx__chip:focus-visible .ctip,.dbx__chip:focus .ctip{opacity:1;visibility:visible;transform:none}
+  .ctip > b{display:block;font-family:var(--display);font-size:1.02rem;color:var(--ink)}
+  .ctip > b small{font-family:var(--body);font-weight:500;font-size:.78rem;color:var(--muted)}
+  .ctip > span{display:block;margin-top:4px;font-size:.8rem;line-height:1.45;color:var(--muted)}
+  .ctip dl{margin:12px 0 0;padding-top:6px;border-top:1px solid var(--line)}
+  .ctip dl div{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:.8rem}
+  .ctip dt{color:var(--muted);flex:none}
+  .ctip dd{margin:0;text-align:right;font-weight:600;color:var(--ink)}
+  .ctip dd.ok{color:var(--success)} .ctip dd.warn{color:#8A6212}
+  .ctip p{margin:8px 0 0;font-size:.76rem;line-height:1.45;color:var(--muted)}
+  .ctip p.terms{padding:8px 10px;border-radius:9px;background:var(--amber-soft);color:#5E4310}
+  .ctip em{display:block;margin-top:8px;font-style:normal;font-family:ui-monospace,Menlo,monospace;font-size:.68rem;color:var(--muted)}
+  /* card: one row per model, label · name · badge; the badge drops below the name when the card is narrow */
+  .amods{display:grid;gap:4px;margin-top:4px;padding-top:10px;border-top:1px solid var(--line)}
+  .amods summary{display:flex;align-items:center;gap:8px;list-style:none;cursor:pointer;margin:0 -8px;padding:4px 8px;border-radius:9px}
+  .amods summary::-webkit-details-marker{display:none}
+  .amods summary:hover{background:var(--bg-soft)}
+  .amods summary:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(232,93,117,.16)}
+  .amods__h{font-size:.64rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .amods__h em{font-style:normal;margin-left:4px;padding:1px 6px;border-radius:6px;border:1px solid var(--line-2);letter-spacing:0;color:var(--ink)}
+  .amods__sum{display:flex;flex-wrap:wrap;gap:4px;margin-left:auto}
+  .amods[open] .amods__sum{display:none}
+  .amods__chev{width:15px;height:15px;flex:none;fill:none;stroke:var(--muted);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s ease}
+  .amods[open] .amods__chev{transform:rotate(180deg);margin-left:auto}
+  .amods--none{padding-top:10px}
+  .mrow{position:relative;display:flex;align-items:center;flex-wrap:wrap;gap:3px 8px;margin:0 -8px;padding:4px 8px;border-radius:9px;cursor:help;outline:none;transition:background-color .15s ease}
+  .mrow:hover,.mrow:focus-visible{background:var(--bg-soft)}
+  .mrow:focus-visible{box-shadow:0 0 0 3px rgba(232,93,117,.16)}
+  .mrow__l{text-decoration:underline dotted rgba(36,26,20,.3);text-underline-offset:3px}
+  /* hover cards: light, like a model card: name, one line on what it does, divider, facts */
+  .mtip{position:absolute;left:0;right:0;bottom:calc(100% + 8px);z-index:20;padding:14px 16px 12px;border-radius:16px;background:var(--panel);border:1px solid var(--line);color:var(--ink);box-shadow:0 24px 50px -20px rgba(36,26,20,.45);
+    opacity:0;visibility:hidden;transform:translateY(4px);transition:opacity .15s ease,transform .15s ease,visibility .15s;pointer-events:none;cursor:default}
+  .mtip::after{content:"";position:absolute;left:24px;top:100%;width:12px;height:12px;margin-top:-6px;background:var(--panel);border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+  .mrow:hover .mtip,.mrow:focus-visible .mtip{opacity:1;visibility:visible;transform:none}
+  .mtip .mtip__id{display:block;margin-top:8px;font-style:normal;font-family:ui-monospace,Menlo,monospace;font-size:.68rem;color:var(--muted)}
+  .mtip b{display:block;font-family:var(--display);font-size:.98rem;font-weight:700;color:var(--ink)}
+  .mtip span{display:block;margin-top:4px;padding-bottom:10px;border-bottom:1px solid var(--line);font-size:.8rem;line-height:1.45;color:var(--muted)}
+  .mtip small{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:.76rem;font-weight:600;color:var(--success)}
+  .mtip small.ven{color:#8A6212}
+  .mtip small svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .acardx{position:relative}
+  .acardx:hover,.acardx:focus-within{z-index:3}
+  .mrow__l{flex:none;width:58px;font-size:.72rem;font-weight:600;color:var(--muted)}
+  .mrow .mname{flex:1 1 auto;min-width:0}
+  .mrow .badge{margin-left:auto}
+  .amods__none{margin:0;font-size:.78rem;color:var(--muted)}
+  .acardx .acardx__last{margin-bottom:2px}
+  .mrow .mprod{font-size:.84rem;font-weight:500}
+  .mprev{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin:0 0 12px;padding:4px;border-radius:12px;border:1px dashed var(--line-2);width:max-content;max-width:100%}
+  .mprev[hidden]{display:none}
+  .mprev span{padding:0 8px 0 6px;font-size:.66rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .mprev button{height:28px;padding:0 11px;border:0;border-radius:8px;background:none;font:inherit;font-size:.78rem;font-weight:600;color:var(--muted);cursor:pointer}
+  .mprev button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+  /* list: first model, +N, badge */
+  button.lrow__m{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0;max-width:100%;padding:6px 8px;margin:-6px -8px;border:1px solid transparent;border-radius:10px;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer}
+  button.lrow__m:hover,button.lrow__m[aria-expanded="true"]{border-color:var(--line-2);background:var(--panel)}
+  button.lrow__m:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(232,93,117,.2)}
+  .lrow__mt{display:flex;align-items:center;gap:6px;max-width:100%;white-space:nowrap}
+  .lrow__mt .mprod{overflow:hidden;text-overflow:ellipsis;font-size:.84rem;font-weight:600}
+  .lrow__mt em{font-style:normal;font-size:.72rem;font-weight:700;color:var(--muted)}
+  .lrow__chev{width:14px;height:14px;flex:none;fill:none;stroke:var(--muted);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s ease}
+  button.lrow__m[aria-expanded="true"] .lrow__chev{transform:rotate(180deg)}
+  .lrow__mb{display:flex;flex-wrap:wrap;gap:4px}
+  .lrow__m--none{color:var(--muted)}
+  /* the models panel under a list row */
+  .lmods{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,360px));gap:4px 28px;padding:6px 16px 14px 74px;background:var(--bg-soft);border-top:1px dashed var(--line-2)}
+  .lmods[hidden]{display:none}
+  .lmods .mrow{margin:0}
+  .lmods .mrow:hover,.lmods .mrow:focus-visible{background:var(--panel)}
+  .lgrp.is-open .lrow{background:var(--bg-soft)}
+  /* in the list the hover card opens downward, and the list no longer clips it */
+  .llist{overflow:visible}
+  .llist > .lgrp:first-child .lrow{border-radius:14px 14px 0 0}
+  .llist > .lgrp:last-child .lrow,.llist > .lgrp:last-child .lmods{border-radius:0 0 14px 14px}
+  .lmods .mtip{bottom:auto;top:calc(100% + 8px);right:auto;width:320px}
+  .lmods .mtip::after{top:auto;bottom:100%;margin:0 0 -6px;transform:rotate(225deg)}
 
   :root[data-theme="dark"]{
     --ink:#F2EBE5; --bg:#15100D; --bg-soft:#231B16; --panel:#1C1612;
@@ -916,6 +1120,7 @@
 
 <aside class="side" aria-label="Main navigation">
   <div class="side__top"><a class="side__brand" href="dashboard.html" aria-label="lojo.ai home"><img src="assets/lojo-icon.png" alt="" width="26" height="26"><b>lojo.ai</b></a>
+  <div class="me nwrap"><button class="side__bell" id="bellBtn" type="button" aria-label="Notifications" aria-expanded="false" aria-haspopup="true"><svg class="i" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><em class="side__belln" id="bellN" hidden></em></button><div class="pop npop" id="notifPop" role="dialog" aria-label="Notifications" hidden><div class="npop__h"><b>Notifications</b><button type="button" id="notifAll">Mark all read</button></div><ul class="npop__list" id="notifList"></ul><div class="npop__f"><label><input type="checkbox" id="notifMail" checked> Email me a daily summary</label><label><input type="checkbox" id="notifPush"> Browser notifications while lojo is open</label></div></div></div>
   <button class="side__collapse" id="collapse" type="button" aria-label="Collapse sidebar" aria-expanded="true"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16M15 10l-2 2 2 2"/></svg></button>
   </div>
   <div class="me">
@@ -988,6 +1193,8 @@
         </div>
         <button class="refresh" id="refresh" type="button" aria-label="Refresh"><svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/></svg></button>
       </div>
+      <div class="mprev" id="mprev" role="group" aria-label="Prototype only: preview a setup"></div>
+      <div class="dbx" id="dbx"></div>
       <div class="agf chips" id="agFilters" role="group" aria-label="Filter agents"></div>
       <div id="alist"></div>
     </section>
@@ -1326,8 +1533,11 @@ const AGENTS = [
   ['src', 'Indexer', 6, 'Indexed Security overview · 51 passages', 'Splits documents into passages and indexes them by meaning'],
   ['bld', 'Drafting agent', 75, 'Drafted 3 answers with sources', 'Drafts each answer with its sources for review'],
   ['bld', 'Rewrite agent', 600, 'Rewrote 2 rejected drafts using your reasons', 'Writes a rejected draft again using your reason'],
+  ['bld', 'SOP builder', 120, 'Drafted “Set up SSO with Okta” for review', 'Writes SOPs from approved answers, with a source for every step'],
   ['ins', 'Question finder', 42, 'Found 4 new questions', 'Finds the questions your sources answer'],
   ['ins', 'Gap finder', 180, 'Flagged 1 contradiction', 'Detects gaps and contradictions between sources'],
+  ['ins', 'Topic grouper', 45, 'Grouped this week’s questions by topic and channel', 'Groups questions into topics and shows which ones are rising'],
+  ['ins', 'Opportunity finder', 240, 'Found 10 opportunities in 4 themes', 'Spots questions that point to something to build or sell'],
   ['dis', 'Chat agent', 11, 'Answered “How fast can we call the API?”', 'Answers questions from approved answers only'],
   ['dis', 'Publisher', null, 'Publishing to your help centre comes with the full build', 'Publishes approved answers to your help centre and Slack'],
 ];
@@ -1337,6 +1547,7 @@ const agAgo = (m) => m === null ? '—' : m < 1 ? 'Now' : m < 60 ? m + ' min ago
 const AVA_COL = {
   'Sync agent': ['#F2683C', '#FFC08F'], 'Indexer': ['#E39A12', '#FFD978'], 'Question finder': ['#7B5CF0', '#C4AEFF'], 'Gap finder': ['#2F74E8', '#9CC8FF'],
   'Drafting agent': ['#2E9E5B', '#9BE3B4'], 'Rewrite agent': ['#B8357A', '#F6A3CB'], 'Chat agent': ['#E85D75', '#FFB199'], 'Publisher': ['#5B6B82', '#BAC5D4'],
+  'SOP builder': ['#0E8F99', '#8FE0E6'], 'Topic grouper': ['#5E8C2A', '#C3E39A'], 'Opportunity finder': ['#9A5B34', '#E9B892'],
 };
 // the white cloud cut from the lojo logo
 const CLOUD_BIG = '<image href="assets/lojo-cloud.png" x="6" y="6" width="32" height="32"/>';
@@ -1350,6 +1561,9 @@ const AVA_JOB = {
   'Rewrite agent': '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
   'Chat agent': '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
   'Publisher': '<path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/>',
+  'SOP builder': '<path d="M9 6h11M9 12h11M9 18h11"/><path d="m3 6 1 1 2-2M3 12l1 1 2-2M3 18l1 1 2-2"/>',
+  'Topic grouper': '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  'Opportunity finder': '<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2z"/>',
 };
 function ava3d(k, name, min) {
   const [deep, light] = AVA_COL[name] || ['#E0486A', '#FFB199'], id = 'ag' + name.replace(/\W/g, '');
@@ -1757,11 +1971,56 @@ if (document.body.dataset.persona !== 'super') {
   });
 
   // two menus: the company/workspace at the top, you at the bottom
-  const MENUS = [['orgBtn', 'orgPop'], ['meBtn', 'mePop']].map(([b, p]) => [$(b), $(p)]);
+  const MENUS = [['orgBtn', 'orgPop'], ['meBtn', 'mePop'], ['bellBtn', 'notifPop']].filter(([b]) => $(b)).map(([b, p]) => [$(b), $(p)]);
   const shut = (keep) => MENUS.forEach(([b, p]) => { if (p !== keep) { p.hidden = true; b.setAttribute('aria-expanded', 'false'); } });
   MENUS.forEach(([b, p]) => b.addEventListener('click', (e) => { e.stopPropagation(); shut(p); p.hidden = !p.hidden; b.setAttribute('aria-expanded', !p.hidden); }));
   document.addEventListener('click', (e) => { const m = e.target.closest('.me'); shut(m && m.querySelector('.pop')); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') shut(); });
+
+  // notifications: what lojo did and what needs you, newest first. Read state is kept per browser
+  if ($('bellBtn')) {
+    const NK = 'lojo-notif-read', PK = 'lojo-notif-prefs';
+    const ls = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
+    const ago = (m) => m < 1 ? 'Just now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' d ago';
+    function notes() {
+      const c = counts(), role = window.LOJO_ROLE || 'admin';
+      // [id, text, minutes ago, link, error?, who sees it]
+      const all = [
+        ['sync-fail', 'Confluence failed to sync', 25, 'sources.html', 1, 'admin'],
+        ['review', c.pending + ' drafts waiting in Review', 40, 'build.html', 0, 'admin editor'],
+        ['build-done', 'Build stage finished', 95, 'activity.html', 0, 'admin editor'],
+        ['questions', c.questions + ' new questions found', 180, 'insights.html', 0, 'admin editor'],
+        ['opps', 'Opportunity finder found 10 opportunities in 4 themes', 240, 'insights.html', 0, 'admin editor'],
+        ['indexed', c.docs + ' documents read and indexed', 360, 'sources.html', 0, 'admin editor'],
+        ['approved', c.approved + ' answers approved and ready to ask', 720, 'chat.html', 0, 'admin editor viewer'],
+        ['source-done', 'Source stage finished', 1500, 'activity.html', 0, 'admin editor'],
+      ];
+      return all.filter(n => n[5].split(' ').includes(role) && !/^0 /.test(n[1]));
+    }
+    function drawNotes() {
+      const read = ls(NK, []), list = notes(), unread = list.filter(n => !read.includes(n[0])).length;
+      $('bellN').textContent = unread > 9 ? '9+' : unread; $('bellN').hidden = !unread;
+      $('bellBtn').setAttribute('aria-label', 'Notifications' + (unread ? ', ' + unread + ' unread' : ''));
+      $('notifAll').disabled = !unread;
+      $('notifList').innerHTML = list.length ? list.map(n => '<li><a href="' + n[3] + '" data-nid="' + n[0] + '" class="' + (read.includes(n[0]) ? 'is-read' : '') + (n[4] ? ' is-err' : '') + '"><b>' + esc(n[1]) + '</b><span>' + ago(n[2]) + '</span></a></li>').join('')
+        : '<li class="npop__empty">You’re all caught up.</li>';
+    }
+    const markRead = (ids) => { const r = ls(NK, []); ids.forEach(i => { if (!r.includes(i)) r.push(i); }); try { localStorage.setItem(NK, JSON.stringify(r)); } catch (e) {} drawNotes(); };
+    $('notifPop').addEventListener('click', (e) => { e.stopPropagation(); const a = e.target.closest('[data-nid]'); if (a) markRead([a.dataset.nid]); });
+    $('notifAll').addEventListener('click', () => markRead(notes().map(n => n[0])));
+    const prefs = ls(PK, { mail: true, push: false });
+    $('notifMail').checked = prefs.mail; $('notifPush').checked = prefs.push && !!window.Notification && Notification.permission === 'granted';
+    const savePrefs = () => { try { localStorage.setItem(PK, JSON.stringify({ mail: $('notifMail').checked, push: $('notifPush').checked })); } catch (e) {} };
+    $('notifMail').addEventListener('change', () => { savePrefs(); toast($('notifMail').checked ? 'You’ll get a daily summary by email.' : 'Daily summary email turned off.'); });
+    $('notifPush').addEventListener('change', async () => {
+      if ($('notifPush').checked) {
+        if (!window.Notification) { $('notifPush').checked = false; toast('This browser doesn’t support notifications.'); }
+        else if ((await Notification.requestPermission()) !== 'granted') { $('notifPush').checked = false; toast('Notifications are blocked. Allow them in your browser settings.'); }
+      }
+      savePrefs();
+    });
+    drawNotes();
+  }
 
   $('resetDemo').addEventListener('click', () => { try { sessionStorage.removeItem(KEY); } catch (e) {} location.reload(); });
   // G21 / G23: workspaces in the account menu
@@ -2023,6 +2282,224 @@ if (document.body.dataset.persona !== 'super') {
 })();
 
 
+// ---------- models (D113 design) ----------
+// The live page reads the models from the env, so names can differ per env. The prototype fakes three envs:
+// activity.html (the POC today: all self-hosted), ?models=vendor (the third-party setup the code supports), ?models=unknown.
+// model name: [what it does, hosting, where it runs (self-hosted) or provider (third-party)]
+const MODEL_INFO = {
+  'qwen3.5:9b': ['Reads, writes, answers', 'self', 'Mac mini (Ollama)'],
+  'bge-m3': ['Search by meaning', 'self', 'Mac mini (Ollama)'],
+  'whisper-large-v3-turbo': ['Call recordings to text', 'self', 'Mac mini (whisper.cpp)'],
+  'tesseract': ['Reads scanned pages (OCR)', 'self', 'lojo’s server'],
+  'claude-haiku-4-5': ['Finds questions, masking', 'vendor', 'Anthropic'],
+  'claude-opus-5-5': ['Drafts answers and SOPs', 'vendor', 'Anthropic'],
+  'claude-sonnet-5-5': ['Chat answers', 'vendor', 'Anthropic'],
+  'text-embedding-3-small': ['Search by meaning', 'vendor', 'OpenAI'],
+  'whisper-1': ['Call recordings to text', 'vendor', 'OpenAI'],
+  // ASSUMPTION: for the Mixed design preview only. Not in the ticket’s supported list; IDs follow each vendor’s naming. check with Eric
+  'gpt-5.6-terra': ['Balanced, efficient language model', 'vendor', 'OpenAI'],
+  'gemini-3.8-flash': ['Fast language model', 'vendor', 'Google'],
+  'gemini-4-argon': ['Language model', 'vendor', 'Google'],
+};
+// CX names: lead with what the model is, in plain words, then the product name as people write it.
+// The env’s technical ID (qwen3.5:9b) is kept for engineers: hover card and AI facts. An ID not listed here shows as it comes.
+const FRIENDLY = {
+  'bge-m3': ['Meaning search', 'BGE-M3'], 'qwen3.5:9b': ['Language model', 'Qwen 3.5'],
+  'tesseract': ['Scan reader', 'Tesseract'], 'whisper-large-v3-turbo': ['Call transcriber', 'Whisper'],
+  'claude-haiku-4-5': ['Quick language model', 'Claude Haiku 4.5'], 'claude-opus-5-5': ['Drafting model', 'Claude Opus 5.5'],
+  'claude-sonnet-5-5': ['Chat model', 'Claude Sonnet 5.5'], 'text-embedding-3-small': ['Meaning search', 'OpenAI Embeddings'],
+  'whisper-1': ['Call transcriber', 'OpenAI Whisper'],
+  'gpt-5.6-terra': ['Language model', 'GPT-5.6 Terra'], 'gemini-3.8-flash': ['Quick language model', 'Gemini 3.8 Flash'], 'gemini-4-argon': ['Language model', 'Gemini 4 Argon'],
+};
+const nice = (m) => FRIENDLY[m] || [m, ''];
+const prod = (m) => (FRIENDLY[m] || [, m])[1];
+const Q = 'qwen3.5:9b', E = 'bge-m3';
+const AGENT_MODELS = {
+  poc: {
+    'Indexer': [['Search', E], ['Masking', Q], ['Scans', 'tesseract'], ['Calls', 'whisper-large-v3-turbo']],
+    'Drafting agent': [['Model', Q], ['Search', E]], 'Rewrite agent': [['Model', Q]], 'SOP builder': [['Model', Q]],
+    'Question finder': [['Model', Q]], 'Gap finder': [['Model', Q]], 'Topic grouper': [['Model', Q]], 'Opportunity finder': [['Model', Q]],
+    'Chat agent': [['Model', Q], ['Search', E]],
+  },
+  // ASSUMPTION: the ticket names a third-party model for finding questions, masking, drafting/SOPs, chat, search and calls only.
+  // Rewrite follows drafting (Opus); Gap finder, Topic grouper and Opportunity finder follow the question finder (Haiku). check with Eric
+  // Mixed: a design preview with self-hosted and current third-party models side by side, so every badge shows
+  mixed: {
+    'Indexer': [['Search', E], ['Masking', Q], ['Scans', 'tesseract'], ['Calls', 'whisper-large-v3-turbo']],
+    'Drafting agent': [['Model', 'claude-opus-5-5'], ['Search', E]], 'Rewrite agent': [['Model', 'claude-opus-5-5']], 'SOP builder': [['Model', 'gpt-5.6-terra']],
+    'Question finder': [['Model', Q]], 'Gap finder': [['Model', 'gemini-3.8-flash']], 'Topic grouper': [['Model', Q]], 'Opportunity finder': [['Model', 'gemini-4-argon']],
+    'Chat agent': [['Model', 'claude-sonnet-5-5'], ['Search', 'text-embedding-3-small']],
+  },
+  vendor: {
+    'Indexer': [['Search', 'text-embedding-3-small'], ['Masking', 'claude-haiku-4-5'], ['Scans', 'tesseract'], ['Calls', 'whisper-1']],
+    'Drafting agent': [['Model', 'claude-opus-5-5'], ['Search', 'text-embedding-3-small']], 'Rewrite agent': [['Model', 'claude-opus-5-5']], 'SOP builder': [['Model', 'claude-opus-5-5']],
+    'Question finder': [['Model', 'claude-haiku-4-5']], 'Gap finder': [['Model', 'claude-haiku-4-5']], 'Topic grouper': [['Model', 'claude-haiku-4-5']], 'Opportunity finder': [['Model', 'claude-haiku-4-5']],
+    'Chat agent': [['Model', 'claude-sonnet-5-5'], ['Search', 'text-embedding-3-small']],
+  },
+};
+// what each model does, in plain words, for the hover card on a model row
+const JOB = {
+  'Search': ['Finds by meaning', 'Turns each passage into numbers that capture its meaning, so a search for “refund window” also finds “money back within 30 days”.'],
+  'Masking': ['Hides personal data', 'Spots names, emails and phone numbers in documents and calls, and hides them before anything is stored.'],
+  'Scans': ['Reads scanned pages', 'Reads the text in scanned PDFs and images (OCR), so they can be searched like any other document.'],
+  'Calls': ['Transcribes calls', 'Turns call recordings into text, so calls are indexed and searched like documents.'],
+};
+const MODEL_JOB = {
+  'Drafting agent': 'Writes each draft answer from your sources, with the passages it used.',
+  'Rewrite agent': 'Writes a rejected draft again, using the reason the reviewer gave.',
+  'SOP builder': 'Turns approved answers into step-by-step SOPs, citing a source for every step.',
+  'Question finder': 'Reads your sources and finds the questions they answer.',
+  'Gap finder': 'Compares your sources to find what’s missing or contradicts itself.',
+  'Topic grouper': 'Groups questions into topics so you can see which are rising.',
+  'Opportunity finder': 'Spots questions that point to something to build or sell.',
+  'Chat agent': 'Writes the reply to a question, using approved answers only.',
+};
+function modelTip(agent, label, model) {
+  const j = label === 'Model' ? ['Language model', MODEL_JOB[agent] || 'Reads, writes and answers for this agent.'] : (JOB[label] || [label, '']);
+  const m = MODEL_INFO[model];
+  const host = !m ? '<small>' + IC_UNK + 'Not reported where this runs</small>'
+    : m[1] === 'self' ? '<small>' + IC_SELF + 'Self-hosted · runs on ' + PLACE + '</small>'
+    : '<small class="ven">' + IC_VEN + 'Third-party · text is sent to ' + esc(m[2]) + '</small>';
+  return '<span class="mtip" role="tooltip"><b>' + j[0] + '</b><span>' + j[1] + '</span>' + host + '<em class="mtip__id">Technical name: ' + esc(model) + '</em></span>';
+}
+// CX: customers see “lojo’s own servers”, not the machines (Mac mini, server). Machine names stay in MODEL_INFO for engineers.
+// ASSUMPTION: the region isn’t known yet. Set REGION (e.g. 'UAE') once confirmed and it shows wherever the place is named. check with Eric
+const REGION = '';
+const PLACE = 'lojo’s own servers' + (REGION ? ' in ' + REGION : '');
+// Admins see models, the boundary and AI facts; Editors get one plain sentence (Viewers can’t open Activity)
+const isLite = () => (window.LOJO_ROLE || 'admin') !== 'admin';
+const NO_MODEL = { 'Sync agent': 'No model: it only reads the sources', 'Publisher': 'No model: it only publishes approved answers' };
+let modelEnv = ['vendor', 'mixed', 'unknown'].includes(new URLSearchParams(location.search).get('models')) ? new URLSearchParams(location.search).get('models') : 'poc';
+const modelsOf = (name) => modelEnv === 'unknown' ? null : (AGENT_MODELS[modelEnv][name] || []);
+const IC_SELF = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg>';
+const IC_VEN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
+const IC_UNK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6M12 17h.01"/></svg>';
+// the hosting badge: Self-hosted, or Third-party · vendor; where it runs is in the tooltip and in “Show all models”
+function hostBadge(model, quiet, inRow) {
+  const m = MODEL_INFO[model];
+  if (quiet && m && m[1] === 'self') return '<span class="hbi" role="img" aria-label="Self-hosted, runs on ' + PLACE + '"' + (inRow ? '' : ' title="Self-hosted: runs on ' + PLACE + '"') + '>' + IC_SELF + '</span>';
+  if (!m) return '<span class="badge badge--muted hb" title="The env didn’t say where this model runs">' + IC_UNK + 'Unknown</span>';
+  return m[1] === 'self'
+    ? '<span class="badge badge--ok hb"' + (inRow ? '' : ' title="Self-hosted: runs on ' + PLACE + '"') + '>' + IC_SELF + 'Self-hosted</span>'
+    : '<span class="badge badge--amber hb"' + (inRow ? '' : ' title="Third-party: text is sent to ' + esc(m[2]) + '"') + '>' + IC_VEN + 'Third-party · ' + esc(m[2]) + '</span>';
+}
+// open or closed per agent, remembered; open by default
+let MOPEN = {};
+try { MOPEN = JSON.parse(localStorage.getItem('lojo-models-open')) || {}; } catch (e) {}
+function modelsBlock(name) {
+  if (isLite()) return '';
+  if (NO_MODEL[name]) return '<div class="amods amods--none"><p class="amods__none">' + NO_MODEL[name] + '</p></div>';
+  const ms = modelsOf(name);
+  if (ms === null) return '<div class="amods amods--none"><p class="amods__none">Models couldn’t be read just now</p></div>';
+  // collapsed, the summary still says where the text goes: one badge per hosting kind
+  const kinds = [...new Set(ms.map(([, m]) => (MODEL_INFO[m] || [])[1] === 'vendor' ? 'v:' + MODEL_INFO[m][2] : 's'))];
+  const sumBadges = kinds.map(k => k === 's' ? '<span class="badge badge--ok hb">' + IC_SELF + 'Self-hosted</span>' : '<span class="badge badge--amber hb">' + IC_VEN + esc(k.slice(2)) + '</span>').join('');
+  return '<details class="amods" data-models-of="' + esc(name) + '"' + (MOPEN[name] === false ? '' : ' open') + '><summary><span class="amods__h">Models <em>' + ms.length + '</em></span><span class="amods__sum">' + sumBadges + '</span>' +
+    '<svg class="amods__chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>' +
+    ms.map(([label, model]) =>
+      '<div class="mrow" tabindex="0" aria-label="' + esc(label + ': ' + prod(model)) + '"><span class="mrow__l">' + label + '</span><span class="mprod">' + esc(prod(model)) + '</span>' + hostBadge(model, false, true) + modelTip(name, label, model) + '</div>').join('') + '</details>';
+}
+// list: the first model, +N, and one badge; the badge is third-party if any of the agent’s models is, so it never hides a vendor
+function modelsCell(name, open) {
+  if (isLite()) return '';
+  const ms = modelsOf(name);
+  if (NO_MODEL[name] || !ms || !ms.length) return '<span class="lrow__m lrow__m--none" title="' + esc(NO_MODEL[name] || 'Models couldn’t be read just now') + '">—</span>';
+  // one badge per hosting kind, like the collapsed card summary
+  const kinds = [...new Set(ms.map(([, m]) => (MODEL_INFO[m] || [])[1] === 'vendor' ? 'v:' + MODEL_INFO[m][2] : 's'))];
+  const badges = kinds.map(k => k === 's' ? '<span class="badge badge--ok hb">' + IC_SELF + 'Self-hosted</span>' : '<span class="badge badge--amber hb">' + IC_VEN + esc(k.slice(2)) + '</span>').join('');
+  return '<button type="button" class="lrow__m" data-lmods="' + esc(name) + '" aria-expanded="' + !!open + '" aria-controls="' + lmId(name) + '" aria-label="' + esc('Models for ' + name + ': ' + ms.map(([l, m]) => l + ' ' + prod(m)).join(', ')) + '">' +
+    '<span class="lrow__mt"><span class="mprod">' + esc(prod(ms[0][1])) + '</span>' + (ms.length > 1 ? '<em>+' + (ms.length - 1) + '</em>' : '') +
+    '<svg class="lrow__chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span><span class="lrow__mb">' + badges + '</span></button>';
+}
+// ---------- 1. the data boundary: your sources → lojo’s machines (→ vendors) → your team ----------
+// who made each model; separate from who runs it (whisper is made by OpenAI but runs on lojo’s Mac mini)
+const MAKER = {
+  'qwen3.5:9b': 'Alibaba (Qwen)', 'bge-m3': 'BAAI', 'whisper-large-v3-turbo': 'OpenAI (open weights)', 'tesseract': 'Open source (Tesseract)',
+  'claude-haiku-4-5': 'Anthropic', 'claude-opus-5-5': 'Anthropic', 'gpt-5.6-terra': 'OpenAI', 'gemini-3.8-flash': 'Google', 'gemini-4-argon': 'Google', 'claude-sonnet-5-5': 'Anthropic', 'text-embedding-3-small': 'OpenAI', 'whisper-1': 'OpenAI',
+};
+// ASSUMPTION: the Indexer masks personal data when it indexes, so later jobs see masked text. The masking, call and scan
+// models read the original text, because they run before masking (or are the masking). check with Eric
+const RAW_JOBS = ['Masking', 'Calls', 'Scans'];
+const IC_DOCS = '<svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>';
+const IC_TEAM = '<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 20a7 7 0 0 1 14 0M16 4a4 4 0 0 1 0 8M22 20a7 7 0 0 0-4-6"/></svg>';
+const IC_LOCK = '<svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>';
+const IC_MAC = '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="12" rx="3"/><path d="M9 20h6"/></svg>';
+const IC_CLOUD = '<svg viewBox="0 0 24 24"><path d="M17.5 19a4.5 4.5 0 1 0-1.4-8.8A6 6 0 0 0 4.5 12a3.5 3.5 0 0 0 1 7z"/></svg>';
+function modelUse() {
+  const used = {};
+  if (modelEnv !== 'unknown') AGENTS.forEach(([, name]) => (modelsOf(name) || []).forEach(([label, m]) => { (used[m] = used[m] || { agents: [], jobs: [] }); used[m].agents.push(name); used[m].jobs.push(label); }));
+  return used;
+}
+// a model in the diagram: its plain name, and on hover (or tap) the facts for that model
+function chipTip(m, u) {
+  const n = nice(m), i = MODEL_INFO[m] || ['Not reported', '', 'Not reported'], self = i[1] === 'self';
+  const raw = u.jobs.some(j => RAW_JOBS.includes(j)), masks = u.jobs.includes('Masking');
+  const row = (k, v, cls) => '<div><dt>' + k + '</dt><dd' + (cls ? ' class="' + cls + '"' : '') + '>' + v + '</dd></div>';
+  // personal data, always with the reason: the masking model reads it to mask it; the call and scan models read the original
+  const pd = !raw ? (self ? 'Masked before it gets here' : 'Masked before it’s sent')
+    : self ? (masks ? 'Reads it to mask it' : 'Reads the original text') : 'Sent before it’s masked';
+  return '<span class="ctip" role="tooltip"><b>' + esc(n[0]) + (n[1] ? ' <small>· ' + esc(n[1]) + '</small>' : '') + '</b><span>' + esc(i[0]) + '</span>' + (u.agents.length ? '' : '<p class="ctip__if">If it were switched on</p>') + '<dl>' +
+    row('Made by', esc(MAKER[m] || 'Not reported')) +
+    row('Runs on', self ? PLACE : esc(i[2]) + '’s cloud') +
+    row('Text leaves lojo', self ? 'No' : 'Yes, to ' + esc(i[2]), self ? 'ok' : 'warn') +
+    row('Personal data', pd, !raw ? 'ok' : self ? '' : 'warn') +
+    (self ? row('Trains on your data', 'No', 'ok') + row('Keeps your text', 'Only on lojo’s servers', 'ok') : '') +
+    '</dl>' + (self ? '' : '<p class="terms">Training and retention follow lojo’s agreement with ' + esc(i[2]) + '. Ask us for the terms.</p>') +
+    '<p>' + (u.agents.length ? 'Used by ' + esc([...new Set(u.agents)].join(', ')) : '<b class="ctip__off">Not used in this workspace.</b> Supported by lojo, switched off here.') + '</p><em>Technical name: ' + esc(m) + '</em></span>';
+}
+// “Anthropic”, “Anthropic and OpenAI”, “Anthropic, Google and OpenAI”
+const listAnd = (xs) => xs.length < 3 ? xs.join(' and ') : xs.slice(0, -1).join(', ') + ' and ' + xs[xs.length - 1];
+let USED = {};
+// third-party models the code supports (ticket D113), shown greyed out when the workspace doesn’t use them
+const SUPPORTED_VEN = ['claude-haiku-4-5', 'claude-opus-5-5', 'claude-sonnet-5-5', 'text-embedding-3-small', 'whisper-1'];
+const SUP_VENDORS = [...new Set(SUPPORTED_VEN.map(m => MODEL_INFO[m][2]))].sort();
+const chip = (m) => { const n = nice(m); return '<span class="dbx__chip" tabindex="0" aria-label="' + esc(n[0] + (n[1] ? ', ' + n[1] : '')) + '"><b>' + esc(n[0]) + '</b>' + (n[1] ? '<small>' + esc(n[1]) + '</small>' : '') + chipTip(m, USED[m] || { agents: [], jobs: [] }) + '</span>'; };
+function renderBoundary() {
+  const used = modelUse(), names = Object.keys(used), box = $('dbx');
+  USED = used;
+  const self = names.filter(m => (MODEL_INFO[m] || [])[1] === 'self'), ven = names.filter(m => (MODEL_INFO[m] || [])[1] === 'vendor');
+  const vendors = [...new Set(ven.map(m => MODEL_INFO[m][2]))].sort();
+  document.body.classList.toggle('ml-lite', isLite());
+  if (isLite()) {
+    // Editors: the one answer they care about, in plain words; no model names
+    box.className = 'dbx dbx--lite' + (modelEnv === 'unknown' ? ' is-unk' : vendors.length ? ' is-ven' : '');
+    box.innerHTML = modelEnv === 'unknown'
+      ? '<span class="dbx__ic">' + IC_UNK + '</span><p>We couldn’t check where your text is processed just now.</p>'
+      : vendors.length
+        ? '<span class="dbx__ic">' + IC_VEN + '</span><p><b>Some text is processed by outside AI companies: ' + listAnd(vendors) + '.</b> Your admin can see which parts and why.</p>'
+        : '<span class="dbx__ic">' + IC_LOCK + '</span><p><b>Your documents and questions stay on ' + PLACE + '.</b> Nothing is sent to outside AI companies.</p>';
+    return;
+  }
+  // Admins: one line. The status, where text goes, and whether the interim and third-party setups are in use
+  box.className = 'dbx dbx--one' + (modelEnv === 'unknown' ? ' is-unk' : '');
+  if (modelEnv === 'unknown') {
+    box.innerHTML = '<span class="badge badge--muted hb">' + IC_UNK + 'Unknown</span><p>The models could not be read just now.</p><button class="btn btn--secondary" type="button" id="mRetry">Try again</button>';
+    return;
+  }
+  const st = (on, cls) => '<i class="zst zst--' + (on ? cls : 'off') + '">' + (on ? 'In use' : 'Not in use') + '</i>';
+  box.innerHTML = (vendors.length
+      ? '<span class="badge badge--amber hb">' + IC_VEN + 'Third-party</span><p role="status">Some models are third-party: text is sent to ' + listAnd(vendors) + '.</p>'
+      : '<span class="badge badge--ok hb">' + IC_SELF + 'Self-hosted</span><p role="status">Every model is self-hosted: documents and questions never leave lojo’s own machines.</p>') +
+    '<span class="dbx__st">' + (modelEnv === 'poc' ? 'Interim (POC)' : 'Self-hosted') + st(self.length, 'on') + '</span>' +
+    '<span class="dbx__st">Third-party' + st(vendors.length, 'ven') + '</span>';
+}
+
+// prototype only: flip between setups to review the design; the live page reads the setup from the env
+const PREVIEWS = [['poc', 'POC today'], ['mixed', 'Mixed'], ['vendor', 'Third-party'], ['unknown', 'Not known']];
+function renderPreview() {
+  $('mprev').hidden = isLite();
+  $('mprev').innerHTML = '<span>Prototype · preview setup</span>' + PREVIEWS.map(([k, l]) => '<button type="button" data-env="' + k + '" aria-pressed="' + (modelEnv === k) + '">' + l + '</button>').join('');
+}
+$('mprev').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-env]'); if (!b) return;
+  modelEnv = b.dataset.env;
+  const u = new URL(location.href); if (modelEnv === 'poc') u.searchParams.delete('models'); else u.searchParams.set('models', modelEnv);
+  history.replaceState(null, '', u); render();
+});
+$('dbx').addEventListener('click', (e) => {
+  if (e.target.closest('#mRetry')) toast('Still can’t read the models. Try again in a minute.');
+});
+
 let agFilter = new URLSearchParams(location.search).get('stage') || 'all';
 // what each agent has done so far, from the same counts the rest of the app uses
 function statsFor(name, c) {
@@ -2038,7 +2515,10 @@ function statsFor(name, c) {
     'Rewrite agent': [[rewritten, 'Drafts rewritten'], [DRAFTS.filter(r => decision(r).redrafted > 1).length, 'Rewritten more than once'], [c.final, 'Left for a human']],
     'Chat agent': [[(ch.asked || 0) + 14, 'Questions asked'], [(ch.answered || 0) + 11, 'Answered'], [(ch.declined || 0) + 3, 'Declined']],
     'Publisher': [[0, 'Published'], [0, 'Channels'], ['—', 'Full build']],
-  }[name];
+    'SOP builder': [[(ST.sops || []).length, 'SOPs'], [(ST.sops || []).filter(s => s.status === 'review').length, 'In review'], [(ST.sops || []).filter(s => s.status === 'due').length, 'Due for a check']],
+    'Topic grouper': [[c.questions, 'Questions grouped'], [4, 'Channels compared'], [0, 'Failed runs']],
+    'Opportunity finder': [[10, 'Opportunities'], [4, 'Themes'], [0, 'Failed runs']],
+  }[name] || [['—', ''], ['—', ''], ['—', '']];
 }
 const at = (min) => { const d = new Date(Date.now() - min * 60000); return (d.toDateString() === new Date().toDateString() ? 'Today' : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })) + ', ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); };
 function row([k, name, min, last, what], c) {
@@ -2051,23 +2531,46 @@ function row([k, name, min, last, what], c) {
 // card view: one card per agent; list view: one row per agent
 let view = 'cards';
 try { view = localStorage.getItem('lojo-agents-view') || 'cards'; } catch (e) {}
+if (location.hash === '#list' || location.hash === '#cards') view = location.hash.slice(1);
 function card([k, name, min, last, what], c) {
   const s = AG_STAGES.find(x => x[0] === k);
   const pill = min === 0 ? '<span class="apill run">Working</span>' : min === null ? '<span class="apill">Not yet</span>' : '<span class="apill">Idle</span>';
   return '<article class="acardx' + (min === 0 ? ' is-run' : '') + (min === null ? ' is-off' : '') + '"><div class="acardx__top">' + ava3d(k, name, min) + pill + '</div>' +
     '<h3>' + esc(name) + '</h3><a class="acardx__stage" href="' + s[2] + '">' + s[1] + '</a><p class="acardx__d">' + esc(what) + '</p>' +
     '<div class="acardx__nums">' + statsFor(name, c).map(([n, l, bad]) => '<div' + (bad ? ' class="bad"' : '') + '><b>' + (typeof n === 'number' ? n.toLocaleString('en-GB') : n) + '</b><span>' + l + '</span></div>').join('') + '</div>' +
-    '<p class="acardx__last">' + (min === null ? 'No activity yet' : (min === 0 ? '<i class="ld"></i><b>Running now</b> · ' : agAgo(min) + ' · ') + esc(last)) + '</p></article>';
+    '<p class="acardx__last">' + (min === null ? 'No activity yet' : (min === 0 ? '<i class="ld"></i><b>Running now</b> · ' : agAgo(min) + ' · ') + esc(last)) + '</p>' + modelsBlock(name) + '</article>';
 }
+document.getElementById('alist').addEventListener('toggle', (e) => {
+  const d = e.target; if (!d.matches || !d.matches('details.amods')) return;
+  MOPEN[d.dataset.modelsOf] = d.open; try { localStorage.setItem('lojo-models-open', JSON.stringify(MOPEN)); } catch (err) {}
+}, true);
 function line([k, name, min, last, what], c) {
   const s = AG_STAGES.find(x => x[0] === k), n = statsFor(name, c)[0];
   const pill = min === 0 ? '<span class="apill run">Working</span>' : min === null ? '<span class="apill">Not yet</span>' : '<span class="apill">Idle</span>';
-  return '<a class="lrow' + (min === null ? ' is-off' : '') + '" href="' + s[2] + '">' + ava3d(k, name, min) +
-    '<span class="lrow__n"><b>' + esc(name) + '</b><span>' + s[1] + '</span></span>' +
+  const open = LOPEN[name] === true;
+  return '<div class="lgrp' + (open ? ' is-open' : '') + '"><div class="lrow' + (min === null ? ' is-off' : '') + '">' + ava3d(k, name, min) +
+    '<span class="lrow__n"><a class="lrow__link" href="' + s[2] + '"><b>' + esc(name) + '</b></a><span>' + s[1] + '</span></span>' +
     '<span class="lrow__w">' + (min === null ? 'No activity yet' : esc(last)) + '</span>' +
-    '<span class="lrow__k"><b>' + (typeof n[0] === 'number' ? n[0].toLocaleString('en-GB') : n[0]) + '</b> ' + n[1].toLowerCase() + '</span>' +
-    pill + '<time>' + (min === null ? '—' : agAgo(min)) + '</time><span class="lrow__go">→</span></a>';
+    '<span class="lrow__k"><b>' + (typeof n[0] === 'number' ? n[0].toLocaleString('en-GB') : n[0]) + '</b> ' + n[1].replace(/^[A-Z](?=[a-z])/, (ch) => ch.toLowerCase()) + '</span>' +
+    modelsCell(name, open) + pill + '<time>' + (min === null ? '—' : agAgo(min)) + '</time><span class="lrow__go">→</span></div>' + listModels(name, open) + '</div>';
 }
+// list view: models fold out under the row, in the same rows as the cards (label · name · badge, with hover)
+let LOPEN = {};
+try { LOPEN = JSON.parse(localStorage.getItem('lojo-models-open-list')) || {}; } catch (e) {}
+const lmId = (name) => 'lm-' + name.replace(/\W/g, '');
+function listModels(name, open) {
+  if (isLite() || NO_MODEL[name]) return '';
+  const ms = modelsOf(name); if (!ms || !ms.length) return '';
+  return '<div class="lmods" id="' + lmId(name) + '"' + (open ? '' : ' hidden') + '>' + ms.map(([label, model]) =>
+    '<div class="mrow" tabindex="0" aria-label="' + esc(label + ': ' + prod(model)) + '"><span class="mrow__l">' + label + '</span><span class="mprod">' + esc(prod(model)) + '</span>' + hostBadge(model, false, true) + modelTip(name, label, model) + '</div>').join('') + '</div>';
+}
+document.getElementById('alist').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-lmods]'); if (!b) return;
+  e.preventDefault();
+  const name = b.dataset.lmods, g = b.closest('.lgrp'), panel = document.getElementById(lmId(name)), open = panel.hidden;
+  panel.hidden = !open; b.setAttribute('aria-expanded', open); g.classList.toggle('is-open', open);
+  LOPEN[name] = open; try { localStorage.setItem('lojo-models-open-list', JSON.stringify(LOPEN)); } catch (err) {}
+});
 function render() {
   const c = counts();
   document.querySelectorAll('.vtog [data-view]').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === view));
@@ -2078,6 +2581,7 @@ function render() {
   $('alist').innerHTML = '<div class="agrp run">Now running <b>' + run.length + '</b></div>' + (run.length ? wrapG(run) : '<p class="anone">No agents are running right now.</p>') +
     '<div class="agrp">Other agents <b>' + rest.length + '</b></div>' + wrapG(rest);
   $('upd').textContent = 'Updated ' + at(0);
+  renderBoundary(); renderPreview();
 }
 $('agFilters').addEventListener('click', (e) => { const b = e.target.closest('[data-agf]'); if (!b) return; agFilter = b.dataset.agf; render(); });
 document.querySelector('.vtog').addEventListener('click', (e) => { const b = e.target.closest('[data-view]'); if (!b) return; view = b.dataset.view; try { localStorage.setItem('lojo-agents-view', view); } catch (err) {} render(); });

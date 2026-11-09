@@ -29,6 +29,9 @@ export const AGENTS = {
   'Rewrite agent': { key: 'rewrite', job: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>' },
   'Chat agent': { key: 'chat', job: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>' },
   'Publisher': { key: 'publisher', job: '<path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/>' },
+  'SOP builder': { key: 'sop', job: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="m3 6 1 1 2-2M3 12l1 1 2-2M3 18l1 1 2-2"/>' },
+  'Topic grouper': { key: 'topics', job: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>' },
+  'Opportunity finder': { key: 'opportunity', job: '<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2z"/>' },
 };
 
 /** Agent avatar. state: idle | run | off */
