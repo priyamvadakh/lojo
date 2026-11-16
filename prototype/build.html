@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Build · lojo</title>
-<link rel="icon" type="image/png" href="assets/lojo-icon.png">
+<link rel="icon" type="image/svg+xml" href="assets/lojo-logo.svg">
 <script src="assets/oslo-pack.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -76,12 +76,12 @@
   .npop__f label{display:flex;align-items:center;gap:10px;cursor:pointer}
   .npop__f input{width:16px;height:16px;accent-color:var(--rose);margin:0}
   body.is-collapsed .nwrap{margin:0}
-  .side__brand{display:flex;align-items:center;gap:8px;height:34px;padding:0 6px;margin-left:-2px;border-radius:9px;color:var(--ink);text-decoration:none}
+  .side__brand{display:flex;align-items:center;gap:8px;height:52px;padding:0 6px;margin-left:-2px;border-radius:9px;color:var(--ink);text-decoration:none}
   .side__brand b{font-family:var(--display);font-weight:700;font-size:.95rem;letter-spacing:-.01em}
   .side__brand:hover{background:var(--bg-soft)}
   .side__brand:hover{text-decoration:none}
-  .side__brand img{width:26px;height:26px;border-radius:24%;flex:none;display:block}
-  .side__brand b{font-family:var(--display);font-weight:800;font-size:1.6rem;letter-spacing:-.02em;line-height:1}
+  .side__brand img{width:58px;height:48px;object-fit:contain;flex:none;display:block}
+  .side__brand b{font-family:var(--display);font-weight:800;font-size:1.15rem;letter-spacing:-.01em;line-height:1}
   body.is-collapsed .side__top{flex-direction:column;gap:10px;margin:0 0 14px}
   body.is-collapsed .side__brand b{display:none}
   .side__brand b span{color:var(--muted);font-weight:700}
@@ -1042,6 +1042,64 @@
   .sopp .dx:hover{color:var(--ink)}
   .sopgo{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
   .sopgo .sub{flex:1;min-width:200px;font-size:.8rem}
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+  .vs .quote{display:flex;flex-direction:column;gap:10px}
+  .vs .quote p{flex:1}
+  .vs .quote .btn{align-self:flex-start}
+  .picked{display:flex;align-items:center;gap:10px;margin:-8px 0 22px;padding:10px 12px;border-radius:10px;background:rgba(63,143,95,.08);font-size:.86rem;color:var(--muted)}
+  .picked b{color:var(--ink)}
+  .picked .spacer{flex:1}
+  @media (max-width:700px){.vs{grid-template-columns:1fr}}
+  /* calmer list: rows on lines, not cards; one accent for the selected row */
+  .items{padding:0;gap:0}
+  .item,.item.is-failed,.item.is-redo,.item.is-other,:root[data-theme="dark"] .item{border-radius:0;background:none;padding:13px 18px;row-gap:5px;border-bottom:1px solid var(--line)}
+  .item:hover,.item.is-failed:hover,.item.is-redo:hover,.item.is-other:hover,:root[data-theme="dark"] .item:hover{background:var(--bg-soft)}
+  .item.is-sel,.item.is-failed.is-sel,.item.is-redo.is-sel,.item.is-other.is-sel,.item.is-hl.is-sel{background:rgba(232,93,117,.05);box-shadow:inset 3px 0 0 var(--rose)}
+  .item.is-hl{background:rgba(47,116,232,.04);box-shadow:inset 3px 0 0 rgba(47,116,232,.5)}
+  .item b{font-weight:600;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;overflow-wrap:anywhere}
+  .item .meta:empty{display:none}
+  .item .meta .badge{height:19px;padding:0 7px;font-size:.6rem}
+  .item.has-av{grid-template-columns:24px minmax(0,1fr)}
+  .item.has-av.has-side,.item.has-av.is-failed{grid-template-columns:24px minmax(0,1fr) auto}
+  .rav{width:24px;height:24px;font-size:.78rem;align-self:start;margin-top:1px}
+  .srcb,:root[data-theme="dark"] .srcb{background:none;border:0;padding:0;height:auto;color:var(--muted);font-weight:600}
+  .fstate{font-size:.74rem}
+  .list .tabs{border-bottom:1px solid var(--line)}
+  .lfind{padding:10px 14px}
+  /* detail: fewer boxes, more air between sections */
+  .detail h2{margin:8px 0 18px}
+  .gapnote{gap:12px;padding:10px 14px;border:0;border-left:3px solid #2F74E8;border-radius:0 10px 10px 0;background:rgba(47,116,232,.05)}
+  .gapnote .g > div{font-size:.84rem}
+  .gapnote .g b{display:inline;margin-right:4px}
+  .gacts{margin-top:8px;gap:4px}
+  .gacts .btn{height:28px;padding:0 10px;font-size:.76rem}
+  .acts{gap:8px}
+  .item.is-drafting{cursor:default;opacity:.8}
+  .gflow{margin:0 0 4px;font-size:.84rem;color:var(--muted)}
+  /* the review panel stays put beside the list and scrolls on its own */
+  .detail{position:sticky;top:84px;height:calc(100vh - 140px);max-height:none;overflow:auto;overscroll-behavior:contain;display:flex;flex-direction:column}
+  .detail > *{flex-shrink:0}
+  /* the decision bar always sits on the bottom edge, however short the item */
+  .detail.card > .acts{margin-top:auto}
+  @media (max-width:1240px){.detail.card > .acts{margin-top:22px}}
+  .detail > .empty{margin:auto 0}
+  .list{height:calc(100vh - 140px);max-height:none}
+  @media (min-width:1001px){.wrap{padding-bottom:0}}
+  @media (max-width:1000px){.detail,.list{height:auto}.detail{display:block}}
+  body.is-fs .detail{top:76px;min-height:0;height:calc(100vh - 96px);max-height:none}
+  @media (max-width:1000px){.detail{position:static;max-height:none;overflow:visible}}
+  /* the decision bar stays in reach at the bottom while you read the sources */
+  .detail .acts{position:sticky;bottom:-24px;z-index:5;flex-wrap:nowrap;gap:6px;margin:22px -26px -24px;padding:12px 96px 12px 26px;border-top:1px solid var(--line);background:var(--panel);border-radius:0 0 16px 16px;box-shadow:0 -14px 24px -18px rgba(36,26,20,.35)}
+  .detail .acts .btn{height:36px;padding:0 12px;font-size:.8rem;white-space:nowrap;flex:none;gap:6px}
+  .detail .acts .btn--ghost{padding:0 8px}
+  .detail .acts .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  /* the right end stays clear for the Ask lojo button */
+  /* not enough room for one row: drop the J/K hint, then let the bar scroll with the page */
+  @media (max-width:1600px){.detail .acts .spacer + .sub:has(kbd),.detail .acts .btn kbd{display:none}}
+  @media (max-width:1240px){.detail .acts{position:static;flex-wrap:wrap;margin:22px 0 0;padding:18px 0 0;box-shadow:none;border-radius:0}}
+  body.is-fs .detail .acts .spacer + .sub:has(kbd){display:inline}
+  .lgrp{list-style:none;padding:14px 18px 6px;font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line)}
+  .lgrp em{font-style:normal;margin-left:4px}
   @media (max-width:700px){.sopp__tabs{grid-template-columns:1fr}.sopm li{grid-template-columns:1fr auto}.pct{display:none}}
 
   :root[data-theme="dark"]{
@@ -1102,7 +1160,7 @@
 <body data-persona="admin">
 
 <aside class="side" aria-label="Main navigation">
-  <div class="side__top"><a class="side__brand" href="dashboard.html" aria-label="lojo.ai home"><img src="assets/lojo-icon.png" alt="" width="26" height="26"><b>lojo.ai</b></a>
+  <div class="side__top"><a class="side__brand" href="dashboard.html" aria-label="lojo.ai home"><img src="assets/lojo-logo.svg" alt="" width="58" height="48"><b>lojo.ai</b></a>
   <div class="me nwrap"><button class="side__bell" id="bellBtn" type="button" aria-label="Notifications" aria-expanded="false" aria-haspopup="true"><svg class="i" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><em class="side__belln" id="bellN" hidden></em></button><div class="pop npop" id="notifPop" role="dialog" aria-label="Notifications" hidden><div class="npop__h"><b>Notifications</b><button type="button" id="notifAll">Mark all read</button></div><ul class="npop__list" id="notifList"></ul><div class="npop__f"><label><input type="checkbox" id="notifMail" checked> Email me a daily summary</label><label><input type="checkbox" id="notifPush"> Browser notifications while lojo is open</label></div></div></div>
   <button class="side__collapse" id="collapse" type="button" aria-label="Collapse sidebar" aria-expanded="true"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16M15 10l-2 2 2 2"/></svg></button>
   </div>
@@ -1127,9 +1185,9 @@
     <a class="nav-item" href="dashboard.html"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg><span class="lbl">Dashboard</span></a>
     <a class="nav-item" href="onboarding.html?loop=1"><svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/></svg><span class="lbl">My loop</span></a>
     <a class="nav-item" href="sources.html" title="01 Source"><svg class="i" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span class="lbl">Sources</span></a>
-    <a class="nav-item is-active" href="build.html" aria-current="page" title="02 Build · Validation"><svg class="i" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg><span class="lbl">Build <em class="lbl-sub">(Review)</em></span><span class="count" id="navReview" hidden></span></a>
-    <a class="nav-item" href="insights.html" title="03 Insights"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg><span class="lbl">Insights</span><span class="count" id="navQuestions" hidden></span></a>
-    <a class="nav-item" href="distribute.html" title="04 Distribute"><svg class="i" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg><span class="lbl">Distribute</span><span class="count" id="navApproved" hidden></span></a>
+    <a class="nav-item is-active" href="build.html" aria-current="page" title="02 Build · Review"><svg class="i" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg><span class="lbl">Build</span><span class="count" id="navReview" hidden></span></a>
+    <a class="nav-item" href="insights.html" title="03 Insights"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg><span class="lbl">Insights</span></a>
+    <a class="nav-item" href="distribute.html" title="04 Distribute"><svg class="i" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg><span class="lbl">Distribute</span></a>
     <a class="nav-item" href="knowledge.html" title="Decide"><svg class="i" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="lbl">Knowledge</span></a>
     <a class="nav-item" href="sops.html" title="Decide"><svg class="i" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10l1.5 1.5L13 9M9 16l1.5 1.5L13 15M15.5 10.5h.01M15.5 16.5h.01"/></svg><span class="lbl">SOPs</span></a>
     <a class="nav-item" href="activity.html" data-feature="agents"><svg class="i" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="lbl">Activity</span></a>
@@ -1162,7 +1220,7 @@
 
     <div class="head">
       <div>
-        <p class="label">02 Build · Validation</p>
+        <p class="label">02 Build · Review</p>
         <h1>Build <i class="htip" tabindex="0" role="note" aria-label="Approve, edit, or reject with a reason. A rejected draft is written again with your reason, or sent to a person to answer." data-tip="Approve, edit, or reject with a reason. A rejected draft is written again with your reason, or sent to a person to answer.">i</i></h1>
       </div>
       <span class="spacer"></span>
@@ -1173,9 +1231,10 @@
     <div class="rv">
       <section class="card list" aria-label="Drafts">
         <div class="tabs" role="tablist" id="rtabs">
-          <button class="tab" data-f="pending" aria-selected="true">To review <span class="n" id="nP">0</span></button>
+          <button class="tab" data-f="pending" aria-selected="true" title="Drafts to review">Drafts <span class="n" id="nP">0</span></button>
+          <button class="tab" data-f="needs" aria-selected="false" title="Questions, gaps and failed drafts that need a decision">Needs you <span class="n" id="nN">0</span></button>
+          <button class="tab" data-f="final" aria-selected="false" title="Answers only a person can write">Human <span class="n" id="nF">0</span></button>
           <button class="tab" data-f="approved" aria-selected="false">Approved <span class="n" id="nA">0</span></button>
-          <button class="tab" data-f="final" aria-selected="false">Human <span class="n" id="nF">0</span></button>
         </div>
         <div class="lfind">
           <div class="lfrow">
@@ -1255,7 +1314,7 @@ const QUESTIONS = [
   { id: 'q22', q: 'What is the chargeback fee on Scale?', origin: 'you', docs: [], gap: 'g2' },
   { id: 'q23', q: 'How long do we keep call recordings?', origin: 'you', docs: [], gap: 'g3' },
   { id: 'q24', q: 'How do customers contact support?', origin: 'faq', docs: ['d2'] },
-  { id: 'q25', q: 'Où puis-je effectuer mes remboursements si je me rends dans un hôpital ou une clinique ailleurs qu’à Dubaï ? (Par exemple à Abu Dhabi.)', origin: 'found', docs: ['d5'] },
+  { id: 'q25', q: 'Où puis-je effectuer mes remboursements si je me rends dans une clinique vétérinaire ailleurs qu’à Dubaï ? (Par exemple à Abu Dhabi.)', origin: 'found', docs: ['d5'] },
 ];
 
 // things the documents refer to but never explain
@@ -1274,7 +1333,7 @@ const DRAFTS = [
       ['d5', 'ZIWO call, 19 Aug', 'You can go to Sharjah, Abu Dhabi, Al Ain, Dubai, everywhere.']],
     draft: 'Vous pouvez vous rendre dans n’importe quelle clinique vétérinaire aux Émirats arabes unis, y compris à Abu Dhabi.\n- **Zone couverte :** toute clinique vétérinaire aux EAU (Dubaï, Abu Dhabi, Al Ain, Sharjah…).\n- **Procédure :** payez la facture sur place, puis téléchargez-la dans votre espace Oslo.\n- **Documents requis :** aucun formulaire, licence ni rapport médical. La facture suffit.',
     redraft: 'Partout aux EAU, y compris à Abu Dhabi : payez la facture sur place, puis téléchargez-la dans votre espace Oslo. Aucun autre document n’est demandé.' },
-  { id: 'r1', qid: 'q1', risk: 'high', conflict: 'd2',
+  { id: 'r1', qid: 'q1', risk: 'high', conflict: 'd2', alt: 'No. SAML single sign-on is only on the Enterprise plan.',
     src: [['d1', 'p. 4', 'SAML single sign-on is available to Growth and Scale workspaces.'], ['d5', 'Brightline call, 12 Aug', 'Told Brightline their Growth plan covers SSO.'], ['d2', 'Security & login · 9 months old', 'SSO is an Enterprise-only feature.']],
     draft: 'Yes. SAML SSO is included on Growth and Scale. The Help Center still says Enterprise-only; that page is 9 months old and conflicts with the 2026 pricing.',
     redraft: 'Yes. SAML single sign-on is included on the Growth and Scale plans. Starter workspaces sign in with email or Google.' },
@@ -1380,6 +1439,7 @@ const SEED = () => ({
   ],
   extra: [],
   gaps: {},
+  apps: { notion: true, website: true, gmail: true, ziwo: true },
   scope: { signed: true, by: 'Eric Ouisse', at: '9 Sep' },
   decision: null,
 });
@@ -1464,7 +1524,7 @@ function sopPlus(months) { const d = new Date(); d.setMonth(d.getMonth() + month
 // the SOP builder agent: one step per sentence of each answer, every step citing the answer it came from
 function draftSop({ title, rids, fmt, from, by, missing, area: pre, sec: given, steps: mapped }) {
   const rs = rids.map(id => DRAFTS.find(r => r.id === id)).filter(Boolean);
-  const qs = rs.map(r => QUESTIONS.find(q => q.id === r.qid).q);
+  const qs = rs.map(r => allQuestions().find(q => q.id === r.qid).q);
   const area = pre ? [pre] : sopArea(title).concat()[0] !== 'GEN' ? sopArea(title) : sopArea(title + ' ' + qs.join(' '));
   const n = Math.max(0, ...ST.sops.map(x => +x.id.split('-').pop() || 0)) + 1;
   const id = 'SOP-' + area[0] + '-' + String(n).padStart(3, '0');
@@ -1490,18 +1550,23 @@ function load() {
   return SEED();
 }
 let ST = load();
+// documents and drafts lojo made during the demo (a question added from a gap, drafted from the document sent for it)
+(ST.xdocs || []).forEach(d => { if (!DOCS.some(x => x.id === d.id)) DOCS.push(d); });
+(ST.xdrafts || []).forEach(d => { if (!DRAFTS.some(x => x.id === d.id)) DRAFTS.push(d); });
 ST.people = ST.people || PEOPLE_SEED();
 ST.companies = ST.companies || COMPANIES_SEED();
 ST.staff = ST.staff || STAFF_SEED();
 ST.platformLog = ST.platformLog || PLOG_SEED();
 ST.sops = ST.sops || SOP_SEED();
+// ZIWO joined the connected sources: add it once to sessions saved before it
+if (!ST.__apps2) { ST.apps = Object.assign({ notion: true, website: true, gmail: true }, ST.apps || {}, { ziwo: true }); ST.__apps2 = true; ST.__appsSeeded = true; }
 ST.sopLinks = ST.sopLinks || { r2: { sop: 'SOP-BIL-001', step: 1 }, r18: { sop: 'SOP-CLM-002', step: 0 } };
 // the position and description someone gave when they joined (auth.html?s=profile)
 try { const pf = JSON.parse(sessionStorage.getItem('lojo-profile')); const me = pf && ST.people.find(p => p.email === pf.email); if (me) { me.title = pf.title; me.about = pf.about; } } catch (e) {}
 function save() { try { sessionStorage.setItem(KEY, JSON.stringify(ST)); } catch (e) {} refreshNav(); }
 
 function decision(r) { return ST.decisions[r.id] || { status: 'pending' }; }
-function answerOf(r) { const d = decision(r); return d.answer || (d.redrafted ? r.redraft : r.draft); }
+function answerOf(r) { const d = decision(r); return d.answer || (d.pick && d.pick === r.conflict && r.alt) || (d.redrafted ? r.redraft : r.draft); }
 function allQuestions() { return QUESTIONS.concat(ST.extra); }
 function matters(q) { return q.id in ST.matters ? ST.matters[q.id] : true; }
 function counts() {
@@ -1515,6 +1580,27 @@ function counts() {
     drafts: DRAFTS.length, approved: st.filter(s => s === 'approved').length,
     pending: st.filter(s => s === 'pending').length, final: st.filter(s => s === 'final').length,
   };
+}
+// one count of what needs a person, read by the nav badge, the Dashboard and Build
+function tasks() {
+  const c = counts(), qs = allQuestions(), F = ST.draftFailed || {}, A = ST.answered || {};
+  const triage = qs.filter(q => matters(q) === null);
+  const gaps = GAPS.filter(g => !ST.gaps[g.id]);
+  const failed = qs.filter(q => F[q.id] && matters(q) !== false);
+  // no source answers it: a person has to write the answer
+  const noSource = qs.filter(q => !(q.docs || []).length && !q.drafting && matters(q) !== false && !A[q.id]);
+  const needs = triage.length + gaps.length + failed.length, human = c.final + noSource.length;
+  return { pending: c.pending, approved: c.approved, final: c.final, drafts: c.drafts, decided: c.approved + c.final,
+    triage, gaps, failed, noSource, needs, human, total: c.pending + needs + human };
+}
+// connected sources and their health, read by Sources, the Dashboard and Activity
+const APP_IDS = ['website', 'notion', 'gmail', 'ziwo', 'slack'];
+const APP_WARN = { website: 1, gmail: 1 };
+const appWarn = (id) => !!APP_WARN[id] && !(ST.synced || {})[id];
+function sourceSummary() {
+  const on = APP_IDS.filter(id => (ST.apps || {})[id]);
+  const upWarn = (ST.docx || []).some(d => d.status === 'failed');
+  return { sources: on.length + 1, apps: on.length, warn: (upWarn ? 1 : 0) + on.filter(appWarn).length, passages: counts().passages };
 }
 
 
@@ -1608,7 +1694,7 @@ function answerHTML(q, a, fromQ, srcs) {
   h += '<div class="srcbox' + (fromDoc ? ' is-doc' : '') + '"><span class="srcbox__ic">' + ICO.check + '</span><span class="srcbox__t">' + (fromDoc ? 'From the attached document · <em>not yet approved</em>' : 'Approved answer' + (same ? '' : ' · <em>' + esc(fromQ) + '</em>')) + '</span>' + (srcs ? '<span class="srcs">' + srcs + '</span>' : '') + '</div>';
   h += '<div class="aacts"><button type="button" data-copy="' + esc(a) + '" title="Copy answer">' + ICO.copy + '<span>Copy</span></button><button type="button" data-rate="up" aria-label="Helpful" title="Helpful">' + ICO.up + '</button><button type="button" data-rate="down" aria-label="Not helpful" title="Not helpful" class="down">' + ICO.up + '</button><span class="fb" role="status"></span></div>';
   // two related approved questions to keep going
-  const ok = DRAFTS.filter(r => decision(r).status === 'approved').map(r => QUESTIONS.find(x => x.id === r.qid).q).filter(x => x !== fromQ);
+  const ok = DRAFTS.filter(r => decision(r).status === 'approved').map(r => allQuestions().find(x => x.id === r.qid).q).filter(x => x !== fromQ);
   const cq = conceptsOf(q + ' ' + fromQ), rel = ok.filter(x => conceptsOf(x).some(c => cq.includes(c))).concat(ok).filter((x, i, arr) => arr.indexOf(x) === i).slice(0, 2);
   if (rel.length && !fromDoc) h += '<div class="related"><small>Related</small>' + rel.map(x => '<button type="button" class="rel" data-ask="' + esc(x) + '">' + esc(x) + '<span>→</span></button>').join('') + '</div>';
   return h;
@@ -1878,9 +1964,8 @@ function countChat(kind) { ST.chat = ST.chat || { asked: 0, answered: 0, decline
 function refreshNav() {
   const c = counts();
   const set = (id, n, hot) => { const el = $(id); if (!el) return; el.textContent = n; el.hidden = !n; el.classList.toggle('count--hot', !!hot); };
+  // drafts waiting for review, the same number as the Drafts tab in Build
   set('navReview', c.pending, true);
-  set('navQuestions', c.needCall + c.gaps);
-  set('navApproved', c.approved);
   set('navPeople', ST.people.filter(x => x.status === 'invited').length);
   set('navCompanies', ST.companies.length);
   // My loop opens the loop where it stands, with today's numbers
@@ -2136,7 +2221,7 @@ if (document.body.dataset.persona !== 'super') {
 (function askLojo() {
   const fab = $('fab'); if (!fab) return;
   const panel = $('askp'), log = $('askLog'), host = $('askHost'), isPage = !!host;
-  const store = () => DRAFTS.filter(r => decision(r).status === 'approved').map(r => ({ r, q: QUESTIONS.find(q => q.id === r.qid).q, a: answerOf(r) }));
+  const store = () => DRAFTS.filter(r => decision(r).status === 'approved').map(r => ({ r, q: allQuestions().find(q => q.id === r.qid).q, a: answerOf(r) }));
   // on the Ask lojo page the same assistant sits in the page instead of floating
   if (isPage) { host.appendChild(panel); panel.classList.add('is-page'); panel.hidden = false; fab.hidden = true; }
   const scroll = () => { log.scrollTop = log.scrollHeight; };
@@ -2184,7 +2269,7 @@ if (document.body.dataset.persona !== 'super') {
       const ws = q.match(/write (?:the |an? )?sop (?:for|on|about) (.+)/i);
       if (ws && window.LOJO_ROLE !== 'viewer') {
         const t = ws[1].replace(/[.?!]+$/, '');
-        const rids = DRAFTS.filter(r => decision(r).status === 'approved').map(r => [r.id, score(t, QUESTIONS.find(x => x.id === r.qid).q + ' ' + answerOf(r)).c]).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]).slice(0, 3).map(x => x[0]);
+        const rids = DRAFTS.filter(r => decision(r).status === 'approved').map(r => [r.id, score(t, allQuestions().find(x => x.id === r.qid).q + ' ' + answerOf(r)).c]).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]).slice(0, 3).map(x => x[0]);
         if (!rids.length) { say('bot am--miss', '<div class="miss"><b>No approved answer covers “' + esc(t) + '” yet</b><p>Every step of an SOP needs a source. Approve an answer about it in Build first.</p></div>'); return; }
         const me = ST.people.find(p => p.id === ROLE_PERSON[window.LOJO_ROLE || 'admin']);
         const sop = draftSop({ title: t.charAt(0).toUpperCase() + t.slice(1), rids, from: 'ask', by: me ? me.name : 'You' }); save();
@@ -2307,7 +2392,7 @@ const CONTEXT = {
   'd4|§3': ['§3 Annual plans. ', ' Monthly plans are not refunded after the first 30 days.'],
   'd9|§2': ['§2 Renewals. ', ' We email a reminder 30 days before each renewal.'],
 };
-const Q = (r) => QUESTIONS.find(q => q.id === r.qid).q;
+const Q = (r) => allQuestions().find(q => q.id === r.qid).q;
 // gaps a draft leans on: a source quote mentions something no document explains
 const GAP_WORDS = { g1: /enterprise/i, g2: /chargeback fee/i, g3: /retention/i, g4: /onboarding manager/i, g5: /over the limit|requests per second|burst/i };
 const gapsOf = (r) => GAPS.filter(g => !ST.gaps[g.id] && r.src.some(s => GAP_WORDS[g.id].test(s[2])));
@@ -2321,20 +2406,38 @@ const isGap = (r) => gapsOf(r).length > 0;
 // questions someone added from a gap (Add as a question)
 const fromGap = (qid) => { const q = allQuestions().find(x => x.id === qid); return !!(q && q.gap); };
 let lq = '', gsel = null, fsel = null, fwrite = false;
+// Needs you: one list of triage, gaps and failed drafts; nsel is "kind:id"
+let nsel = null, tsel = null, asking = null;
+// Human: questions no source answers, written by a person
+let osel = null, owrite = false;
+const JK = '<span class="spacer"></span><span class="sub"><kbd>J</kbd> <kbd>K</kbd> to move</span>';
+const needsPick = (r) => !!r.conflict && decision(r).status === 'pending' && !decision(r).pick;
 // filters: several can be on; a row shows if it matches any of them
 const ltags = new Set();
-const onlyGaps = () => ltags.size === 1 && ltags.has('gap');
+const onlyGaps = () => false;
 // questions lojo couldn't draft: no answer with sources that check out
-const failedQs = () => tab !== 'pending' ? [] : allQuestions().filter(q => (ST.draftFailed || {})[q.id] && (!lq || q.q.toLowerCase().includes(lq)));
+const failedQs = () => tab !== 'needs' ? [] : allQuestions().filter(q => (ST.draftFailed || {})[q.id] && (!lq || q.q.toLowerCase().includes(lq)));
 // open gaps: things the documents mention but never explain
 const openGaps = () => GAPS.filter(g => !ST.gaps[g.id] && (!lq || (g.term + ' ' + g.why).toLowerCase().includes(lq)));
 const gapDrafts = (g) => DRAFTS.filter(r => decision(r).status !== 'approved' && gapsOf(r).some(x => x.id === g.id));
-const TAGS = [['all', 'All', () => true], ['question', 'Questions', (r) => !isGap(r)], ['gap', 'Gaps', isGap], ['failed', 'Draft failed', () => false], ['conflict', 'Sources disagree', (r) => !!r.conflict]];
+const TAGS_DRAFTS = [['all', 'All', () => true], ['question', 'Questions', (r) => !isGap(r)], ['gap', 'Relies on a gap', isGap], ['conflict', 'Sources disagree', (r) => !!r.conflict]];
+const TAGS_NEEDS = [['all', 'All', () => true], ['triage', 'Triage', () => false], ['gap', 'Gaps', () => false], ['failed', 'Draft failed', () => false]];
+let TAGS = TAGS_DRAFTS;
 const tagOk = (r) => !ltags.size || [...ltags].some(k => TAGS.find(t => t[0] === k)[2](r));
-const showFailed = () => !ltags.size || ltags.has('failed') || ltags.has('question');
+const showFailed = () => !ltags.size || ltags.has('failed');
+const triageQs = () => tasks().triage.filter(q => !lq || q.q.toLowerCase().includes(lq));
+function needItems() {
+  const on = (k) => !ltags.size || ltags.has(k), out = [];
+  if (on('triage')) triageQs().forEach(q => out.push(['triage', q.id]));
+  if (on('gap')) openGaps().forEach(g => out.push(['gap', g.id]));
+  if (on('failed')) failedQs().forEach(q => out.push(['failed', q.id]));
+  return out;
+}
+const ownQs = () => tasks().noSource.filter(q => !lq || q.q.toLowerCase().includes(lq));
 function renderTags() {
+  TAGS = tab === 'needs' ? TAGS_NEEDS : TAGS_DRAFTS;
   const base = DRAFTS.filter(inTab), nf = failedQs().length;
-  const count = (k, f) => k === 'gap' ? GAPS.filter(g => !ST.gaps[g.id]).length : k === 'failed' ? nf : base.filter(f).length + (k === 'question' ? nf : 0);
+  const count = (k, f) => tab === 'needs' ? (k === 'triage' ? triageQs().length : k === 'gap' ? openGaps().length : nf) : base.filter(f).length;
   $('ltags').innerHTML = TAGS.filter(t => t[0] !== 'all').map(([k, l, f]) => { const n = count(k, f), on = ltags.has(k); return (n || on) ? '<label class="lfitem"><input type="checkbox" data-tag="' + k + '"' + (on ? ' checked' : '') + '><span>' + l + '</span><em>' + n + '</em></label>' : ''; }).join('') +
     (ltags.size ? '<button type="button" class="lfclear" data-reset>Clear all</button>' : '');
   $('lfActive').hidden = !ltags.size;
@@ -2349,22 +2452,41 @@ const rowAv = (k) => '<span class="rav rav--' + k + '" title="' + ROW_ICON[k][1]
 // compact source count for list rows; hover says "3 sources"
 const srcBadge = (n) => '<span class="srcb" title="' + nsrc(n) + '" aria-label="' + nsrc(n) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>' + n + '</span>';
 function badges(r, inList) {
-  const d = decision(r); let b = isGap(r) ? '' : '<span class="badge badge--q">Question</span>';
+  const d = decision(r); let b = '';
   if (r.conflict) b += '<span class="badge badge--amber">Sources disagree</span>';
   const gs = gapsOf(r); if (gs.length) b = '<span class="badge badge--gap" title="' + esc(gs.map(g => g.term).join(', ')) + '">Gap</span>' + b;
   if (fromGap(r.qid)) b += '<span class="badge badge--fromgap" title="Added as a question from a gap">From gap</span>';
-  if (!inList) b += '<span class="badge badge--muted">' + nsrc(r.src.length) + '</span>';
   if (d.by) b += '<span class="badge badge--muted">By ' + esc(d.by.split(' ')[0]) + '</span>';
   if (d.edited) b += '<span class="badge badge--muted">Edited</span>';
   if (ST.sopLinks[r.id]) b += '<span class="badge badge--sop" title="Linked to ' + ST.sopLinks[r.id].sop + '">SOP</span>';
   return b;
 }
 function renderList() {
-  const c = counts();
-  $('nP').textContent = c.pending; $('nA').textContent = c.approved; $('nF').textContent = c.final;
+  const c = counts(), T = tasks();
+  $('nP').textContent = c.pending; $('nN').textContent = T.needs; $('nA').textContent = c.approved; $('nF').textContent = T.human;
   const done = c.approved + c.final;
   $('mCount').textContent = done + ' of ' + c.drafts; $('mBar').style.width = (done / c.drafts * 100) + '%';
   renderTags();
+  if (tab === 'needs') {
+    const its = needItems(), key = (i) => i[0] + ':' + i[1];
+    if (!its.some(i => key(i) === nsel)) nsel = its.length ? key(its[0]) : null;
+    const [nk, nid] = nsel ? nsel.split(':') : [null, null];
+    tsel = nk === 'triage' ? nid : null; gsel = nk === 'gap' ? nid : null; fsel = nk === 'failed' ? nid : null;
+    const sl = (k, id) => (k + ':' + id === nsel ? ' is-sel' : '');
+    // one heading per kind instead of a tag on every row
+    const GRP = { triage: 'Say whether it matters', gap: 'Gaps that need a source', failed: 'Drafts that failed' };
+    const head = (k, i) => i === 0 || its[i - 1][0] !== k ? '<li class="lgrp" aria-hidden="true">' + GRP[k] + '<em>' + its.filter(x => x[0] === k).length + '</em></li>' : '';
+    $('items').innerHTML = its.length ? its.map(([k, id], i) => head(k, i) + (() => {
+      if (k === 'triage') { const q = allQuestions().find(x => x.id === id);
+        return '<li class="item has-av has-side' + sl(k, id) + '" data-nk="' + k + ':' + id + '">' + rowAv('question') + '<b>' + esc(q.q) + '</b><span class="meta"></span><span class="rside">Matters?</span></li>'; }
+      if (k === 'gap') { const g = GAPS.find(x => x.id === id);
+        return '<li class="item has-av' + sl(k, id) + (id === HL_GAP ? ' is-hl' : '') + '" data-nk="' + k + ':' + id + '">' + rowAv('gap') + '<b>' + esc(g.term) + '</b><span class="meta">' + ((ST.gapDocs || {})[id] ? '<span class="badge badge--ok">Document sent</span>' : (ST.gapAsked || {})[id] ? '<span class="badge badge--info">Asked ' + esc(ST.gapAsked[id].split(' ')[0]) + '</span>' : '') + '</span></li>'; }
+      const q = allQuestions().find(x => x.id === id), n = (q.docs || []).length;
+      return '<li class="item has-av is-failed' + sl(k, id) + '" data-nk="' + k + ':' + id + '">' + rowAv('failed') + '<b>' + esc(q.q) + '</b><span class="meta">' + (q.gap ? '<span class="badge badge--fromgap">From gap</span>' : '') +
+        '</span><span class="fstate">' + ((ST.draftFailed || {})[q.id] === 'retrying' ? 'Drafting again…' : 'Draft failed') + '<small>' + srcBadge(n) + '</small></span></li>';
+    })()).join('') : '<li class="empty"><b>' + (lq || ltags.size ? 'Nothing matches.' : 'Nothing needs you.') + '</b>' + (lq || ltags.size ? 'Try other words or another tag.' : 'Every question, gap and failed draft is handled.') + '</li>';
+    return;
+  }
   if (onlyGaps()) {
     const gl = openGaps();
     if (!gl.some(g => g.id === gsel)) gsel = gl.length ? gl[0].id : null;
@@ -2374,6 +2496,7 @@ function renderList() {
     return;
   }
   const fl = showFailed() ? failedQs() : [];
+  const drafting = tab === 'pending' ? ST.extra.filter(q => q.drafting) : [];
   const list = (ltags.size === 1 && ltags.has('failed')) ? [] : DRAFTS.filter(inTab).filter(r => tagOk(r) && (!lq || (Q(r) + ' ' + answerOf(r)).toLowerCase().includes(lq)));
   if (fsel && !fl.some(q => q.id === fsel)) fsel = null;
   if (!list.length && !fsel && fl.length) fsel = fl[0].id;
@@ -2381,10 +2504,17 @@ function renderList() {
     return '<li class="item has-av is-failed' + (q.id === fsel ? ' is-sel' : '') + '" data-fq="' + q.id + '">' + rowAv('failed') + '<b>' + esc(q.q) + '</b><span class="meta"><span class="badge badge--q">Question</span>' + (q.gap ? '<span class="badge badge--fromgap">From gap</span>' : '') +
       '</span><span class="fstate">' + ((ST.draftFailed || {})[q.id] === 'retrying' ? 'Drafting again…' : 'Draft failed') + '<small>' + srcBadge(n) + '</small></span></li>'; }).join('');
   if (!list.some(r => r.id === sel)) { sel = list.length ? list[0].id : null; mode = 'view'; }
-  const rows = list.map(r => '<li class="item has-av has-side' + '' + (r.id === sel && !fsel ? ' is-sel' : '') + (hasHl(r) ? ' is-hl' : '') + '" data-id="' + r.id + '">' + rowAv(isGap(r) ? 'gap' : 'question') + '' +
+  const oq = tab === 'final' ? ownQs() : [];
+  if (osel && !oq.some(q => q.id === osel)) { osel = null; owrite = false; }
+  if (tab === 'final' && !list.length && !osel && oq.length) osel = oq[0].id;
+  const rows = list.map(r => '<li class="item has-av has-side' + '' + (r.id === sel && !fsel && !osel ? ' is-sel' : '') + (hasHl(r) ? ' is-hl' : '') + '" data-id="' + r.id + '">' + rowAv(isGap(r) ? 'gap' : 'question') + '' +
     '<b>' + esc(Q(r)) + '</b><span class="meta">' + badges(r, true) + '</span><span class="rside">' + '' + srcBadge(r.src.length) + '</span></li>');
-  rows.splice(Math.min(3, rows.length), 0, fhtml); // failed questions sit among the others, fourth in the list
-  $('items').innerHTML = (list.length || fl.length) ? rows.join('')
+  rows.splice(Math.min(3, rows.length), 0, fhtml);
+  drafting.slice().reverse().forEach(q => rows.unshift('<li class="item has-av has-side is-drafting" aria-busy="true">' + rowAv('question') + '<b>' + esc(q.q) + '</b><span class="meta"><span class="badge badge--fromgap">From gap</span></span><span class="rside"><span class="spin" style="width:10px;height:10px"></span> Drafting…</span></li>'));
+  // questions no source answers: only a person can write these
+  oq.forEach(q => { const n = (ST.asks || {})[q.id];
+    rows.push('<li class="item has-av has-side' + (q.id === osel ? ' is-sel' : '') + '" data-oq="' + q.id + '">' + rowAv('question') + '<b>' + esc(q.q) + '</b><span class="meta"><span class="badge badge--muted">No source</span>' + (q.gap ? '<span class="badge badge--fromgap">From gap</span>' : '') + '</span><span class="rside">' + (n ? 'Asked ' + n + '×' : '') + '</span></li>'); });
+  $('items').innerHTML = (list.length || fl.length || oq.length || drafting.length) ? rows.join('')
     : (lq || ltags.size) ? '<li class="empty"><b>Nothing matches.</b>Try other words or another tag.</li>'
     : '<li class="empty"><b>' + (tab === 'pending' ? 'Nothing to review.' : 'Nothing here yet.') + '</b>' + (tab === 'pending' ? 'The first batch is done.' : '') + '</li>';
 }
@@ -2397,18 +2527,40 @@ function renderGap() {
     ((ST.gapDocs || {})[g.id] ? '<div class="gsent"><span class="spin"></span><span><b>' + esc(ST.gapDocs[g.id]) + '</b> is being read. The gap closes once it’s explained.</span></div>' : '') +
     '<p class="seclbl">Where it’s mentioned</p><div class="quotes">' + g.where.map(([doc, loc, text]) => '<div class="quote is-gap"><div class="qtop"><b>' + esc(docShort(doc)) + '</b><em>' + esc(loc) + '</em></div><p>“' + esc(text) + '”</p></div>').join('') + '</div>' +
     (ds.length ? '<p class="seclbl">Drafts that rely on it</p><div class="gdrafts">' + ds.map(r => '<button type="button" class="gdraft" data-open="' + r.id + '">' + esc(Q(r)) + ' <span>Open →</span></button>').join('') + '</div>' : '') +
-    '<div class="acts"><button class="btn btn--primary" type="button" data-senddoc="' + g.id + '">Send a document that explains it</button><button class="btn btn--secondary" type="button" data-gapq="' + g.id + '">Add as a question</button><button class="btn btn--ghost" type="button" data-gap="' + g.id + '">Not needed</button></div>';
+    ((ST.gapAsked || {})[g.id] && asking !== g.id ? '<div class="gsent"><span>✓</span><span><b>Asked ' + esc(ST.gapAsked[g.id]) + '.</b> Their answer comes back here.</span></div>' : '') +
+    (asking === g.id ? '<div class="reject"><label class="seclbl" for="ownerSel" style="margin:0">Who knows the answer?</label><select class="text" id="ownerSel">' + ST.people.filter(p => p.status === 'member').map(p => '<option>' + esc(p.name) + '</option>').join('') + '</select>' +
+      '<textarea class="text" id="ownerNote" placeholder="Add a note (optional)" style="min-height:70px"></textarea><p class="sub">They get an email with the passages above. Their answer comes back to this gap.</p></div>' +
+      '<div class="acts"><button class="btn btn--primary" type="button" data-askgo="' + g.id + '">Send</button><button class="btn btn--ghost" type="button" data-askx>Cancel</button></div>'
+    : '<p class="gflow">Add as a question: lojo drafts it first. It goes to a person only if lojo can’t find an answer.</p><div class="acts"><button class="btn btn--primary" type="button" data-senddoc="' + g.id + '">Upload a document</button><button class="btn btn--secondary" type="button" data-ask="' + g.id + '">Ask an owner</button><button class="btn btn--secondary" type="button" data-gapq="' + g.id + '">Add as a question</button><button class="btn btn--ghost" type="button" data-gap="' + g.id + '">Dismiss</button>' + JK + '</div>');
+  if (asking === g.id) $('ownerSel').focus();
 }
 function renderFailed() {
   const q = allQuestions().find(x => x.id === fsel), why = (ST.draftFailed || {})[q.id], again = why === 'retrying';
-  $('detail').innerHTML = '<div class="meta" style="display:flex;gap:6px"><span class="badge badge--q">Question</span></div><h2>' + esc(q.q) + '</h2>' +
+  $('detail').innerHTML = '<div class="meta" style="display:flex;gap:6px"><span class="badge badge--bad">Draft failed</span></div><h2>' + esc(q.q) + '</h2>' +
     (again ? '<div class="answer" style="display:flex;gap:10px;align-items:center;color:var(--muted)"><span class="spin"></span>lojo is drafting it again from its sources.</div>'
       : '<div class="fnote2"><b>No draft with sources that check out could be written.</b>' + (why && why !== true ? '<span>' + esc(why) + '</span>' : '') + '</div>') +
     ((q.docs || []).length ? '<p class="seclbl">Sources it tried</p><div class="quotes" style="display:flex;flex-wrap:wrap;gap:6px">' + q.docs.map(d => srcChip(d, '')).join('') + '</div>' : '') +
     (fwrite ? '<p class="seclbl">Your answer</p><textarea class="text" id="fBox" style="min-height:130px;padding:12px 13px" placeholder="Write the answer as you would give it."></textarea>' : '') +
     (again ? '' : '<div class="acts">' + (fwrite ? '<button class="btn btn--primary" data-fa="save">Save &amp; approve</button><button class="btn btn--ghost" data-fa="cancel">Cancel</button>'
-      : '<button class="btn btn--primary" data-fa="retry">Try again</button><button class="btn btn--secondary" data-fa="write">Write my own answer</button><button class="btn btn--ghost" data-fa="leave">Leave out</button>') + '</div>');
+      : '<button class="btn btn--primary" data-fa="retry">Try again</button><button class="btn btn--secondary" data-fa="write">Write my own answer</button><button class="btn btn--ghost" data-fa="leave">Dismiss</button>' + JK) + '</div>');
   if (fwrite) $('fBox').focus();
+}
+function renderTriage() {
+  const q = allQuestions().find(x => x.id === tsel);
+  $('detail').innerHTML = '<div class="meta" style="display:flex;gap:6px"><span class="badge badge--amber">Triage</span></div><h2>' + esc(q.q) + '</h2>' +
+    '<p class="gwhy">lojo found this question in your sources. Say whether it matters. Only questions that matter get drafted.</p>' +
+    ((q.docs || []).length ? '<p class="seclbl">Found in</p><div class="quotes" style="display:flex;flex-wrap:wrap;gap:6px">' + q.docs.map(d => srcChip(d, '')).join('') + '</div>' : '') +
+    '<div class="acts"><button class="btn btn--primary" type="button" data-ta="yes">It matters</button><button class="btn btn--ghost" type="button" data-ta="no">Doesn’t matter</button>' + JK + '</div>';
+}
+function renderOwn() {
+  const q = allQuestions().find(x => x.id === osel), g = q.gap && GAPS.find(x => x.id === q.gap), n = (ST.asks || {})[q.id];
+  $('detail').innerHTML = '<div class="meta" style="display:flex;gap:6px;flex-wrap:wrap"><span class="badge badge--muted">No source</span>' + (q.gap ? '<span class="badge badge--fromgap">From gap</span>' : '') + '</div><h2>' + esc(q.q) + '</h2>' +
+    '<div class="done-note no">' + (q.why ? esc(q.why) + ' Write the answer yourself, or upload a document that does.' : 'No source answers this yet. Write the answer yourself, or upload a document that does.') + '</div>' +
+    (n ? '<p class="gwhy">Asked ' + n + ' times in Ask lojo and email.</p>' : '') + (g ? '<p class="gwhy">' + esc(g.why) + '</p>' : '') +
+    (owrite ? '<p class="seclbl">Your answer</p><textarea class="text" id="oBox" style="min-height:130px;padding:12px 13px" placeholder="Write the answer as you would give it."></textarea><div style="height:22px"></div>' : '') +
+    '<div class="acts">' + (owrite ? '<button class="btn btn--primary" type="button" data-oa="save">Save &amp; approve</button><button class="btn btn--ghost" type="button" data-oa="cancel">Cancel</button>'
+      : '<button class="btn btn--primary" type="button" data-oa="write">Write my own answer</button><button class="btn btn--secondary" type="button" data-oa="upload">Upload a document</button><button class="btn btn--ghost" type="button" data-oa="leave">Leave out</button>' + JK) + '</div>';
+  if (owrite) $('oBox').focus();
 }
 // a call as one readable log: who, when, how long; only the turns lojo used, with a little context
 const CALLS = {
@@ -2474,16 +2626,19 @@ function callLog(k) {
     '<button class="more" type="button" data-full="' + esc(k) + '" aria-expanded="' + open + '">' + (open ? 'Show only what was used' : 'Show full call (' + L.length + ' turns)') + '</button></div>';
 }
 function renderDetail() {
-  if (onlyGaps()) return renderGap();
-  if (fsel) return renderFailed();
+  if (tab === 'needs') {
+    if (tsel) return renderTriage(); if (gsel) return renderGap(); if (fsel) return renderFailed();
+    $('detail').innerHTML = '<div class="empty"><b>Nothing needs you.</b>Every question, gap and failed draft is handled.</div>'; return;
+  }
+  if (tab === 'final' && osel) return renderOwn();
   const r = DRAFTS.find(x => x.id === sel);
   if (!r) { $('detail').innerHTML = '<div class="empty"><b>Nothing to review. The loop is running.</b>Approved answers are in the store; try them in Ask lojot.</div>'; return; }
   const d = decision(r), ans = answerOf(r);
   let h = '<div class="meta" style="display:flex;gap:6px;flex-wrap:wrap">' + badges(r) + '</div><h2>' + esc(Q(r)) + '</h2>';
   const other = ST.others && ST.others[r.id], gs = gapsOf(r);
   // the answer relies on something the documents never explain: check it before approving
-  if (gs.length && d.status !== 'approved') h += '<div class="gapnote">' + gs.map(g => '<div class="g' + (g.id === HL_GAP ? ' is-hl' : '') + '"><span class="badge badge--gap">' + (g.id === HL_GAP ? 'From Insights' : 'Knowledge gap') + '</span><div><b>' + esc(g.term) + '</b>' + esc(g.why) + ' Check this answer doesn’t rely on it.' +
-    '<div class="gacts"><button class="btn btn--secondary" type="button" data-senddoc="' + g.id + '">Send a document that explains it</button><button class="btn btn--secondary" type="button" data-gapq="' + g.id + '">Add as a question</button><button class="btn btn--ghost" type="button" data-gap="' + g.id + '">Not needed</button></div></div></div>').join('') + '</div>';
+  if (gs.length && d.status !== 'approved') h += '<div class="gapnote">' + gs.map(g => '<div class="g' + (g.id === HL_GAP ? ' is-hl' : '') + '"><div><b>' + (g.id === HL_GAP ? 'From Insights · ' : 'Relies on a gap · ') + esc(g.term) + '.</b>' + esc(g.why) + ' Check this answer doesn’t rely on it.' +
+    '<div class="gacts"><button class="btn btn--ghost" type="button" data-senddoc="' + g.id + '">Upload a document</button><button class="btn btn--ghost" type="button" data-gapq="' + g.id + '">Add as a question</button><button class="btn btn--ghost" type="button" data-gap="' + g.id + '">Dismiss</button></div></div></div>').join('') + '</div>';
   // G10: someone else decided this draft while it was open here
   if (other && d.status === 'pending') h += '<div class="other"><span class="av av--p ' + tone(other.by) + '">' + esc(other.by.split(' ').map(x => x[0]).join('')) + '</span><div><b>' + esc(other.by) + ' ' + esc(other.action) + ' this ' + esc(other.when) + '.</b>' +
     'Your screen was out of date, so nothing you do here will change it. Their decision stands.<div class="btns"><button class="btn btn--primary btn--sm" data-a="ackOther">Got it, next draft</button><button class="btn btn--ghost btn--sm" data-a="seeOther">See their version</button></div></div></div>';
@@ -2531,16 +2686,30 @@ function renderDetail() {
   else if (mode === 'edit') acts = '<button class="btn btn--primary" data-a="save">' + (d.status === 'approved' ? 'Save changes' : 'Save &amp; approve') + '</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
   else if (mode === 'reject') acts = '<button class="btn btn--danger" data-a="confirm">Reject &amp; rewrite</button><button class="btn btn--secondary" data-a="tohuman">Send to Human</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
   else if (d.status === 'pending' && ST.others && ST.others[r.id]) acts = '';
-  else if (d.status === 'pending') acts = '<button class="btn btn--primary" data-a="approve">Approve <kbd>A</kbd></button><button class="btn btn--secondary" data-a="edit">Edit &amp; approve <kbd>E</kbd></button><button class="btn btn--danger" data-a="reject">Reject <kbd>R</kbd></button><button class="btn btn--secondary" data-a="sop" aria-expanded="' + sopOpen + '">Link to SOP <kbd>L</kbd></button><button class="btn btn--ghost" data-a="own">Write my own answer</button><span class="spacer"></span><span class="sub"><kbd>J</kbd> <kbd>K</kbd> to move</span>';
+  else if (needsPick(r)) {
+    const old = r.src.find(x => x[0] === r.conflict), nw = r.src.find(x => x[0] !== r.conflict);
+    h += '<p class="seclbl">Sources disagree. Which one is right?</p><div class="vs">' + [nw, old].map(x => '<div class="quote' + (x === old ? ' is-warn' : '') + '"><div class="qtop"><b>' + esc(docShort(x[0])) + '</b><em>' + esc(x[1]) + '</em>' + (x === old ? '<span class="badge badge--amber">Older</span>' : '<span class="badge badge--ok">Newer</span>') + '</div><p>“' + esc(x[2]) + '”</p>' +
+      '<button class="btn btn--secondary btn--sm" type="button" data-use="' + x[0] + '">Use this source</button></div>').join('') + '</div>';
+    acts = '<button class="btn btn--danger" type="button" data-a="retireold">Retire the old one</button><span class="sub">' + esc(docShort(old[0])) + ' stops being used for drafts and Ask lojo.</span>' + JK;
+  }
+  else if (d.status === 'pending') acts = '<button class="btn btn--primary" data-a="approve" title="Approve (A)">Approve <kbd>A</kbd></button><button class="btn btn--secondary" data-a="edit" title="Edit &amp; approve (E)">Edit &amp; approve <kbd>E</kbd></button><button class="btn btn--danger" data-a="reject" title="Reject (R)">Reject <kbd>R</kbd></button><button class="btn btn--secondary" data-a="sop" aria-expanded="' + sopOpen + '" title="Link to SOP (L)">Link to SOP <kbd>L</kbd></button><button class="btn btn--ghost" data-a="own">Write my own answer</button><span class="spacer"></span><span class="sub"><kbd>J</kbd> <kbd>K</kbd> to move</span>';
   else if (d.status === 'final') acts = '<button class="btn btn--primary" data-a="edit">Write the answer</button><button class="btn btn--ghost" data-a="undo">Back to review</button>';
   else acts = '<button class="btn btn--primary" data-a="edit">Edit answer</button><button class="btn btn--secondary" data-a="sop" aria-expanded="' + sopOpen + '">Link to SOP <kbd>L</kbd></button><button class="btn btn--ghost" data-a="undo">Undo approval</button><span class="spacer"></span><span class="sub">Edits go live in Ask lojo as soon as you save.</span>';
+  if (r.conflict && d.pick && d.status === 'pending' && mode === 'view') h += '<div class="picked"><span>✓</span><span>Using <b>' + esc(docShort(d.pick)) + '</b>. The draft follows it.</span><span class="spacer"></span><button class="btn btn--ghost btn--sm" type="button" data-a="repick">Change</button></div>';
   if (acts) h += '<div class="acts">' + acts + '</div>';
   if (sopOpen && mode === 'view' && (d.status === 'pending' || d.status === 'approved')) h += sopPanel(r);
   $('detail').innerHTML = h;
   if (sopOpen && sopFocus) { sopFocus = false; const p = $('sopp'); if (p) { p.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); const f = p.querySelector('[data-sopl], #sopT'); if (f) f.focus({ preventScroll: true }); } }
   if (mode === 'edit') { const t = $('editBox'); if (typed !== null) { t.value = typed; typed = null; } t.focus(); t.setSelectionRange(t.value.length, t.value.length); }
 }
-function render() { renderList(); renderDetail(); }
+// titles stop at two lines; the full text shows on hover, only where it was cut
+function clampTitles() { document.querySelectorAll('#items .item > b').forEach(b => { if (b.scrollHeight > b.clientHeight + 1) b.title = b.textContent; else b.removeAttribute('title'); }); }
+let shownKey = null;
+function render() {
+  renderList(); renderDetail(); clampTitles();
+  // a new item opens at its top
+  const k = [tab, sel, nsel, osel].join('|'); if (k !== shownKey) { shownKey = k; $('detail').scrollTop = 0; }
+}
 const SOPIC = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10l1.5 1.5L13 9M9 16l1.5 1.5L13 15"/></svg>';
 let sopFocus = false;
 // ranked by meaning: the step this answer fits best in each SOP
@@ -2633,6 +2802,8 @@ function act(a) {
     if (a === 'ackOther') { next(); } else { tab = 'approved'; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === 'approved')); sel = r.id; }
   }
   if (a === 'edit') { mode = 'edit'; refs = (d.refs || []).slice(); linking = false; }
+  if (a === 'repick') { delete d.pick; save(); }
+  if (a === 'retireold') { ST.retired = ST.retired || {}; ST.retired[r.conflict] = true; d.pick = r.src.find(x => x[0] !== r.conflict)[0]; save(); toast(docShort(r.conflict) + ' retired. You can restore it in Sources.'); }
   // a person answers it from scratch instead of fixing the draft
   if (a === 'own') {
     // the draft moves to Human, opened for you to write
@@ -2682,39 +2853,57 @@ $('detail').addEventListener('click', (e) => {
     const id = fsel, act2 = fa.dataset.fa; ST.draftFailed = ST.draftFailed || {};
     if (act2 === 'write') { fwrite = true; renderDetail(); }
     if (act2 === 'cancel') { fwrite = false; renderDetail(); }
-    if (act2 === 'save') { const v = $('fBox').value.trim(); if (!v) { $('fBox').focus(); return; } delete ST.draftFailed[id]; fwrite = false; fsel = null; save(); toast('Your answer is approved'); render(); }
-    if (act2 === 'leave') { delete ST.draftFailed[id]; ST.matters = ST.matters || {}; ST.matters[id] = false; fsel = null; save(); toast('Left out'); render(); }
+    if (act2 === 'save') { const v = $('fBox').value.trim(); if (!v) { $('fBox').focus(); return; } ST.answered = ST.answered || {}; ST.answered[id] = v; delete ST.draftFailed[id]; fwrite = false; fsel = null; save(); toast('Your answer is approved'); render(); }
+    if (act2 === 'leave') { delete ST.draftFailed[id]; ST.matters = ST.matters || {}; ST.matters[id] = false; fsel = null; save(); toast('Dismissed. It won’t be drafted.'); render(); }
     if (act2 === 'retry') {
       ST.draftFailed[id] = 'retrying'; save(); render();
       setTimeout(() => { delete ST.draftFailed[id]; if (fsel === id) fsel = null; save(); render(); toast('Drafted. It joins the next batch to review.'); }, 1600);
     }
     return;
   }
+  const us = e.target.closest('[data-use]'); if (us) { const d = ST.decisions[sel] = ST.decisions[sel] || { status: 'pending' }; d.pick = us.dataset.use; save(); toast('Using ' + docShort(d.pick)); render(); return; }
+  const ta = e.target.closest('[data-ta]'); if (ta) { ST.matters[tsel] = ta.dataset.ta === 'yes'; save(); toast(ta.dataset.ta === 'yes' ? 'It matters. lojo drafts it for the next batch.' : 'Left out. It won’t be drafted.'); render(); return; }
+  const ak = e.target.closest('[data-ask]'); if (ak) { asking = ak.dataset.ask; renderDetail(); return; }
+  if (e.target.closest('[data-askx]')) { asking = null; renderDetail(); return; }
+  const ag = e.target.closest('[data-askgo]'); if (ag) { ST.gapAsked = ST.gapAsked || {}; ST.gapAsked[ag.dataset.askgo] = $('ownerSel').value; asking = null; save(); toast('Asked ' + ST.gapAsked[ag.dataset.askgo] + '. Their answer comes back here.'); render(); return; }
+  const oa = e.target.closest('[data-oa]');
+  if (oa) {
+    const k2 = oa.dataset.oa;
+    if (k2 === 'write') { owrite = true; renderDetail(); }
+    if (k2 === 'cancel') { owrite = false; renderDetail(); }
+    if (k2 === 'upload') location.href = 'sources.html?src=upload';
+    if (k2 === 'save') { const v = $('oBox').value.trim(); if (!v) { $('oBox').focus(); return; } ST.answered = ST.answered || {}; ST.answered[osel] = v; owrite = false; osel = null; save(); toast('Your answer is approved'); render(); }
+    if (k2 === 'leave') { ST.matters[osel] = false; owrite = false; osel = null; save(); toast('Left out. It won’t be answered.'); render(); }
+    return;
+  }
   const sd = e.target.closest('[data-senddoc]'); if (sd) { location.href = 'sources.html?src=upload&gap=' + sd.dataset.senddoc; return; }
   const od = e.target.closest('[data-open]'); if (od) { ltags.clear(); sel = od.dataset.open; const s0 = decision(DRAFTS.find(x => x.id === sel)).status; tab = s0 === 'final' ? 'final' : 'pending'; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === tab)); mode = 'view'; render(); return; }
-  const gb = e.target.closest('[data-gap]'); if (gb) { ST.gaps[gb.dataset.gap] = true; save(); toast('Marked not needed'); render(); return; }
+  const gb = e.target.closest('[data-gap]'); if (gb) { ST.gaps[gb.dataset.gap] = true; save(); toast('Dismissed'); render(); return; }
   // turn the gap into a question someone answers
-  const gq = e.target.closest('[data-gapq]'); if (gq) { const g = GAPS.find(x => x.id === gq.dataset.gapq); ST.extra.push({ id: 'qx' + Date.now(), q: 'What is ' + g.term.replace(/^The /, 'the ') + '?', origin: 'you', docs: [], gap: g.id }); ST.gaps[g.id] = true; save(); toast('Added as a question in Insights'); render(); return; }
+  // the question goes to lojo first; a person gets it only if lojo can't find an answer
+  const gq = e.target.closest('[data-gapq]'); if (gq) { const g = GAPS.find(x => x.id === gq.dataset.gapq); const q = { id: 'qx' + Date.now(), q: 'What is the ' + (/^The /.test(g.term) ? g.term.slice(4) : g.term.replace(/^([A-Z])(?=[a-z])/, m => m.toLowerCase())) + '?', origin: 'you', docs: [], gap: g.id, drafting: true }; ST.extra.push(q); ST.gaps[g.id] = true; save(); toast('Added. lojo is drafting it.'); render(); finishGapDraft(q.id); return; }
   const st = e.target.closest('[data-st]'); if (st) { e.preventDefault(); if ($('sopT')) sopTitle = $('sopT').value; sopTab = st.dataset.st; sopFocus = true; renderDetail(); return; }
   const fm = e.target.closest('[data-fmt]'); if (fm) { sopTitle = $('sopT').value; sopFmt = fm.dataset.fmt; renderDetail(); return; }
   const sl = e.target.closest('[data-sopl]'); if (sl) { const [sid, step] = sl.dataset.sopl.split('|'); ST.sopLinks[sel] = { sop: sid, step: +step }; sopOpen = false; save(); render(); toast('Linked to ' + sid + ', step ' + (+step + 1)); return; }
   const b = e.target.closest('[data-a]'); if (b) act(b.dataset.a);
 });
 $('items').addEventListener('click', (e) => {
+  const nk = e.target.closest('[data-nk]'); if (nk) { nsel = nk.dataset.nk; fwrite = false; asking = null; render(); return; }
+  const oq = e.target.closest('[data-oq]'); if (oq) { osel = oq.dataset.oq; owrite = false; render(); return; }
   const gi = e.target.closest('[data-gapid]'); if (gi) { gsel = gi.dataset.gapid; render(); return; }
   const fq = e.target.closest('[data-fq]'); if (fq) { fsel = fq.dataset.fq; fwrite = false; render(); return; }
-  const li = e.target.closest('[data-id]'); if (li) { fsel = null; sel = li.dataset.id; mode = 'view'; sopOpen = false; render(); }
+  const li = e.target.closest('[data-id]'); if (li) { fsel = null; osel = null; owrite = false; sel = li.dataset.id; mode = 'view'; sopOpen = false; render(); }
 });
 const todayStr = () => new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }).replace(',', '');
 $('lq').addEventListener('input', (e) => { lq = e.target.value.trim().toLowerCase(); sel = null; render(); });
-const refilter = () => { sel = null; fsel = null; fwrite = false; render(); };
+const refilter = () => { sel = null; fsel = null; nsel = null; fwrite = false; render(); };
 $('lfBtn').addEventListener('click', (e) => { e.stopPropagation(); const m = $('ltags'); m.hidden = !m.hidden; $('lfBtn').setAttribute('aria-expanded', !m.hidden); });
 $('ltags').addEventListener('change', (e) => { const c = e.target.closest('[data-tag]'); if (!c) return; c.checked ? ltags.add(c.dataset.tag) : ltags.delete(c.dataset.tag); refilter(); });
 $('ltags').addEventListener('click', (e) => { e.stopPropagation(); if (e.target.closest('[data-reset]')) { ltags.clear(); refilter(); } });
 $('lfActive').addEventListener('click', (e) => { const u = e.target.closest('[data-untag]'); if (u) { ltags.delete(u.dataset.untag); refilter(); } if (e.target.closest('[data-reset]')) { ltags.clear(); refilter(); } });
 document.addEventListener('click', (e) => { if (!e.target.closest('.lfdrop')) { $('ltags').hidden = true; $('lfBtn').setAttribute('aria-expanded', 'false'); } });
 document.querySelectorAll('#rtabs .tab').forEach(t => t.addEventListener('click', () => {
-  tab = t.dataset.f; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x === t)); sel = null; fsel = null; mode = 'view'; ltags.clear(); render();
+  tab = t.dataset.f; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x === t)); sel = null; fsel = null; nsel = null; osel = null; owrite = false; asking = null; mode = 'view'; ltags.clear(); render();
 }));
 // full screen review: hides the sidebar and widens both columns; F toggles, Esc leaves
 function setFs(on) {
@@ -2731,13 +2920,16 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && document.body.classList.contains('is-fs') && mode === 'view' && !document.querySelector('dialog[open]')) { setFs(false); return; }
   const k = e.key.toLowerCase(), r = DRAFTS.find(x => x.id === sel);
   if (k === 'j' || k === 'k') {
-    const list = DRAFTS.filter(inTab), i = list.findIndex(x => x.id === sel);
-    const n = list[Math.max(0, Math.min(list.length - 1, i + (k === 'j' ? 1 : -1)))]; if (n) { sel = n.id; mode = 'view'; sopOpen = false; render(); }
+    const its = [...document.querySelectorAll('#items .item')], i = its.findIndex(x => x.classList.contains('is-sel'));
+    const n = its[Math.max(0, Math.min(its.length - 1, i + (k === 'j' ? 1 : -1)))];
+    if (n) { mode = 'view'; n.click(); const s2 = document.querySelector('#items .item.is-sel'); if (s2) s2.scrollIntoView({ block: 'nearest' }); }
+    return;
   }
-  if (r && decision(r).status === 'pending' && mode === 'view') {
+  const onDraft = r && !(tab === 'needs') && !(tab === 'final' && osel) && !needsPick(r);
+  if (onDraft && decision(r).status === 'pending' && mode === 'view') {
     if (k === 'a') act('approve'); if (k === 'e') act('edit'); if (k === 'r') act('reject');
   }
-  if (r && ['pending', 'approved'].includes(decision(r).status) && mode === 'view' && k === 'l') act('sop');
+  if (onDraft && ['pending', 'approved'].includes(decision(r).status) && mode === 'view' && k === 'l') act('sop');
   if (k === 'escape' && sopOpen) { sopOpen = false; renderDetail(); }
   if (k === 'escape' && mode !== 'view') act('cancel');
 });
@@ -2745,7 +2937,7 @@ const RP = new URLSearchParams(location.search);
 // arriving from an Insights action that has no draft to open yet
 (function fromInsights() {
   const q = RP.get('q') && allQuestions().find(x => x.id === RP.get('q')), g = RP.get('gap') && GAPS.find(x => x.id === RP.get('gap')), o = RP.get('opp') && RP.get('t');
-  const v = q ? ['Recurring question', q.q, (q.docs && q.docs.length ? 'lojo is drafting it from ' + q.docs.map(docShort).join(', ') + '. It lands in To review when it’s ready.' : 'Nothing in your documents answers it yet. Write the answer once and lojo reuses it every time it comes up.'), '#questions']
+  const v = q ? ['Recurring question', q.q, (q.docs && q.docs.length ? 'lojo is drafting it from ' + q.docs.map(docShort).join(', ') + '. It lands in Drafts when it’s ready.' : 'Nothing in your documents answers it yet. Write the answer once and lojo reuses it every time it comes up.'), '#questions']
     : g ? ['Knowledge gap', g.term, g.why + ' Explain it here so answers that mention it can be approved.', '#gaps']
     : o ? ['Opportunity', o, 'Write how support should answer this until it exists, so people get a straight answer today.', '#opportunities'] : null;
   if (!v) return;
@@ -2755,7 +2947,8 @@ const RP = new URLSearchParams(location.search);
 })();
 if (RP.get('edit')) mode = 'edit';
 // open a tab directly, e.g. from the dashboard
-if (['pending', 'approved', 'final'].includes(RP.get('tab'))) { tab = RP.get('tab'); document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === tab)); }
+if (RP.get('fq')) nsel = 'failed:' + RP.get('fq');
+if (['pending', 'needs', 'approved', 'final'].includes(RP.get('tab'))) { tab = RP.get('tab'); document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === tab)); }
 // from an Insights gap: open the first pending draft that leans on it
 if (RP.get('gap') && !RP.get('sel')) { const gr = DRAFTS.find(r => decision(r).status === 'pending' && gapsOf(r).some(g => g.id === RP.get('gap'))); if (gr) sel = gr.id; }
 if (RP.get('sel')) { sel = RP.get('sel'); const sr = DRAFTS.find(x => x.id === sel); if (sr) { const s = decision(sr).status; tab = s === 'redrafting' ? 'pending' : (s === 'approved' || s === 'final') ? s : 'pending'; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === tab)); } if (RP.get('full')) { const r = DRAFTS.find(x => x.id === sel); if (r) openFull.add(r.src[0][0] + '|' + r.src[0][1]); } }
@@ -2765,6 +2958,23 @@ if (RP.get('sop') === 'new' && !RP.get('sel')) {
   const fr = [DRAFTS.find(x => x.id === 'r9')].filter(x => x && ok(x))[0] || DRAFTS.filter(x => decision(x).status === 'approved' && !ST.sopLinks[x.id]).sort((a, b) => (sopRelated(b).length - sopRelated(a).length) || (sopMatches(a).length - sopMatches(b).length))[0];
   if (fr) { sel = fr.id; sopOpen = true; sopTab = 'new'; sopFocus = true; }
 }
+if (tab === 'needs' && RP.get('kind') && !nsel) { const it = needItems().find(i => i[0] === RP.get('kind')); if (it) nsel = it[0] + ':' + it[1]; }
+// a gap question drafted by lojo: from the document sent for the gap if there is one, otherwise it goes to a person
+function finishGapDraft(qid) {
+  setTimeout(() => {
+    const q = ST.extra.find(x => x.id === qid); if (!q || !q.drafting) return;
+    const g = GAPS.find(x => x.id === q.gap), sent = (ST.gapDocs || {})[q.gap];
+    q.drafting = false;
+    if (sent) {
+      const n = Date.now(), doc = { id: 'dx' + n, name: sent, pages: 2, size: '—', added: 'Today' };
+      const r = { id: 'rx' + n, qid: q.id, src: [[doc.id, 'p. 1', 'Sent to explain ' + g.term.replace(/^The /, 'the ') + '.']],
+        draft: 'Drafted from ' + sent.replace(/\.[a-z]+$/i, '') + '. Check the details against the document before you approve.', redraft: 'Drafted again from ' + sent.replace(/\.[a-z]+$/i, '') + '.' };
+      q.docs = [doc.id]; ST.xdocs = (ST.xdocs || []).concat([doc]); ST.xdrafts = (ST.xdrafts || []).concat([r]); DOCS.push(doc); DRAFTS.push(r);
+      save(); render(); toast('Drafted from ' + sent + '. It’s in Drafts.');
+    } else { q.why = 'lojo tried to draft it and couldn’t find an answer in your sources.'; save(); render(); toast('lojo couldn’t find an answer. It’s in Human for a person.'); }
+  }, 1800);
+}
+ST.extra.filter(q => q.drafting).forEach(q => finishGapDraft(q.id));
 // a rewrite cut short by leaving the page finishes when you come back
 Object.keys(ST.decisions).forEach(id => { if (ST.decisions[id].status === 'redrafting') finishRewrite(id); });
 render();

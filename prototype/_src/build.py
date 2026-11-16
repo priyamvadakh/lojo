@@ -409,7 +409,7 @@ function stackCycle() {
   const pend = DRAFTS.filter(r => decision(r).status === 'pending');
   if (!pend.length) return;
   const show = () => {
-    const r = pend[stackI++ % pend.length], q = QUESTIONS.find(x => x.id === r.qid).q, [kind, ic] = SRCKIND(r.src[0][0]);
+    const r = pend[stackI++ % pend.length], q = allQuestions().find(x => x.id === r.qid).q, [kind, ic] = SRCKIND(r.src[0][0]);
     $('stackCard').innerHTML = '<span class="qa__src"><svg viewBox="0 0 24 24">' + ic + '</svg>' + kind + '</span><b class="qa__q">' + esc(q) + '</b>' +
       '<p class="qa__a">' + esc(answerOf(r).replace(/[#*_>]/g, '').slice(0, 70)) + '…</p><div class="acts"><i></i><i></i><i></i></div>';
     $('stackCard').classList.remove('in'); void $('stackCard').offsetWidth; $('stackCard').classList.add('in');
@@ -440,12 +440,12 @@ function render() {
   }
 
   const also = [];
-  const noSource = allQuestions().filter(q => (!q.docs || !q.docs.length) && matters(q) !== false).length;
-  const human = c.final + noSource, failedDrafts = Object.keys(ST.draftFailed || {}).filter(k => ST.draftFailed[k] && ST.draftFailed[k] !== 'retrying').length;
+  // the same counts as the Build tabs and the nav badge
+  const T = tasks(), human = T.human, failedDrafts = T.failed.length;
   if (human) also.push({ ic: 'hand', t: human + ' question' + (human === 1 ? ' needs' : 's need') + ' a human answer', s: 'No source, or sent to a person', href: 'build.html?tab=final' });
-  if (failedDrafts) also.push({ ic: 'q', t: failedDrafts + ' draft' + (failedDrafts === 1 ? '' : 's') + ' could not be written', s: 'Try ' + (failedDrafts === 1 ? 'it' : 'them') + ' again from Insights', href: 'insights.html?demo=failed' });
-  if (c.needCall) also.push({ ic: 'q', t: 'Say whether ' + c.needCall + ' question' + (c.needCall > 1 ? 's matter' : ' matters'), s: 'Only those get drafted', href: 'insights.html#questions' });
-  if (c.gaps) also.push({ ic: 'gap', t: c.gaps + ' gaps need a source', s: 'Send a document or add them as questions', href: 'insights.html#gaps' });
+  if (failedDrafts) also.push({ ic: 'q', t: failedDrafts + ' draft' + (failedDrafts === 1 ? '' : 's') + ' could not be written', s: 'Try ' + (failedDrafts === 1 ? 'it' : 'them') + ' again in Build', href: 'build.html?tab=needs&fq=' + T.failed[0].id });
+  if (T.triage.length) also.push({ ic: 'q', t: 'Say whether ' + T.triage.length + ' question' + (T.triage.length > 1 ? 's matter' : ' matters'), s: 'Only those get drafted', href: 'build.html?tab=needs&kind=triage' });
+  if (T.gaps.length) also.push({ ic: 'gap', t: T.gaps.length + ' gap' + (T.gaps.length === 1 ? ' needs' : 's need') + ' a source', s: 'Upload a document, ask an owner, or add them as questions', href: 'build.html?tab=needs&kind=gap' });
   $('alsoMore').hidden = also.length <= 2; $('alsoMore').textContent = '+' + (also.length - 2) + ' more ↓';
   $('also').innerHTML = also.length ? also.map(i => '<a class="also" href="' + i.href + '"><span class="ic t-' + i.ic + '">' + ICON[i.ic] + '</span><div><b>' + esc(i.t) + '</b><span>' + esc(i.s) + '</span></div><em>→</em></a>').join('') : '<p class="sub">Nothing else right now.</p>';
 
@@ -461,11 +461,11 @@ function render() {
   $('feed').innerHTML = feed.map(f => '<li><span class="dot">' + ICON[f.ic] + '</span><div><b>' + esc(f.t) + '</b><span>' + esc(f.s) + '</span></div></li>').join('');
 
   // merged tiles
-  const yours = allQuestions().filter(q => q.origin === 'you').length;
+  const yours = allQuestions().filter(q => q.origin === 'you').length, S = sourceSummary();
   $('today').innerHTML = [
     '<a class="tile tile--soft" href="build.html">' + gauge(decided / c.drafts, '#4F7A2F') + '<span class="tile__lbl">Review progress ' + tip('Drafts in the first batch that you have approved, edited or left for a human answer.') + '</span><span class="tile__sub">' + decided + ' of ' + c.drafts + ' decided · ' + c.approved + ' approved</span><span class="tile__go">→</span></a>',
-    '<a class="tile tile--ok" href="sources.html"><span class="tile__tag">Indexed</span><span class="tile__lbl">Sources ' + tip('Documents you sent us. Their text is pulled out, split into passages and indexed by meaning.') + '</span><span class="tile__val">' + c.docs + '</span><span class="tile__sub">' + c.pages + ' pages · ' + c.passages + ' passages</span></a>',
-    '<a class="tile' + (c.needCall ? ' tile--warn' : '') + '" href="build.html">' + (c.needCall ? '<span class="tile__tag">' + c.needCall + ' need your call</span>' : '') + '<span class="tile__lbl">Questions ' + tip('Questions your documents answer, found by the agent, plus the ones you added.') + '</span><span class="tile__val">' + c.questions + '</span><span class="tile__sub">' + (c.questions - yours) + ' found · ' + yours + ' from you</span></a>',
+    '<a class="tile ' + (S.warn ? 'tile--warn' : 'tile--ok') + '" href="sources.html"><span class="tile__tag">' + (S.warn ? S.warn + ' need' + (S.warn === 1 ? 's' : '') + ' attention' : 'Healthy') + '</span><span class="tile__lbl">Sources ' + tip('Uploaded documents plus the apps lojo reads: Website, Notion, Gmail and ZIWO calls.') + '</span><span class="tile__val">' + S.sources + '</span><span class="tile__sub">connected · ' + S.passages.toLocaleString('en-GB') + ' passages</span></a>',
+    '<a class="tile' + (c.needCall ? ' tile--warn' : '') + '" href="' + (c.needCall ? 'build.html?tab=needs&kind=triage' : 'build.html') + '">' + (c.needCall ? '<span class="tile__tag">' + c.needCall + ' need your call</span>' : '') + '<span class="tile__lbl">Questions ' + tip('Questions your documents answer, found by the agent, plus the ones you added.') + '</span><span class="tile__val">' + c.questions + '</span><span class="tile__sub">' + (c.questions - yours) + ' found · ' + yours + ' from you</span></a>',
     '<a class="tile' + (c.gaps ? ' tile--warn' : ' tile--ok') + '" href="insights.html#gaps">' + (c.gaps ? '<span class="tile__tag">Needs input</span>' : '') + '<span class="tile__lbl">Gaps ' + tip('Things your documents refer to but never explain. Expected at this stage: send a document or answer them yourself.') + '</span><span class="tile__val">' + c.gaps + '</span><span class="tile__sub">Referred to, never explained</span></a>',
   ].join('');
 
@@ -627,7 +627,7 @@ DOCUMENTS = dict(
   .srcsum{margin:-8px 0 16px;font-size:.86rem;color:var(--muted)}
   .srcsum b{color:var(--ink)}
   .srcwrap{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}
-  .srclist{position:sticky;top:96px;display:flex;flex-direction:column;max-height:calc(100vh - 116px);overflow:hidden}
+  .srclist{position:sticky;top:96px;display:flex;flex-direction:column;height:calc(100vh - 166px);overflow:hidden}
   .srclist__h{padding:16px 16px 12px;border-bottom:1px solid var(--line)}
   .srclist__h h2{margin:0 0 10px;font-family:var(--display);font-weight:700;font-size:1.05rem}
   .srcq{display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;border-radius:10px;border:1px solid var(--line-2);background:var(--panel)}
@@ -650,7 +650,9 @@ DOCUMENTS = dict(
   .sico.doc{background:rgba(232,93,117,.08);color:#C7385B;border-color:transparent}
   .sico.doc svg{fill:none;stroke:currentColor;stroke-width:1.8}
   .srclist__f{padding:12px;border-top:1px solid var(--line)}
-  .srcdet{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;min-width:0}
+  .srcdet{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;min-width:0;align-content:start}
+  /* the page stays put: the source list is fixed and the right side scrolls on its own */
+  @media (min-width:1101px){.wrap{padding-bottom:0}.srcdet{position:sticky;top:96px;height:calc(100vh - 166px);overflow:auto;overscroll-behavior:contain;padding:0 4px 20px 0;margin-right:-4px}}
   .srcdet > *{min-width:0}
   .srcwrap > *{min-width:0}
   .sh__top{flex-wrap:wrap}
@@ -696,7 +698,7 @@ DOCUMENTS = dict(
   .addsrc__h{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
   .addsrc__h > div{flex:1}
   .addsrc__h h2{margin:0;font-family:var(--display);font-weight:700;font-size:1.3rem}
-  @media (max-width:1100px){.srcwrap{grid-template-columns:1fr}.srclist{position:static;max-height:none}.health,.supply{grid-template-columns:1fr}}
+  @media (max-width:1100px){.srcwrap{grid-template-columns:1fr}.srclist{position:static;max-height:none;height:auto}.health,.supply{grid-template-columns:1fr}}
   .scope{display:grid;grid-template-columns:36px 1fr auto;gap:14px;align-items:center;padding:14px 18px;border-radius:14px;background:rgba(63,143,95,.06);border:1px solid rgba(63,143,95,.22);margin-bottom:20px}
   .scope .ok{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:rgba(63,143,95,.14);color:var(--success);font-weight:700}
   .scope b{display:block;font-size:.9rem}
@@ -769,7 +771,7 @@ DOCUMENTS = dict(
   body=r"""
     <div class="head">
       <div>
-        <p class="label">01 Source · Connect</p>
+        <p class="label">01 Source</p>
         <h1>Sources</h1>
         <p>Select a source to see its health, what it gives lojo, and the one thing to do next.</p>
       </div>
@@ -784,7 +786,6 @@ DOCUMENTS = dict(
         <div class="srclist__h"><h2>Connected sources</h2>
           <label class="srcq"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="srcQ" placeholder="Search sources…" aria-label="Search sources"></label></div>
         <div class="srclist__b" id="srcList"></div>
-        <div class="srclist__f"><button class="btn btn--secondary" id="browseConn" type="button" style="width:100%"><svg class="i" viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round"><path d="M12 5v14M5 12h14"/></svg>Browse connectors</button></div>
       </aside>
 
       <section class="srcdet" id="srcDet" aria-live="polite">
@@ -874,15 +875,18 @@ const APPS = [
   { id: 'website', name: 'Website', kind: 'Web parsing', mono: 'W', color: '#3E6FA6', n: 3 },
   { id: 'notion', name: 'Notion', kind: 'Pages & wikis', mono: 'N', color: 'var(--ink)', n: 5 },
   { id: 'gmail', name: 'Gmail', kind: 'Email', mono: 'M', color: '#D93025', n: 3 },
-  { id: 'ziwo', name: 'ZIWO', kind: 'Calls & transcripts', mono: 'Z', color: '#6A3FD4', n: 2 },
+  { id: 'ziwo', name: 'ZIWO', kind: 'Calls & transcripts', mono: 'Z', color: '#AC3378', n: 2 },
+  { id: 'slack', name: 'Slack', kind: 'Channels & threads', mono: 'S', color: '#4A154B', n: 3 },
   { id: 'gdrive', soon: true, name: 'Google Drive', kind: 'Docs & files', mono: 'GD', color: '#1A73E8', n: 6 },
   { id: 'sharepoint', soon: true, name: 'SharePoint', kind: 'Sites & libraries', mono: 'SP', color: '#036C70', n: 5 },
   { id: 'confluence', soon: true, name: 'Confluence', kind: 'Spaces', mono: 'C', color: '#0C66E4', n: 4 },
   { id: 'aircall', soon: true, name: 'Aircall', kind: 'Calls', mono: 'A', color: '#00B388', n: 2 },
   { id: 'gsheets', soon: true, name: 'Google Sheets', kind: 'Spreadsheets', mono: 'GS', color: '#188038', n: 2 },
 ];
-const LOGO = {"ziwo": "<path d=\"M6.6 2.5c.5 0 .9.3 1.1.8l1.4 3.4c.2.5 0 1.1-.4 1.4l-1.9 1.4a12.3 12.3 0 0 0 5.7 5.7l1.4-1.9c.3-.4.9-.6 1.4-.4l3.4 1.4c.5.2.8.6.8 1.1V19c0 1.4-1.2 2.5-2.6 2.4C8.6 20.8 3.2 15.4 2.6 8.1 2.5 6.7 3.6 5.5 5 5.5h.1V3.6c0-.6.5-1.1 1.1-1.1zM14 2h7v2.2l-4.4 5.1H21V11h-7V8.8l4.4-5.1H14z\"/>", "notion": "<path d=\"M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.139c-.093-.514.28-.887.747-.933zM1.936 1.035l13.31-.98c1.634-.14 2.055-.047 3.082.7l4.249 2.986c.7.513.934.653.934 1.213v16.378c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.047-1.448-.093-1.962-.747l-3.129-4.06c-.56-.747-.793-1.306-.793-1.96V2.667c0-.839.374-1.54 1.447-1.632z\"/>", "gdrive": "<path d=\"M12.01 1.485c-2.082 0-3.754.02-3.743.047.01.02 1.708 3.001 3.774 6.62l3.76 6.574h3.76c2.081 0 3.753-.02 3.742-.047-.005-.02-1.708-3.001-3.775-6.62l-3.76-6.574zm-4.76 1.73a789.828 789.861 0 0 0-3.63 6.319L0 15.868l1.89 3.298 1.885 3.297 3.62-6.335 3.618-6.33-1.88-3.287C8.1 4.704 7.255 3.22 7.25 3.214zm2.259 12.653-.203.348c-.114.198-.96 1.672-1.88 3.287a423.93 423.948 0 0 1-1.698 2.97c-.01.026 3.24.042 7.222.042h7.244l1.796-3.157c.992-1.734 1.85-3.23 1.906-3.323l.104-.167h-7.249z\"/>", "gsheets": "<path d=\"M11.318 12.545H7.91v-1.909h3.41v1.91zM14.728 0v6h6l-6-6zm1.363 10.636h-3.41v1.91h3.41v-1.91zm0 3.273h-3.41v1.91h3.41v-1.91zM20.727 6.5v15.864c0 .904-.732 1.636-1.636 1.636H4.909a1.636 1.636 0 0 1-1.636-1.636V1.636C3.273.732 4.005 0 4.909 0h9.318v6.5h6.5zm-3.273 2.773H6.545v7.909h10.91v-7.91zm-6.136 4.636H7.91v1.91h3.41v-1.91z\"/>", "gmail": "<path d=\"M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z\"/>", "confluence": "<path d=\"M.87 18.257c-.248.382-.53.875-.763 1.245a.764.764 0 0 0 .255 1.04l4.965 3.054a.764.764 0 0 0 1.058-.26c.199-.332.454-.763.733-1.221 1.967-3.247 3.945-2.853 7.508-1.146l4.957 2.337a.764.764 0 0 0 1.028-.382l2.364-5.346a.764.764 0 0 0-.382-1 599.851 599.851 0 0 1-4.965-2.361C10.911 10.97 5.224 11.185.87 18.257zM23.131 5.743c.249-.405.531-.875.764-1.25a.764.764 0 0 0-.256-1.034L18.675.404a.764.764 0 0 0-1.058.26c-.195.335-.451.763-.734 1.225-1.966 3.246-3.945 2.85-7.508 1.146L4.437.694a.764.764 0 0 0-1.027.382L1.046 6.422a.764.764 0 0 0 .382 1c1.039.49 3.105 1.467 4.965 2.361 6.698 3.246 12.392 3.029 16.738-4.04z\"/>", "aircall": "<path d=\"M23.451 5.906a6.978 6.978 0 0 0-5.375-5.39C16.727.204 14.508 0 12 0S7.273.204 5.924.516a6.978 6.978 0 0 0-5.375 5.39C.237 7.26.034 9.485.034 12s.203 4.74.515 6.094a6.978 6.978 0 0 0 5.375 5.39C7.273 23.796 9.492 24 12 24s4.727-.204 6.076-.516a6.978 6.978 0 0 0 5.375-5.39c.311-1.354.515-3.578.515-6.094 0-2.515-.203-4.74-.515-6.094zm-5.873 12.396l-.003.001c-.428.152-1.165.283-2.102.377l-.147.014a.444.444 0 0 1-.45-.271 1.816 1.816 0 0 0-1.296-1.074c-.351-.081-.928-.134-1.58-.134s-1.229.053-1.58.134a1.817 1.817 0 0 0-1.291 1.062.466.466 0 0 1-.471.281 8 8 0 0 0-.129-.012c-.938-.094-1.676-.224-2.105-.377l-.003-.001a.76.76 0 0 1-.492-.713c0-.032.003-.066.005-.098.073-.979.666-3.272 1.552-5.89C8.5 8.609 9.559 6.187 10.037 5.714a1.029 1.029 0 0 1 .404-.26l.004-.002c.314-.106.892-.178 1.554-.178.663 0 1.241.071 1.554.178l.005.002a1.025 1.025 0 0 1 .405.26c.478.472 1.537 2.895 2.549 5.887.886 2.617 1.479 4.91 1.552 5.89.002.032.005.066.005.098a.76.76 0 0 1-.491.713z\"/>", "sharepoint": "<path d=\"M24 13.5q0 1.242-.475 2.332-.474 1.09-1.289 1.904-.814.815-1.904 1.29-1.09.474-2.332.474-.762 0-1.523-.2-.106.997-.557 1.858-.451.862-1.154 1.494-.704.633-1.606.99-.902.358-1.91.358-1.09 0-2.045-.416-.955-.416-1.664-1.125-.709-.709-1.125-1.664Q6 19.84 6 18.75q0-.188.018-.375.017-.188.04-.375H.997q-.41 0-.703-.293T0 17.004V6.996q0-.41.293-.703T.996 6h3.54q.14-1.277.726-2.373.586-1.096 1.488-1.904Q7.652.914 8.807.457 9.96 0 11.25 0q1.395 0 2.625.533T16.02 1.98q.914.915 1.447 2.145T18 6.75q0 .188-.012.375-.011.188-.035.375 1.242 0 2.344.469 1.101.468 1.928 1.277.826.809 1.3 1.904Q24 12.246 24 13.5zm-12.75-12q-.973 0-1.857.34-.885.34-1.577.943-.691.604-1.154 1.43Q6.2 5.039 6.06 6h4.945q.41 0 .703.293t.293.703v4.945l.21-.035q.212-.75.61-1.424.399-.673.944-1.218.545-.545 1.213-.944.668-.398 1.43-.61.093-.503.093-.96 0-1.09-.416-2.045-.416-.955-1.125-1.664-.709-.709-1.664-1.125Q12.34 1.5 11.25 1.5zM6.117 15.902q.54 0 1.06-.111.522-.111.932-.37.41-.257.662-.679.252-.422.252-1.055 0-.632-.263-1.054-.264-.422-.662-.703-.399-.282-.856-.463l-.855-.34q-.399-.158-.662-.334-.264-.176-.264-.445 0-.2.14-.323.141-.123.335-.193.193-.07.404-.094.21-.023.351-.023.598 0 1.055.152.457.153.95.457V8.543q-.282-.082-.522-.14-.24-.06-.475-.1-.234-.041-.486-.059-.252-.017-.557-.017-.515 0-1.054.117-.54.117-.979.375-.44.258-.715.68-.275.421-.275 1.03 0 .598.263.997.264.398.663.68.398.28.855.474l.856.363q.398.17.662.358.263.187.263.457 0 .222-.123.351-.123.13-.31.2-.188.07-.393.087-.205.018-.369.018-.703 0-1.248-.234-.545-.235-1.107-.621v1.875q1.195.468 2.472.468zM11.25 22.5q.773 0 1.453-.293t1.19-.803q.51-.51.808-1.195.299-.686.299-1.459 0-.668-.223-1.277-.222-.61-.62-1.096-.4-.486-.95-.826-.55-.34-1.207-.48v1.933q0 .41-.293.703t-.703.293H7.57q-.07.375-.07.75 0 .773.293 1.459t.803 1.195q.51.51 1.195.803.686.293 1.459.293zM18 18q.926 0 1.746-.352.82-.351 1.436-.966.615-.616.966-1.43.352-.815.352-1.752 0-.926-.352-1.746-.351-.82-.966-1.436-.616-.615-1.436-.966Q18.926 9 18 9t-1.74.357q-.815.358-1.43.973t-.973 1.43q-.357.814-.357 1.74 0 .129.006.258t.017.258q.551.27 1.02.65t.838.855q.369.475.627 1.026.258.55.387 1.148Q17.18 18 18 18Z\"/>", "website": "<circle cx=\"12\" cy=\"12\" r=\"9\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/><path d=\"M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/>"};
+const LOGO = {"slack": "<g transform=\"translate(.3 .3) scale(.184)\"><path d=\"M27.2 80c0 7.3-5.9 13.2-13.2 13.2C6.7 93.2.8 87.3.8 80c0-7.3 5.9-13.2 13.2-13.2h13.2V80zm6.6 0c0-7.3 5.9-13.2 13.2-13.2 7.3 0 13.2 5.9 13.2 13.2v33c0 7.3-5.9 13.2-13.2 13.2-7.3 0-13.2-5.9-13.2-13.2V80z\" fill=\"#E01E5A\"/><path d=\"M47 27c-7.3 0-13.2-5.9-13.2-13.2C33.8 6.5 39.7.6 47 .6c7.3 0 13.2 5.9 13.2 13.2V27H47zm0 6.7c7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2H13.9C6.6 60.1.7 54.2.7 46.9c0-7.3 5.9-13.2 13.2-13.2H47z\" fill=\"#36C5F0\"/><path d=\"M99.9 46.9c0-7.3 5.9-13.2 13.2-13.2 7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2H99.9V46.9zm-6.6 0c0 7.3-5.9 13.2-13.2 13.2-7.3 0-13.2-5.9-13.2-13.2V13.8C66.9 6.5 72.8.6 80.1.6c7.3 0 13.2 5.9 13.2 13.2v33.1z\" fill=\"#2EB67D\"/><path d=\"M80.1 99.8c7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2-7.3 0-13.2-5.9-13.2-13.2V99.8h13.2zm0-6.6c-7.3 0-13.2-5.9-13.2-13.2 0-7.3 5.9-13.2 13.2-13.2h33.1c7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2H80.1z\" fill=\"#ECB22E\"/></g>", "ziwo": "<g transform=\"translate(-47.8 -4.9) scale(.6)\"><path d=\"M95.0623 48C95.0623 48 94.4942 47.3268 94.2984 47.0929C92.9783 45.5054 91.5627 43.9561 90.1876 42.4139C89.8391 42.0224 89.4977 41.6428 89.1563 41.2633C88.5452 40.5853 87.9126 39.8811 87.2275 39.0981C82.835 34.3713 81.0756 29.647 81.6915 24.2304C82.6965 15.3977 90.2163 8.49379 99.1803 8.17151C100.522 8.12377 101.873 8.22642 103.196 8.48185C109.474 9.6874 113.831 13.3327 116.146 19.3199C117.662 23.2373 117.65 27.2956 116.115 31.3825C114.174 36.5437 110.555 40.1962 105.356 42.2373C103.494 42.9678 101.558 43.3736 99.6005 43.4452C98.2899 43.4929 96.9411 43.3903 95.5923 43.1396C95.5064 43.1229 95.4395 43.1182 95.3799 43.1205C95.2772 43.1253 95.196 43.1563 95.1411 43.2184C95.0552 43.3115 95.0433 43.4428 95.0528 43.6266C95.0814 44.2234 95.0623 48.0048 95.0623 48.0048V48ZM106.681 30.3202C106.392 31.3563 105.783 32.2324 104.819 32.9987C103.437 34.0968 101.747 34.7223 99.7938 34.8583C99.6482 34.8679 99.505 34.875 99.3617 34.8822C97.1798 34.961 95.3512 34.4549 93.778 33.3353C92.7443 32.6 92.1046 31.7048 91.8229 30.5948C91.6629 29.9645 91.1736 29.5706 90.5791 29.5921C90.4956 29.5945 90.4096 29.6064 90.3237 29.6255C89.6362 29.7855 89.2327 30.4444 89.3807 31.1629C89.6171 32.2968 90.1685 33.3329 91.0184 34.2472C92.594 35.9374 94.6398 36.9281 97.2801 37.2718C98.0249 37.3697 98.7649 37.4055 99.4811 37.3793C101.298 37.3148 103.012 36.8684 104.721 36.0161C106.817 34.9085 108.192 33.4523 108.923 31.5616C108.989 31.3897 109.049 31.2059 109.102 31.0149C109.319 30.2367 109.006 29.5754 108.326 29.3677C108.183 29.3247 108.037 29.3056 107.891 29.3104C107.321 29.3319 106.843 29.7282 106.679 30.3226L106.681 30.3202Z\"/></g>", "notion": "<path d=\"M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.139c-.093-.514.28-.887.747-.933zM1.936 1.035l13.31-.98c1.634-.14 2.055-.047 3.082.7l4.249 2.986c.7.513.934.653.934 1.213v16.378c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.047-1.448-.093-1.962-.747l-3.129-4.06c-.56-.747-.793-1.306-.793-1.96V2.667c0-.839.374-1.54 1.447-1.632z\"/>", "gdrive": "<path d=\"M12.01 1.485c-2.082 0-3.754.02-3.743.047.01.02 1.708 3.001 3.774 6.62l3.76 6.574h3.76c2.081 0 3.753-.02 3.742-.047-.005-.02-1.708-3.001-3.775-6.62l-3.76-6.574zm-4.76 1.73a789.828 789.861 0 0 0-3.63 6.319L0 15.868l1.89 3.298 1.885 3.297 3.62-6.335 3.618-6.33-1.88-3.287C8.1 4.704 7.255 3.22 7.25 3.214zm2.259 12.653-.203.348c-.114.198-.96 1.672-1.88 3.287a423.93 423.948 0 0 1-1.698 2.97c-.01.026 3.24.042 7.222.042h7.244l1.796-3.157c.992-1.734 1.85-3.23 1.906-3.323l.104-.167h-7.249z\"/>", "gsheets": "<path d=\"M11.318 12.545H7.91v-1.909h3.41v1.91zM14.728 0v6h6l-6-6zm1.363 10.636h-3.41v1.91h3.41v-1.91zm0 3.273h-3.41v1.91h3.41v-1.91zM20.727 6.5v15.864c0 .904-.732 1.636-1.636 1.636H4.909a1.636 1.636 0 0 1-1.636-1.636V1.636C3.273.732 4.005 0 4.909 0h9.318v6.5h6.5zm-3.273 2.773H6.545v7.909h10.91v-7.91zm-6.136 4.636H7.91v1.91h3.41v-1.91z\"/>", "gmail": "<path d=\"M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z\"/>", "confluence": "<path d=\"M.87 18.257c-.248.382-.53.875-.763 1.245a.764.764 0 0 0 .255 1.04l4.965 3.054a.764.764 0 0 0 1.058-.26c.199-.332.454-.763.733-1.221 1.967-3.247 3.945-2.853 7.508-1.146l4.957 2.337a.764.764 0 0 0 1.028-.382l2.364-5.346a.764.764 0 0 0-.382-1 599.851 599.851 0 0 1-4.965-2.361C10.911 10.97 5.224 11.185.87 18.257zM23.131 5.743c.249-.405.531-.875.764-1.25a.764.764 0 0 0-.256-1.034L18.675.404a.764.764 0 0 0-1.058.26c-.195.335-.451.763-.734 1.225-1.966 3.246-3.945 2.85-7.508 1.146L4.437.694a.764.764 0 0 0-1.027.382L1.046 6.422a.764.764 0 0 0 .382 1c1.039.49 3.105 1.467 4.965 2.361 6.698 3.246 12.392 3.029 16.738-4.04z\"/>", "aircall": "<path d=\"M23.451 5.906a6.978 6.978 0 0 0-5.375-5.39C16.727.204 14.508 0 12 0S7.273.204 5.924.516a6.978 6.978 0 0 0-5.375 5.39C.237 7.26.034 9.485.034 12s.203 4.74.515 6.094a6.978 6.978 0 0 0 5.375 5.39C7.273 23.796 9.492 24 12 24s4.727-.204 6.076-.516a6.978 6.978 0 0 0 5.375-5.39c.311-1.354.515-3.578.515-6.094 0-2.515-.203-4.74-.515-6.094zm-5.873 12.396l-.003.001c-.428.152-1.165.283-2.102.377l-.147.014a.444.444 0 0 1-.45-.271 1.816 1.816 0 0 0-1.296-1.074c-.351-.081-.928-.134-1.58-.134s-1.229.053-1.58.134a1.817 1.817 0 0 0-1.291 1.062.466.466 0 0 1-.471.281 8 8 0 0 0-.129-.012c-.938-.094-1.676-.224-2.105-.377l-.003-.001a.76.76 0 0 1-.492-.713c0-.032.003-.066.005-.098.073-.979.666-3.272 1.552-5.89C8.5 8.609 9.559 6.187 10.037 5.714a1.029 1.029 0 0 1 .404-.26l.004-.002c.314-.106.892-.178 1.554-.178.663 0 1.241.071 1.554.178l.005.002a1.025 1.025 0 0 1 .405.26c.478.472 1.537 2.895 2.549 5.887.886 2.617 1.479 4.91 1.552 5.89.002.032.005.066.005.098a.76.76 0 0 1-.491.713z\"/>", "sharepoint": "<path d=\"M24 13.5q0 1.242-.475 2.332-.474 1.09-1.289 1.904-.814.815-1.904 1.29-1.09.474-2.332.474-.762 0-1.523-.2-.106.997-.557 1.858-.451.862-1.154 1.494-.704.633-1.606.99-.902.358-1.91.358-1.09 0-2.045-.416-.955-.416-1.664-1.125-.709-.709-1.125-1.664Q6 19.84 6 18.75q0-.188.018-.375.017-.188.04-.375H.997q-.41 0-.703-.293T0 17.004V6.996q0-.41.293-.703T.996 6h3.54q.14-1.277.726-2.373.586-1.096 1.488-1.904Q7.652.914 8.807.457 9.96 0 11.25 0q1.395 0 2.625.533T16.02 1.98q.914.915 1.447 2.145T18 6.75q0 .188-.012.375-.011.188-.035.375 1.242 0 2.344.469 1.101.468 1.928 1.277.826.809 1.3 1.904Q24 12.246 24 13.5zm-12.75-12q-.973 0-1.857.34-.885.34-1.577.943-.691.604-1.154 1.43Q6.2 5.039 6.06 6h4.945q.41 0 .703.293t.293.703v4.945l.21-.035q.212-.75.61-1.424.399-.673.944-1.218.545-.545 1.213-.944.668-.398 1.43-.61.093-.503.093-.96 0-1.09-.416-2.045-.416-.955-1.125-1.664-.709-.709-1.664-1.125Q12.34 1.5 11.25 1.5zM6.117 15.902q.54 0 1.06-.111.522-.111.932-.37.41-.257.662-.679.252-.422.252-1.055 0-.632-.263-1.054-.264-.422-.662-.703-.399-.282-.856-.463l-.855-.34q-.399-.158-.662-.334-.264-.176-.264-.445 0-.2.14-.323.141-.123.335-.193.193-.07.404-.094.21-.023.351-.023.598 0 1.055.152.457.153.95.457V8.543q-.282-.082-.522-.14-.24-.06-.475-.1-.234-.041-.486-.059-.252-.017-.557-.017-.515 0-1.054.117-.54.117-.979.375-.44.258-.715.68-.275.421-.275 1.03 0 .598.263.997.264.398.663.68.398.28.855.474l.856.363q.398.17.662.358.263.187.263.457 0 .222-.123.351-.123.13-.31.2-.188.07-.393.087-.205.018-.369.018-.703 0-1.248-.234-.545-.235-1.107-.621v1.875q1.195.468 2.472.468zM11.25 22.5q.773 0 1.453-.293t1.19-.803q.51-.51.808-1.195.299-.686.299-1.459 0-.668-.223-1.277-.222-.61-.62-1.096-.4-.486-.95-.826-.55-.34-1.207-.48v1.933q0 .41-.293.703t-.703.293H7.57q-.07.375-.07.75 0 .773.293 1.459t.803 1.195q.51.51 1.195.803.686.293 1.459.293zM18 18q.926 0 1.746-.352.82-.351 1.436-.966.615-.616.966-1.43.352-.815.352-1.752 0-.926-.352-1.746-.351-.82-.966-1.436-.616-.615-1.436-.966Q18.926 9 18 9t-1.74.357q-.815.358-1.43.973t-.973 1.43q-.357.814-.357 1.74 0 .129.006.258t.017.258q.551.27 1.02.65t.838.855q.369.475.627 1.026.258.55.387 1.148Q17.18 18 18 18Z\"/>", "website": "<circle cx=\"12\" cy=\"12\" r=\"9\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/><path d=\"M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/>"};
 ST.apps = ST.apps || {};
+// name, length, passages, questions found, state; names match the ZIWO list in the source detail
+const ZIWO_CALLS = [['Inbound call · Emmanuel · 25 Sep', '7 min', 9, 1, 'analysed'], ['Inbound call · Emmanuel · 19 Aug', '13 min', 14, 1, 'analysed'], ['Outbound call · Maria · 12 Aug', '7 min', 8, 1, 'analysed'], ['Inbound call · Emmanuel · 2 Oct', '4 min', 5, 0, 'ready']];
 function passagesFor(id) {
   const out = [];
   DRAFTS.forEach(r => r.src.forEach(([d, loc, text]) => { if (d === id && !out.some(p => p.text === text)) out.push({ loc, text }); }));
@@ -952,6 +956,9 @@ function render() {
     acts: '<button class="btn btn--secondary" data-restore="' + d.id + '" data-base="1">Restore</button>' })));
   docx.filter(d => d.status === 'retired').forEach(d => rows.push(docRow({ cls: ' is-retired', ext: d.ext, name: d.name, st: 'ret', why: '<span class="why mute">' + esc(d.retiredNote) + '</span>',
     acts: '<button class="btn btn--secondary" data-restore="' + d.id + '">Restore</button>' })));
+  // ZIWO calls: transcripts split by speaker, read like documents
+  if (ST.apps.ziwo) ZIWO_CALLS.forEach(([n, mins, ps, qn, st]) => rows.push(docRow({ ext: 'call', name: n, pages: undefined, passages: ps, qs: qn, st: st === 'ready' ? 'wait' : 'done',
+    why: '<span class="why mute">ZIWO · ' + mins + (st === 'ready' ? ' · waiting to be analysed' : '') + '</span>' })));
   rows.push(docRow({ ext: 'gmail', name: 'SSO stopped working after we upgraded', cls: ' is-failed', st: 'fail', why: '<span class="why">The email body is an image only, so there’s no text to read. Paste the text into a document and upload it.</span>',
     acts: '<button class="btn btn--secondary" data-retrymail="1">Try again</button>' }));
   rows.push(docRow({ ext: 'web', name: 'help.oslo.com/sso', cls: ' is-failed', st: 'fail', why: '<span class="why">The page asks visitors to sign in, and lojo never signs in. Make the page public, or upload it as a document.</span>',
@@ -969,7 +976,7 @@ function renderApps() {
 $('apps').addEventListener('click', (e) => {
   const b = e.target.closest('[data-app]'); if (!b || ST.apps[b.dataset.app]) return;
   const a = APPS.find(x => x.id === b.dataset.app);
-  if (a.soon) { e.stopImmediatePropagation(); toast(a.name + ' is coming soon. Connect Website, Notion, Gmail or ZIWO for now.'); return; }
+  if (a.soon) { e.stopImmediatePropagation(); toast(a.name + ' is coming soon. Connect Website, Notion, Gmail, ZIWO or Slack for now.'); return; }
   // ZIWO needs an account, an API key and a recording consent
   if (a.id === 'website') { $('wForm').reset(); $('wGo').disabled = true; $('wErr').textContent = ''; $('wProg').hidden = true; $('apps').hidden = true; $('wForm').hidden = false; $('wUrl').focus(); return; }
   if (a.id === 'ziwo') { $('zForm').reset(); $('zGo').disabled = true; $('apps').hidden = true; $('zForm').hidden = false; $('zForm').querySelector('svg').innerHTML = LOGO.ziwo; $('zAcc').focus(); return; }
@@ -1004,7 +1011,7 @@ $('zForm').addEventListener('submit', (e) => {
 $('synced').addEventListener('click', (e) => { const b = e.target.closest('[data-off]'); if (!b) return; delete ST.apps[b.dataset.off]; save(); render(); toast('Disconnected. Documents already indexed stay until you retire them.'); });
 // full-screen documents log with search, status and type filters
 const DV_ST = [['all', 'All'], ['fail', 'Failed'], ['run', 'Processing'], ['wait', 'Waiting'], ['done', 'Indexed'], ['ret', 'Retired']];
-const DV_TYPE = { pdf: 'Uploads', docx: 'Uploads', doc: 'Uploads', md: 'Uploads', txt: 'Uploads', gmail: 'Gmail', web: 'Website', website: 'Website', notion: 'Notion', ziwo: 'ZIWO' };
+const DV_TYPE = { pdf: 'Uploads', docx: 'Uploads', doc: 'Uploads', md: 'Uploads', txt: 'Uploads', call: 'ZIWO', slack: 'Slack', gmail: 'Gmail', web: 'Website', website: 'Website', notion: 'Notion', ziwo: 'ZIWO' };
 const dvSrc = (ext) => DV_TYPE[ext] || 'Uploads';
 let dvSt = 'all', dvType = '';
 function dvRender() {
@@ -1122,9 +1129,11 @@ const APPINFO = {
   notion: { what: 'Oslo wiki', items: [['Pricing wiki', '6 pages'], ['Onboarding playbook', '11 pages'], ['Security docs', '4 pages'], ['Policies', '5 pages'], ['Help centre drafts', '3 pages']], state: 'ok', fresh: 'Synced 6 min ago', supplies: 'Pages and wikis from the teamspaces you chose, split into passages for drafting answers.' },
   website: { what: 'help.oslo.com · oslo.com/pricing', items: [['help.oslo.com/sso', 'changed since last sync'], ['oslo.com/pricing', 'synced'], ['oslo.com/legal/refunds', 'synced']], state: 'warn', fresh: '1 page changed since the last sync', next: 'Sync now to pick up the changed page. Drafts that cite it will be checked again.', supplies: 'Public pages from your website and help centre, read the same way as documents.' },
   gmail: { what: 'support@oslo.com', items: [['SSO stopped working after we upgraded', 'couldn’t be analysed'], ['Invoice for our annual plan', 'ready'], ['Apple Pay in Germany?', 'analysed']], state: 'warn', fresh: '1 email couldn’t be analysed', next: 'Open it in Insights and try the analysis again.', nextHref: 'insights.html#inbox', supplies: 'Incoming email threads, participants and message text, analysed in Insights for new questions.' },
-  ziwo: { what: 'Support line · inbound and outbound', items: [['Inbound call · Emmanuel · 25 Sep', 'analysed'], ['Inbound call · Emmanuel · 19 Aug', 'analysed'], ['Outbound call · Maria · 12 Aug', 'ready']], state: 'ok', fresh: 'Synced after the last call', supplies: 'Call recordings and their transcripts, split by speaker, analysed in Insights for new questions.' },
+  ziwo: { what: 'Support line · inbound and outbound', items: [['Inbound call · Emmanuel · 25 Sep', 'analysed'], ['Inbound call · Emmanuel · 19 Aug', 'analysed'], ['Outbound call · Maria · 12 Aug', 'analysed'], ['Inbound call · Emmanuel · 2 Oct', 'ready']], state: 'ok', fresh: 'Synced 12 min ago', supplies: 'Call recordings and their transcripts, split by speaker, analysed in Insights for new questions.' },
+  slack: { what: '#support · #sales-questions · #billing', items: [['#support', '214 threads'], ['#sales-questions', '88 threads'], ['#billing', '41 threads']], state: 'ok', fresh: 'Synced just now', supplies: 'Messages and threads from the channels you choose, analysed in Insights for the questions your team keeps asking.' },
   aircall: { what: 'Support line · Sales line', items: [['+44 20 7946 0958', 'awaiting transcript'], ['+33 6 85 36 57 11', 'ready'], ['+33 7 57 91 26 97', 'too short to transcribe']], state: 'warn', fresh: 'Waiting for 1 transcript', next: 'Nothing to do: the transcript arrives from Aircall, then the call can be analysed.', supplies: 'Call recordings and transcripts, analysed in Insights for the questions customers ask.' },
 };
+Object.keys(ST.synced || {}).forEach(id => { if (APPINFO[id]) APPINFO[id].items = APPINFO[id].items.map(([n, st]) => [n, /changed/.test(st) ? 'synced' : st]); });
 const DEF = { what: 'Connected just now', items: [['First sync', 'running']], state: 'ok', fresh: 'First sync in progress', supplies: 'Files and pages from this app, read like documents.' };
 let srcSel = SP0().get('src') || ST.srcSel || 'upload';
 function SP0() { return new URLSearchParams(location.search); }
@@ -1137,6 +1146,7 @@ function sources() {
     supplies: 'Documents you upload: their text is pulled out, split into passages and indexed by meaning.', next: failed ? 'Fix the document that couldn’t be processed, below.' : 'Nothing to do. Upload more when you have them.' }];
   APPS.filter(a => ST.apps[a.id]).forEach(a => {
     const i = APPINFO[a.id] || DEF;
+    if (APP_IDS.includes(a.id) && !appWarn(a.id)) { i.state = 'ok'; delete i.next; }
     list.push({ id: a.id, name: a.name, sub: a.name + ' · ' + i.what, icon: '<span class="sico" style="color:' + a.color + '"><svg viewBox="0 0 24 24" fill="currentColor">' + LOGO[a.id] + '</svg></span>', state: i.state,
       line: (i.state === 'warn' ? 'Needs attention · ' : '') + i.fresh, conn: 'Connected', connS: 'Signed in as eric@oslo.com. lojo only reads.', fresh: i.fresh, freshS: i.state === 'warn' ? 'See what happens next below.' : 'Checked for changes every hour.',
       contrib: i.items.length + ' item' + (i.items.length === 1 ? '' : 's'), contribS: 'Imported knowledge can be reviewed in Insights and Knowledge.', supplies: i.supplies, next: i.next || 'Nothing to do. lojo keeps it in sync.', nextHref: i.nextHref, items: i.items });
@@ -1148,6 +1158,7 @@ const ABOUT = (s) => {
   const app = { upload: ['Uploaded documents', 'Files you upload here', 'When you upload'], notion: ['Notion', 'Teamspaces: Pricing wiki, Onboarding playbook, Security docs, Policies', 'Automatic · every hour'],
     website: ['Website', 'help.oslo.com and oslo.com/pricing, oslo.com/legal', 'Automatic · daily'], gmail: ['Gmail', 'support@oslo.com inbox', 'Automatic · as emails arrive'],
     ziwo: ['ZIWO', 'Support line calls, inbound and outbound, with transcripts', 'Automatic · after each call'],
+    slack: ['Slack', 'Public channels: #support, #sales-questions, #billing. Never DMs or private channels.', 'Automatic · every 15 minutes'],
     aircall: ['Aircall', 'Support line and Sales line, with transcripts', 'Automatic · after each call'] }[s.id] || [s.name, 'Everything the account can read', 'Automatic · every hour'];
   return [['Source type', app[0]], ['Configured scope', app[1]], ['Sync mode', app[2]], ['Connected by', s.id === 'upload' ? 'Anyone who uploads' : 'Eric Ouisse · eric@oslo.com'], ['Access', 'Read only. lojo never edits your files.']];
 };
@@ -1155,8 +1166,9 @@ document.addEventListener('click', (e) => { if (!e.target.closest('.about')) doc
 function renderSources() {
   const all = sources(), q = $('srcQ').value.trim().toLowerCase(), list = all.filter(s => !q || (s.name + ' ' + s.sub).toLowerCase().includes(q));
   if (!all.some(s => s.id === srcSel)) srcSel = 'upload';
-  const warn = all.filter(s => s.state === 'warn');
-  $('srcSum').innerHTML = '<b>' + all.length + ' connected sources</b> · ' + warn.length + ' need' + (warn.length === 1 ? 's' : '') + ' attention · ' + counts().passages.toLocaleString('en-GB') + ' passages';
+  // the same numbers as the Dashboard Sources card and Activity
+  const S = sourceSummary();
+  $('srcSum').innerHTML = '<b>' + S.sources + ' connected sources</b> · ' + S.warn + ' need' + (S.warn === 1 ? 's' : '') + ' attention · ' + S.passages.toLocaleString('en-GB') + ' passages';
   const row = (s) => '<button type="button" class="sitem' + (s.id === srcSel ? ' is-sel' : '') + '" data-src="' + s.id + '">' + s.icon + '<span><b>' + esc(s.name) + '</b><span>' + esc(s.line) + '</span></span><i class="dot' + (s.state === 'warn' ? ' warn' : '') + '"></i></button>';
   const w = list.filter(s => s.state === 'warn'), ok = list.filter(s => s.state !== 'warn');
   $('srcList').innerHTML = (w.length ? '<p class="sgrp">Needs attention <span>' + w.length + '</span></p>' + w.map(row).join('') : '') + (ok.length ? '<p class="sgrp">Healthy <span>' + ok.length + '</span></p>' + ok.map(row).join('') : '') || '<p class="sub" style="padding:14px">No source matches.</p>';
@@ -1164,7 +1176,7 @@ function renderSources() {
   $('srcHead').innerHTML = '<div class="sh__top">' + s.icon + '<div><h2>' + esc(s.name) + '</h2><p>' + esc(s.sub) + '</p></div><span class="spacer"></span>' +
     '<span class="about"><button class="btn btn--secondary" type="button" data-about aria-expanded="false"><svg class="i" viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>About this source</button>' +
     '<span class="aboutpop" role="dialog" aria-label="About this source"><dl>' + ABOUT(s).map(([k, v]) => '<div><dt>' + k + '</dt><dd>' + esc(v) + '</dd></div>').join('') + '</dl></span></span>' +
-    '<button class="btn btn--grad" type="button" data-sync>Sync now</button></div>';
+    (s.id === 'upload' ? '<button class="btn btn--grad" type="button" data-upload>Upload documents</button>' : '<button class="btn btn--grad" type="button" data-sync>Sync now</button>') + '</div>';
   $('uploadBody').hidden = s.id !== 'upload'; $('appBody').hidden = s.id === 'upload';
   if (s.id === 'gmail') { renderGmail(); return; }
   if (s.id !== 'upload') $('appBody').innerHTML = '<h3>What’s synced<span class="spacer"></span><button class="btn btn--ghost btn--sm" type="button" data-off="' + s.id + '">Disconnect</button></h3>' +
@@ -1214,11 +1226,12 @@ $('appBody').addEventListener('click', (e) => {
       toast('Read ' + idx.length + ' label' + (idx.length === 1 ? '' : 's') + ' · ' + got + ' threads. New questions show up in Insights.'); }, 700); }, 900 * (n + 1)));
   }
 });
-$('srcList').addEventListener('click', (e) => { const b = e.target.closest('[data-src]'); if (!b) return; srcSel = b.dataset.src; ST.srcSel = srcSel; save(); renderSources(); });
+$('srcList').addEventListener('click', (e) => { const b = e.target.closest('[data-src]'); if (!b) return; srcSel = b.dataset.src; ST.srcSel = srcSel; save(); renderSources(); $('srcDet').scrollTop = 0; });
 $('srcQ').addEventListener('input', renderSources);
 $('srcDet').addEventListener('click', (e) => {
+  if (e.target.closest('[data-upload]')) { openAdd('docs'); return; }
   const sy = e.target.closest('[data-sync]');
-  if (sy) { sy.disabled = true; sy.innerHTML = '<span class="spin" style="width:12px;height:12px"></span> Syncing…'; setTimeout(() => { if (APPINFO[srcSel]) { APPINFO[srcSel].state = 'ok'; APPINFO[srcSel].fresh = 'Synced just now'; APPINFO[srcSel].items = APPINFO[srcSel].items.map(([n, st]) => [n, /changed/.test(st) ? 'synced' : st]); delete APPINFO[srcSel].next; } renderSources(); toast('Synced'); }, 1400); }
+  if (sy) { sy.disabled = true; sy.innerHTML = '<span class="spin" style="width:12px;height:12px"></span> Syncing…'; setTimeout(() => { ST.synced = ST.synced || {}; ST.synced[srcSel] = true; save(); if (APPINFO[srcSel]) { APPINFO[srcSel].state = 'ok'; APPINFO[srcSel].fresh = 'Synced just now'; APPINFO[srcSel].items = APPINFO[srcSel].items.map(([n, st]) => [n, /changed/.test(st) ? 'synced' : st]); delete APPINFO[srcSel].next; } renderSources(); toast('Synced'); }, 1400); }
   const ab = e.target.closest('[data-about]'); if (ab) { const w = ab.parentNode; w.classList.toggle('is-open'); ab.setAttribute('aria-expanded', w.classList.contains('is-open')); }
   const off = e.target.closest('[data-off]'); if (off) { delete ST.apps[off.dataset.off]; save(); srcSel = 'upload'; render(); renderSources(); toast('Disconnected. Knowledge already imported stays until you retire it.'); }
 });
@@ -1227,7 +1240,6 @@ const dlg = $('addDlg');
 const openAdd = (tab) => { show(tab); dlg.showModal(); };
 $('addSrc').addEventListener('click', () => openAdd('docs'));
 $('addDocs').addEventListener('click', () => openAdd('docs'));
-$('browseConn').addEventListener('click', () => openAdd('connect'));
 $('addX').addEventListener('click', () => dlg.close());
 dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
 // close the popup once something is added, and show where it went
@@ -2194,12 +2206,70 @@ REVIEW = dict(
   .sopp .dx:hover{color:var(--ink)}
   .sopgo{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
   .sopgo .sub{flex:1;min-width:200px;font-size:.8rem}
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+  .vs .quote{display:flex;flex-direction:column;gap:10px}
+  .vs .quote p{flex:1}
+  .vs .quote .btn{align-self:flex-start}
+  .picked{display:flex;align-items:center;gap:10px;margin:-8px 0 22px;padding:10px 12px;border-radius:10px;background:rgba(63,143,95,.08);font-size:.86rem;color:var(--muted)}
+  .picked b{color:var(--ink)}
+  .picked .spacer{flex:1}
+  @media (max-width:700px){.vs{grid-template-columns:1fr}}
+  /* calmer list: rows on lines, not cards; one accent for the selected row */
+  .items{padding:0;gap:0}
+  .item,.item.is-failed,.item.is-redo,.item.is-other,:root[data-theme="dark"] .item{border-radius:0;background:none;padding:13px 18px;row-gap:5px;border-bottom:1px solid var(--line)}
+  .item:hover,.item.is-failed:hover,.item.is-redo:hover,.item.is-other:hover,:root[data-theme="dark"] .item:hover{background:var(--bg-soft)}
+  .item.is-sel,.item.is-failed.is-sel,.item.is-redo.is-sel,.item.is-other.is-sel,.item.is-hl.is-sel{background:rgba(232,93,117,.05);box-shadow:inset 3px 0 0 var(--rose)}
+  .item.is-hl{background:rgba(47,116,232,.04);box-shadow:inset 3px 0 0 rgba(47,116,232,.5)}
+  .item b{font-weight:600;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;overflow-wrap:anywhere}
+  .item .meta:empty{display:none}
+  .item .meta .badge{height:19px;padding:0 7px;font-size:.6rem}
+  .item.has-av{grid-template-columns:24px minmax(0,1fr)}
+  .item.has-av.has-side,.item.has-av.is-failed{grid-template-columns:24px minmax(0,1fr) auto}
+  .rav{width:24px;height:24px;font-size:.78rem;align-self:start;margin-top:1px}
+  .srcb,:root[data-theme="dark"] .srcb{background:none;border:0;padding:0;height:auto;color:var(--muted);font-weight:600}
+  .fstate{font-size:.74rem}
+  .list .tabs{border-bottom:1px solid var(--line)}
+  .lfind{padding:10px 14px}
+  /* detail: fewer boxes, more air between sections */
+  .detail h2{margin:8px 0 18px}
+  .gapnote{gap:12px;padding:10px 14px;border:0;border-left:3px solid #2F74E8;border-radius:0 10px 10px 0;background:rgba(47,116,232,.05)}
+  .gapnote .g > div{font-size:.84rem}
+  .gapnote .g b{display:inline;margin-right:4px}
+  .gacts{margin-top:8px;gap:4px}
+  .gacts .btn{height:28px;padding:0 10px;font-size:.76rem}
+  .acts{gap:8px}
+  .item.is-drafting{cursor:default;opacity:.8}
+  .gflow{margin:0 0 4px;font-size:.84rem;color:var(--muted)}
+  /* the review panel stays put beside the list and scrolls on its own */
+  .detail{position:sticky;top:84px;height:calc(100vh - 140px);max-height:none;overflow:auto;overscroll-behavior:contain;display:flex;flex-direction:column}
+  .detail > *{flex-shrink:0}
+  /* the decision bar always sits on the bottom edge, however short the item */
+  .detail.card > .acts{margin-top:auto}
+  @media (max-width:1240px){.detail.card > .acts{margin-top:22px}}
+  .detail > .empty{margin:auto 0}
+  .list{height:calc(100vh - 140px);max-height:none}
+  @media (min-width:1001px){.wrap{padding-bottom:0}}
+  @media (max-width:1000px){.detail,.list{height:auto}.detail{display:block}}
+  body.is-fs .detail{top:76px;min-height:0;height:calc(100vh - 96px);max-height:none}
+  @media (max-width:1000px){.detail{position:static;max-height:none;overflow:visible}}
+  /* the decision bar stays in reach at the bottom while you read the sources */
+  .detail .acts{position:sticky;bottom:-24px;z-index:5;flex-wrap:nowrap;gap:6px;margin:22px -26px -24px;padding:12px 96px 12px 26px;border-top:1px solid var(--line);background:var(--panel);border-radius:0 0 16px 16px;box-shadow:0 -14px 24px -18px rgba(36,26,20,.35)}
+  .detail .acts .btn{height:36px;padding:0 12px;font-size:.8rem;white-space:nowrap;flex:none;gap:6px}
+  .detail .acts .btn--ghost{padding:0 8px}
+  .detail .acts .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  /* the right end stays clear for the Ask lojo button */
+  /* not enough room for one row: drop the J/K hint, then let the bar scroll with the page */
+  @media (max-width:1600px){.detail .acts .spacer + .sub:has(kbd),.detail .acts .btn kbd{display:none}}
+  @media (max-width:1240px){.detail .acts{position:static;flex-wrap:wrap;margin:22px 0 0;padding:18px 0 0;box-shadow:none;border-radius:0}}
+  body.is-fs .detail .acts .spacer + .sub:has(kbd){display:inline}
+  .lgrp{list-style:none;padding:14px 18px 6px;font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line)}
+  .lgrp em{font-style:normal;margin-left:4px}
   @media (max-width:700px){.sopp__tabs{grid-template-columns:1fr}.sopm li{grid-template-columns:1fr auto}.pct{display:none}}
 """,
   body=r"""
     <div class="head">
       <div>
-        <p class="label">02 Build · Validation</p>
+        <p class="label">02 Build · Review</p>
         <h1>Build</h1>
         <p>Approve, edit, or reject with a reason. A rejected draft is written again with your reason, or sent to a person to answer.</p>
       </div>
@@ -2211,9 +2281,10 @@ REVIEW = dict(
     <div class="rv">
       <section class="card list" aria-label="Drafts">
         <div class="tabs" role="tablist" id="rtabs">
-          <button class="tab" data-f="pending" aria-selected="true">To review <span class="n" id="nP">0</span></button>
+          <button class="tab" data-f="pending" aria-selected="true" title="Drafts to review">Drafts <span class="n" id="nP">0</span></button>
+          <button class="tab" data-f="needs" aria-selected="false" title="Questions, gaps and failed drafts that need a decision">Needs you <span class="n" id="nN">0</span></button>
+          <button class="tab" data-f="final" aria-selected="false" title="Answers only a person can write">Human <span class="n" id="nF">0</span></button>
           <button class="tab" data-f="approved" aria-selected="false">Approved <span class="n" id="nA">0</span></button>
-          <button class="tab" data-f="final" aria-selected="false">Human <span class="n" id="nF">0</span></button>
         </div>
         <div class="lfind">
           <div class="lfrow">
@@ -2263,7 +2334,7 @@ const CONTEXT = {
   'd4|§3': ['§3 Annual plans. ', ' Monthly plans are not refunded after the first 30 days.'],
   'd9|§2': ['§2 Renewals. ', ' We email a reminder 30 days before each renewal.'],
 };
-const Q = (r) => QUESTIONS.find(q => q.id === r.qid).q;
+const Q = (r) => allQuestions().find(q => q.id === r.qid).q;
 // gaps a draft leans on: a source quote mentions something no document explains
 const GAP_WORDS = { g1: /enterprise/i, g2: /chargeback fee/i, g3: /retention/i, g4: /onboarding manager/i, g5: /over the limit|requests per second|burst/i };
 const gapsOf = (r) => GAPS.filter(g => !ST.gaps[g.id] && r.src.some(s => GAP_WORDS[g.id].test(s[2])));
@@ -2277,20 +2348,38 @@ const isGap = (r) => gapsOf(r).length > 0;
 // questions someone added from a gap (Add as a question)
 const fromGap = (qid) => { const q = allQuestions().find(x => x.id === qid); return !!(q && q.gap); };
 let lq = '', gsel = null, fsel = null, fwrite = false;
+// Needs you: one list of triage, gaps and failed drafts; nsel is "kind:id"
+let nsel = null, tsel = null, asking = null;
+// Human: questions no source answers, written by a person
+let osel = null, owrite = false;
+const JK = '<span class="spacer"></span><span class="sub"><kbd>J</kbd> <kbd>K</kbd> to move</span>';
+const needsPick = (r) => !!r.conflict && decision(r).status === 'pending' && !decision(r).pick;
 // filters: several can be on; a row shows if it matches any of them
 const ltags = new Set();
-const onlyGaps = () => ltags.size === 1 && ltags.has('gap');
+const onlyGaps = () => false;
 // questions lojo couldn't draft: no answer with sources that check out
-const failedQs = () => tab !== 'pending' ? [] : allQuestions().filter(q => (ST.draftFailed || {})[q.id] && (!lq || q.q.toLowerCase().includes(lq)));
+const failedQs = () => tab !== 'needs' ? [] : allQuestions().filter(q => (ST.draftFailed || {})[q.id] && (!lq || q.q.toLowerCase().includes(lq)));
 // open gaps: things the documents mention but never explain
 const openGaps = () => GAPS.filter(g => !ST.gaps[g.id] && (!lq || (g.term + ' ' + g.why).toLowerCase().includes(lq)));
 const gapDrafts = (g) => DRAFTS.filter(r => decision(r).status !== 'approved' && gapsOf(r).some(x => x.id === g.id));
-const TAGS = [['all', 'All', () => true], ['question', 'Questions', (r) => !isGap(r)], ['gap', 'Gaps', isGap], ['failed', 'Draft failed', () => false], ['conflict', 'Sources disagree', (r) => !!r.conflict]];
+const TAGS_DRAFTS = [['all', 'All', () => true], ['question', 'Questions', (r) => !isGap(r)], ['gap', 'Relies on a gap', isGap], ['conflict', 'Sources disagree', (r) => !!r.conflict]];
+const TAGS_NEEDS = [['all', 'All', () => true], ['triage', 'Triage', () => false], ['gap', 'Gaps', () => false], ['failed', 'Draft failed', () => false]];
+let TAGS = TAGS_DRAFTS;
 const tagOk = (r) => !ltags.size || [...ltags].some(k => TAGS.find(t => t[0] === k)[2](r));
-const showFailed = () => !ltags.size || ltags.has('failed') || ltags.has('question');
+const showFailed = () => !ltags.size || ltags.has('failed');
+const triageQs = () => tasks().triage.filter(q => !lq || q.q.toLowerCase().includes(lq));
+function needItems() {
+  const on = (k) => !ltags.size || ltags.has(k), out = [];
+  if (on('triage')) triageQs().forEach(q => out.push(['triage', q.id]));
+  if (on('gap')) openGaps().forEach(g => out.push(['gap', g.id]));
+  if (on('failed')) failedQs().forEach(q => out.push(['failed', q.id]));
+  return out;
+}
+const ownQs = () => tasks().noSource.filter(q => !lq || q.q.toLowerCase().includes(lq));
 function renderTags() {
+  TAGS = tab === 'needs' ? TAGS_NEEDS : TAGS_DRAFTS;
   const base = DRAFTS.filter(inTab), nf = failedQs().length;
-  const count = (k, f) => k === 'gap' ? GAPS.filter(g => !ST.gaps[g.id]).length : k === 'failed' ? nf : base.filter(f).length + (k === 'question' ? nf : 0);
+  const count = (k, f) => tab === 'needs' ? (k === 'triage' ? triageQs().length : k === 'gap' ? openGaps().length : nf) : base.filter(f).length;
   $('ltags').innerHTML = TAGS.filter(t => t[0] !== 'all').map(([k, l, f]) => { const n = count(k, f), on = ltags.has(k); return (n || on) ? '<label class="lfitem"><input type="checkbox" data-tag="' + k + '"' + (on ? ' checked' : '') + '><span>' + l + '</span><em>' + n + '</em></label>' : ''; }).join('') +
     (ltags.size ? '<button type="button" class="lfclear" data-reset>Clear all</button>' : '');
   $('lfActive').hidden = !ltags.size;
@@ -2305,22 +2394,41 @@ const rowAv = (k) => '<span class="rav rav--' + k + '" title="' + ROW_ICON[k][1]
 // compact source count for list rows; hover says "3 sources"
 const srcBadge = (n) => '<span class="srcb" title="' + nsrc(n) + '" aria-label="' + nsrc(n) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>' + n + '</span>';
 function badges(r, inList) {
-  const d = decision(r); let b = isGap(r) ? '' : '<span class="badge badge--q">Question</span>';
+  const d = decision(r); let b = '';
   if (r.conflict) b += '<span class="badge badge--amber">Sources disagree</span>';
   const gs = gapsOf(r); if (gs.length) b = '<span class="badge badge--gap" title="' + esc(gs.map(g => g.term).join(', ')) + '">Gap</span>' + b;
   if (fromGap(r.qid)) b += '<span class="badge badge--fromgap" title="Added as a question from a gap">From gap</span>';
-  if (!inList) b += '<span class="badge badge--muted">' + nsrc(r.src.length) + '</span>';
   if (d.by) b += '<span class="badge badge--muted">By ' + esc(d.by.split(' ')[0]) + '</span>';
   if (d.edited) b += '<span class="badge badge--muted">Edited</span>';
   if (ST.sopLinks[r.id]) b += '<span class="badge badge--sop" title="Linked to ' + ST.sopLinks[r.id].sop + '">SOP</span>';
   return b;
 }
 function renderList() {
-  const c = counts();
-  $('nP').textContent = c.pending; $('nA').textContent = c.approved; $('nF').textContent = c.final;
+  const c = counts(), T = tasks();
+  $('nP').textContent = c.pending; $('nN').textContent = T.needs; $('nA').textContent = c.approved; $('nF').textContent = T.human;
   const done = c.approved + c.final;
   $('mCount').textContent = done + ' of ' + c.drafts; $('mBar').style.width = (done / c.drafts * 100) + '%';
   renderTags();
+  if (tab === 'needs') {
+    const its = needItems(), key = (i) => i[0] + ':' + i[1];
+    if (!its.some(i => key(i) === nsel)) nsel = its.length ? key(its[0]) : null;
+    const [nk, nid] = nsel ? nsel.split(':') : [null, null];
+    tsel = nk === 'triage' ? nid : null; gsel = nk === 'gap' ? nid : null; fsel = nk === 'failed' ? nid : null;
+    const sl = (k, id) => (k + ':' + id === nsel ? ' is-sel' : '');
+    // one heading per kind instead of a tag on every row
+    const GRP = { triage: 'Say whether it matters', gap: 'Gaps that need a source', failed: 'Drafts that failed' };
+    const head = (k, i) => i === 0 || its[i - 1][0] !== k ? '<li class="lgrp" aria-hidden="true">' + GRP[k] + '<em>' + its.filter(x => x[0] === k).length + '</em></li>' : '';
+    $('items').innerHTML = its.length ? its.map(([k, id], i) => head(k, i) + (() => {
+      if (k === 'triage') { const q = allQuestions().find(x => x.id === id);
+        return '<li class="item has-av has-side' + sl(k, id) + '" data-nk="' + k + ':' + id + '">' + rowAv('question') + '<b>' + esc(q.q) + '</b><span class="meta"></span><span class="rside">Matters?</span></li>'; }
+      if (k === 'gap') { const g = GAPS.find(x => x.id === id);
+        return '<li class="item has-av' + sl(k, id) + (id === HL_GAP ? ' is-hl' : '') + '" data-nk="' + k + ':' + id + '">' + rowAv('gap') + '<b>' + esc(g.term) + '</b><span class="meta">' + ((ST.gapDocs || {})[id] ? '<span class="badge badge--ok">Document sent</span>' : (ST.gapAsked || {})[id] ? '<span class="badge badge--info">Asked ' + esc(ST.gapAsked[id].split(' ')[0]) + '</span>' : '') + '</span></li>'; }
+      const q = allQuestions().find(x => x.id === id), n = (q.docs || []).length;
+      return '<li class="item has-av is-failed' + sl(k, id) + '" data-nk="' + k + ':' + id + '">' + rowAv('failed') + '<b>' + esc(q.q) + '</b><span class="meta">' + (q.gap ? '<span class="badge badge--fromgap">From gap</span>' : '') +
+        '</span><span class="fstate">' + ((ST.draftFailed || {})[q.id] === 'retrying' ? 'Drafting again…' : 'Draft failed') + '<small>' + srcBadge(n) + '</small></span></li>';
+    })()).join('') : '<li class="empty"><b>' + (lq || ltags.size ? 'Nothing matches.' : 'Nothing needs you.') + '</b>' + (lq || ltags.size ? 'Try other words or another tag.' : 'Every question, gap and failed draft is handled.') + '</li>';
+    return;
+  }
   if (onlyGaps()) {
     const gl = openGaps();
     if (!gl.some(g => g.id === gsel)) gsel = gl.length ? gl[0].id : null;
@@ -2330,6 +2438,7 @@ function renderList() {
     return;
   }
   const fl = showFailed() ? failedQs() : [];
+  const drafting = tab === 'pending' ? ST.extra.filter(q => q.drafting) : [];
   const list = (ltags.size === 1 && ltags.has('failed')) ? [] : DRAFTS.filter(inTab).filter(r => tagOk(r) && (!lq || (Q(r) + ' ' + answerOf(r)).toLowerCase().includes(lq)));
   if (fsel && !fl.some(q => q.id === fsel)) fsel = null;
   if (!list.length && !fsel && fl.length) fsel = fl[0].id;
@@ -2337,10 +2446,17 @@ function renderList() {
     return '<li class="item has-av is-failed' + (q.id === fsel ? ' is-sel' : '') + '" data-fq="' + q.id + '">' + rowAv('failed') + '<b>' + esc(q.q) + '</b><span class="meta"><span class="badge badge--q">Question</span>' + (q.gap ? '<span class="badge badge--fromgap">From gap</span>' : '') +
       '</span><span class="fstate">' + ((ST.draftFailed || {})[q.id] === 'retrying' ? 'Drafting again…' : 'Draft failed') + '<small>' + srcBadge(n) + '</small></span></li>'; }).join('');
   if (!list.some(r => r.id === sel)) { sel = list.length ? list[0].id : null; mode = 'view'; }
-  const rows = list.map(r => '<li class="item has-av has-side' + '' + (r.id === sel && !fsel ? ' is-sel' : '') + (hasHl(r) ? ' is-hl' : '') + '" data-id="' + r.id + '">' + rowAv(isGap(r) ? 'gap' : 'question') + '' +
+  const oq = tab === 'final' ? ownQs() : [];
+  if (osel && !oq.some(q => q.id === osel)) { osel = null; owrite = false; }
+  if (tab === 'final' && !list.length && !osel && oq.length) osel = oq[0].id;
+  const rows = list.map(r => '<li class="item has-av has-side' + '' + (r.id === sel && !fsel && !osel ? ' is-sel' : '') + (hasHl(r) ? ' is-hl' : '') + '" data-id="' + r.id + '">' + rowAv(isGap(r) ? 'gap' : 'question') + '' +
     '<b>' + esc(Q(r)) + '</b><span class="meta">' + badges(r, true) + '</span><span class="rside">' + '' + srcBadge(r.src.length) + '</span></li>');
-  rows.splice(Math.min(3, rows.length), 0, fhtml); // failed questions sit among the others, fourth in the list
-  $('items').innerHTML = (list.length || fl.length) ? rows.join('')
+  rows.splice(Math.min(3, rows.length), 0, fhtml);
+  drafting.slice().reverse().forEach(q => rows.unshift('<li class="item has-av has-side is-drafting" aria-busy="true">' + rowAv('question') + '<b>' + esc(q.q) + '</b><span class="meta"><span class="badge badge--fromgap">From gap</span></span><span class="rside"><span class="spin" style="width:10px;height:10px"></span> Drafting…</span></li>'));
+  // questions no source answers: only a person can write these
+  oq.forEach(q => { const n = (ST.asks || {})[q.id];
+    rows.push('<li class="item has-av has-side' + (q.id === osel ? ' is-sel' : '') + '" data-oq="' + q.id + '">' + rowAv('question') + '<b>' + esc(q.q) + '</b><span class="meta"><span class="badge badge--muted">No source</span>' + (q.gap ? '<span class="badge badge--fromgap">From gap</span>' : '') + '</span><span class="rside">' + (n ? 'Asked ' + n + '×' : '') + '</span></li>'); });
+  $('items').innerHTML = (list.length || fl.length || oq.length || drafting.length) ? rows.join('')
     : (lq || ltags.size) ? '<li class="empty"><b>Nothing matches.</b>Try other words or another tag.</li>'
     : '<li class="empty"><b>' + (tab === 'pending' ? 'Nothing to review.' : 'Nothing here yet.') + '</b>' + (tab === 'pending' ? 'The first batch is done.' : '') + '</li>';
 }
@@ -2353,18 +2469,40 @@ function renderGap() {
     ((ST.gapDocs || {})[g.id] ? '<div class="gsent"><span class="spin"></span><span><b>' + esc(ST.gapDocs[g.id]) + '</b> is being read. The gap closes once it’s explained.</span></div>' : '') +
     '<p class="seclbl">Where it’s mentioned</p><div class="quotes">' + g.where.map(([doc, loc, text]) => '<div class="quote is-gap"><div class="qtop"><b>' + esc(docShort(doc)) + '</b><em>' + esc(loc) + '</em></div><p>“' + esc(text) + '”</p></div>').join('') + '</div>' +
     (ds.length ? '<p class="seclbl">Drafts that rely on it</p><div class="gdrafts">' + ds.map(r => '<button type="button" class="gdraft" data-open="' + r.id + '">' + esc(Q(r)) + ' <span>Open →</span></button>').join('') + '</div>' : '') +
-    '<div class="acts"><button class="btn btn--primary" type="button" data-senddoc="' + g.id + '">Send a document that explains it</button><button class="btn btn--secondary" type="button" data-gapq="' + g.id + '">Add as a question</button><button class="btn btn--ghost" type="button" data-gap="' + g.id + '">Not needed</button></div>';
+    ((ST.gapAsked || {})[g.id] && asking !== g.id ? '<div class="gsent"><span>✓</span><span><b>Asked ' + esc(ST.gapAsked[g.id]) + '.</b> Their answer comes back here.</span></div>' : '') +
+    (asking === g.id ? '<div class="reject"><label class="seclbl" for="ownerSel" style="margin:0">Who knows the answer?</label><select class="text" id="ownerSel">' + ST.people.filter(p => p.status === 'member').map(p => '<option>' + esc(p.name) + '</option>').join('') + '</select>' +
+      '<textarea class="text" id="ownerNote" placeholder="Add a note (optional)" style="min-height:70px"></textarea><p class="sub">They get an email with the passages above. Their answer comes back to this gap.</p></div>' +
+      '<div class="acts"><button class="btn btn--primary" type="button" data-askgo="' + g.id + '">Send</button><button class="btn btn--ghost" type="button" data-askx>Cancel</button></div>'
+    : '<p class="gflow">Add as a question: lojo drafts it first. It goes to a person only if lojo can’t find an answer.</p><div class="acts"><button class="btn btn--primary" type="button" data-senddoc="' + g.id + '">Upload a document</button><button class="btn btn--secondary" type="button" data-ask="' + g.id + '">Ask an owner</button><button class="btn btn--secondary" type="button" data-gapq="' + g.id + '">Add as a question</button><button class="btn btn--ghost" type="button" data-gap="' + g.id + '">Dismiss</button>' + JK + '</div>');
+  if (asking === g.id) $('ownerSel').focus();
 }
 function renderFailed() {
   const q = allQuestions().find(x => x.id === fsel), why = (ST.draftFailed || {})[q.id], again = why === 'retrying';
-  $('detail').innerHTML = '<div class="meta" style="display:flex;gap:6px"><span class="badge badge--q">Question</span></div><h2>' + esc(q.q) + '</h2>' +
+  $('detail').innerHTML = '<div class="meta" style="display:flex;gap:6px"><span class="badge badge--bad">Draft failed</span></div><h2>' + esc(q.q) + '</h2>' +
     (again ? '<div class="answer" style="display:flex;gap:10px;align-items:center;color:var(--muted)"><span class="spin"></span>lojo is drafting it again from its sources.</div>'
       : '<div class="fnote2"><b>No draft with sources that check out could be written.</b>' + (why && why !== true ? '<span>' + esc(why) + '</span>' : '') + '</div>') +
     ((q.docs || []).length ? '<p class="seclbl">Sources it tried</p><div class="quotes" style="display:flex;flex-wrap:wrap;gap:6px">' + q.docs.map(d => srcChip(d, '')).join('') + '</div>' : '') +
     (fwrite ? '<p class="seclbl">Your answer</p><textarea class="text" id="fBox" style="min-height:130px;padding:12px 13px" placeholder="Write the answer as you would give it."></textarea>' : '') +
     (again ? '' : '<div class="acts">' + (fwrite ? '<button class="btn btn--primary" data-fa="save">Save &amp; approve</button><button class="btn btn--ghost" data-fa="cancel">Cancel</button>'
-      : '<button class="btn btn--primary" data-fa="retry">Try again</button><button class="btn btn--secondary" data-fa="write">Write my own answer</button><button class="btn btn--ghost" data-fa="leave">Leave out</button>') + '</div>');
+      : '<button class="btn btn--primary" data-fa="retry">Try again</button><button class="btn btn--secondary" data-fa="write">Write my own answer</button><button class="btn btn--ghost" data-fa="leave">Dismiss</button>' + JK) + '</div>');
   if (fwrite) $('fBox').focus();
+}
+function renderTriage() {
+  const q = allQuestions().find(x => x.id === tsel);
+  $('detail').innerHTML = '<div class="meta" style="display:flex;gap:6px"><span class="badge badge--amber">Triage</span></div><h2>' + esc(q.q) + '</h2>' +
+    '<p class="gwhy">lojo found this question in your sources. Say whether it matters. Only questions that matter get drafted.</p>' +
+    ((q.docs || []).length ? '<p class="seclbl">Found in</p><div class="quotes" style="display:flex;flex-wrap:wrap;gap:6px">' + q.docs.map(d => srcChip(d, '')).join('') + '</div>' : '') +
+    '<div class="acts"><button class="btn btn--primary" type="button" data-ta="yes">It matters</button><button class="btn btn--ghost" type="button" data-ta="no">Doesn’t matter</button>' + JK + '</div>';
+}
+function renderOwn() {
+  const q = allQuestions().find(x => x.id === osel), g = q.gap && GAPS.find(x => x.id === q.gap), n = (ST.asks || {})[q.id];
+  $('detail').innerHTML = '<div class="meta" style="display:flex;gap:6px;flex-wrap:wrap"><span class="badge badge--muted">No source</span>' + (q.gap ? '<span class="badge badge--fromgap">From gap</span>' : '') + '</div><h2>' + esc(q.q) + '</h2>' +
+    '<div class="done-note no">' + (q.why ? esc(q.why) + ' Write the answer yourself, or upload a document that does.' : 'No source answers this yet. Write the answer yourself, or upload a document that does.') + '</div>' +
+    (n ? '<p class="gwhy">Asked ' + n + ' times in Ask lojo and email.</p>' : '') + (g ? '<p class="gwhy">' + esc(g.why) + '</p>' : '') +
+    (owrite ? '<p class="seclbl">Your answer</p><textarea class="text" id="oBox" style="min-height:130px;padding:12px 13px" placeholder="Write the answer as you would give it."></textarea><div style="height:22px"></div>' : '') +
+    '<div class="acts">' + (owrite ? '<button class="btn btn--primary" type="button" data-oa="save">Save &amp; approve</button><button class="btn btn--ghost" type="button" data-oa="cancel">Cancel</button>'
+      : '<button class="btn btn--primary" type="button" data-oa="write">Write my own answer</button><button class="btn btn--secondary" type="button" data-oa="upload">Upload a document</button><button class="btn btn--ghost" type="button" data-oa="leave">Leave out</button>' + JK) + '</div>';
+  if (owrite) $('oBox').focus();
 }
 // a call as one readable log: who, when, how long; only the turns lojo used, with a little context
 const CALLS = {
@@ -2430,16 +2568,19 @@ function callLog(k) {
     '<button class="more" type="button" data-full="' + esc(k) + '" aria-expanded="' + open + '">' + (open ? 'Show only what was used' : 'Show full call (' + L.length + ' turns)') + '</button></div>';
 }
 function renderDetail() {
-  if (onlyGaps()) return renderGap();
-  if (fsel) return renderFailed();
+  if (tab === 'needs') {
+    if (tsel) return renderTriage(); if (gsel) return renderGap(); if (fsel) return renderFailed();
+    $('detail').innerHTML = '<div class="empty"><b>Nothing needs you.</b>Every question, gap and failed draft is handled.</div>'; return;
+  }
+  if (tab === 'final' && osel) return renderOwn();
   const r = DRAFTS.find(x => x.id === sel);
   if (!r) { $('detail').innerHTML = '<div class="empty"><b>Nothing to review. The loop is running.</b>Approved answers are in the store; try them in Ask lojot.</div>'; return; }
   const d = decision(r), ans = answerOf(r);
   let h = '<div class="meta" style="display:flex;gap:6px;flex-wrap:wrap">' + badges(r) + '</div><h2>' + esc(Q(r)) + '</h2>';
   const other = ST.others && ST.others[r.id], gs = gapsOf(r);
   // the answer relies on something the documents never explain: check it before approving
-  if (gs.length && d.status !== 'approved') h += '<div class="gapnote">' + gs.map(g => '<div class="g' + (g.id === HL_GAP ? ' is-hl' : '') + '"><span class="badge badge--gap">' + (g.id === HL_GAP ? 'From Insights' : 'Knowledge gap') + '</span><div><b>' + esc(g.term) + '</b>' + esc(g.why) + ' Check this answer doesn’t rely on it.' +
-    '<div class="gacts"><button class="btn btn--secondary" type="button" data-senddoc="' + g.id + '">Send a document that explains it</button><button class="btn btn--secondary" type="button" data-gapq="' + g.id + '">Add as a question</button><button class="btn btn--ghost" type="button" data-gap="' + g.id + '">Not needed</button></div></div></div>').join('') + '</div>';
+  if (gs.length && d.status !== 'approved') h += '<div class="gapnote">' + gs.map(g => '<div class="g' + (g.id === HL_GAP ? ' is-hl' : '') + '"><div><b>' + (g.id === HL_GAP ? 'From Insights · ' : 'Relies on a gap · ') + esc(g.term) + '.</b>' + esc(g.why) + ' Check this answer doesn’t rely on it.' +
+    '<div class="gacts"><button class="btn btn--ghost" type="button" data-senddoc="' + g.id + '">Upload a document</button><button class="btn btn--ghost" type="button" data-gapq="' + g.id + '">Add as a question</button><button class="btn btn--ghost" type="button" data-gap="' + g.id + '">Dismiss</button></div></div></div>').join('') + '</div>';
   // G10: someone else decided this draft while it was open here
   if (other && d.status === 'pending') h += '<div class="other"><span class="av av--p ' + tone(other.by) + '">' + esc(other.by.split(' ').map(x => x[0]).join('')) + '</span><div><b>' + esc(other.by) + ' ' + esc(other.action) + ' this ' + esc(other.when) + '.</b>' +
     'Your screen was out of date, so nothing you do here will change it. Their decision stands.<div class="btns"><button class="btn btn--primary btn--sm" data-a="ackOther">Got it, next draft</button><button class="btn btn--ghost btn--sm" data-a="seeOther">See their version</button></div></div></div>';
@@ -2487,16 +2628,30 @@ function renderDetail() {
   else if (mode === 'edit') acts = '<button class="btn btn--primary" data-a="save">' + (d.status === 'approved' ? 'Save changes' : 'Save &amp; approve') + '</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
   else if (mode === 'reject') acts = '<button class="btn btn--danger" data-a="confirm">Reject &amp; rewrite</button><button class="btn btn--secondary" data-a="tohuman">Send to Human</button><button class="btn btn--ghost" data-a="cancel">Cancel</button>';
   else if (d.status === 'pending' && ST.others && ST.others[r.id]) acts = '';
-  else if (d.status === 'pending') acts = '<button class="btn btn--primary" data-a="approve">Approve <kbd>A</kbd></button><button class="btn btn--secondary" data-a="edit">Edit &amp; approve <kbd>E</kbd></button><button class="btn btn--danger" data-a="reject">Reject <kbd>R</kbd></button><button class="btn btn--secondary" data-a="sop" aria-expanded="' + sopOpen + '">Link to SOP <kbd>L</kbd></button><button class="btn btn--ghost" data-a="own">Write my own answer</button><span class="spacer"></span><span class="sub"><kbd>J</kbd> <kbd>K</kbd> to move</span>';
+  else if (needsPick(r)) {
+    const old = r.src.find(x => x[0] === r.conflict), nw = r.src.find(x => x[0] !== r.conflict);
+    h += '<p class="seclbl">Sources disagree. Which one is right?</p><div class="vs">' + [nw, old].map(x => '<div class="quote' + (x === old ? ' is-warn' : '') + '"><div class="qtop"><b>' + esc(docShort(x[0])) + '</b><em>' + esc(x[1]) + '</em>' + (x === old ? '<span class="badge badge--amber">Older</span>' : '<span class="badge badge--ok">Newer</span>') + '</div><p>“' + esc(x[2]) + '”</p>' +
+      '<button class="btn btn--secondary btn--sm" type="button" data-use="' + x[0] + '">Use this source</button></div>').join('') + '</div>';
+    acts = '<button class="btn btn--danger" type="button" data-a="retireold">Retire the old one</button><span class="sub">' + esc(docShort(old[0])) + ' stops being used for drafts and Ask lojo.</span>' + JK;
+  }
+  else if (d.status === 'pending') acts = '<button class="btn btn--primary" data-a="approve" title="Approve (A)">Approve <kbd>A</kbd></button><button class="btn btn--secondary" data-a="edit" title="Edit &amp; approve (E)">Edit &amp; approve <kbd>E</kbd></button><button class="btn btn--danger" data-a="reject" title="Reject (R)">Reject <kbd>R</kbd></button><button class="btn btn--secondary" data-a="sop" aria-expanded="' + sopOpen + '" title="Link to SOP (L)">Link to SOP <kbd>L</kbd></button><button class="btn btn--ghost" data-a="own">Write my own answer</button><span class="spacer"></span><span class="sub"><kbd>J</kbd> <kbd>K</kbd> to move</span>';
   else if (d.status === 'final') acts = '<button class="btn btn--primary" data-a="edit">Write the answer</button><button class="btn btn--ghost" data-a="undo">Back to review</button>';
   else acts = '<button class="btn btn--primary" data-a="edit">Edit answer</button><button class="btn btn--secondary" data-a="sop" aria-expanded="' + sopOpen + '">Link to SOP <kbd>L</kbd></button><button class="btn btn--ghost" data-a="undo">Undo approval</button><span class="spacer"></span><span class="sub">Edits go live in Ask lojo as soon as you save.</span>';
+  if (r.conflict && d.pick && d.status === 'pending' && mode === 'view') h += '<div class="picked"><span>✓</span><span>Using <b>' + esc(docShort(d.pick)) + '</b>. The draft follows it.</span><span class="spacer"></span><button class="btn btn--ghost btn--sm" type="button" data-a="repick">Change</button></div>';
   if (acts) h += '<div class="acts">' + acts + '</div>';
   if (sopOpen && mode === 'view' && (d.status === 'pending' || d.status === 'approved')) h += sopPanel(r);
   $('detail').innerHTML = h;
   if (sopOpen && sopFocus) { sopFocus = false; const p = $('sopp'); if (p) { p.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); const f = p.querySelector('[data-sopl], #sopT'); if (f) f.focus({ preventScroll: true }); } }
   if (mode === 'edit') { const t = $('editBox'); if (typed !== null) { t.value = typed; typed = null; } t.focus(); t.setSelectionRange(t.value.length, t.value.length); }
 }
-function render() { renderList(); renderDetail(); }
+// titles stop at two lines; the full text shows on hover, only where it was cut
+function clampTitles() { document.querySelectorAll('#items .item > b').forEach(b => { if (b.scrollHeight > b.clientHeight + 1) b.title = b.textContent; else b.removeAttribute('title'); }); }
+let shownKey = null;
+function render() {
+  renderList(); renderDetail(); clampTitles();
+  // a new item opens at its top
+  const k = [tab, sel, nsel, osel].join('|'); if (k !== shownKey) { shownKey = k; $('detail').scrollTop = 0; }
+}
 const SOPIC = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10l1.5 1.5L13 9M9 16l1.5 1.5L13 15"/></svg>';
 let sopFocus = false;
 // ranked by meaning: the step this answer fits best in each SOP
@@ -2589,6 +2744,8 @@ function act(a) {
     if (a === 'ackOther') { next(); } else { tab = 'approved'; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === 'approved')); sel = r.id; }
   }
   if (a === 'edit') { mode = 'edit'; refs = (d.refs || []).slice(); linking = false; }
+  if (a === 'repick') { delete d.pick; save(); }
+  if (a === 'retireold') { ST.retired = ST.retired || {}; ST.retired[r.conflict] = true; d.pick = r.src.find(x => x[0] !== r.conflict)[0]; save(); toast(docShort(r.conflict) + ' retired. You can restore it in Sources.'); }
   // a person answers it from scratch instead of fixing the draft
   if (a === 'own') {
     // the draft moves to Human, opened for you to write
@@ -2638,39 +2795,57 @@ $('detail').addEventListener('click', (e) => {
     const id = fsel, act2 = fa.dataset.fa; ST.draftFailed = ST.draftFailed || {};
     if (act2 === 'write') { fwrite = true; renderDetail(); }
     if (act2 === 'cancel') { fwrite = false; renderDetail(); }
-    if (act2 === 'save') { const v = $('fBox').value.trim(); if (!v) { $('fBox').focus(); return; } delete ST.draftFailed[id]; fwrite = false; fsel = null; save(); toast('Your answer is approved'); render(); }
-    if (act2 === 'leave') { delete ST.draftFailed[id]; ST.matters = ST.matters || {}; ST.matters[id] = false; fsel = null; save(); toast('Left out'); render(); }
+    if (act2 === 'save') { const v = $('fBox').value.trim(); if (!v) { $('fBox').focus(); return; } ST.answered = ST.answered || {}; ST.answered[id] = v; delete ST.draftFailed[id]; fwrite = false; fsel = null; save(); toast('Your answer is approved'); render(); }
+    if (act2 === 'leave') { delete ST.draftFailed[id]; ST.matters = ST.matters || {}; ST.matters[id] = false; fsel = null; save(); toast('Dismissed. It won’t be drafted.'); render(); }
     if (act2 === 'retry') {
       ST.draftFailed[id] = 'retrying'; save(); render();
       setTimeout(() => { delete ST.draftFailed[id]; if (fsel === id) fsel = null; save(); render(); toast('Drafted. It joins the next batch to review.'); }, 1600);
     }
     return;
   }
+  const us = e.target.closest('[data-use]'); if (us) { const d = ST.decisions[sel] = ST.decisions[sel] || { status: 'pending' }; d.pick = us.dataset.use; save(); toast('Using ' + docShort(d.pick)); render(); return; }
+  const ta = e.target.closest('[data-ta]'); if (ta) { ST.matters[tsel] = ta.dataset.ta === 'yes'; save(); toast(ta.dataset.ta === 'yes' ? 'It matters. lojo drafts it for the next batch.' : 'Left out. It won’t be drafted.'); render(); return; }
+  const ak = e.target.closest('[data-ask]'); if (ak) { asking = ak.dataset.ask; renderDetail(); return; }
+  if (e.target.closest('[data-askx]')) { asking = null; renderDetail(); return; }
+  const ag = e.target.closest('[data-askgo]'); if (ag) { ST.gapAsked = ST.gapAsked || {}; ST.gapAsked[ag.dataset.askgo] = $('ownerSel').value; asking = null; save(); toast('Asked ' + ST.gapAsked[ag.dataset.askgo] + '. Their answer comes back here.'); render(); return; }
+  const oa = e.target.closest('[data-oa]');
+  if (oa) {
+    const k2 = oa.dataset.oa;
+    if (k2 === 'write') { owrite = true; renderDetail(); }
+    if (k2 === 'cancel') { owrite = false; renderDetail(); }
+    if (k2 === 'upload') location.href = 'sources.html?src=upload';
+    if (k2 === 'save') { const v = $('oBox').value.trim(); if (!v) { $('oBox').focus(); return; } ST.answered = ST.answered || {}; ST.answered[osel] = v; owrite = false; osel = null; save(); toast('Your answer is approved'); render(); }
+    if (k2 === 'leave') { ST.matters[osel] = false; owrite = false; osel = null; save(); toast('Left out. It won’t be answered.'); render(); }
+    return;
+  }
   const sd = e.target.closest('[data-senddoc]'); if (sd) { location.href = 'sources.html?src=upload&gap=' + sd.dataset.senddoc; return; }
   const od = e.target.closest('[data-open]'); if (od) { ltags.clear(); sel = od.dataset.open; const s0 = decision(DRAFTS.find(x => x.id === sel)).status; tab = s0 === 'final' ? 'final' : 'pending'; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === tab)); mode = 'view'; render(); return; }
-  const gb = e.target.closest('[data-gap]'); if (gb) { ST.gaps[gb.dataset.gap] = true; save(); toast('Marked not needed'); render(); return; }
+  const gb = e.target.closest('[data-gap]'); if (gb) { ST.gaps[gb.dataset.gap] = true; save(); toast('Dismissed'); render(); return; }
   // turn the gap into a question someone answers
-  const gq = e.target.closest('[data-gapq]'); if (gq) { const g = GAPS.find(x => x.id === gq.dataset.gapq); ST.extra.push({ id: 'qx' + Date.now(), q: 'What is ' + g.term.replace(/^The /, 'the ') + '?', origin: 'you', docs: [], gap: g.id }); ST.gaps[g.id] = true; save(); toast('Added as a question in Insights'); render(); return; }
+  // the question goes to lojo first; a person gets it only if lojo can't find an answer
+  const gq = e.target.closest('[data-gapq]'); if (gq) { const g = GAPS.find(x => x.id === gq.dataset.gapq); const q = { id: 'qx' + Date.now(), q: 'What is the ' + (/^The /.test(g.term) ? g.term.slice(4) : g.term.replace(/^([A-Z])(?=[a-z])/, m => m.toLowerCase())) + '?', origin: 'you', docs: [], gap: g.id, drafting: true }; ST.extra.push(q); ST.gaps[g.id] = true; save(); toast('Added. lojo is drafting it.'); render(); finishGapDraft(q.id); return; }
   const st = e.target.closest('[data-st]'); if (st) { e.preventDefault(); if ($('sopT')) sopTitle = $('sopT').value; sopTab = st.dataset.st; sopFocus = true; renderDetail(); return; }
   const fm = e.target.closest('[data-fmt]'); if (fm) { sopTitle = $('sopT').value; sopFmt = fm.dataset.fmt; renderDetail(); return; }
   const sl = e.target.closest('[data-sopl]'); if (sl) { const [sid, step] = sl.dataset.sopl.split('|'); ST.sopLinks[sel] = { sop: sid, step: +step }; sopOpen = false; save(); render(); toast('Linked to ' + sid + ', step ' + (+step + 1)); return; }
   const b = e.target.closest('[data-a]'); if (b) act(b.dataset.a);
 });
 $('items').addEventListener('click', (e) => {
+  const nk = e.target.closest('[data-nk]'); if (nk) { nsel = nk.dataset.nk; fwrite = false; asking = null; render(); return; }
+  const oq = e.target.closest('[data-oq]'); if (oq) { osel = oq.dataset.oq; owrite = false; render(); return; }
   const gi = e.target.closest('[data-gapid]'); if (gi) { gsel = gi.dataset.gapid; render(); return; }
   const fq = e.target.closest('[data-fq]'); if (fq) { fsel = fq.dataset.fq; fwrite = false; render(); return; }
-  const li = e.target.closest('[data-id]'); if (li) { fsel = null; sel = li.dataset.id; mode = 'view'; sopOpen = false; render(); }
+  const li = e.target.closest('[data-id]'); if (li) { fsel = null; osel = null; owrite = false; sel = li.dataset.id; mode = 'view'; sopOpen = false; render(); }
 });
 const todayStr = () => new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }).replace(',', '');
 $('lq').addEventListener('input', (e) => { lq = e.target.value.trim().toLowerCase(); sel = null; render(); });
-const refilter = () => { sel = null; fsel = null; fwrite = false; render(); };
+const refilter = () => { sel = null; fsel = null; nsel = null; fwrite = false; render(); };
 $('lfBtn').addEventListener('click', (e) => { e.stopPropagation(); const m = $('ltags'); m.hidden = !m.hidden; $('lfBtn').setAttribute('aria-expanded', !m.hidden); });
 $('ltags').addEventListener('change', (e) => { const c = e.target.closest('[data-tag]'); if (!c) return; c.checked ? ltags.add(c.dataset.tag) : ltags.delete(c.dataset.tag); refilter(); });
 $('ltags').addEventListener('click', (e) => { e.stopPropagation(); if (e.target.closest('[data-reset]')) { ltags.clear(); refilter(); } });
 $('lfActive').addEventListener('click', (e) => { const u = e.target.closest('[data-untag]'); if (u) { ltags.delete(u.dataset.untag); refilter(); } if (e.target.closest('[data-reset]')) { ltags.clear(); refilter(); } });
 document.addEventListener('click', (e) => { if (!e.target.closest('.lfdrop')) { $('ltags').hidden = true; $('lfBtn').setAttribute('aria-expanded', 'false'); } });
 document.querySelectorAll('#rtabs .tab').forEach(t => t.addEventListener('click', () => {
-  tab = t.dataset.f; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x === t)); sel = null; fsel = null; mode = 'view'; ltags.clear(); render();
+  tab = t.dataset.f; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x === t)); sel = null; fsel = null; nsel = null; osel = null; owrite = false; asking = null; mode = 'view'; ltags.clear(); render();
 }));
 // full screen review: hides the sidebar and widens both columns; F toggles, Esc leaves
 function setFs(on) {
@@ -2687,13 +2862,16 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && document.body.classList.contains('is-fs') && mode === 'view' && !document.querySelector('dialog[open]')) { setFs(false); return; }
   const k = e.key.toLowerCase(), r = DRAFTS.find(x => x.id === sel);
   if (k === 'j' || k === 'k') {
-    const list = DRAFTS.filter(inTab), i = list.findIndex(x => x.id === sel);
-    const n = list[Math.max(0, Math.min(list.length - 1, i + (k === 'j' ? 1 : -1)))]; if (n) { sel = n.id; mode = 'view'; sopOpen = false; render(); }
+    const its = [...document.querySelectorAll('#items .item')], i = its.findIndex(x => x.classList.contains('is-sel'));
+    const n = its[Math.max(0, Math.min(its.length - 1, i + (k === 'j' ? 1 : -1)))];
+    if (n) { mode = 'view'; n.click(); const s2 = document.querySelector('#items .item.is-sel'); if (s2) s2.scrollIntoView({ block: 'nearest' }); }
+    return;
   }
-  if (r && decision(r).status === 'pending' && mode === 'view') {
+  const onDraft = r && !(tab === 'needs') && !(tab === 'final' && osel) && !needsPick(r);
+  if (onDraft && decision(r).status === 'pending' && mode === 'view') {
     if (k === 'a') act('approve'); if (k === 'e') act('edit'); if (k === 'r') act('reject');
   }
-  if (r && ['pending', 'approved'].includes(decision(r).status) && mode === 'view' && k === 'l') act('sop');
+  if (onDraft && ['pending', 'approved'].includes(decision(r).status) && mode === 'view' && k === 'l') act('sop');
   if (k === 'escape' && sopOpen) { sopOpen = false; renderDetail(); }
   if (k === 'escape' && mode !== 'view') act('cancel');
 });
@@ -2701,7 +2879,7 @@ const RP = new URLSearchParams(location.search);
 // arriving from an Insights action that has no draft to open yet
 (function fromInsights() {
   const q = RP.get('q') && allQuestions().find(x => x.id === RP.get('q')), g = RP.get('gap') && GAPS.find(x => x.id === RP.get('gap')), o = RP.get('opp') && RP.get('t');
-  const v = q ? ['Recurring question', q.q, (q.docs && q.docs.length ? 'lojo is drafting it from ' + q.docs.map(docShort).join(', ') + '. It lands in To review when it’s ready.' : 'Nothing in your documents answers it yet. Write the answer once and lojo reuses it every time it comes up.'), '#questions']
+  const v = q ? ['Recurring question', q.q, (q.docs && q.docs.length ? 'lojo is drafting it from ' + q.docs.map(docShort).join(', ') + '. It lands in Drafts when it’s ready.' : 'Nothing in your documents answers it yet. Write the answer once and lojo reuses it every time it comes up.'), '#questions']
     : g ? ['Knowledge gap', g.term, g.why + ' Explain it here so answers that mention it can be approved.', '#gaps']
     : o ? ['Opportunity', o, 'Write how support should answer this until it exists, so people get a straight answer today.', '#opportunities'] : null;
   if (!v) return;
@@ -2711,7 +2889,8 @@ const RP = new URLSearchParams(location.search);
 })();
 if (RP.get('edit')) mode = 'edit';
 // open a tab directly, e.g. from the dashboard
-if (['pending', 'approved', 'final'].includes(RP.get('tab'))) { tab = RP.get('tab'); document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === tab)); }
+if (RP.get('fq')) nsel = 'failed:' + RP.get('fq');
+if (['pending', 'needs', 'approved', 'final'].includes(RP.get('tab'))) { tab = RP.get('tab'); document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === tab)); }
 // from an Insights gap: open the first pending draft that leans on it
 if (RP.get('gap') && !RP.get('sel')) { const gr = DRAFTS.find(r => decision(r).status === 'pending' && gapsOf(r).some(g => g.id === RP.get('gap'))); if (gr) sel = gr.id; }
 if (RP.get('sel')) { sel = RP.get('sel'); const sr = DRAFTS.find(x => x.id === sel); if (sr) { const s = decision(sr).status; tab = s === 'redrafting' ? 'pending' : (s === 'approved' || s === 'final') ? s : 'pending'; document.querySelectorAll('#rtabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.f === tab)); } if (RP.get('full')) { const r = DRAFTS.find(x => x.id === sel); if (r) openFull.add(r.src[0][0] + '|' + r.src[0][1]); } }
@@ -2721,6 +2900,23 @@ if (RP.get('sop') === 'new' && !RP.get('sel')) {
   const fr = [DRAFTS.find(x => x.id === 'r9')].filter(x => x && ok(x))[0] || DRAFTS.filter(x => decision(x).status === 'approved' && !ST.sopLinks[x.id]).sort((a, b) => (sopRelated(b).length - sopRelated(a).length) || (sopMatches(a).length - sopMatches(b).length))[0];
   if (fr) { sel = fr.id; sopOpen = true; sopTab = 'new'; sopFocus = true; }
 }
+if (tab === 'needs' && RP.get('kind') && !nsel) { const it = needItems().find(i => i[0] === RP.get('kind')); if (it) nsel = it[0] + ':' + it[1]; }
+// a gap question drafted by lojo: from the document sent for the gap if there is one, otherwise it goes to a person
+function finishGapDraft(qid) {
+  setTimeout(() => {
+    const q = ST.extra.find(x => x.id === qid); if (!q || !q.drafting) return;
+    const g = GAPS.find(x => x.id === q.gap), sent = (ST.gapDocs || {})[q.gap];
+    q.drafting = false;
+    if (sent) {
+      const n = Date.now(), doc = { id: 'dx' + n, name: sent, pages: 2, size: '—', added: 'Today' };
+      const r = { id: 'rx' + n, qid: q.id, src: [[doc.id, 'p. 1', 'Sent to explain ' + g.term.replace(/^The /, 'the ') + '.']],
+        draft: 'Drafted from ' + sent.replace(/\.[a-z]+$/i, '') + '. Check the details against the document before you approve.', redraft: 'Drafted again from ' + sent.replace(/\.[a-z]+$/i, '') + '.' };
+      q.docs = [doc.id]; ST.xdocs = (ST.xdocs || []).concat([doc]); ST.xdrafts = (ST.xdrafts || []).concat([r]); DOCS.push(doc); DRAFTS.push(r);
+      save(); render(); toast('Drafted from ' + sent + '. It’s in Drafts.');
+    } else { q.why = 'lojo tried to draft it and couldn’t find an answer in your sources.'; save(); render(); toast('lojo couldn’t find an answer. It’s in Human for a person.'); }
+  }, 1800);
+}
+ST.extra.filter(q => q.drafting).forEach(q => finishGapDraft(q.id));
 // a rewrite cut short by leaving the page finishes when you come back
 Object.keys(ST.decisions).forEach(id => { if (ST.decisions[id].status === 'redrafting') finishRewrite(id); });
 render();
@@ -2803,23 +2999,625 @@ APPROVED = dict(
   .ansbody{margin:0 0 10px;font-size:.9rem}
   .ans .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
   .ans .by{margin-left:auto;color:var(--muted);font-size:.76rem}
+
+  /* hub: the approved answers, then one row per channel */
+  .head .back{display:inline-flex;font-size:.8rem;font-weight:600;color:var(--muted);margin:0 0 2px;text-decoration:none}
+  .head .back:hover{color:var(--ink)}
+  .hacts{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .hacts:empty{display:none}
+  .store{display:flex;align-items:center;gap:16px;padding:18px 20px;margin:0 0 26px}
+  .store div{flex:1;min-width:0}
+  .store b{display:block;font-family:var(--display);font-size:1.05rem}
+  .store span{display:block;color:var(--muted);font-size:.86rem}
+  .chl{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden}
+  .chl li + li{border-top:1px solid var(--line)}
+  .chrow{display:flex;align-items:center;gap:16px;padding:16px 20px;color:inherit;text-decoration:none;transition:background-color .15s ease}
+  .chrow:hover{background:var(--bg-soft);text-decoration:none}
+  .chrow:focus-visible{outline:2px solid var(--rose);outline-offset:-2px}
+  .chrow__ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--bg-soft);flex:none}
+  .chrow__ic svg{width:20px;height:20px;fill:none;stroke:var(--ink);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .chrow__t{flex:1;min-width:0}
+  .chrow__t b{display:block;font-size:.95rem}
+  .chrow__t span,.chrow__m > span:last-child{display:block;color:var(--muted);font-size:.82rem}
+  .chrow__m{display:grid;justify-items:end;gap:4px;text-align:right;max-width:46%}
+  .chrow__go{font-size:1.4rem;color:var(--muted);line-height:1}
+  .chl__more{margin:12px 2px 0;color:var(--muted);font-size:.82rem}
+  @media (max-width:700px){.chrow{flex-wrap:wrap}.chrow__m{justify-items:start;text-align:left;max-width:none;order:3;width:100%;padding-left:56px}.chrow__go{display:none}.store{flex-wrap:wrap}}
+
+  /* Help Center: setup, then the managed page */
+  .steps{list-style:none;display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;padding:0}
+  .steps li{display:flex;align-items:center;gap:8px;height:34px;padding:0 14px 0 6px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-size:.82rem;font-weight:600;color:var(--muted)}
+  .steps i{font-style:normal;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--bg-soft);font-size:.72rem}
+  .steps .is-on{border-color:var(--ink);color:var(--ink)}
+  .steps .is-on i{background:var(--ink);color:#fff}
+  .steps .is-done i{background:rgba(63,143,95,.15);color:var(--success)}
+  .hcs{padding:22px 24px;display:grid;gap:12px;max-width:820px}
+  .hcs h2,.hcc h2{font-family:var(--display);font-size:1.05rem;margin:0}
+  .hcs__p,.hcc__p{margin:0;color:var(--muted);font-size:.88rem;max-width:68ch}
+  .hcs__note,.hcc__note{margin:0;color:var(--muted);font-size:.8rem}
+  .hcs__f{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:14px;border-top:1px solid var(--line);font-size:.84rem;color:var(--muted)}
+  .hcs__f .spacer{flex:1}
+  .tgrp{font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:8px 0 0}
+  .tgrp span{font-weight:600;letter-spacing:0;margin-left:4px}
+  .publ{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:12px}
+  .publ li{display:flex;align-items:center;gap:10px;padding:10px 14px;flex-wrap:wrap}
+  .publ li + li{border-top:1px solid var(--line)}
+  .publ label{display:flex;align-items:center;gap:10px;flex:1;min-width:0;cursor:pointer;font-size:.9rem}
+  .publ input{width:16px;height:16px;accent-color:var(--ink);flex:none}
+  .publ .spacer{flex:1}
+  .pubq{font-size:.9rem;min-width:0}
+  .pubq .badge{margin-left:6px;vertical-align:1px}
+  .opts{display:grid;gap:10px}
+  .opt{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid var(--line-2);border-radius:12px;cursor:pointer}
+  .opt:has(input:checked){border-color:var(--ink);box-shadow:0 0 0 3px rgba(36,26,20,.06)}
+  .opt input{margin-top:3px;accent-color:var(--ink)}
+  .opt > span{display:grid;gap:4px;flex:1}
+  .opt b{font-size:.92rem}
+  .opt span span{color:var(--muted);font-size:.82rem}
+  .opt .text{max-width:320px;margin-top:6px}
+  .sum{display:grid;gap:0;margin:0;border:1px solid var(--line);border-radius:12px}
+  .sum div{display:grid;grid-template-columns:140px 1fr;gap:12px;padding:10px 14px}
+  .sum div + div{border-top:1px solid var(--line)}
+  .sum dt{color:var(--muted);font-size:.82rem}
+  .sum dd{margin:0;font-size:.88rem;font-weight:600}
+  .hcban{display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:16px;margin:0 0 16px;background:var(--ink);color:#fff}
+  .hcban div{flex:1}
+  .hcban b{display:block;font-size:.98rem}
+  .hcban span{display:block;font-size:.84rem;opacity:.75}
+  .hcban.is-draft{background:var(--amber-soft);color:var(--ink)}
+  .hcban.is-off{background:var(--bg-soft);color:var(--ink)}
+  .hcban .sw{width:30px;height:17px}
+  .hcban .sw::after{top:2.5px;left:2.5px;width:12px;height:12px}
+  .hcban .sw[aria-checked="true"]::after{transform:translateX(13px)}
+  .hcc{padding:18px 20px;margin:0 0 14px;display:grid;gap:12px}
+  .hcc__h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .hcc__l{display:flex;gap:8px;flex-wrap:wrap}
+  .rows{display:grid;gap:12px}
+  .hcc .srow,.rows .srow{display:flex;align-items:center;gap:14px;padding:12px 0 0;border-top:1px solid var(--line)}
+  .hcc .srow:first-child,.rows .srow:first-child{border-top:0;padding-top:0}
+  .hcc .srow > div,.rows .srow > div{flex:1;min-width:0}
+  .hcc .srow b,.rows .srow b{display:block;font-size:.9rem}
+  .hcc .srow span,.rows .srow span{display:block;color:var(--muted);font-size:.8rem}
+  .hcc .srow .badge,.rows .srow .badge{display:inline-flex;margin-left:6px;vertical-align:1px}
+  .hcc__e{margin:0;color:var(--muted);font-size:.86rem}
+  .sw{position:relative;width:40px;height:22px;border-radius:999px;border:0;background:var(--line-2);cursor:pointer;flex:none;transition:background-color .15s ease}
+  .sw::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:transform .15s ease}
+  .sw[aria-checked="true"]{background:var(--ink)}
+  .sw[aria-checked="true"]::after{transform:translateX(18px)}
+  .sw:disabled{opacity:.45;cursor:default}
+  .sw:focus-visible{outline:2px solid var(--rose);outline-offset:2px}
+  .fixed{font-size:.72rem;font-weight:700;color:var(--muted);white-space:nowrap}
+  .seg{display:inline-flex;border:1px solid var(--line-2);border-radius:999px;padding:2px;flex:none}
+  .seg button{height:28px;padding:0 12px;border:0;border-radius:999px;background:none;font:inherit;font-size:.78rem;font-weight:600;color:var(--muted);cursor:pointer}
+  .seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+  .swatches{display:flex;gap:8px}
+  .swatches button{width:28px;height:28px;border-radius:50%;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--line-2);cursor:pointer}
+  .swatches button[aria-checked="true"]{box-shadow:0 0 0 2px var(--ink)}
+  .logo-pv{font-family:var(--display);font-weight:800;font-size:1.2rem}
+  .rows .srow--col{flex-direction:column;align-items:stretch;gap:10px}
+  #vSub .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .swatches{flex-wrap:wrap}
+  .swcustom{position:relative;width:28px;height:28px;border-radius:50%;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--line-2);background:conic-gradient(#E53E3E,#DD6B20,#D69E2E,#38A169,#3182CE,#805AD5,#D53F8C,#E53E3E);cursor:pointer;display:grid;place-items:center}
+  .swcustom.is-on{box-shadow:0 0 0 2px var(--ink)}
+  .swcustom input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:0;padding:0}
+  .swcustom:focus-within{outline:2px solid var(--ink);outline-offset:2px}
+  .bgsw{display:flex;gap:8px;flex-wrap:wrap}
+  .bgsw button{display:grid;gap:4px;justify-items:center;padding:0;border:0;background:none;font:inherit;font-size:.72rem;color:var(--muted);cursor:pointer}
+  .bgsw button i{width:52px;height:34px;border-radius:9px;box-shadow:0 0 0 1px var(--line-2);border:2px solid var(--panel)}
+  .bgsw button[aria-checked="true"] i{box-shadow:0 0 0 2px var(--ink)}
+  .bgsw button[aria-checked="true"]{color:var(--ink);font-weight:700}
+  .lchips{display:flex;gap:6px;flex-wrap:wrap}
+  .lchip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--line-2);border-radius:999px;background:var(--panel);font:inherit;font-size:.84rem;color:var(--ink);cursor:pointer}
+  .lchip svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .lchip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .lchip.is-main{background:var(--bg-soft);border-color:var(--line);cursor:default}
+  .lchip.is-main small{font-size:.7rem;color:var(--muted)}
+  .pv__wave{display:inline-block;margin-right:.3em}
+  .rows .srow .bgsw,.rows .srow .swatches{display:flex;flex-wrap:wrap;gap:8px}
+  .rows .srow .lchips{display:flex}
+  .rows .srow .lchip.is-main small{display:inline;color:var(--muted)}
+  .pvv.has-vid{color:var(--ok,#2E7D4F)}
+  .hed{display:grid;gap:12px}
+  .hed__back{justify-self:start;border:0;background:none;padding:4px 0;font:inherit;font-size:.86rem;font-weight:600;color:var(--muted);cursor:pointer}
+  .hed__back:hover{color:var(--ink)}
+  .hed .fld{max-width:none}
+  .hed .fld b{font-size:.84rem}
+  .hed .fld small{color:var(--muted);font-size:.78rem}
+  .rows .srow--col .fld{max-width:none}
+  .rows .srow--col .fld b{font-size:.84rem}
+  .rows .srow--col .fld small{color:var(--muted);font-size:.78rem}
+  .rows .srow--col .hed__2{width:100%}
+  .hed textarea.text{min-height:76px}
+  .hed__2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .hed__ans{padding:12px 14px;border-radius:12px;background:var(--bg-soft);border:1px solid var(--line);max-height:220px;overflow:auto}
+  .hed__ans .ansbody{margin:0;font-size:.86rem}
+  .hed__meta{font-size:.78rem;color:var(--muted)}
+  .hed__acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .hed__cv{display:grid;gap:10px;padding-top:12px;border-top:1px solid var(--line)}
+  .hed__cv h3{display:flex;align-items:center;gap:8px;margin:0;font-size:.92rem}
+  .hed__cv p{margin:0;font-size:.8rem;color:var(--muted)}
+  .hed__stale{padding:10px 12px;border-radius:10px;background:#FFF4DC;color:#8A6212;font-size:.82rem}
+  .pubq .badge--vid{background:color-mix(in srgb,var(--ok,#2E7D4F) 12%,transparent);color:var(--ok,#2E7D4F)}
+  .pv__art .pv__go{margin-top:6px}
+  @media (max-width:1100px){.hed__2{grid-template-columns:1fr}}
+  .sugv{list-style:none;margin:0;padding:0}
+  .sugv li{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+  .sugv li:first-child{border-top:0}
+  .sugv div{flex:1;min-width:0}
+  .sugv b{display:block;font-size:.9rem}
+  .sugv span{color:var(--muted);font-size:.8rem}
+  .vdlg{width:min(520px,calc(100vw - 32px))}
+  .vdlg .seg{margin-bottom:14px}
+  .vdlg .fld{max-width:none;margin-bottom:14px}
+  .vdlg .fld b{font-size:.82rem}
+  .vdlg__hint{display:block;margin-top:6px;font-size:.8rem;color:var(--muted)}
+  .vdlg__hint.is-ok{color:var(--ok,#2E7D4F);font-weight:600}
+  .vdlg__hint.is-err{color:var(--error)}
+  .vdrop{display:flex;align-items:center;gap:12px;padding:14px;border:1.5px dashed var(--line-2);border-radius:14px;margin-bottom:14px}
+  .vdrop.is-over{border-color:var(--ink);background:color-mix(in srgb,var(--ink) 4%,transparent)}
+  .vdrop div{flex:1;min-width:0;display:grid;gap:2px;font-size:.84rem}
+  .vdrop div b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .vdrop div span{color:var(--muted);font-size:.78rem}
+  .vdlg__f{justify-content:flex-start}
+  .vdlg__f .spacer{flex:1}
+  .srow--col > div:first-child{display:grid;gap:2px}
+  .lgdrop{display:flex;align-items:center;gap:14px;padding:14px;border:1.5px dashed var(--line-2);border-radius:14px;transition:border-color .15s,background .15s}
+  .lgdrop.is-over{border-color:var(--ink);background:color-mix(in srgb,var(--ink) 4%,transparent)}
+  .lgdrop__pv{flex:none;width:132px;height:64px;border-radius:10px;border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;
+    background:#fff conic-gradient(#F1EEEB 25%,#fff 0 50%,#F1EEEB 0 75%,#fff 0) 0 0/12px 12px}
+  .lgdrop__pv img{max-width:116px;max-height:48px;object-fit:contain}
+  .lgdrop__pv svg{width:22px;height:22px;fill:none;stroke:var(--muted);stroke-width:1.7}
+  .lgdrop__t{flex:1;min-width:0;display:grid;gap:2px;font-size:.84rem}
+  .lgdrop__t b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lgdrop__t span{color:var(--muted);font-size:.78rem}
+  .lgdrop__a{display:flex;gap:6px;flex-wrap:wrap}
+  .lglink{display:flex;align-items:center;border:1px solid var(--line-2);border-radius:10px;background:var(--panel);overflow:hidden}
+  .lglink span{padding:0 10px;color:var(--muted);font-size:.84rem;border-right:1px solid var(--line);align-self:stretch;display:grid;place-items:center;background:color-mix(in srgb,var(--ink) 3%,transparent)}
+  .lglink input{flex:1;min-width:0;border:0;padding:9px 10px;font:inherit;font-size:.88rem;background:none;color:inherit}
+  .lglink:focus-within{outline:2px solid var(--ink);outline-offset:1px}
+  .srow .lgdrop{flex-wrap:wrap}
+  .srow .lgdrop .lgdrop__pv{display:grid;color:inherit}
+  .srow .lgdrop .lgdrop__t{display:grid;flex:1 1 120px;font-size:.84rem;color:var(--ink)}
+  .srow .lgdrop .lgdrop__t span{color:var(--muted);font-size:.78rem}
+  .srow .lgdrop .lgdrop__t b{white-space:normal;overflow-wrap:anywhere}
+  .srow .lgdrop .lgdrop__a{display:flex}
+  .srow .lglink > span{display:grid;place-items:center;font-size:.84rem}
+  .rows .srow > div:first-child{flex:1;min-width:0}
+  .lglink input:focus{outline:none}
+  .langs{display:flex;gap:14px;flex-wrap:wrap;font-size:.86rem}
+  .langs label{display:flex;gap:6px;align-items:center}
+  .fld{display:grid;gap:6px;max-width:420px}
+  .fld b{font-size:.86rem}
+
+  /* visitor preview: the customer's site, always light */
+  .dlg.pv{width:100vw;height:100vh;max-width:none;max-height:none;margin:0;border-radius:0;overflow:auto;background:#fff}
+  .dlg.pv .pv__bar--v{position:sticky;top:0;z-index:5}
+  .pv__bar{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:6px;padding:10px 14px;background:#EFECE9;border-bottom:1px solid #E2DDD8}
+  .pv__bar i{width:10px;height:10px;border-radius:50%;background:#D9D3CD}
+  .pv__bar code{flex:1;margin:0 10px;padding:5px 12px;border-radius:8px;background:#fff;color:#6B625C;font-size:.8rem;font-family:ui-monospace,Menlo,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pv__site{--hc:#1F7A7A;background:#fff;color:#1E2A2A;font-size:.9rem}
+  .pv__site{--hc2:#E5194C}
+  .pv__top{display:flex;align-items:center;gap:22px;padding:14px 28px;border-bottom:1px solid #EEE;font-size:.8rem}
+  .pv__logo{display:grid;line-height:1;color:var(--hc);text-decoration:none}
+  .pv__logo img{display:block;width:auto;max-width:220px;object-fit:contain}
+  .pv__logo b{font-family:var(--body);font-weight:800;font-size:1.45rem;letter-spacing:-.02em}
+  .pv__logo small{font-size:.48rem;font-weight:700;letter-spacing:.18em;color:#557;white-space:nowrap}
+  .pv__nav{display:flex;gap:20px;color:#3B4747;white-space:nowrap;font-size:.84rem}
+  .pv__nav span.is-on{color:var(--hc);font-weight:700}
+  .pv__top .spacer{flex:1}
+  .pv__lang{display:inline-flex;align-items:center;gap:6px;color:#3B4747;font-size:.8rem;white-space:nowrap}
+  .pv__lang svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8}
+  .pv__btn{font-style:normal;font-weight:700;font-size:.8rem;color:#fff;background:var(--hc2);padding:7px 14px;border-radius:999px;white-space:nowrap}
+  .pv__hero{padding:40px 28px 30px;text-align:center;background:var(--hbg,color-mix(in srgb,var(--hc) 12%,#fff))}
+  .pv__hero h2{font-family:Georgia,'Times New Roman',serif;font-weight:600;font-size:2rem;letter-spacing:-.01em;line-height:1.15;margin:0 0 8px;color:#1A2626}
+  .pv__hero > p{margin:0 0 20px;color:#5B6767;font-size:.9rem}
+  .pv__search{display:flex;align-items:center;gap:10px;max-width:620px;margin:0 auto;padding:6px 6px 6px 18px;border-radius:999px;border:2px solid color-mix(in srgb,var(--hc) 75%,#fff);background:#fff;text-align:left;color:#8A9494;box-shadow:0 10px 26px -20px rgba(0,0,0,.5)}
+  .pv__search > span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.86rem}
+  .pv__search > svg{width:18px;height:18px;flex:none;fill:none;stroke:#556;stroke-width:1.8}
+  .pv__mic{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--hc) 12%,#fff);flex:none}
+  .pv__mic svg{width:16px;height:16px;fill:none;stroke:var(--hc);stroke-width:1.8}
+  .pv__search em{font-style:normal;font-size:.8rem;font-weight:700;color:#fff;background:var(--hc);padding:9px 16px;border-radius:999px;white-space:nowrap}
+  .pv__pop{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;margin-top:14px;font-size:.78rem;color:#5B6767}
+  .pv__pop button{padding:4px 10px;border:0;border-radius:999px;background:color-mix(in srgb,var(--hc) 14%,#fff);color:color-mix(in srgb,var(--hc) 80%,#000);font:inherit;font-weight:600;cursor:pointer;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pv__talk{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:7px 14px;border:1px solid #D5DEDE;border-radius:999px;background:#fff;font-size:.8rem;font-weight:600;color:#2C3B3B}
+  .pv__talk svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8}
+  .pv__main{padding:24px 28px 30px;display:grid;gap:24px}
+  .pv__sh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 0 12px}
+  .pv__sh h3{font-weight:700;font-size:1.05rem;margin:0;color:#1A2222}
+  .pv__sh em{font-style:normal;color:var(--hc);font-weight:700;font-size:.8rem}
+  .pv__topics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .pv__topics button{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid #E1E7E7;border-radius:12px;background:#fff;font:inherit;color:inherit;text-align:left;cursor:pointer}
+  .pv__topics button:hover{border-color:color-mix(in srgb,var(--hc) 50%,#fff)}
+  .pv__topics i{flex:none;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:color-mix(in srgb,var(--hc) 10%,#fff)}
+  .pv__topics svg{width:18px;height:18px;fill:none;stroke:var(--hc);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .pv__topics b{display:block;font-size:.88rem}
+  .pv__topics b + span{display:block;font-size:.74rem;color:#667}
+  .pv__low{display:grid;gap:22px;width:100%;max-width:620px;margin:0 auto}
+  .pv__help{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;padding:12px 16px;border-radius:12px;background:color-mix(in srgb,var(--hc) 7%,#fff);border:1px solid color-mix(in srgb,var(--hc) 14%,#fff)}
+  .pv__help b{font-size:.84rem;margin-right:4px;color:#1A2626}
+  .pv__help span{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:#fff;border:1px solid #DDE5E5;font-size:.78rem;font-weight:600;color:#2C3B3B}
+  .pv__help svg{width:14px;height:14px;fill:none;stroke:var(--hc);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .hlp{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:center}
+  .hlp small{grid-column:2;margin-top:-4px;color:var(--muted);font-size:.76rem}
+  .pv__low .pv__sh{justify-content:center;position:relative}
+  .pv__low .pv__sh em{position:absolute;right:0}
+  .pv__trend{list-style:none;margin:0;padding:0}
+  .pv__trend li{border-bottom:1px solid #E6EBEB}
+  .pv__trend button{width:100%;display:flex;align-items:center;gap:8px;padding:10px 0;border:0;background:none;font:inherit;font-size:.84rem;color:inherit;text-align:left;cursor:pointer}
+  .pv__trend button > span{flex:1;min-width:0}
+  .pv__trend button:hover > span{color:var(--hc)}
+  .pv__trend small{flex:none;font-size:.62rem;font-weight:800;letter-spacing:.06em;padding:2px 6px;border-radius:5px;background:color-mix(in srgb,var(--hc) 14%,#fff);color:color-mix(in srgb,var(--hc) 80%,#000)}
+  .pv__trend i{font-style:normal;color:#889}
+  .pv__vids{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:start}
+  .pv__vids button{display:grid;align-content:start;gap:6px;padding:0;border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer}
+  .pv__vids i{aspect-ratio:16/9;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,color-mix(in srgb,var(--hc) 90%,#000),color-mix(in srgb,var(--hc) 75%,#fff))}
+  .pv__vids i::after{content:'';width:28px;height:28px;border-radius:50%;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 7l9 5-9 5z' fill='%23222'/%3E%3C/svg%3E") center/16px no-repeat}
+  .pv__vids b{font-size:.78rem;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .pv__vids span{font-size:.7rem;color:#889}
+  .pv__player{position:relative;aspect-ratio:16/9;max-width:560px;margin:0 0 16px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,color-mix(in srgb,var(--hc) 90%,#000),color-mix(in srgb,var(--hc) 70%,#fff))}
+  .pv__player::after{content:'';width:46px;height:46px;border-radius:50%;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 7l9 5-9 5z' fill='%23222'/%3E%3C/svg%3E") center/22px no-repeat}
+  .pv__player small{position:absolute;left:12px;bottom:10px;color:#fff;font-size:.74rem;font-weight:600}
+  .pv__art{padding:22px 28px 30px;max-width:720px}
+  .pv__crumb{border:0;background:none;padding:0;font:inherit;font-size:.8rem;color:var(--hc);cursor:pointer;margin-bottom:10px}
+  .pv__art h2{font-family:Georgia,serif;font-weight:600;font-size:1.45rem;margin:0 0 6px}
+  .pv__val{margin:0 0 16px;color:#3F8F5F;font-size:.8rem;font-weight:600}
+  .pv__fb{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:18px;padding-top:14px;border-top:1px solid #EEE;font-size:.84rem}
+  .pv__fb span{padding:5px 12px;border:1px solid #DDE;border-radius:999px}
+  .pv__fb em{margin-left:auto;font-style:normal;color:var(--hc);font-weight:600}
+  .pv__empty{padding:30px 28px;text-align:center;color:#667}
+  .pv__foot{display:flex;gap:10px;padding:14px 28px;border-top:1px solid #EEE;font-size:.76rem;color:#889}
+  .pv__foot .spacer{flex:1}
+  .pv__by{display:inline-flex;align-items:center;gap:5px}
+  .pv__by img{display:block}
+  @media (max-width:760px){.pv__topics{grid-template-columns:1fr 1fr}.pv__vids{grid-template-columns:1fr 1fr}}
+
+  /* builder: steps on the left, live preview on the right */
+  .hcb{display:grid;grid-template-columns:minmax(340px,440px) minmax(0,1fr);gap:24px;align-items:start}
+  .hcb__side{display:grid;gap:12px;min-width:0}
+  .hcb__side > .hcc,.hcb__side > .bar{margin:0}
+  .hcb__intro{margin:0 0 2px;color:var(--muted);font-size:.86rem}
+  .bcard{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--panel);font:inherit;color:inherit;text-align:left;cursor:pointer;transition:border-color .15s ease,box-shadow .15s ease}
+  .bcard:hover{border-color:var(--ink);box-shadow:0 14px 30px -24px rgba(36,26,20,.5)}
+  .bcard:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .bcard i{font-style:normal;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--bg-soft);font-size:.78rem;font-weight:700;flex:none}
+  .bcard__t{flex:1;min-width:0;display:grid;gap:2px}
+  .bcard__t b{font-size:.95rem}
+  .bcard__t span{color:var(--muted);font-size:.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bcard__go{flex:none;color:var(--muted);font-size:.82rem;font-weight:600}
+  .bcard i svg,.bstep__h i svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .bcard.is-alert{border-color:#E3C277;background:#FFFAEC}
+  .bcard.is-alert i{background:#F8E7BC;color:#8A6212}
+  .hacts .sw{width:30px;height:17px}
+  .hacts .sw::after{top:2.5px;left:2.5px;width:12px;height:12px}
+  .hacts .sw[aria-checked="true"]::after{transform:translateX(13px)}
+  .hcstat{display:inline-flex;align-items:center;gap:8px}
+  .bstep__b .bar{margin:0}
+  .bstep__b .publ li{padding:8px 8px 8px 12px}
+  .hcpub__t{margin:0;font-size:.88rem}
+  .hcpub__t b{font-weight:700}
+  .bcard:hover .bcard__go{color:var(--ink)}
+  .bstep{border:1px solid var(--line);border-radius:14px;background:var(--panel);transition:border-color .15s ease,box-shadow .15s ease}
+  .bstep.is-on{border-color:var(--ink);box-shadow:0 14px 30px -24px rgba(36,26,20,.5)}
+  .bstep__h{display:flex;align-items:center;gap:12px;padding:14px 16px}
+  .bstep__h i{font-style:normal;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--bg-soft);font-size:.78rem;font-weight:700;flex:none}
+  .bstep.is-on .bstep__h i{background:var(--ink);color:#fff}
+  .bstep.is-done .bstep__h i{background:rgba(63,143,95,.15);color:var(--success)}
+  .bstep__h div{flex:1;min-width:0}
+  .bstep__h h2{font-family:var(--body,inherit);font-size:.95rem;font-weight:700;margin:0;outline:0}
+  .bstep__h span{display:block;color:var(--muted);font-size:.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bstep:not(.is-on):not(.is-done) .bstep__h h2{color:var(--muted);font-weight:600}
+  .bstep__b{padding:0 16px 16px;display:grid;gap:12px}
+  .bstep .publ li{padding:8px 8px 8px 12px}
+  .bstep .publ label{align-items:flex-start}
+  .bstep .publ input{margin-top:2px}
+  .bstep .pubq .badge{display:flex;width:max-content;margin:5px 0 0}
+  .bstep .opt{padding:12px 14px}
+  .bstep .sum div{grid-template-columns:96px 1fr}
+  .publ li:has(.pubacts){flex-wrap:nowrap;align-items:center}
+  .publ li:has(.pubacts) .pubq{flex:1;min-width:0}
+  .pubacts{display:flex;align-items:center;gap:6px;flex:none}
+  #subT .hinfo{position:relative;display:inline-flex;vertical-align:middle;margin-left:8px;font-family:var(--body);font-weight:400;letter-spacing:0}
+  .hinfo__b{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--muted);display:inline-grid;place-items:center;cursor:pointer;padding:0}
+  .hinfo__b:hover,.hinfo.is-open .hinfo__b{color:var(--ink);border-color:var(--ink)}
+  .hinfo__b:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .hinfo__b svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9}
+  .hinfo__p{position:absolute;top:calc(100% + 8px);left:0;z-index:30;width:320px;max-width:calc(100vw - 32px);padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:var(--panel);box-shadow:0 24px 50px -24px rgba(36,26,20,.45);font-size:.86rem;font-weight:400;line-height:1.5;color:var(--muted);opacity:0;pointer-events:none;transform:translateY(4px);transition:opacity .15s ease,transform .15s ease}
+  .hinfo.is-open .hinfo__p,.hinfo:hover .hinfo__p{opacity:1;pointer-events:auto;transform:none}
+  .hinfo__p b{display:block;color:var(--ink);font-weight:700;margin-bottom:4px}
+  .pvv{border:0;background:none;font:inherit;font-size:.76rem;font-weight:600;color:var(--muted);padding:5px 9px;border-radius:8px;cursor:pointer;flex:none}
+  .pvv:hover,.pvv[aria-pressed="true"]{background:var(--bg-soft);color:var(--ink)}
+  .hcb__pv{position:sticky;top:156px;height:calc(100vh - 180px);min-height:460px;display:flex;flex-direction:column;overflow:hidden}
+  .pvp__bar{display:flex;align-items:center;gap:10px;padding:10px 12px 10px 16px;border-bottom:1px solid var(--line)}
+  .pvp__bar .spacer{flex:1}
+  .pvp__t{font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .pvp__t::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--success);margin-right:7px;vertical-align:1px}
+  .pvp__stage{flex:1;overflow:auto;overscroll-behavior:contain;background:var(--bg-soft);padding:16px}
+  .pvp__fit{overflow:hidden}
+  .pvp__frame{background:#fff;border-radius:12px;box-shadow:0 18px 40px -26px rgba(36,26,20,.55);overflow:hidden;transform-origin:0 0}
+  .pvp__frame.is-desk{width:880px}
+  .pvp__frame.is-phone{width:375px;margin:0 auto;border-radius:34px;border:10px solid #1F1A17}
+  .pvp__frame.is-phone .pvp__url{justify-content:center}
+  .pvp__frame.is-phone .pvp__url i{display:none}
+  .pvp__url{display:flex;align-items:center;gap:5px;padding:8px 12px;background:#EFECE9;border-bottom:1px solid #E2DDD8}
+  .pvp__url i{width:9px;height:9px;border-radius:50%;background:#D9D3CD}
+  .pvp__url code{margin-left:8px;padding:3px 10px;border-radius:6px;background:#fff;color:#6B625C;font-size:.72rem;font-family:ui-monospace,Menlo,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pv__hidden{margin:0;padding:8px 14px;background:#FFF4DC;color:#8A6212;font-size:.8rem;font-weight:600}
+  .pv__site{container-type:inline-size}
+  @container (max-width:900px){.pv__nav{gap:14px}.pv__nav span:nth-child(n+3){display:none}}
+  @container (max-width:620px){
+    .pv__top{padding:12px 16px;gap:10px}
+    .pv__hero{padding:24px 16px 20px}
+    .pv__hero h2{font-size:1.45rem}
+    .pv__main{padding:18px 16px 22px;gap:18px}
+    .pv__topics{grid-template-columns:1fr}
+    .pv__nav,.pv__btn{display:none}
+    .pv__pop,.pv__talk{font-size:.74rem}
+    .pv__vids{grid-template-columns:1fr 1fr}
+    .pv__art{padding:18px 16px 22px}
+    .pv__art h2{font-size:1.2rem}
+    .pv__foot{padding:12px 16px;flex-wrap:wrap}
+  }
+  @media (max-width:1100px){.hcb{grid-template-columns:minmax(280px,1fr) minmax(0,1fr);gap:16px}}
+  @media (max-width:760px){.hcb{grid-template-columns:1fr}.hcb__pv{position:static;height:620px}}
+  /* ---------- Help Center visual editor */
+  :root{--sel:var(--info);--sel-soft:color-mix(in srgb,var(--info) 10%,#fff);--ease-out-strong:cubic-bezier(.23,1,.32,1)}
+  #tabHc{margin:-6px 0 0}
+  .ve{display:flex;min-height:560px;border:1px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden}
+  .ve__out{width:256px;flex:none;border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+  .ve__otabs{display:flex;gap:4px;padding:10px 10px 0;border-bottom:1px solid var(--line)}
+  .ve__otabs button{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;border:0;border-bottom:2px solid transparent;background:none;font:inherit;font-size:.84rem;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap}
+  .ve__otabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+  .ve__dot{min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--amber-soft);color:#8A6212;font-size:.68rem;font-weight:800;display:inline-grid;place-items:center}
+  .ve__ob{flex:1;overflow:auto;padding:12px 10px 16px;overscroll-behavior:contain}
+  .ve__sty{width:100%;display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--panel);font:inherit;text-align:left;color:inherit;cursor:pointer;transition:border-color .15s ease,background-color .15s ease}
+  .ve__sty:hover{border-color:var(--line-2)}
+  .ve__sty.is-sel{background:var(--sel-soft);border-color:color-mix(in srgb,var(--sel) 40%,#fff)}
+  .ve__sty i{width:26px;height:26px;border-radius:8px;flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+  .ve__sty span,.ve__orb span{flex:1;min-width:0;display:grid}
+  .ve__sty b,.ve__orb b{font-size:.84rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ve__sty small,.ve__orb small{font-size:.74rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ve__sty svg,.ve__orb svg,.ve__eye svg,.ve__ib svg,.ve__chk svg,.ve__pubw svg,.ve__pop svg,.blk__tools svg,.blk--hid svg,.ve__ai svg,.ve__drp svg,.pv__note svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .ve__og{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:16px 4px 6px;font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .ve__og span{font-weight:600;letter-spacing:0;text-transform:none;font-size:.72rem}
+  .ve__ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+  .ve__or{position:relative;display:flex;align-items:center;border-radius:10px;transition:background-color .15s ease}
+  .ve__or:hover{background:var(--bg-soft)}
+  .ve__or.is-sel{background:var(--sel-soft)}
+  .ve__or.is-sel b{color:var(--sel)}
+  .ve__or.is-hid .ve__orb{opacity:.55}
+  .ve__or.is-drag{opacity:.4}
+  .ve__or.is-before{box-shadow:inset 0 2px 0 var(--sel)}
+  .ve__or.is-after{box-shadow:inset 0 -2px 0 var(--sel)}
+  .ve__orb{flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 10px;border:0;background:none;font:inherit;text-align:left;color:inherit;cursor:pointer;border-radius:10px}
+  .ve__orb svg{color:var(--muted);width:14px;height:14px}
+  .ve__or.is-mov .ve__orb{cursor:grab}
+  .ve__eye{width:28px;height:28px;margin-right:4px;border:0;border-radius:8px;background:none;color:var(--muted);display:grid;place-items:center;cursor:pointer;opacity:0;transition:opacity .15s ease,background-color .15s ease}
+  .ve__or:hover .ve__eye,.ve__or.is-hid .ve__eye,.ve__eye:focus-visible{opacity:1}
+  .ve__eye:hover{background:var(--panel);color:var(--ink)}
+  .ve__oh{margin:14px 4px 0;font-size:.74rem;color:var(--muted);line-height:1.45}
+  .ve__alert{width:100%;padding:10px 12px;border:1px solid #E3C277;border-radius:12px;background:#FFFAEC;color:#8A6212;font:inherit;font-size:.8rem;font-weight:700;text-align:left;cursor:pointer;margin-bottom:10px}
+  .ve__auto{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:12px}
+  .ve__auto span{flex:1;display:grid;gap:2px}
+  .ve__auto b{font-size:.8rem}
+  .ve__auto small{font-size:.72rem;color:var(--muted);line-height:1.4}
+  .ve__al{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:12px}
+  .ve__al li{display:grid;gap:6px;padding:9px 10px}
+  .ve__al li + li{border-top:1px solid var(--line)}
+  .ve__al li.is-sel{background:var(--sel-soft)}
+  .ve__aq{border:0;background:none;padding:0;font:inherit;font-size:.82rem;font-weight:600;text-align:left;color:var(--ink);cursor:pointer;line-height:1.35}
+  .ve__aq:hover{text-decoration:underline}
+  .ve__am{display:flex;align-items:center;gap:6px;justify-content:space-between}
+  .ve__am small{font-size:.7rem;color:var(--success);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .seg--xs button{height:22px;padding:0 8px;font-size:.68rem}
+  .ve__main{position:relative;flex:1;min-width:0;display:flex;flex-direction:column;background:var(--bg-soft)}
+  .ve__tb{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+  .ve__mid{flex:1;display:flex;align-items:center;justify-content:center;gap:4px}
+  .seg--ic button{width:34px;padding:0;display:grid;place-items:center}
+  .seg--ic svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .seg button{white-space:nowrap;transition:background-color .15s ease,color .15s ease}
+  .ve__ib{width:32px;height:32px;border:0;border-radius:999px;background:none;color:var(--muted);display:grid;place-items:center;cursor:pointer;transition:background-color .15s ease,color .15s ease}
+  .ve__ib:hover:not(:disabled){background:var(--bg-soft);color:var(--ink)}
+  .ve__ib:disabled{opacity:.35;cursor:default}
+  .ve__ib:focus-visible,.ve__orb:focus-visible,.ve__sty:focus-visible,.ve__stb:focus-visible,.ve__aq:focus-visible,.ve__otabs button:focus-visible,.ve__chk:focus-visible,.blk__tools button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .ve__stb{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 14px 0 10px;border:1px solid var(--line-2);border-radius:999px;background:var(--panel);font:inherit;font-size:.8rem;font-weight:600;color:var(--ink);cursor:pointer;white-space:nowrap}
+  .ve__stb i{width:14px;height:14px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.1)}
+  .ve__stb[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .ve__stage{position:relative;flex:1;overflow:auto;padding:24px 24px 112px;overscroll-behavior:contain}
+  .ve__page{margin:0 auto;max-width:1120px;background:#fff;border-radius:14px;box-shadow:0 1px 2px rgba(36,26,20,.06),0 20px 44px -30px rgba(36,26,20,.45);overflow:hidden;transition:max-width .28s var(--ease-out-strong)}
+  .ve__page.is-tab{max-width:768px}
+  .ve__page.is-phone{max-width:390px;border-radius:26px}
+  .ve__stage.has-insp .ve__page.is-phone{margin-left:max(0px,calc(50% - 390px))}
+  .ve__page{transition:max-width .28s var(--ease-out-strong),margin .28s var(--ease-out-strong)}
+  .ve__page .pv__site{min-height:100%}
+  /* section chrome: hover shows its name, a click selects it */
+  .blk{position:relative}
+  .blk::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 1px transparent;z-index:3;transition:box-shadow .15s ease}
+  .blk:hover::after{box-shadow:inset 0 0 0 1px var(--sel)}
+  .blk.is-sel::after{box-shadow:inset 0 0 0 2px var(--sel)}
+  .blk:not(.is-sel){cursor:pointer}
+  .blk__tag{position:absolute;top:0;left:0;z-index:4;padding:3px 8px;border-radius:0 0 8px 0;background:var(--sel);color:#fff;font:600 .68rem/1.3 var(--body);letter-spacing:.02em;opacity:0;pointer-events:none;transition:opacity .15s ease;white-space:nowrap}
+  .blk:hover > .blk__tag,.blk.is-sel > .blk__tag{opacity:1}
+  .blk__tools{position:absolute;top:8px;right:8px;z-index:5;display:flex;align-items:center;gap:2px;padding:3px;border-radius:999px;background:var(--ink);box-shadow:0 10px 24px -12px rgba(0,0,0,.5)}
+  .blk__tools button{display:inline-flex;align-items:center;gap:5px;height:28px;min-width:28px;padding:0 8px;border:0;border-radius:999px;background:none;color:#fff;font:600 .74rem var(--body);cursor:pointer;justify-content:center}
+  .blk__tools button:hover:not(:disabled){background:rgba(255,255,255,.14)}
+  .blk__tools button:disabled{opacity:.35;cursor:default}
+  .blk__tools svg{width:14px;height:14px}
+  .blk__tools i{width:1px;height:16px;background:rgba(255,255,255,.25);margin:0 2px}
+  .blk--hid{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px dashed var(--line-2);border-radius:12px;color:var(--muted);font:500 .8rem var(--body);background:#fff}
+  .blk--hid span{flex:1}
+  .blk__ph{margin:0;padding:14px;border:1.5px dashed var(--line-2);border-radius:12px;text-align:center;color:var(--muted);font:.8rem var(--body)}
+  .inl{outline:1.5px dashed var(--sel);outline-offset:3px;border-radius:3px;cursor:text;min-width:2ch;display:inline-block}
+  .inl:focus{outline-style:solid;background:color-mix(in srgb,var(--sel) 6%,transparent)}
+  /* settings beside the selected section */
+  .vi{position:absolute;z-index:8;width:340px;max-width:calc(100% - 16px);display:flex;flex-direction:column;max-height:480px;border:1px solid var(--line);border-radius:16px;background:var(--panel);box-shadow:0 24px 50px -24px rgba(36,26,20,.45);animation:viIn .18s var(--ease-out-strong)}
+  .vi--style{top:62px;right:14px;max-height:min(580px,calc(100% - 8rem))}
+  @keyframes viIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+  .vi__h{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 10px 10px 16px;border-bottom:1px solid var(--line)}
+  .vi__h b{font-size:.9rem}
+  .vi__b{overflow:auto;padding:14px 16px 16px;display:grid;gap:12px;overscroll-behavior:contain}
+  .vi__b .rows .srow{flex-wrap:wrap}
+  .vi__b .fld{max-width:none}
+  .vi__b .fld b{font-size:.8rem}
+  .vi__b .fld small{color:var(--muted);font-size:.74rem}
+  .vi__b .text{height:36px;font-size:.84rem}
+  .vi__b textarea.text{height:auto}
+  .vi__b .rows .srow b{font-size:.84rem}
+  .vi__b .rows .srow span{font-size:.76rem}
+  .vi__b .hed__2{grid-template-columns:1fr}
+  .vi__b .lgdrop__pv{width:96px;height:52px}
+  .vi__b .opt{padding:10px 12px}
+  .vi__b .opt b{font-size:.84rem}
+  .vi__b .hed{gap:12px}
+  .vi__b .hcc{padding:12px;border-radius:12px;box-shadow:none}
+  .vi__b .hcc h2{font-size:.86rem}
+  .vi__tip,.vi__note{margin:0;font-size:.76rem;color:var(--muted);line-height:1.45}
+  .vi__tip{padding:8px 10px;border-radius:10px;background:var(--sel-soft);color:color-mix(in srgb,var(--sel) 80%,#000)}
+  .vi__g{margin:4px 0 0;font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .vi__topic{display:grid;gap:6px;padding-top:10px;border-top:1px solid var(--line)}
+  .vi__acts{display:flex !important;gap:6px;flex-wrap:wrap}
+  .vi__b .sugv li{padding:8px 10px}
+  /* AI bar */
+  .ve__ai{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:9;width:min(576px,calc(100% - 32px));display:flex;align-items:center;gap:10px;padding:6px 6px 6px 16px;border:1px solid var(--line-2);border-radius:999px;background:var(--panel);box-shadow:0 18px 40px -20px rgba(36,26,20,.5)}
+  .ve__ai > svg{color:var(--rose)}
+  .ve__ai input{flex:1;min-width:0;border:0;background:none;font:inherit;font-size:.88rem;color:var(--ink);height:34px}
+  .ve__ai input:focus{outline:none}
+  .ve__ai:focus-within{border-color:var(--ink)}
+  .ve__aigo{width:34px;height:34px;border-radius:50%;border:0;background:var(--ink);color:#fff;display:grid;place-items:center;cursor:pointer;flex:none;transition:transform .15s var(--ease-out-strong),opacity .15s ease}
+  .ve__aigo:active:not(:disabled){transform:scale(.97)}
+  .ve__aigo:disabled{opacity:.3;cursor:default}
+  .ve__chips{position:absolute;left:0;right:0;bottom:calc(100% + 8px);display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;font-size:.76rem;color:var(--muted)}
+  .ve__chips[hidden]{display:none}
+  .ve__chips span{width:100%;text-align:center}
+  .ve__chips button{padding:6px 12px;border:1px solid var(--line-2);border-radius:999px;background:var(--panel);font:inherit;font-size:.78rem;font-weight:600;color:var(--ink);cursor:pointer;white-space:nowrap;box-shadow:0 6px 16px -12px rgba(36,26,20,.5)}
+  .ve__chips button:hover{border-color:var(--ink)}
+  body.ve-on .toast{bottom:96px}
+  .toast__undo{border:0;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:.8rem;font-weight:700;padding:4px 10px;border-radius:999px;cursor:pointer}
+  .toast.has-act{pointer-events:auto}
+  /* top bar */
+  .ve__st{height:24px}
+  .ve__chk{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:1px solid #E3C277;border-radius:999px;background:#FFFAEC;color:#8A6212;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap}
+  .ve__chk svg{width:14px;height:14px}
+  .ve__pubw{position:relative}
+  .ve__pubw > .btn svg{width:14px;height:14px;margin-right:-4px}
+  .ve__spin{width:13px;height:13px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:veSpin .7s linear infinite}
+  @keyframes veSpin{to{transform:rotate(360deg)}}
+  .ve__pop{position:absolute;top:calc(100% + 8px);right:0;z-index:40;width:320px;padding:16px;display:grid;gap:12px;border:1px solid var(--line);border-radius:16px;background:var(--panel);box-shadow:0 24px 50px -24px rgba(36,26,20,.5);animation:viIn .18s var(--ease-out-strong);transform-origin:top right}
+  .ve__pop .sum{margin:0;border:1px solid var(--line);border-radius:12px}
+  .ve__pop .sum div{grid-template-columns:84px 1fr;padding:8px 12px}
+  .ve__pop .sum dd{font-size:.82rem;overflow-wrap:anywhere}
+  .ve__pt{margin:0;font-size:.84rem;color:var(--muted)}
+  .ve__pt b{color:var(--ink);font-size:.95rem}
+  .ve__wait{margin:0;padding:10px 12px;border-radius:12px;background:#FFFAEC;color:#8A6212;font-size:.8rem;line-height:1.45}
+  .ve__wait button{border:0;background:none;padding:0;font:inherit;font-weight:700;color:inherit;text-decoration:underline;cursor:pointer}
+  .ve__wide{width:100%}
+  .ve__live{display:flex;align-items:center;gap:8px;margin:0;font-weight:700;color:var(--success)}
+  .ve__addr{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px;border-radius:12px;background:rgba(63,143,95,.1);color:var(--success);font:600 .82rem ui-monospace,Menlo,monospace;text-decoration:none}
+  .ve__off{justify-self:start;padding:0}
+  /* review drawer */
+  .ve__dr{position:fixed;inset:0;z-index:70}
+  .ve__drbg{position:absolute;inset:0;background:rgba(36,26,20,.2);animation:drBg .28s var(--ease-out-strong)}
+  .ve__drp{position:absolute;top:0;right:0;bottom:0;width:min(460px,100%);display:flex;flex-direction:column;background:var(--panel);box-shadow:-24px 0 60px -30px rgba(36,26,20,.5);animation:drIn .28s var(--ease-out-strong)}
+  @keyframes drIn{from{transform:translateX(100%)}to{transform:none}}
+  @keyframes drBg{from{opacity:0}to{opacity:1}}
+  .ve__drp header{display:flex;gap:12px;align-items:flex-start;padding:20px 20px 16px;border-bottom:1px solid var(--line)}
+  .ve__drp header div{flex:1}
+  .ve__drp h2{margin:0 0 4px;font-family:var(--display);font-size:1.2rem;outline:0}
+  .ve__drp header p{margin:0;font-size:.82rem;color:var(--muted)}
+  .ve__drb{flex:1;overflow:auto;padding:16px 20px 24px;display:grid;gap:12px;align-content:start}
+  .ve__card{display:grid;gap:10px;padding:14px;border:1px solid var(--line);border-radius:14px}
+  .ve__cm{margin:0;font-size:.74rem;font-weight:700;color:var(--muted)}
+  .ve__cm .is-ok{color:var(--success)}
+  .ve__cm .is-warn{color:#8A6212}
+  .ve__flag{display:flex;gap:8px;align-items:flex-start;margin:0;padding:9px 11px;border-radius:10px;background:#FFF4DC;color:#8A6212;font-size:.8rem}
+  .ve__card h3{margin:0;font-size:.95rem;line-height:1.35}
+  .ve__ans{margin:0;max-height:150px;overflow:auto;padding:10px 12px;border-radius:10px;background:var(--bg-soft);font-size:.82rem}
+  .ve__src{display:flex;align-items:center;gap:6px;margin:0;font-size:.74rem;color:var(--muted)}
+  .ve__src svg{width:13px;height:13px}
+  .ve__ca{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .ve__ca .spacer{flex:1}
+  .ve__ca svg{width:14px;height:14px}
+  .ve__done{display:grid;justify-items:center;gap:8px;padding:48px 16px;text-align:center}
+  .ve__done svg{width:36px;height:36px;color:var(--success)}
+  .ve__done p{margin:0 0 8px;color:var(--muted);font-size:.86rem;max-width:30ch}
+  /* the page itself: style options */
+  .pv__site h2,.pv__site .pv__sh h3,.pv__site .pv__help b{font-family:var(--hfont,Georgia,serif)}
+  .pv__site .pv__sh h3{font-weight:700}
+  .pv__site .pv__topics button,.pv__site .pv__help,.pv__site .pv__vids i,.pv__site .pv__player,.pv__site .pv__ai{border-radius:var(--hr,12px)}
+  .pv__site .pv__topics i{border-radius:calc(var(--hr,12px) - 2px)}
+  .pv__site .pv__search,.pv__site .pv__search em,.pv__site .pv__go2,.pv__site .pv__pop button,.pv__site .pv__btn,.pv__site .pv__help span,.pv__site .pv__mic{border-radius:var(--hpill,999px)}
+  .pv__hero.is-left{text-align:left}
+  .pv__hero.is-left .pv__search{margin:0}
+  .pv__site .pv__main{gap:20px}
+  .pv__site .pv__main > .blk > .pv__pop,.pv__site .pv__main > .pv__pop{margin:0}
+  .pv__pop{color:#5B6767}
+  .pv__tlist{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px}
+  .pv__tlist h4{margin:0 0 6px;font-size:.9rem}
+  .pv__tlist h4 small{font-weight:600;color:#889;font-size:.74rem}
+  .pv__tlist ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+  .pv__tlist button{border:0;background:none;padding:0;font:inherit;font-size:.84rem;color:var(--hc);text-align:left;cursor:pointer}
+  .pv__fb span{display:inline-flex;align-items:center;gap:6px}
+  .pv__fb svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .pv__rel{margin-top:22px}
+  .pv__rel h3{font-size:.95rem;margin:0 0 6px}
+  .pv__art .pv__hidden{border-radius:8px;margin:0 0 14px}
+  .pv__search input{flex:1;min-width:0;border:0;background:none;font:inherit;font-size:.86rem;color:inherit;height:34px}
+  .pv__search input:focus{outline:none}
+  .pv__search:focus-within{box-shadow:0 0 0 3px color-mix(in srgb,var(--hc) 20%,transparent)}
+  .pv__go2{border:0;font:inherit;font-size:.8rem;font-weight:700;color:#fff;background:var(--hc);padding:9px 16px;cursor:pointer;white-space:nowrap}
+  .pv__ask{padding:22px 28px 30px;max-width:720px;display:grid;gap:14px;justify-items:start}
+  .pv__ask h2{margin:0;font-weight:600;font-size:1.45rem;outline:0}
+  .pv__ask .pv__search{width:100%;margin:0}
+  .pv__ask .pv__crumb{margin:0}
+  .pv__ai{width:100%;display:grid;gap:8px;padding:16px;background:color-mix(in srgb,var(--hc) 7%,#fff);border:1px solid color-mix(in srgb,var(--hc) 18%,#fff)}
+  .pv__ai > b{font-size:.84rem;color:color-mix(in srgb,var(--hc) 80%,#000)}
+  .pv__ai p{margin:0;font-size:.92rem;line-height:1.6}
+  .pv__ai small{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#778}
+  .pv__ai ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+  .pv__ai li button{border:0;background:none;padding:0;font:inherit;font-size:.84rem;font-weight:600;color:var(--hc);text-align:left;cursor:pointer}
+  .pv__ai li button span{font-weight:400;color:#778}
+  .pv__ai.is-none{background:#fff;border-color:#E1E7E7}
+  .pv__mail{display:flex;gap:8px;flex-wrap:wrap}
+  .pv__mail input{flex:1 1 200px;height:38px;padding:0 12px;border:1px solid #D5DEDE;border-radius:10px;font:inherit}
+  .pv__mail button{height:38px;padding:0 16px;border:0;border-radius:var(--hpill,999px);background:var(--hc);color:#fff;font:inherit;font-weight:700;cursor:pointer;white-space:nowrap}
+  .pv__logo[data-pvhome]{cursor:pointer}
+  .pv__bar--v{background:var(--ink);border-bottom:0;color:#fff;padding:10px 16px}
+  .pv__back{border:0;background:rgba(255,255,255,.12);color:#fff;font:inherit;font-size:.82rem;font-weight:700;padding:7px 14px;border-radius:999px;cursor:pointer;white-space:nowrap}
+  .pv__back:focus-visible{outline:2px solid #fff;outline-offset:2px}
+  .pv__bar--v .spacer{flex:1}
+  .pv__note{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;opacity:.85}
+  @container (max-width:620px){.pv__tlist{grid-template-columns:1fr}.pv__ask{padding:18px 16px 22px}}
+  @media (max-width:1240px){.ve__out{display:none}}
+  @media (max-width:900px){.ve__mid{display:none}.ve__tb{justify-content:space-between}}
+  @media (max-width:640px){.ve__pvb,.ve__st,.ve__chk span,.pv__n1{display:none}.ve__stage{padding:12px 12px 112px}}
+  @media (prefers-reduced-motion:reduce){.ve__page,.vi,.ve__pop,.ve__drp,.ve__drbg,.blk::after,.blk__tag{transition:none;animation:none}}
+
 """,
   body=r"""
-    <div class="head">
-      <div>
-        <p class="label">04 Distribute · Publish</p>
-        <h1>Distribute</h1>
-        <p>Approved answers, and where they go: Ask lojo, export, and AI assistants through API &amp; MCP.</p>
+    <div id="vHub">
+      <div class="head">
+        <div>
+          <p class="label">04 Distribute</p>
+          <h1>Distribute</h1>
+          <p>Your approved answers, and where they go.</p>
+        </div>
       </div>
-      <span class="spacer"></span>
-      <button class="btn btn--secondary" id="csv">Export CSV</button>
-      <button class="btn btn--primary" id="json">Export JSON</button>
+      <section class="card store" id="store"></section>
+      <h2 class="sech">Channels</h2>
+      <ul class="chl" id="chl"></ul>
+      <p class="chl__more">More channels are coming: an FAQ widget for your site, a smart contact form and WhatsApp.</p>
     </div>
-    <div class="ptabs" id="dTabs" role="tablist" aria-label="Distribute">
-      <button class="ptab" type="button" role="tab" data-dtab="answers" aria-selected="true">Approved answers</button>
-      <button class="ptab" type="button" role="tab" data-dtab="ask" aria-selected="false">Ask lojo</button>
-      <button class="ptab" type="button" role="tab" data-dtab="api" aria-selected="false">API &amp; MCP</button>
-    </div>
+    <div id="vSub" hidden>
+      <div class="head">
+        <div>
+          <a class="back" href="distribute.html" id="backHub">← Distribute</a>
+          <h1 id="subT"></h1>
+          <p id="subP"></p>
+        </div>
+        <span class="spacer"></span>
+        <span class="hacts" id="hcActs"></span>
+        <button class="btn btn--secondary" id="csv">Export CSV</button>
+        <button class="btn btn--primary" id="json">Export JSON</button>
+      </div>
     <div id="tabAsk" hidden>
       <div class="askhost" id="askHost"></div>
     </div>
@@ -2836,7 +3634,6 @@ APPROVED = dict(
     </div>
 
     <div id="tabApi" hidden>
-      <p class="apilead">Let AI assistants and your own systems read the approved answers. They read only what a person approved, like the chat.</p>
       <h2 class="apih">MCP connector</h2>
       <p class="apisub">For any AI assistant that supports MCP connectors.</p>
       <section class="apicard" id="mcpCard"></section>
@@ -2849,9 +3646,11 @@ APPROVED = dict(
         <section class="apicard apilist" id="keyList"></section>
       </div>
     </div>
+    <div id="tabHc" hidden></div>
+    </div>
 """,
   js=r"""
-const approved = () => DRAFTS.filter(r => decision(r).status === 'approved').map(r => ({ r, q: QUESTIONS.find(q => q.id === r.qid).q, a: answerOf(r), d: decision(r) }));
+const approved = () => DRAFTS.filter(r => decision(r).status === 'approved').map(r => ({ r, q: allQuestions().find(q => q.id === r.qid).q, a: answerOf(r), d: decision(r) }));
 // smart search: plain words search by meaning; "remove/delete…" and "edit/change…" select the matches to act on
 const picked = new Set();
 let ask = { verb: 'find', topic: '' };
@@ -2932,15 +3731,6 @@ $('csv').addEventListener('click', () => { if (!exportGuard(() => $('csv').click
 });
 render();
 
-// ---------- tabs: Approved answers | API & MCP
-function dtab(t) {
-  document.querySelectorAll('[data-dtab]').forEach(b => b.setAttribute('aria-selected', b.dataset.dtab === t));
-  $('tabAnswers').hidden = t !== 'answers'; $('tabAsk').hidden = t !== 'ask'; $('tabApi').hidden = t !== 'api';
-  $('csv').hidden = $('json').hidden = t !== 'answers';
-  history.replaceState(null, '', t === 'answers' ? location.pathname + location.search : '#' + t);
-  if (t === 'api') renderApi();
-}
-$('dTabs').addEventListener('click', (e) => { const b = e.target.closest('[data-dtab]'); if (b) dtab(b.dataset.dtab); });
 
 // ---------- API & MCP: the Admin sets the mode and makes keys; everyone connects their own assistant
 ST.api = ST.api || { mode: 'signin', apps: [
@@ -3001,7 +3791,790 @@ $('tabApi').addEventListener('click', async (e) => {
   const rk = t.closest('[data-revoke-key]'); if (rk) { const k = ST.api.keys.find(x => x.id === rk.dataset.revokeKey); if (!(await askConfirm('Revoke “' + esc(k.name) + '”?', 'Anything using this key stops working straight away.', 'Revoke'))) return; ST.api.keys = ST.api.keys.filter(x => x !== k); fresh = null; save(); renderApi(); toast('Key revoked'); }
 });
 $('tabApi').addEventListener('input', (e) => { if (e.target.id === 'keyName') e.target.classList.remove('is-bad'); });
-if (location.hash === '#api' || location.hash === '#ask') dtab(location.hash.slice(1));
+
+// ---------- Help Center: built from the approved answers a person makes public
+const HC0 = { status: 'new', step: 1, pub: {}, seen: {}, addr: 'sub', domain: 'help.oslopet.com', auto: false, dirty: false,
+  modules: { faq: true, search: true, ai: true, voice: true, videos: true, agent: false }, logo: null, logoSize: 'm', logoLink: 'oslopet.com', langSwitch: true, videos: {}, pages: {}, hero: '', sub: '', ph: '', trendT: '', helpT: '', help: {}, wave: true, bg: 'soft', topics: {}, nav: [{ t: 'Pet Insurance', u: 'oslopet.com/insurance' }, { t: 'Vets', u: 'oslopet.com/vets' }, { t: '', u: '' }], btn: { t: 'Get a Quote', u: 'oslopet.com/quote' }, color: '#1F7A7A', langs: { en: true, ar: true, fr: false },
+  support: 'care@oslopet.com', sales: 'HubSpot · Sales' };
+ST.hc = Object.assign({}, HC0, ST.hc || {}); ST.hc.modules = Object.assign({}, HC0.modules, ST.hc.modules); ST.hc.videos = ST.hc.videos || {}; ST.hc.pages = ST.hc.pages || {}; ST.hc.topics = ST.hc.topics || {}; ST.hc.help = ST.hc.help || {}; ST.hc.nav = ST.hc.nav || HC0.nav.map(x => ({ ...x })); ST.hc.btn = ST.hc.btn || { ...HC0.btn }; delete ST.hc.modules.banner; delete ST.hc.ban;
+let hcEdit = null, pvArt = null;
+const HC_TOPICS = [['API & limits', /\b(api|rate)\b/i], ['Vets & claims', /vet|clinic|clinique|claim/i], ['Billing & refunds', /refund|pay|invoice|chargeback|billing/i],
+  ['Security & login', /sso|saml|okta|data|encrypt|stor|secur/i], ['Plans', /plan|upgrade|limit|onboard|starter|growth|scale/i]];
+const topicOf = (q) => (HC_TOPICS.find(t => t[1].test(q)) || ['General'])[0];
+// lojo holds back answers that look internal; a person still decides
+function hcFlag(x) {
+  if (/\b(we|our|us)\b/i.test(x.q)) return 'Reads like a team process';
+  if (/still says|told |internal|\bcall\b/i.test(x.a)) return 'Mentions internal notes';
+  return '';
+}
+const MODS = [['faq', 'FAQ pages', 'One page per answer, with steps and documents'], ['search', 'Search', 'Results as you type, forgives typos'],
+  ['ai', 'Ask AI', 'Chat answers from your public answers, with sources'], ['voice', 'Voice notes', 'Ask by recording a question'],
+  ['videos', 'Short videos', 'Your videos, under the topics and on answer pages. Hidden until you add one'],
+  ['agent', 'Voice agent', 'A live voice conversation', true]];
+const LANGS = [['en', 'English'], ['ar', 'Arabic'], ['fr', 'French']];
+const HC_COLS = [['#1F7A7A', 'Teal'], ['#0E7490', 'Ocean'], ['#3E6FA6', 'Blue'], ['#4F46E5', 'Indigo'], ['#7C3AED', 'Violet'], ['#C7385B', 'Rose'], ['#E0603B', 'Coral'], ['#B7791F', 'Amber'], ['#2F855A', 'Green'], ['#241A14', 'Ink']];
+// the background behind the heading and search: a soft tint of the main colour, or a gradient
+const HC_BGS = [['soft', 'Soft', 'color-mix(in srgb,var(--hc) 12%,#fff)'], ['brand', 'Brand', 'linear-gradient(135deg,color-mix(in srgb,var(--hc) 26%,#fff),color-mix(in srgb,var(--hc) 5%,#fff))'],
+  ['mint', 'Mint', 'linear-gradient(135deg,#DDF5EE,#D6E8FB)'], ['peach', 'Peach', 'linear-gradient(135deg,#FFE7D9,#FBE1EC)'], ['lilac', 'Lilac', 'linear-gradient(135deg,#ECE5FF,#DCEEFF)'], ['sunrise', 'Sunrise', 'linear-gradient(135deg,#FFF2D2,#FFDEDE)'], ['white', 'White', '#fff']];
+const hcBg = () => (HC_BGS.find(b => b[0] === ST.hc.bg) || HC_BGS[0])[2];
+const hcAddr = () => ST.hc.addr === 'own' ? (ST.hc.domain || 'help.oslopet.com') : 'oslo.help.lojo.ai';
+const hcLangs = () => LANGS.filter(([k]) => ST.hc.langs[k]).map(l => l[1]).join(' · ');
+const hcMods = () => MODS.filter(([k]) => k !== 'faq' && ST.hc.modules[k]).map(m => m[1]).join(', ');
+const hcPublic = () => approved().filter(x => ST.hc.pub[x.r.id]);
+const hcCheck = () => approved().filter(x => !ST.hc.seen[x.r.id]);
+// videos: the company's own, linked or uploaded, attached to an answer
+const VPROV = [['YouTube', /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)[\w-]{6,}/i], ['Vimeo', /vimeo\.com\/(?:video\/)?\d+/i], ['Loom', /loom\.com\/(?:share|embed)\/\w+/i]];
+const vProv = (u) => (VPROV.find(([, re]) => re.test(u)) || [''])[0];
+const hcVid = (x) => ST.hc.videos[x.r.id];
+// how often each answer is asked a month (from Insights)
+const asks = (x) => { let h = 0; for (const c of x.r.id) h = (h * 31 + c.charCodeAt(0)) % 997; return 24 + h % 140; };
+// how each answer's page reads on the Help Center. The answer itself stays the approved one
+const pg = (x) => ST.hc.pages[x.r.id] || {};
+const pTitle = (x) => pg(x).title || x.q;
+const pTopic = (x) => pg(x).topic || topicOf(x.q);
+const cvOf = (x) => pg(x).cv;
+const cvStale = (x) => !!(cvOf(x) && cvOf(x).base !== x.a);
+const pBody = (x) => { const c = cvOf(x); return c && c.status === 'ok' && !cvStale(x) ? c.text : x.a; };
+const pSum = (x) => pg(x).sum || brief(pBody(x));
+// lojo's first draft of a customer version: drop team-only lines, speak as the company
+function cvDraft(x) {
+  const keep = String(x.a).split(/(?<=[.!?])\s+/).filter(t => !/still says|told |internal|\bcall\b/i.test(t))
+    .map(t => t.replace(/\bwe\b/g, 'Oslo').replace(/\bWe\b/g, 'Oslo').replace(/\bour\b/gi, 'Oslo’s').replace(/\bus\b/g, 'Oslo'));
+  return keep.join(' ').trim() || 'Contact Oslo’s support team and they’ll help you with this.';
+}
+function groups(list) { const g = {}; list.forEach(x => { const t = pTopic(x); (g[t] = g[t] || []).push(x); }); return Object.entries(g); }
+// with "automatically" on, new answers that look safe go public; the rest still wait in To check
+function hcSync() {
+  if (ST.hc.status === 'new' || !ST.hc.auto) return;
+  approved().forEach(x => { if (!ST.hc.seen[x.r.id] && !hcFlag(x)) { ST.hc.seen[x.r.id] = true; ST.hc.pub[x.r.id] = true; } });
+}
+// re-render, then put focus back on the control the person used
+function keepFocus(fn) {
+  const a = document.activeElement, sel = a && a !== document.body ? [...a.attributes].filter(x => x.name.startsWith('data-') || (a.type === 'radio' && (x.name === 'name' || x.name === 'value'))).map(x => '[' + x.name + '="' + CSS.escape(x.value) + '"]').join('') : '';
+  fn(); if (sel) { const n = document.querySelector('#vSub ' + sel); if (n) n.focus(); }
+}
+
+// ---------- shared rows: look and modules, used in setup and after
+// the small "Still need help?" strip at the bottom: each option can be switched off and renamed
+const HELP_OPTS = [['ai', 'Ask AI', '<path d="M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/>', 'ai'], ['voice', 'Leave a voice note', '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>', 'voice'],
+  ['call', 'Request a callback', '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'], ['email', 'Email us', '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>']];
+const helpOn = (k, mod) => (ST.hc.help[k] || {}).on !== false && (!mod || ST.hc.modules[mod]);
+const tName = (t) => (ST.hc.topics[t] || {}).title || t;
+const tDesc = (t) => (ST.hc.topics[t] || {}).desc || (TOPIC_UI[t] || TOPIC_UI.General)[0];
+const HERO0 = 'How can we help?', SUB0 = 'Answers checked by Oslo’s team and in-house vet.', PH0 = 'Search or ask anything… e.g. “Is dental cleaning covered?”';
+// the big heading on the home page
+function homeRows() {
+  const H = ST.hc, other = LANGS.filter(([k]) => k !== 'en' && H.langs[k]).map(l => l[1]);
+  return '<div class="srow"><div><b>Wave 👋</b><span>Before the heading, to say hello.</span></div><button class="sw" type="button" role="switch" aria-checked="' + !!H.wave + '" aria-label="Wave before the heading" data-wave></button></div>' +
+    '<div class="srow srow--col"><label class="fld"><b>Heading</b><input class="text" data-hf="hero" value="' + esc(H.hero) + '" placeholder="' + esc(HERO0) + '" maxlength="60" autocomplete="off"><small>The big line at the top. Leave empty to use “' + esc(HERO0) + '”.</small></label>' +
+    '<label class="fld"><b>Search hint</b><input class="text" data-hf="ph" value="' + esc(H.ph || '') + '" placeholder="' + esc(PH0) + '" maxlength="80" autocomplete="off"><small>The grey text inside the search box.</small></label>' +
+    '<label class="fld"><b>Line under it</b><input class="text" data-hf="sub" value="' + esc(H.sub || '') + '" placeholder="' + esc(SUB0) + '" maxlength="90" autocomplete="off"><small>' + (other.length ? 'lojo translates both into ' + other.join(' and ') + '.' : 'One short sentence.') + '</small></label></div>' +
+    '<div class="srow srow--col"><div><b>Section titles</b><span>Leave empty to use the default.</span></div><label class="fld"><b>Popular list</b><input class="text" data-hf="trendT" value="' + esc(H.trendT || '') + '" placeholder="Trending this week" maxlength="40" autocomplete="off"></label></div>' +
+    '<div class="srow srow--col"><div><b>Help at the bottom</b><span>A small strip at the end of the page. Switch options off, or rename them.</span></div>' +
+      '<label class="fld"><b>Title</b><input class="text" data-hf="helpT" value="' + esc(H.helpT || '') + '" placeholder="Still need help?" maxlength="40" autocomplete="off"></label>' +
+      HELP_OPTS.map(([k, d, , mod]) => { const off = mod && !H.modules[mod], on = !off && (H.help[k] || {}).on !== false;
+        return '<div class="hlp"><button class="sw" type="button" role="switch" aria-checked="' + on + '" aria-label="Show ' + d + '" data-help="' + k + '"' + (off ? ' disabled' : '') + '></button><input class="text" data-hf="help.' + k + '.t" value="' + esc((H.help[k] || {}).t || '') + '" placeholder="' + esc(d) + '" maxlength="30" autocomplete="off" aria-label="Label for ' + d + '"' + (on ? '' : ' disabled') + '>' + (off ? '<small>Turn on ' + (mod === 'ai' ? 'Ask AI' : 'Voice notes') + ' in “On the site” to use this.</small>' : '') + '</div>'; }).join('') + '</div>' +
+    '<div class="srow srow--col"><div><b>Topic cards</b><span>lojo makes the topics from your public answers. Rename them or change the line under each.</span></div>' +
+    (groups(pvList()).map(([t, xs]) => '<div class="hed__2"><label class="fld"><b>' + esc(t) + ' · ' + xs.length + '</b><input class="text" data-hf="t:' + esc(t) + ':title" value="' + esc((H.topics[t] || {}).title || '') + '" placeholder="' + esc(t) + '" maxlength="40" autocomplete="off" aria-label="Name for ' + esc(t) + '"></label>' +
+      '<label class="fld"><b>Description</b><input class="text" data-hf="t:' + esc(t) + ':desc" value="' + esc((H.topics[t] || {}).desc || '') + '" placeholder="' + esc((TOPIC_UI[t] || TOPIC_UI.General)[0]) + '" maxlength="90" autocomplete="off" aria-label="Description for ' + esc(t) + '"></label></div>').join('') || '<span class="hed__meta">Make some answers public to see topics here.</span>') + '</div>';
+}
+const LOGO_H = { s: 22, m: 30, l: 40 };
+const IMG_IC = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>';
+const kb = (n) => n < 1024 ? n + ' B' : Math.round(n / 1024) + ' KB';
+// the header: logo, where it links, and the language switch
+function headRows() {
+  const H = ST.hc, L = H.logo, many = LANGS.filter(([k]) => H.langs[k]).length > 1;
+  return '<div class="srow srow--col"><div><b>Logo</b><span>Shows at the top left of every page. PNG, SVG, JPG or WebP, up to 1 MB. A transparent background works best.</span></div>' +
+    '<div class="lgdrop" data-lgdrop><span class="lgdrop__pv">' + (L ? '<img src="' + L.src + '" alt="Your logo">' : IMG_IC) + '</span>' +
+    '<span class="lgdrop__t">' + (L ? '<b>' + esc(L.name) + '</b><span>' + kb(L.size) + '</span>' : '<b>Drop your logo here</b><span>or choose a file. Until then the site shows your name.</span>') + '</span>' +
+    '<span class="lgdrop__a"><button class="btn btn--secondary btn--sm" type="button" data-logo>' + (L ? 'Replace' : 'Choose file') + '</button>' + (L ? '<button class="btn btn--ghost btn--sm" type="button" data-logorm>Remove</button>' : '') + '</span>' +
+    '<input type="file" id="hcLogoFile" accept="image/png,image/svg+xml,image/jpeg,image/webp" hidden></div></div>' +
+    '<div class="srow"><div><b>Logo size</b><span>How tall it shows in the header.</span></div><span class="seg" role="group" aria-label="Logo size">' + [['s', 'Small'], ['m', 'Medium'], ['l', 'Large']].map(([k, l]) => '<button type="button" data-lsize="' + k + '" aria-pressed="' + (H.logoSize === k) + '">' + l + '</button>').join('') + '</span></div>' +
+    '<div class="srow srow--col"><div><b>Logo link</b><span>Where visitors go when they click the logo, such as your main site. Leave empty to go to the Help Center home.</span></div>' +
+    '<label class="lglink"><span>https://</span><input id="hcLogoLink" value="' + esc(H.logoLink || '') + '" placeholder="oslopet.com" autocomplete="off" spellcheck="false" aria-label="Logo link"></label></div>' +
+    '<div class="srow srow--col"><div><b>Menu links</b><span>Next to “Help Center” at the top. Leave a name empty to hide it.</span></div>' +
+      H.nav.map((n, i) => '<div class="hed__2"><label class="fld"><b class="sr-only">Link ' + (i + 1) + ' name</b><input class="text" data-hf="nav.' + i + '.t" value="' + esc(n.t) + '" placeholder="Name, such as Vets" maxlength="24" autocomplete="off" aria-label="Link ' + (i + 1) + ' name"></label><label class="lglink"><span>https://</span><input data-hf="nav.' + i + '.u" value="' + esc(n.u) + '" placeholder="oslopet.com/vets" autocomplete="off" spellcheck="false" aria-label="Link ' + (i + 1) + ' address"></label></div>').join('') + '</div>' +
+    '<div class="srow srow--col"><div><b>Button</b><span>At the top right, such as “Get a Quote”. Leave the text empty for no button.</span></div><div class="hed__2"><label class="fld"><input class="text" data-hf="btn.t" value="' + esc(H.btn.t) + '" placeholder="Get a Quote" maxlength="24" autocomplete="off" aria-label="Button text"></label><label class="lglink"><span>https://</span><input data-hf="btn.u" value="' + esc(H.btn.u) + '" placeholder="oslopet.com/quote" autocomplete="off" spellcheck="false" aria-label="Button link"></label></div></div>' +
+    '<div class="srow"><div><b>Language switch</b><span>' + (many ? 'At the top right, so visitors can change language.' : 'Turn on a second language below to use it.') + '</span></div><button class="sw" type="button" role="switch" aria-checked="' + !!(H.langSwitch && many) + '" aria-label="Language switch" data-lswitch' + (many ? '' : ' disabled') + '></button></div>';
+}
+function lookRows(withFooter) {
+  const H = ST.hc, custom = !HC_COLS.some(c => c[0] === H.color), CK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>', PL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+  return '<div class="srow srow--col"><div><b>Main colour</b><span>Buttons, links, icons and tints. Pick one, or choose your own.</span></div><span class="swatches" role="radiogroup" aria-label="Main colour">' + HC_COLS.map(([c, n]) => '<button type="button" role="radio" aria-checked="' + (H.color === c) + '" aria-label="' + n + '" title="' + n + '" style="background:' + c + '" data-col="' + c + '"></button>').join('') +
+      '<label class="swcustom' + (custom ? ' is-on' : '') + '" title="Your own colour"><input type="color" data-colpick value="' + esc(H.color) + '" aria-label="Your own colour"></label></span></div>' +
+    '<div class="srow srow--col"><div><b>Top background</b><span>Behind the heading and search.</span></div><span class="bgsw" role="radiogroup" aria-label="Top background">' + HC_BGS.map(([k, n, css]) => '<button type="button" role="radio" aria-checked="' + ((H.bg || 'soft') === k) + '" data-bg="' + k + '"><i style="--hc:' + H.color + ';background:' + css + '"></i>' + n + '</button>').join('') + '</span></div>' +
+    '<div class="srow srow--col"><div><b>Languages</b><span>English is the main language. Arabic pages read right to left.</span></div><span class="lchips" role="group" aria-label="Languages">' + LANGS.map(([k, n]) => k === 'en' ? '<span class="lchip is-main">' + n + ' <small>Main</small></span>' : '<button type="button" class="lchip" data-lang="' + k + '" aria-pressed="' + !!H.langs[k] + '">' + (H.langs[k] ? CK : PL) + n + '</button>').join('') + '</span></div>' +
+    (withFooter ? '<div class="srow"><div><b>Footer</b><span>“Powered by lojo.ai” shows at the bottom of every page.</span></div><span class="fixed">Always on</span></div>' : '');
+}
+const modRows = () => MODS.filter(m => m[0] !== 'faq').map(([k, n, d, later]) => '<div class="srow"><div><b>' + n + (later ? '<span class="badge badge--muted">Later</span>' : '') + '</b><span>' + d + '</span></div><button class="sw" type="button" role="switch" aria-checked="' + !!ST.hc.modules[k] + '" aria-label="' + n + '" data-mod="' + k + '"' + (later ? ' disabled' : '') + '></button></div>').join('');
+
+// ---------- the visitor site, built from the public answers and the settings
+const pvList = () => hcPublic();
+const TOPIC_UI = {
+  'Plans': ['Plans, prices, waiting periods', '<path d="M7 3h8l4 4v14H7z"/><path d="M10 11h6M10 15h6"/>'],
+  'Vets & claims': ['Submit, track, reimbursement', '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/>'],
+  'Billing & refunds': ['Payments, invoices, refunds', '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/>'],
+  'Security & login': ['Account, login, your data', '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>'],
+  'API & limits': ['For your developers', '<path d="M8 8l-4 4 4 4M16 8l4 4-4 4"/>'],
+  'General': ['Everything else', '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>'],
+};
+// first one or two sentences of an answer, as plain text, for the AI answer card
+const brief = (a) => { const t = String(a).replace(/[#*_`>\[\]]|\(http[^)]*\)/g, '').replace(/\s+/g, ' ').trim(); const m = t.match(/^(.{40,220}?[.!?])(\s|$)/); return m ? m[1] : t.slice(0, 200) + (t.length > 200 ? '…' : ''); };
+// ---------- the visitor site: one renderer for the editor (with section chrome) and the visitor preview
+const VE_SEC = {
+  header: ['Header', 'Logo, menu and button'], hero: ['Welcome & search', 'Heading, search and features'],
+  popular: ['Popular questions', 'Shortcuts to the most-read answers'], topics: ['Browse by topic', 'Topic cards from your public answers'],
+  trending: ['Trending', 'What visitors read most'], videos: ['Videos', 'Watch in 1 minute'], help: ['Still need help?', 'Ways to reach your team'],
+  footer: ['Footer', 'Links and Powered by lojo.ai'], article: ['Answer page', 'How every answer shows'],
+};
+const VE_MOV = ['popular', 'topics', 'trending', 'videos', 'help'];
+const hcOrder = () => { const o = (ST.hc.order || []).filter(k => VE_MOV.includes(k)); VE_MOV.forEach(k => { if (!o.includes(k)) o.push(k); }); return o; };
+const hcHid = (k) => (ST.hc.hidden || []).includes(k);
+const HC_RAD = { square: '6px', soft: '12px', round: '22px' };
+const HC_FONT = { serif: "Georgia,'Times New Roman',serif", sans: 'var(--body)' };
+const VI = (d) => '<svg viewBox="0 0 24 24" aria-hidden="true">' + d + '</svg>';
+const EYE = '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>';
+const EYE_OFF = '<path d="M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6C3.8 8.4 2 12 2 12s3.5 7 10 7c1.8 0 3.4-.5 4.8-1.3M9.9 9.9a3 3 0 0 0 4.2 4.2"/>';
+const pvSearch = (H, M, mic, IC, live) => {
+  const ph = M.ai ? (H.ph || PH0) : 'Search answers';
+  const inner = IC('<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>') + (live ? '<input name="q" placeholder="' + esc(ph) + '" aria-label="Search or ask" autocomplete="off">' : '<span>' + esc(ph) + '</span>') +
+    (M.voice ? '<i class="pv__mic">' + mic + '</i>' : '') + (live ? '<button type="submit" class="pv__go2">' + (M.ai ? '✦ Ask AI' : 'Search') + '</button>' : '<em>' + (M.ai ? '✦ Ask AI' : 'Search') + '</em>');
+  return live ? '<form class="pv__search" data-pvask role="search">' + inner + '</form>' : '<div class="pv__search">' + inner + '</div>';
+};
+// o.edit: section chrome and inline text; o.sel: selected section; o.ask: a visitor's question (preview only)
+function pvSite(list, art, o) {
+  o = o || {}; const E = !!o.edit, sel = o.sel, H = ST.hc, M = H.modules, live = !E;
+  const mic = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+  const ls = LANGS.filter(([k]) => H.langs[k]), lh = LOGO_H[H.logoSize] || 30;
+  const logo = H.logo ? '<img src="' + H.logo.src + '" alt="Oslo" style="height:' + lh + 'px">' : '<b style="font-size:' + (lh * 0.8 / 16).toFixed(2) + 'rem">Oslo</b><small>PET INSURANCE</small>';
+  const IC = (d) => '<svg viewBox="0 0 24 24" aria-hidden="true">' + d + '</svg>';
+  const order = hcOrder();
+  const inl = (k, txt, bk, max) => E && sel === bk ? '<span class="inl" data-inl="' + k + '" contenteditable="true" spellcheck="true" role="textbox" aria-label="' + esc(VE_SEC[bk][0]) + ': edit text" data-max="' + (max || 60) + '">' + esc(txt) + '</span>' : esc(txt);
+  const blk = (k, html) => {
+    if (VE_MOV.includes(k) && hcHid(k)) return E ? '<div class="blk--hid">' + VI(EYE_OFF) + '<span>' + VE_SEC[k][0] + ' is hidden from visitors</span><button type="button" class="btn btn--secondary btn--sm" data-veshow="' + k + '">Show</button></div>' : '';
+    if (!E) return html;
+    const i = order.indexOf(k), on = sel === k;
+    const tools = on && i >= 0 ? '<span class="blk__tools" role="toolbar" aria-label="' + VE_SEC[k][0] + '"><button type="button" data-vemv="-1" aria-label="Move up"' + (i === 0 ? ' disabled' : '') + '>' + VI('<path d="M12 19V5M6 11l6-6 6 6"/>') + '</button><button type="button" data-vemv="1" aria-label="Move down"' + (i === order.length - 1 ? ' disabled' : '') + '>' + VI('<path d="M12 5v14M6 13l6 6 6-6"/>') + '</button><i></i><button type="button" data-vehide="' + k + '">' + VI(EYE_OFF) + 'Hide</button></span>' : '';
+    return '<div class="blk' + (on ? ' is-sel' : '') + '" data-blk="' + k + '"><span class="blk__tag">' + VE_SEC[k][0] + '</span>' + tools + html + '</div>';
+  };
+  let b = '<div class="pv__site' + (H.font === 'sans' ? ' is-sans' : '') + '" style="--hc:' + H.color + ';--hbg:' + hcBg() + ';--hr:' + (HC_RAD[H.corners] || HC_RAD.soft) + ';--hpill:' + (H.corners === 'square' ? '6px' : '999px') + ';--hfont:' + (HC_FONT[H.font] || HC_FONT.serif) + '">';
+  b += blk('header', '<header class="pv__top"><span class="pv__logo"' + (live ? ' data-pvhome role="link" tabindex="0"' : '') + ' title="Goes to ' + esc(H.logoLink ? 'https://' + H.logoLink : 'the Help Center home') + '">' + logo + '</span>' +
+    '<nav class="pv__nav" aria-label="Site"><span class="is-on">Help Center</span>' + H.nav.filter(n => n.t).map(n => '<span title="' + esc(n.u ? 'https://' + n.u : '') + '">' + esc(n.t) + '</span>').join('') + '</nav><span class="spacer"></span>' +
+    (H.langSwitch && ls.length > 1 ? '<span class="pv__lang">' + IC('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/>') + ls.map(([k]) => ({ en: 'EN', ar: 'عربي', fr: 'FR' })[k]).join(' | ') + '</span>' : '') +
+    (H.btn.t ? '<em class="pv__btn" title="' + esc(H.btn.u ? 'https://' + H.btn.u : '') + '">' + esc(H.btn.t) + '</em>' : '') + '</header>');
+  if (o.ask != null) {
+    b += pvAsk(list, o.ask, H, M, mic, IC);
+  } else if (art) {
+    const pub = list.some(y => y.r.id === art.r.id), rel = list.filter(y => y.r.id !== art.r.id && pTopic(y) === pTopic(art)).slice(0, 3);
+    b += blk('article', '<article class="pv__art"><button class="pv__crumb" type="button" data-pvhome>← Help Center · ' + esc(tName(pTopic(art))) + '</button><h2>' + esc(pTitle(art)) + '</h2>' +
+      (H.showVal !== false ? '<p class="pv__val">✓ Checked by Oslo’s team' + (art.d.at ? ' · Updated ' + esc(art.d.at) : '') + '</p>' : '') +
+      (pub ? '' : '<p class="pv__hidden">Only your team can see this answer</p>') +
+      (M.videos && hcVid(art) ? '<div class="pv__player" role="img" aria-label="Video: ' + esc(hcVid(art).title || art.q) + '"><small>' + esc(hcVid(art).title || art.q) + (hcVid(art).src === 'Upload' ? '' : ' · ' + esc(hcVid(art).src)) + '</small></div>' : '') +
+      '<div class="ansbody">' + md(pBody(art)) + '</div>' + (pg(art).cta ? '<span class="pv__go">' + esc(pg(art).cta) + ' →</span>' : '') +
+      (H.showFb !== false ? '<div class="pv__fb">Was this helpful? <span>' + IC('<path d="M7 10v11H3V10zM7 10l4-7a2 2 0 0 1 3 2l-1 4h6a2 2 0 0 1 2 2.3l-1.3 7A2 2 0 0 1 17.7 21H7"/>') + 'Yes</span><span>' + IC('<path d="M17 14V3h4v11zM17 14l-4 7a2 2 0 0 1-3-2l1-4H5a2 2 0 0 1-2-2.3l1.3-7A2 2 0 0 1 6.3 3H17"/>') + 'No</span>' + (M.ai ? '<em>✦ Ask AI about this</em>' : '') + '</div>' : '') +
+      (H.showRel !== false && rel.length ? '<div class="pv__rel"><h3>More in ' + esc(tName(pTopic(art))) + '</h3><ul class="pv__trend">' + rel.map(x => '<li><button type="button" data-pvq="' + x.r.id + '"><span>' + esc(pTitle(x)) + '</span><i aria-hidden="true">›</i></button></li>').join('') + '</ul></div>' : '') + '</article>');
+  } else {
+    const hot = list.slice().sort((a, b) => asks(b) - asks(a));
+    b += blk('hero', '<section class="pv__hero' + (H.heroAlign === 'left' ? ' is-left' : '') + '"><h2>' + (H.wave ? '<span class="pv__wave" aria-hidden="true">👋</span>' : '') + inl('hero', H.hero || HERO0, 'hero', 60) + '</h2><p>' + inl('sub', H.sub || SUB0, 'hero', 90) + '</p>' +
+      (M.search || M.ai ? pvSearch(H, M, mic, IC, live) : '') +
+      (M.voice ? '<span class="pv__talk">' + IC('<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>') + 'Prefer to talk? Leave a voice note</span>' : '') + '</section>');
+    if (!list.length) b += '<p class="pv__empty">No public answers yet. Make some public to fill the page.</p>';
+    else {
+      const S = {
+        popular: () => '<div class="pv__pop">' + inl('popT', H.popT || 'Popular:', 'popular', 30) + hot.slice(0, 4).map(x => '<button type="button" data-pvq="' + x.r.id + '" title="' + esc(pTitle(x)) + '">' + esc(pTitle(x)) + '</button>').join('') + '</div>',
+        topics: () => { const g = groups(list), cnt = H.counts !== false;
+          return '<section><div class="pv__sh"><h3>' + inl('topicsT', H.topicsT || 'Browse by topic', 'topics', 40) + '</h3></div>' + (H.topicLayout === 'list'
+            ? '<div class="pv__tlist">' + g.map(([t, xs]) => '<div><h4>' + esc(tName(t)) + (cnt ? ' <small>' + xs.length + '</small>' : '') + '</h4><ul>' + xs.slice(0, 4).map(x => '<li><button type="button" data-pvq="' + x.r.id + '">' + esc(pTitle(x)) + '</button></li>').join('') + '</ul></div>').join('') + '</div>'
+            : '<div class="pv__topics">' + g.map(([t, xs]) => { const u = TOPIC_UI[t] || TOPIC_UI.General; return '<button type="button" data-pvq="' + xs[0].r.id + '"><i>' + IC(u[1]) + '</i><span><b>' + esc(tName(t)) + '</b><span>' + esc(tDesc(t)) + (cnt ? ' · ' + xs.length : '') + '</span></span></button>'; }).join('') + '</div>') + '</section>'; },
+        trending: () => '<div class="pv__low"><section><div class="pv__sh"><h3>' + inl('trendT', H.trendT || 'Trending this week', 'trending', 40) + '</h3></div><ul class="pv__trend">' +
+          hot.slice(0, H.trendN || 4).map(x => '<li><button type="button" data-pvq="' + x.r.id + '">' + (M.videos && hcVid(x) ? '<small>VIDEO</small>' : '') + '<span>' + esc(pTitle(x)) + '</span><i aria-hidden="true">›</i></button></li>').join('') + '</ul></section></div>',
+        videos: () => { const vids = list.filter(hcVid);
+          if (!M.videos || !vids.length) return E ? '<p class="blk__ph">' + (M.videos ? 'No videos yet. Select this section to add one to an answer.' : 'Short videos are off. Turn them on in Site style.') + ' Visitors don’t see this.</p>' : '';
+          return '<section><div class="pv__sh"><h3>' + inl('vidT', H.vidT || 'Watch in 1 minute', 'videos', 40) + '</h3></div><div class="pv__vids">' + vids.slice(0, 4).map(x => '<button type="button" data-pvq="' + x.r.id + '"><i aria-hidden="true"></i><b>' + esc(hcVid(x).title || pTitle(x)) + '</b><span>' + (hcVid(x).src === 'Upload' ? 'Video' : esc(hcVid(x).src)) + '</span></button>').join('') + '</div></section>'; },
+        help: () => { const hs = HELP_OPTS.filter(([k, , , mod]) => helpOn(k, mod));
+          if (!hs.length) return E ? '<p class="blk__ph">Every option is off. Select this section to turn one on.</p>' : '';
+          return '<aside class="pv__help"><b>' + inl('helpT', H.helpT || 'Still need help?', 'help', 40) + '</b>' + hs.map(([k, d, ic]) => '<span>' + IC(ic) + esc((H.help[k] || {}).t || d) + '</span>').join('') + '</aside>'; },
+      };
+      b += '<div class="pv__main">' + order.map(k => { const h = S[k](); return h || (E && hcHid(k)) ? blk(k, h) : ''; }).join('') + '</div>';
+    }
+  }
+  return b + blk('footer', '<footer class="pv__foot">' + esc(H.footT || '© Oslo Pet Insurance · Privacy · Terms') + '<span class="spacer"></span><span class="pv__by">Powered by <img src="assets/lojo-logo.svg" alt="" width="18" height="15"><b>lojo.ai</b></span></footer>') + '</div>';
+}
+// a visitor's question in the preview: answered only from public answers, or handed to the team
+const HC_STOP = new Set('what when where which does have with this that your from about there their they them will would could should into than then also just only been being more most some such dont cant much many'.split(' '));
+function pvMatch(list, q) {
+  const ws = (q.toLowerCase().match(/[a-zà-ÿ]{4,}/g) || []).filter(w => !HC_STOP.has(w));
+  return list.map(x => { const t = (pTitle(x) + ' ' + pBody(x)).toLowerCase(); return [x, ws.filter(w => t.includes(w)).length]; }).filter(s => s[1] > 0).sort((a, b) => b[1] - a[1]).slice(0, 2).map(s => s[0]);
+}
+function pvAsk(list, q, H, M, mic, IC) {
+  const top = pvMatch(list, q);
+  let h = '<section class="pv__ask"><button class="pv__crumb" type="button" data-pvhome>← Help Center</button><h2>“' + esc(q) + '”</h2>';
+  if (top.length && M.ai) h += '<div class="pv__ai"><b>✦ AI answer, built only from checked answers</b><p>' + esc(pSum(top[0])) + '</p><small>Based on</small><ul>' + top.map(x => '<li><button type="button" data-pvq="' + x.r.id + '">✓ ' + esc(pTitle(x)) + ' <span>· Checked by Oslo’s team</span></button></li>').join('') + '</ul></div>';
+  else if (top.length) h += '<ul class="pv__trend">' + top.map(x => '<li><button type="button" data-pvq="' + x.r.id + '"><span>' + esc(pTitle(x)) + '</span><i aria-hidden="true">›</i></button></li>').join('') + '</ul>';
+  else h += '<div class="pv__ai is-none">' + (pvAsk.sent ? '<p><b>Sent.</b> Someone from Oslo’s team will reply by email, usually within a few hours.</p>'
+    : '<p>We don’t have a checked answer for this yet, so we won’t guess. Leave your email and someone from Oslo’s team will reply, usually within a few hours.</p><form class="pv__mail" data-pvmail><input type="email" name="em" placeholder="you@example.com" aria-label="Your email" required><button type="submit">Send to the team</button></form>') + '</div>';
+  return h + pvSearch(H, M, mic, IC, true) + '</section>';
+}
+// ---------- the visual editor: click a section of the real page to change it
+let veSel = null, veStyle = false, vePage = 'home', veDev = 'desk', veTab = 'page', veDrawer = false, vePop = false, veBusy = false, veDrag = null;
+// undo and redo cover every change to the site. Approving answers is not undone here
+const VE_PAST = [], VE_FUT = [], VE_SKIP = ['status', 'dirty', 'pub', 'seen', 'auto', 'init'];
+let veSnap = null, veLast = 0;
+const veState = () => { const o = {}; Object.keys(ST.hc).forEach(k => { if (!VE_SKIP.includes(k)) o[k] = ST.hc[k]; }); return JSON.stringify(o); };
+function veCommit() {
+  const cur = veState(); if (veSnap === null) { veSnap = cur; return; } if (cur === veSnap) return;
+  // quick changes in a row, like typing, undo together
+  if (Date.now() - veLast > 900) { VE_PAST.push(veSnap); if (VE_PAST.length > 30) VE_PAST.shift(); }
+  veLast = Date.now(); VE_FUT.length = 0; veSnap = cur;
+}
+function hcChange() { if (ST.hc.status === 'live') ST.hc.dirty = true; veCommit(); save(); }
+// a single action: its own undo step, with a toast that can undo it
+function veDo(fn, msg) { veLast = 0; fn(); hcChange(); renderHc(); if (msg) veToast(msg); }
+function veApply(s) { Object.assign(ST.hc, JSON.parse(s)); veSnap = s; veLast = 0; if (ST.hc.status === 'live') ST.hc.dirty = true; save(); renderHc(); }
+function veUndo() { if (!VE_PAST.length) return; VE_FUT.push(veSnap); veApply(VE_PAST.pop()); toast('Undone'); }
+function veRedo() { if (!VE_FUT.length) return; VE_PAST.push(veSnap); veApply(VE_FUT.pop()); toast('Redone'); }
+function veToast(msg) {
+  const t = $('toast'); t.classList.remove('is-err');
+  t.innerHTML = '<span>' + esc(msg) + '</span><button type="button" class="toast__undo">Undo</button>'; t.classList.add('show', 'has-act');
+  t.querySelector('button').onclick = () => { t.classList.remove('show'); veUndo(); };
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show', 'has-act'), 3200);
+}
+function veInit() {
+  const H = ST.hc;
+  if (!Array.isArray(H.order)) H.order = VE_MOV.slice(); if (!Array.isArray(H.hidden)) H.hidden = [];
+  // first visit: answers that look safe for customers start public; the rest wait in To check
+  if (H.status === 'new' && !H.init) { approved().forEach(x => { if (!hcFlag(x)) { H.seen[x.r.id] = true; H.pub[x.r.id] = true; } }); H.init = true; save(); }
+  if (!pvArt || !approved().some(x => x.r.id === pvArt)) { const l = hcPublic().sort((a, b) => asks(b) - asks(a)); pvArt = l[0] ? l[0].r.id : (approved()[0] ? approved()[0].r.id : null); }
+  if (veSnap === null) veSnap = veState();
+}
+const veArt = () => vePage === 'article' && pvArt ? approved().find(x => x.r.id === pvArt) || null : null;
+function veSelect(k) {
+  veSel = k || null; veStyle = false;
+  if (veSel === 'article') vePage = 'article'; else if (veSel) vePage = 'home';
+  renderHc(); veReveal();
+}
+function veOpenArt(id) { pvArt = id; vePage = 'article'; veSel = 'article'; veStyle = false; renderHc(); const st = $('veStage'); if (st) st.scrollTop = 0; veReveal(); }
+function veReveal() {
+  const st = $('veStage'), b = st && st.querySelector('[data-blk="' + veSel + '"]'); if (!b) return;
+  const sr = st.getBoundingClientRect(), br = b.getBoundingClientRect();
+  if (br.top < sr.top + 8 || br.top > sr.bottom - 160) st.scrollTop += br.top - sr.top - 24;
+  vePlace();
+}
+
+// ---------- settings rows for the inspector
+const vf = (key, label, val, ph, max, hint) => '<label class="fld"><b>' + label + '</b><input class="text" data-hf="' + key + '" value="' + esc(val || '') + '" placeholder="' + esc(ph) + '" maxlength="' + max + '" autocomplete="off">' + (hint ? '<small>' + hint + '</small>' : '') + '</label>';
+const vseg = (key, label, opts, cur) => '<div class="srow"><div><b>' + label + '</b></div><span class="seg" role="group" aria-label="' + label + '">' + opts.map(([v, l]) => '<button type="button" data-veset="' + key + '" data-v="' + v + '" aria-pressed="' + (String(cur) === String(v)) + '">' + l + '</button>').join('') + '</span></div>';
+const vtog = (key, label, hint, on) => '<div class="srow"><div><b>' + label + '</b>' + (hint ? '<span>' + hint + '</span>' : '') + '</div><button class="sw" type="button" role="switch" aria-checked="' + !!on + '" aria-label="' + label + '" data-vetog="' + key + '"></button></div>';
+const featRows = (keys) => MODS.filter(m => keys.includes(m[0])).map(([k, n, d, later]) => '<div class="srow"><div><b>' + n + (later ? '<span class="badge badge--muted">Later</span>' : '') + '</b><span>' + d + '</span></div><button class="sw" type="button" role="switch" aria-checked="' + !!ST.hc.modules[k] + '" aria-label="' + n + '" data-mod="' + k + '"' + (later ? ' disabled' : '') + '></button></div>').join('');
+function colRow() {
+  const H = ST.hc, custom = !HC_COLS.some(c => c[0] === H.color);
+  return '<div class="srow srow--col"><div><b>Main colour</b><span>Buttons, links, icons and tints.</span></div><span class="swatches" role="radiogroup" aria-label="Main colour">' + HC_COLS.map(([c, n]) => '<button type="button" role="radio" aria-checked="' + (H.color === c) + '" aria-label="' + n + '" title="' + n + '" style="background:' + c + '" data-col="' + c + '"></button>').join('') +
+    '<label class="swcustom' + (custom ? ' is-on' : '') + '" title="Your own colour"><input type="color" data-colpick value="' + esc(H.color) + '" aria-label="Your own colour"></label></span></div>';
+}
+const bgRow = () => '<div class="srow srow--col"><div><b>Background</b><span>Behind the heading and search.</span></div><span class="bgsw" role="radiogroup" aria-label="Background">' + HC_BGS.map(([k, n, css]) => '<button type="button" role="radio" aria-checked="' + ((ST.hc.bg || 'soft') === k) + '" data-bg="' + k + '"><i style="--hc:' + ST.hc.color + ';background:' + css + '"></i>' + n + '</button>').join('') + '</span></div>';
+function langRow() {
+  const H = ST.hc, CK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>', PL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+  return '<div class="srow srow--col"><div><b>Languages</b><span>Arabic pages read right to left. lojo drafts the translations.</span></div><span class="lchips" role="group" aria-label="Languages">' + LANGS.map(([k, n]) => k === 'en' ? '<span class="lchip is-main">' + n + ' <small>Main</small></span>' : '<button type="button" class="lchip" data-lang="' + k + '" aria-pressed="' + !!H.langs[k] + '">' + (H.langs[k] ? CK : PL) + n + '</button>').join('') + '</span></div>';
+}
+function addrRow() {
+  const H = ST.hc, snip = '<script src="https://hc.lojo.ai/widget.js" data-workspace="oslo" async></' + 'script>';
+  return '<div class="srow srow--col"><div><b>Address</b><span>Where customers find the Help Center.</span></div><div class="opts" role="radiogroup" aria-label="Address">' +
+    '<label class="opt"><input type="radio" name="addr" value="sub"' + (H.addr !== 'own' ? ' checked' : '') + '><span><b>oslo.help.lojo.ai</b><span>Ready now. Nothing to set up.</span></span></label>' +
+    '<label class="opt"><input type="radio" name="addr" value="own"' + (H.addr === 'own' ? ' checked' : '') + '><span><b>Your own address</b><span>Add a CNAME record that points to hc.lojo.ai. lojo adds SSL.</span>' +
+      (H.addr === 'own' ? '<input class="text" id="hcDomain" value="' + esc(H.domain) + '" aria-label="Your address" placeholder="help.oslopet.com" autocomplete="off">' : '') + '</span></label></div>' +
+    '<span class="vi__acts"><button class="btn btn--secondary btn--sm" type="button" data-copy="https://' + esc(hcAddr()) + '">Copy link</button><button class="btn btn--ghost btn--sm" type="button" data-copy="' + esc(snip) + '" title="A small widget for your own site">Copy embed snippet</button></span></div>';
+}
+function helpRows() {
+  const H = ST.hc;
+  return HELP_OPTS.map(([k, d, , mod]) => { const off = mod && !H.modules[mod], on = !off && (H.help[k] || {}).on !== false;
+    return '<div class="hlp"><button class="sw" type="button" role="switch" aria-checked="' + on + '" aria-label="Show ' + d + '" data-help="' + k + '"' + (off ? ' disabled' : '') + '></button><input class="text" data-hf="help.' + k + '.t" value="' + esc((H.help[k] || {}).t || '') + '" placeholder="' + esc(d) + '" maxlength="30" autocomplete="off" aria-label="Label for ' + d + '"' + (on ? '' : ' disabled') + '>' + (off ? '<small>Turn on ' + (mod === 'ai' ? 'Ask AI' : 'Voice notes') + ' in Welcome &amp; search.</small>' : '') + '</div>'; }).join('');
+}
+const topicRows = () => groups(pvList()).map(([t, xs]) => '<div class="vi__topic"><label class="fld"><b>' + esc(t) + ' · ' + xs.length + '</b><input class="text" data-hf="t:' + esc(t) + ':title" value="' + esc((ST.hc.topics[t] || {}).title || '') + '" placeholder="' + esc(t) + '" maxlength="40" autocomplete="off" aria-label="Name for ' + esc(t) + '"></label>' +
+  '<input class="text" data-hf="t:' + esc(t) + ':desc" value="' + esc((ST.hc.topics[t] || {}).desc || '') + '" placeholder="' + esc((TOPIC_UI[t] || TOPIC_UI.General)[0]) + '" maxlength="90" autocomplete="off" aria-label="Description for ' + esc(t) + '"></div>').join('') || '<span class="hed__meta">Make some answers public to see topics here.</span>';
+function veFields(k) {
+  const H = ST.hc, R = (s) => '<div class="rows">' + s + '</div>';
+  if (k === 'header') return R(headRows());
+  if (k === 'hero') return '<p class="vi__tip">Click the heading or the line under it on the page to type straight into it.</p>' + R(vtog('wave', 'Wave 👋', 'Before the heading, to say hello.', H.wave) +
+    '<div class="srow srow--col">' + vf('hero', 'Heading', H.hero, HERO0, 60) + vf('sub', 'Line under it', H.sub, SUB0, 90) + vf('ph', 'Search hint', H.ph, PH0, 80, 'The grey text inside the search box.') + '</div>' +
+    vseg('heroAlign', 'Align', [['center', 'Centre'], ['left', 'Left']], H.heroAlign || 'center') + bgRow() + featRows(['search', 'ai', 'voice']));
+  if (k === 'popular') return R('<div class="srow srow--col">' + vf('popT', 'Label', H.popT, 'Popular:', 30) + '</div><p class="vi__note">Shows the 4 public answers visitors ask most, from Insights.</p>');
+  if (k === 'topics') return R('<div class="srow srow--col">' + vf('topicsT', 'Title', H.topicsT, 'Browse by topic', 40) + '</div>' + vseg('topicLayout', 'Layout', [['grid', 'Cards'], ['list', 'List']], H.topicLayout || 'grid') +
+    vtog('counts', 'Show how many answers', '', H.counts !== false) + '<div class="srow srow--col"><div><b>Topics</b><span>lojo makes them from your public answers. Rename them or change the line under each.</span></div>' + topicRows() + '</div>');
+  if (k === 'trending') return R('<div class="srow srow--col">' + vf('trendT', 'Title', H.trendT, 'Trending this week', 40) + '</div>' + vseg('trendN', 'How many', [[3, '3'], [4, '4'], [5, '5']], H.trendN || 4));
+  if (k === 'videos') {
+    const pub = hcPublic(), sug = pub.filter(x => !hcVid(x)).sort((a, b) => asks(b) - asks(a)).slice(0, 3), has = pub.filter(hcVid);
+    return R(featRows(['videos']) + '<div class="srow srow--col">' + vf('vidT', 'Title', H.vidT, 'Watch in 1 minute', 40) + '</div>' +
+      '<div class="srow srow--col"><div><b>Suggested</b><span>Your most-asked answers without a video. Link from YouTube, Vimeo or Loom, or upload.</span></div>' + (sug.length ? '<ul class="sugv">' + sug.map(x => '<li><div><b>' + esc(pTitle(x)) + '</b><span>Asked ' + asks(x) + ' times a month</span></div><button class="btn btn--secondary btn--sm" type="button" data-vid="' + x.r.id + '">Add</button></li>').join('') + '</ul>' : '<span class="hed__meta">Every public answer has a video.</span>') + '</div>' +
+      (has.length ? '<div class="srow srow--col"><div><b>Has a video · ' + has.length + '</b></div><ul class="sugv">' + has.map(x => '<li><div><b>' + esc(hcVid(x).title || pTitle(x)) + '</b><span>' + (hcVid(x).src === 'Upload' ? 'Uploaded file' : hcVid(x).src + ' link') + '</span></div><button class="btn btn--ghost btn--sm" type="button" data-vid="' + x.r.id + '">Change</button></li>').join('') + '</ul></div>' : ''));
+  }
+  if (k === 'help') return R('<div class="srow srow--col">' + vf('helpT', 'Title', H.helpT, 'Still need help?', 40) + '</div><div class="srow srow--col"><div><b>Options</b><span>Switch them off, or rename them.</span></div>' + helpRows() + '</div>' +
+    '<div class="srow srow--col"><div><b>Where requests go</b><span>Your team gets the question, an AI summary and the transcript. Visitors always agree first.</span></div><label class="fld"><b>Support callbacks and email replies</b><input class="text" data-route="support" value="' + esc(H.support) + '" autocomplete="off"></label>' +
+    '<label class="fld"><b>Sales callbacks</b><select class="text" data-route="sales">' + ['HubSpot · Sales', 'sales@oslopet.com', 'Off'].map(o => '<option' + (H.sales === o ? ' selected' : '') + '>' + o + '</option>').join('') + '</select></label></div>');
+  if (k === 'footer') return R('<div class="srow srow--col">' + vf('footT', 'Footer text', H.footT, '© Oslo Pet Insurance · Privacy · Terms', 80) + '</div><p class="vi__note">“Powered by lojo.ai” always shows on the right.</p>');
+  if (k === 'article') {
+    const x = approved().find(y => y.r.id === pvArt);
+    return '<h4 class="vi__g">Every answer page</h4>' + R(vtog('showVal', 'Checked by Oslo’s team', 'The line under the question.', H.showVal !== false) + vtog('showFb', 'Was this helpful?', 'Yes and No under the answer.', H.showFb !== false) + vtog('showRel', 'More in this topic', 'Up to 3 other answers.', H.showRel !== false)) +
+      (x ? '<h4 class="vi__g">This answer</h4>' + hcEditor(x).replace(/<button class="hed__back"[^>]*>.*?<\/button>/, '') : '');
+  }
+  return '';
+}
+const veStyleFields = () => '<div class="rows">' + colRow() + vseg('font', 'Headings', [['serif', 'Serif'], ['sans', 'Sans']], ST.hc.font || 'serif') + vseg('corners', 'Corners', [['square', 'Square'], ['soft', 'Soft'], ['round', 'Round']], ST.hc.corners || 'soft') + langRow() + addrRow() + '</div>';
+
+// ---------- the top bar: status, what to check, preview and publish
+function drawActs() {
+  const H = ST.hc, chk = hcCheck().length, pub = hcPublic(), tps = groups(pub).length, live = H.status === 'live';
+  const st = veBusy ? ['muted', 'Publishing'] : live ? (H.dirty ? ['amber', 'Unpublished changes'] : ['ok', 'Live']) : H.status === 'off' ? ['muted', 'Off'] : ['muted', 'Not published'];
+  const lbl = veBusy ? '<span class="ve__spin" aria-hidden="true"></span>Publishing' : live ? (H.dirty ? 'Publish changes' : 'Published') : H.status === 'off' ? 'Turned off' : 'Publish';
+  let pop = '';
+  if (vePop) {
+    const rows = '<dl class="sum"><div><dt>Answers</dt><dd>' + pub.length + ' in ' + tps + ' topic' + (tps === 1 ? '' : 's') + '</dd></div><div><dt>Address</dt><dd>' + esc(hcAddr()) + '</dd></div><div><dt>Languages</dt><dd>' + hcLangs() + '</dd></div></dl>';
+    const wait = chk ? '<p class="ve__wait">' + chk + ' answer' + (chk === 1 ? '' : 's') + ' still need you to check ' + (chk === 1 ? 'it' : 'them') + '. ' + (chk === 1 ? 'It stays' : 'They stay') + ' hidden until approved. <button type="button" data-vedrawer>Check now →</button></p>' : '';
+    pop = '<div class="ve__pop" role="dialog" aria-label="Publish">' + (live
+      ? '<p class="ve__live">' + VI('<path d="M5 12l5 5 9-10"/>') + 'Your Help Center is live</p><a class="ve__addr" href="#" data-copy="https://' + esc(hcAddr()) + '">' + esc(hcAddr()) + VI('<path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/>') + '</a>' +
+        (H.dirty ? '<p class="ve__pt">You have changes that aren’t online yet.</p>' + wait + '<button class="btn btn--primary ve__wide" type="button" data-vego>Publish changes</button>' : wait) +
+        '<button class="btn btn--ghost btn--sm ve__off" type="button" data-master>Turn off the Help Center</button>'
+      : H.status === 'off' ? '<p class="ve__pt"><b>The Help Center is off.</b> Pages are offline and widgets are hidden. Your settings are kept.</p><button class="btn btn--primary ve__wide" type="button" data-master>Turn back on</button>'
+      : '<p class="ve__pt"><b>Ready to go live?</b></p>' + rows + wait + '<button class="btn btn--primary ve__wide" type="button" data-vego' + (pub.length ? '' : ' disabled') + '>Publish to ' + esc(hcAddr()) + '</button>' + (pub.length ? '' : '<p class="ve__pt">Make at least one answer public first.</p>')) + '</div>';
+  }
+  $('hcActs').innerHTML = '<span class="badge badge--' + st[0] + ' ve__st">' + st[1] + '</span>' +
+    (chk ? '<button class="ve__chk" type="button" data-vedrawer>' + VI('<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2 18a2 2 0 0 0 1.7 3h16.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>') + chk + '<span> to check</span></button>' : '') +
+    '<button class="btn btn--secondary ve__pvb" type="button" data-pv>Preview as visitor</button>' +
+    '<span class="ve__pubw"><button class="btn btn--primary" type="button" data-vepop aria-expanded="' + vePop + '"' + (veBusy ? ' disabled' : '') + '>' + lbl + VI('<path d="M6 9l6 6 6-6"/>') + '</button>' + pop + '</span>';
+}
+
+// ---------- the editor
+function veOutline() {
+  const H = ST.hc, chk = hcCheck(), GRIP = VI('<circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/>'), LOCK = VI('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>');
+  const fixed = (k) => '<li class="ve__or' + (veSel === k ? ' is-sel' : '') + '"><button type="button" class="ve__orb" data-vesel="' + k + '" aria-current="' + (veSel === k) + '">' + LOCK + '<span><b>' + VE_SEC[k][0] + '</b><small>' + VE_SEC[k][1] + '</small></span></button></li>';
+  const mov = (k) => { const hid = hcHid(k); return '<li class="ve__or is-mov' + (veSel === k ? ' is-sel' : '') + (hid ? ' is-hid' : '') + '" draggable="true" data-vedrag="' + k + '"><button type="button" class="ve__orb" data-vesel="' + k + '" aria-current="' + (veSel === k) + '">' + GRIP + '<span><b>' + VE_SEC[k][0] + '</b><small>' + (hid ? 'Hidden from visitors' : VE_SEC[k][1]) + '</small></span></button>' +
+    '<button type="button" class="ve__eye" ' + (hid ? 'data-veshow' : 'data-vehide') + '="' + k + '" aria-label="' + (hid ? 'Show ' : 'Hide ') + VE_SEC[k][0] + '">' + VI(hid ? EYE_OFF : EYE) + '</button></li>'; };
+  const tabs = '<div class="ve__otabs" role="tablist" aria-label="Outline">' + [['page', 'Page'], ['answers', 'Answers']].map(([k, l]) => '<button type="button" role="tab" aria-selected="' + (veTab === k) + '" data-veotab="' + k + '">' + l + (k === 'answers' && chk.length ? '<span class="ve__dot">' + chk.length + '</span>' : '') + '</button>').join('') + '</div>';
+  let body;
+  if (veTab === 'page') {
+    body = '<button type="button" class="ve__sty' + (veStyle ? ' is-sel' : '') + '" data-vestyle><i style="background:' + H.color + '"></i><span><b>Site style</b><small>Colour, fonts, corners, address</small></span>' + VI('<path d="M14 4l6 6-9 9H5v-6z"/>') + '</button>' +
+      '<h4 class="ve__og">Home page</h4><ul class="ve__ol" id="veOl">' + fixed('header') + fixed('hero') + hcOrder().map(mov).join('') + fixed('footer') + '</ul>' +
+      '<h4 class="ve__og">Every answer page</h4><ul class="ve__ol">' + fixed('article') + '</ul><p class="ve__oh">Drag to reorder. Hover a section to hide it. The header and welcome always stay on top.</p>';
+  } else {
+    const all = approved().filter(x => H.seen[x.r.id]);
+    body = (chk.length ? '<button type="button" class="ve__alert" data-vedrawer>' + chk.length + ' new answer' + (chk.length === 1 ? '' : 's') + ' waiting for you to check →</button>' : '') +
+      '<div class="ve__auto"><span><b>New answers go public automatically</b><small>Off is safer. lojo still holds back anything that looks internal.</small></span><button class="sw" type="button" role="switch" aria-checked="' + !!H.auto + '" aria-label="New answers go public automatically" data-auto></button></div>' +
+      (all.length ? groups(all).map(([t, xs]) => '<h4 class="ve__og">' + esc(tName(t)) + '<span>' + xs.filter(x => H.pub[x.r.id]).length + ' of ' + xs.length + ' public</span></h4><ul class="ve__al">' + xs.map(x => { const on = !!H.pub[x.r.id];
+        return '<li' + (vePage === 'article' && pvArt === x.r.id ? ' class="is-sel"' : '') + '><button type="button" class="ve__aq" data-veart="' + x.r.id + '">' + esc(pTitle(x)) + '</button><span class="ve__am"><small>✓ Approved' + (x.d.at ? ' · ' + esc(x.d.at) : '') + '</small><span class="seg seg--xs" role="group" aria-label="Who sees it"><button type="button" data-vis="pub" data-id="' + x.r.id + '" aria-pressed="' + on + '">Public</button><button type="button" data-vis="int" data-id="' + x.r.id + '" aria-pressed="' + !on + '">Internal</button></span></span></li>'; }).join('') + '</ul>').join('')
+        : '<div class="empty"><b>Nothing approved yet.</b> <a href="build.html">Approve answers in Build</a> first.</div>');
+  }
+  return '<aside class="ve__out" aria-label="Outline">' + tabs + '<div class="ve__ob" id="veOb">' + body + '</div></aside>';
+}
+const VE_CHIPS = ['Make it feel warmer', 'Use our blue', 'Put trending above topics', 'Hide popular questions'];
+function veView() {
+  const H = ST.hc, art = veArt(), D = [['desk', 'Desktop', '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>'], ['tab', 'Tablet', '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M11 18h2"/>'], ['phone', 'Phone', '<rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/>']];
+  const tb = '<div class="ve__tb"><span class="seg" role="group" aria-label="Page">' + [['home', 'Home page'], ['article', 'Answer page']].map(([k, l]) => '<button type="button" data-vepage="' + k + '" aria-pressed="' + (vePage === k) + '">' + l + '</button>').join('') + '</span>' +
+    '<span class="ve__mid"><span class="seg seg--ic" role="group" aria-label="Screen size">' + D.map(([k, l, d]) => '<button type="button" data-vedev="' + k + '" aria-pressed="' + (veDev === k) + '" aria-label="' + l + '" title="' + l + '">' + VI(d) + '</button>').join('') + '</span>' +
+    '<button type="button" class="ve__ib" data-veundo aria-label="Undo" title="Undo (⌘Z)"' + (VE_PAST.length ? '' : ' disabled') + '>' + VI('<path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/>') + '</button><button type="button" class="ve__ib" data-veredo aria-label="Redo" title="Redo (⇧⌘Z)"' + (VE_FUT.length ? '' : ' disabled') + '>' + VI('<path d="M15 14l5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/>') + '</button></span>' +
+    '<button type="button" class="ve__stb" data-vestyle aria-pressed="' + veStyle + '"><i style="background:' + H.color + '"></i>Site style</button></div>';
+  const insp = veSel ? '<div class="vi" id="veInsp" role="dialog" aria-label="' + VE_SEC[veSel][0] + ' settings"><div class="vi__h"><b>' + VE_SEC[veSel][0] + '</b><button type="button" class="ve__ib" data-vesel="" aria-label="Close settings">' + VI('<path d="M6 6l12 12M18 6L6 18"/>') + '</button></div><div class="vi__b">' + veFields(veSel) + '</div></div>' : '';
+  const sty = veStyle ? '<div class="vi vi--style" id="veSty" role="dialog" aria-label="Site style"><div class="vi__h"><b>Site style</b><button type="button" class="ve__ib" data-vestyle aria-label="Close site style">' + VI('<path d="M6 6l12 12M18 6L6 18"/>') + '</button></div><div class="vi__b">' + veStyleFields() + '</div></div>' : '';
+  const ai = '<form class="ve__ai" id="veAi" autocomplete="off"><div class="ve__chips" id="veChips" hidden><span id="veAiMsg">Try</span>' + VE_CHIPS.map(c => '<button type="button" data-vechip>' + c + '</button>').join('') + '</div>' +
+    VI('<path d="M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2 2.2.8-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>') +
+    '<input id="veAiIn" placeholder="Tell lojo what to change…" aria-label="Tell lojo what to change"><button type="submit" class="ve__aigo" aria-label="Send" disabled>' + VI('<path d="M12 19V5M6 11l6-6 6 6"/>') + '</button></form>';
+  const chk = hcCheck();
+  const dr = veDrawer ? '<div class="ve__dr"><div class="ve__drbg" data-vedrawerx></div><aside class="ve__drp" role="dialog" aria-modal="true" aria-labelledby="veDrT"><header><div><h2 id="veDrT" tabindex="-1">Check new answers</h2><p>Approved in Build, waiting for you to decide who sees them. Nothing goes public until you say so.</p></div><button type="button" class="ve__ib" data-vedrawerx aria-label="Close">' + VI('<path d="M6 6l12 12M18 6L6 18"/>') + '</button></header><div class="ve__drb">' +
+    (chk.length ? chk.map(x => { const f = hcFlag(x), src = x.r.src && x.r.src[0] ? x.r.src[0][1] : '';
+      return '<article class="ve__card"><p class="ve__cm">' + esc(tName(pTopic(x))) + ' · <span class="' + (f ? 'is-warn' : 'is-ok') + '">' + (f ? 'Check before making public' : 'Looks safe for customers') + '</span></p>' + (f ? '<p class="ve__flag">' + VI('<path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/>') + f + '. It may be for your team only.</p>' : '') +
+        '<h3>' + esc(pTitle(x)) + '</h3><div class="ve__ans ansbody">' + md(pBody(x)) + '</div>' + (src ? '<p class="ve__src">' + VI('<path d="M7 3h8l4 4v14H7z"/><path d="M15 3v4h4"/>') + 'From ' + esc(src) + '</p>' : '') +
+        '<div class="ve__ca"><button class="btn btn--primary btn--sm" type="button" data-mkpub="' + x.r.id + '">' + VI('<path d="M5 12l5 5 9-10"/>') + 'Make public</button><button class="btn btn--secondary btn--sm" type="button" data-keep="' + x.r.id + '">Team only</button><span class="spacer"></span><button class="btn btn--ghost btn--sm" type="button" data-veart="' + x.r.id + '">Open page</button></div></article>'; }).join('')
+      : '<div class="ve__done">' + VI('<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/>') + '<b>All caught up</b><p>New answers show up here when someone approves them in Build.</p><button class="btn btn--secondary" type="button" data-vedrawerx>Back to the page</button></div>') + '</div></aside></div>' : '';
+  return '<div class="ve" id="ve">' + veOutline() + '<div class="ve__main">' + tb + '<div class="ve__stage' + (veSel ? ' has-insp' : '') + '" id="veStage"><div class="ve__page is-' + veDev + '" id="vePage">' + pvSite(pvList(), art, { edit: true, sel: veSel }) + '</div>' + insp + '</div>' + sty + ai + '</div></div>' + dr;
+}
+function renderHc() {
+  hcSync(); veInit();
+  hcEdit = veSel === 'article' ? pvArt : null;
+  const st = $('veStage'), sTop = st ? st.scrollTop : 0, ib = document.querySelector('#veInsp .vi__b, #veSty .vi__b'), iTop = ib ? ib.scrollTop : 0, ob = $('veOb'), oTop = ob ? ob.scrollTop : 0;
+  drawActs();
+  $('tabHc').innerHTML = veView();
+  document.body.classList.add('ve-on');
+  if ($('veStage')) $('veStage').scrollTop = sTop; const ib2 = document.querySelector('#veInsp .vi__b, #veSty .vi__b'); if (ib2) ib2.scrollTop = iTop; if ($('veOb')) $('veOb').scrollTop = oTop;
+  fitPane();
+}
+// after typing: redraw only the page, so the field keeps focus
+function drawPane() {
+  const p = $('vePage'); if (!p) return;
+  p.innerHTML = pvSite(pvList(), veArt(), { edit: true, sel: veSel }); drawActs();
+  const u = document.querySelector('[data-veundo]'); if (u) u.disabled = !VE_PAST.length; const r = document.querySelector('[data-veredo]'); if (r) r.disabled = !VE_FUT.length;
+  vePlace();
+}
+// the editor fills the screen under the header; settings sit beside the section they change
+function fitPane() {
+  const v = $('ve'); if (!v) return;
+  v.style.height = Math.max(560, window.innerHeight - v.getBoundingClientRect().top - 20) + 'px';
+  vePlace();
+}
+function vePlace() {
+  const ins = $('veInsp'), st = $('veStage'); if (!ins || !st) return;
+  const b = st.querySelector('[data-blk="' + veSel + '"]'), pgEl = $('vePage'); if (!b) { ins.hidden = true; return; } ins.hidden = false;
+  const sr = st.getBoundingClientRect(), br = b.getBoundingClientRect(), pr = pgEl.getBoundingClientRect(), w = ins.offsetWidth;
+  let top = br.top - sr.top + st.scrollTop + (VE_MOV.includes(veSel) ? 46 : 10);
+  if (veSel === 'footer') top = Math.max(8, br.top - sr.top + st.scrollTop - ins.offsetHeight - 10);
+  const outside = pr.right - sr.left + 16;
+  const left = outside + w <= st.clientWidth - 8 ? outside : Math.max(8, Math.min(br.right, sr.right) - sr.left - w - 14);
+  ins.style.top = top + 'px'; ins.style.left = left + 'px';
+}
+
+// ---------- plain-language changes: "put trending above topics", "use our blue"
+const VE_COLW = [[/\bocean|navy\b/, 'Ocean'], [/\bblue\b/, 'Blue'], [/\bindigo\b/, 'Indigo'], [/\bpurple|violet|plum\b/, 'Violet'], [/\brose|pink\b/, 'Rose'], [/\borange|coral|red|rust\b/, 'Coral'], [/\bamber|yellow|gold\b/, 'Amber'], [/\bgreen|forest\b/, 'Green'], [/\bteal\b/, 'Teal'], [/\bdark|black|ink|grey|gray|graphite\b/, 'Ink']];
+function veAsk(text) {
+  const s = text.toLowerCase(), H = ST.hc;
+  const found = [[/popular/, 'popular'], [/topic/, 'topics'], [/trend/, 'trending'], [/video/, 'videos'], [/hand|contact|talk|need help|help strip|still need/, 'help']].map(([re, k]) => [s.search(re), k]).filter(m => m[0] >= 0).sort((a, b) => a[0] - b[0]).map(m => m[1]);
+  const A = found[0], B = found[1];
+  if (A && /\b(hide|remove|drop)\b/.test(s)) return { fn: () => { if (!hcHid(A)) H.hidden.push(A); }, msg: 'Hid ' + VE_SEC[A][0] };
+  if (A && /\b(show|bring back|unhide)\b/.test(s)) return { fn: () => { H.hidden = H.hidden.filter(k => k !== A); }, msg: 'Showing ' + VE_SEC[A][0], sel: A };
+  if (A && /\b(above|before|first|top|up)\b/.test(s)) return { fn: () => { const o = hcOrder().filter(k => k !== A), i = B ? o.indexOf(B) : 0; o.splice(Math.max(0, i), 0, A); H.order = o; }, msg: 'Moved ' + VE_SEC[A][0] + ' up', sel: A };
+  if (A && /\b(below|after|last|bottom|down)\b/.test(s)) return { fn: () => { const o = hcOrder().filter(k => k !== A), i = B ? o.indexOf(B) + 1 : o.length; o.splice(i, 0, A); H.order = o; }, msg: 'Moved ' + VE_SEC[A][0] + ' down', sel: A };
+  if (/warm|friendl|casual|playful/.test(s)) return { fn: () => { H.hero = 'Hi there, what can we help with?'; H.sub = 'Real answers, checked by Oslo’s team and our in-house vet.'; H.corners = 'round'; H.wave = true; }, msg: 'Friendlier welcome and rounder corners', sel: 'hero' };
+  if (/formal|serious|professional/.test(s)) return { fn: () => { H.hero = 'Help Center'; H.font = 'sans'; H.corners = 'square'; H.wave = false; }, msg: 'More formal heading and style', sel: 'hero' };
+  const bg = HC_BGS.find(([k, n]) => k !== 'soft' && new RegExp('\\b' + n.toLowerCase() + '\\b').test(s));
+  if (bg && /gradient|background|\b(mint|peach|lilac|sunrise)\b/.test(s)) return { fn: () => { H.bg = bg[0]; }, msg: 'Background is now ' + bg[1], sel: 'hero' };
+  const col = VE_COLW.find(([re]) => re.test(s));
+  if (col) { const c = HC_COLS.find(x => x[1] === col[1]); return { fn: () => { H.color = c[0]; }, msg: 'Main colour is now ' + c[1], style: true }; }
+  if (/\bleft\b/.test(s)) return { fn: () => { H.heroAlign = 'left'; }, msg: 'Welcome is now left-aligned', sel: 'hero' };
+  if (/\bcent(er|re)\b/.test(s)) return { fn: () => { H.heroAlign = 'center'; }, msg: 'Welcome is now centred', sel: 'hero' };
+  if (/\blist\b/.test(s)) return { fn: () => { H.topicLayout = 'list'; }, msg: 'Topics show as a list', sel: 'topics' };
+  if (/\b(grid|cards)\b/.test(s)) return { fn: () => { H.topicLayout = 'grid'; }, msg: 'Topics show as cards', sel: 'topics' };
+  if (/\bsans\b/.test(s)) return { fn: () => { H.font = 'sans'; }, msg: 'Headings use a sans font', style: true };
+  if (/\bserif\b/.test(s)) return { fn: () => { H.font = 'serif'; }, msg: 'Headings use a serif font', style: true };
+  if (/\bround/.test(s)) return { fn: () => { H.corners = 'round'; }, msg: 'Rounder corners', style: true };
+  if (/\bsquare|sharp/.test(s)) return { fn: () => { H.corners = 'square'; }, msg: 'Square corners', style: true };
+  return null;
+}
+function veRun(text) {
+  const r = veAsk(text);
+  if (!r) { const m = $('veAiMsg'), c = $('veChips'); if (m) m.textContent = 'I can’t do that one yet. Try:'; if (c) c.hidden = false; return false; }
+  veLast = 0; r.fn(); hcChange();
+  if (r.style) { veSel = null; veStyle = true; } else if (r.sel) { veSel = r.sel; veStyle = false; if (r.sel !== 'article') vePage = 'home'; }
+  renderHc(); veReveal(); veToast(r.msg); return true;
+}
+// one answer's page: the parts the Help Center owns, and the answer it shows
+function hcEditor(x) {
+  const P = pg(x), cv = cvOf(x), v = hcVid(x), id = x.r.id;
+  const topics = [...new Set(HC_TOPICS.map(t => t[0]).concat('General'))];
+  let h = '<div class="hed"><button class="hed__back" type="button" data-hedone>← Answers</button>' +
+    '<section class="card hcc"><div class="hcc__h"><h2>Page</h2><span class="sub">Only how it shows on the Help Center.</span></div>' +
+    '<label class="fld"><b>Page title</b><input class="text" data-pf="title" value="' + esc(P.title || '') + '" placeholder="' + esc(x.q) + '" autocomplete="off"><small>How customers read the question. Leave empty to use the approved wording.</small></label>' +
+    '<label class="fld"><b>Topic</b><select class="text" data-pf="topic"><option value="">Automatic (' + esc(topicOf(x.q)) + ')</option>' + topics.map(t => '<option' + (P.topic === t ? ' selected' : '') + '>' + esc(t) + '</option>').join('') + '</select></label>' +
+    '<label class="fld"><b>Short answer</b><textarea class="text" data-pf="sum" rows="3" placeholder="' + esc(brief(pBody(x))) + '">' + esc(P.sum || '') + '</textarea><small>Shown in the AI answer card when this is the best match. Leave empty and lojo uses the first lines of the answer.</small></label>' +
+    '<div class="hed__2"><label class="fld"><b>Button text</b><input class="text" data-pf="cta" value="' + esc(P.cta || '') + '" placeholder="Get a quote for your pet" autocomplete="off"></label>' +
+    '<label class="fld"><b>Button link</b><input class="text" data-pf="ctaUrl" value="' + esc(P.ctaUrl || '') + '" placeholder="oslopet.com/quote" autocomplete="off" spellcheck="false"></label></div>' +
+    '<small class="hed__meta">The button shows under the answer. Leave the text empty for no button.</small></section>';
+  h += '<section class="card hcc"><div class="hcc__h"><h2>Video</h2></div><div class="srow" style="border:0;padding:0"><div><b>' + (v ? esc(v.title || pTitle(x)) : 'No video') + '</b><span>' + (v ? (v.src === 'Upload' ? 'Uploaded file' : v.src + ' link') : 'Asked ' + asks(x) + ' times a month.') + '</span></div><span class="spacer"></span><button class="btn btn--secondary btn--sm" type="button" data-vid="' + id + '">' + (v ? 'Change' : 'Add video') + '</button></div></section>';
+  h += '<section class="card hcc"><div class="hcc__h"><h2>Answer</h2><span class="sub">Approved in Build. Ask lojo and the API use it too.</span></div>' +
+    '<div class="hed__ans"><div class="ansbody">' + md(x.a) + '</div></div><span class="hed__meta">Approved' + (x.d.at ? ' · ' + esc(x.d.at) : '') + '</span>' +
+    '<div class="hed__acts"><a class="btn btn--secondary btn--sm" href="build.html?sel=' + id + '&edit=1">Edit answer in Build</a>' + (cv ? '' : '<button class="btn btn--ghost btn--sm" type="button" data-cvnew>✦ Write a customer version</button>') + '</div>';
+  if (cv) {
+    const st = cvStale(x) ? ['amber', 'Out of date'] : cv.status === 'ok' ? ['ok', 'Approved'] : ['amber', 'Needs approval'];
+    h += '<div class="hed__cv"><h3>Customer version <span class="badge badge--' + st[0] + '">' + st[1] + '</span></h3>' +
+      '<p>Only the Help Center shows this. Ask lojo and the API keep the approved answer.</p>' +
+      (cvStale(x) ? '<div class="hed__stale">The approved answer changed since this was written. Check it still says the same thing.</div>' : '') +
+      (cv.status === 'ok' && !cvStale(x) ? '<div class="hed__ans"><div class="ansbody">' + md(cv.text) + '</div></div><div class="hed__acts"><button class="btn btn--secondary btn--sm" type="button" data-cvedit>Edit</button><button class="btn btn--ghost btn--sm" type="button" data-cvx>Remove</button></div>'
+        : '<textarea class="text" data-cv rows="5" aria-label="Customer version">' + esc(cv.text) + '</textarea>' +
+          '<div class="hed__acts"><button class="btn btn--primary btn--sm" type="button" data-cvok>Approve</button>' + (cvStale(x) ? '<button class="btn btn--secondary btn--sm" type="button" data-cvnew>Redraft from the new answer</button>' : '') + '<button class="btn btn--ghost btn--sm" type="button" data-cvx>' + (cv.status === 'ok' ? 'Remove' : 'Discard') + '</button></div>') + '</div>';
+  }
+  return h + '</section></div>';
+}
+// add or edit an answer's video: paste a link, or upload a file
+function hcVideo(id, opener) {
+  const x = approved().find(y => y.r.id === id); if (!x) return;
+  const H = ST.hc, cur = H.videos[id];
+  let d = $('vidDlg');
+  if (!d) { d = document.createElement('dialog'); d.id = 'vidDlg'; d.className = 'dlg vdlg'; d.setAttribute('aria-labelledby', 'vidT'); document.body.appendChild(d); }
+  let mode = cur && cur.src === 'Upload' ? 'file' : 'link', file = cur && cur.src === 'Upload' ? { name: cur.name, size: cur.size } : null;
+  const mb = (n) => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
+  const draw = () => {
+    d.innerHTML = '<form method="dialog" novalidate><div class="dlg__b"><h3 id="vidT">' + (cur ? 'Edit video' : 'Add a video') + '</h3><p>For “' + esc(x.q) + '”. It shows on the answer’s page and in “Watch in 1 minute”.</p>' +
+      '<span class="seg" role="group" aria-label="Where the video is">' + [['link', 'Paste a link'], ['file', 'Upload a file']].map(([k, l]) => '<button type="button" data-vm="' + k + '" aria-pressed="' + (mode === k) + '">' + l + '</button>').join('') + '</span>' +
+      (mode === 'link'
+        ? '<label class="fld"><b>Video link</b><input class="text" id="vidUrl" type="url" placeholder="https://youtu.be/…" value="' + esc(cur && cur.url || '') + '" autocomplete="off" spellcheck="false" aria-describedby="vidHint"><span class="vdlg__hint" id="vidHint" aria-live="polite">YouTube, Vimeo or Loom. Unlisted videos work too.</span></label>'
+        : '<div class="vdrop" data-vdrop><div>' + (file ? '<b>' + esc(file.name) + '</b><span>' + mb(file.size) + '</span>' : '<b>Drop a video here</b><span>MP4, MOV or WebM, up to 500 MB.</span>') + '</div><button class="btn btn--secondary btn--sm" type="button" data-vpick>' + (file ? 'Replace' : 'Choose file') + '</button><input type="file" id="vidFile" accept="video/mp4,video/quicktime,video/webm" hidden></div>') +
+      '<label class="fld"><b>Title</b><input class="text" id="vidTitle" value="' + esc(cur ? cur.title : x.q) + '" autocomplete="off"></label></div>' +
+      '<div class="dlg__f vdlg__f">' + (cur ? '<button class="btn btn--ghost" type="button" data-vrm>Remove video</button>' : '') + '<span class="spacer"></span><button class="btn btn--secondary" type="button" data-vx>Cancel</button><button class="btn btn--primary" type="submit" data-vok>' + (cur ? 'Save' : 'Add video') + '</button></div></form>';
+  };
+  const hint = (msg, cls) => { const h = $('vidHint'); if (h) { h.textContent = msg; h.className = 'vdlg__hint' + (cls ? ' ' + cls : ''); } };
+  const takeFile = (f) => {
+    if (!/^video\/(mp4|quicktime|webm)$/.test(f.type)) { toastError('Use an MP4, MOV or WebM file.'); return; }
+    if (f.size > 500 * 1048576) { toastError('That file is ' + mb(f.size) + '. Use one under 500 MB.'); return; }
+    file = { name: f.name, size: f.size }; const t = $('vidTitle').value; draw(); $('vidTitle').value = t; d.querySelector('[data-vpick]').focus();
+  };
+  const done = (msg) => { hcChange(); d.close(); renderHc(); drawPane(); toast(msg); };
+  d.onclick = (e) => {
+    if (e.target === d || e.target.closest('[data-vx]')) { d.close(); return; }
+    const m = e.target.closest('[data-vm]'); if (m) { const t = $('vidTitle').value; mode = m.dataset.vm; draw(); $('vidTitle').value = t; d.querySelector('[data-vm="' + mode + '"]').focus(); return; }
+    if (e.target.closest('[data-vpick]')) { $('vidFile').click(); return; }
+    if (e.target.closest('[data-vrm]')) { delete H.videos[id]; done('Video removed'); }
+  };
+  d.onchange = (e) => { if (e.target.id === 'vidFile' && e.target.files[0]) takeFile(e.target.files[0]); };
+  d.oninput = (e) => { if (e.target.id === 'vidUrl') { const v = e.target.value.trim(), p = vProv(v); hint(!v ? 'YouTube, Vimeo or Loom. Unlisted videos work too.' : p ? '✓ ' + p + ' video' : 'Not a YouTube, Vimeo or Loom video link yet.', v ? (p ? 'is-ok' : '') : ''); } };
+  d.ondragover = (e) => { const z = e.target.closest('[data-vdrop]'); if (z) { e.preventDefault(); z.classList.add('is-over'); } };
+  d.ondragleave = (e) => { const z = e.target.closest('[data-vdrop]'); if (z && !z.contains(e.relatedTarget)) z.classList.remove('is-over'); };
+  d.ondrop = (e) => { const z = e.target.closest('[data-vdrop]'); if (!z) return; e.preventDefault(); z.classList.remove('is-over'); if (e.dataTransfer.files[0]) takeFile(e.dataTransfer.files[0]); };
+  d.onsubmit = (e) => {
+    e.preventDefault();
+    const title = $('vidTitle').value.trim() || x.q;
+    if (mode === 'link') {
+      const u = $('vidUrl').value.trim(), p = vProv(u);
+      if (!p) { hint(u ? 'Use a YouTube, Vimeo or Loom video link.' : 'Paste a video link.', 'is-err'); $('vidUrl').focus(); return; }
+      H.videos[id] = { src: p, url: /^https?:/i.test(u) ? u : 'https://' + u, title };
+    } else {
+      if (!file) { toastError('Choose a video file first.'); d.querySelector('[data-vpick]').focus(); return; }
+      H.videos[id] = { src: 'Upload', name: file.name, size: file.size, title };
+    }
+    done(cur ? 'Video saved' : 'Video added' + (H.status === 'live' ? '. It goes online when you publish.' : ''));
+  };
+  d.onclose = () => { const o = document.querySelector('#vSub [data-vid="' + id + '"]') || opener; if (o && o.isConnected) o.focus(); };
+  draw(); d.showModal(); const f = $('vidUrl') || d.querySelector('[data-vpick]'); if (f) f.focus();
+}
+
+$('vSub').addEventListener('click', async (e) => {
+  const t = e.target, H = ST.hc;
+  const pv = t.closest('[data-pv]'); if (pv) { hcPreview(pv); return; }
+  if (t.closest('[data-master]')) {
+    if (H.status === 'live') { if (!(await askConfirm('Turn off the Help Center?', 'Its pages go offline and the widgets hide. Your settings and answers stay.', 'Turn off'))) return; H.status = 'off'; }
+    else { H.status = 'live'; H.dirty = false; }
+    save(); keepFocus(renderHc); toast(H.status === 'live' ? 'Help Center is back online' : 'Help Center turned off'); return;
+  }
+  const vis = t.closest('[data-vis]');
+  if (vis) { const on = vis.dataset.vis === 'pub'; if (!!H.pub[vis.dataset.id] === on) return; H.pub[vis.dataset.id] = on; hcChange(); keepFocus(renderHc); toast(on ? 'Visible on the Help Center' + (H.status === 'live' ? ' when you publish' : '') : 'Hidden. Your team still sees it in Ask lojo.'); return; }
+  const mp = t.closest('[data-mkpub]'), kp = t.closest('[data-keep]');
+  if (mp || kp) { const id = mp ? mp.dataset.mkpub : kp.dataset.keep; H.seen[id] = true; H.pub[id] = !!mp; hcChange(); renderHc(); toast(mp ? 'Approved. It’s on the Help Center' + (H.status === 'live' ? ' when you publish.' : '.') : 'Approved for your team only'); const n = document.querySelector('.ve__drb [data-mkpub], .ve__drb [data-vedrawerx]'); if (n) n.focus(); return; }
+  if (t.closest('[data-auto]')) { H.auto = !H.auto; save(); keepFocus(renderHc); return; }
+  const md_ = t.closest('[data-mod]'); if (md_) { H.modules[md_.dataset.mod] = !H.modules[md_.dataset.mod]; hcChange(); keepFocus(renderHc); return; }
+  const lg = t.closest('button[data-lang]'); if (lg) { H.langs[lg.dataset.lang] = !H.langs[lg.dataset.lang]; hcChange(); keepFocus(renderHc); return; }
+  const bgb = t.closest('[data-bg]'); if (bgb) { H.bg = bgb.dataset.bg; hcChange(); keepFocus(renderHc); return; }
+  const hp = t.closest('[data-help]'); if (hp) { const o = H.help[hp.dataset.help] = H.help[hp.dataset.help] || {}; o.on = o.on === false; hcChange(); keepFocus(renderHc); return; }
+  if (t.closest('[data-wave]')) { H.wave = !H.wave; hcChange(); keepFocus(renderHc); return; }
+  const cl = t.closest('[data-col]'); if (cl) { H.color = cl.dataset.col; hcChange(); keepFocus(renderHc); return; }
+  const vb = t.closest('[data-vid]'); if (vb) { hcVideo(vb.dataset.vid, vb); return; }
+  if (hcEdit && t.closest('[data-cvnew],[data-cvok],[data-cvx],[data-cvedit]')) {
+    const x = approved().find(y => y.r.id === hcEdit), P = H.pages[hcEdit] = H.pages[hcEdit] || {};
+    if (t.closest('[data-cvnew]')) { P.cv = { text: cvDraft(x), status: 'review', base: x.a }; toast('lojo drafted a customer version. Check it, then approve.'); }
+    else if (t.closest('[data-cvedit]')) P.cv.status = 'review';
+    else if (t.closest('[data-cvok]')) { const ta = $('tabHc').querySelector('[data-cv]'); if (ta && !ta.value.trim()) { toastError('Write the customer version first.'); ta.focus(); return; } if (ta) P.cv.text = ta.value.trim(); P.cv.status = 'ok'; P.cv.base = x.a; toast('Customer version approved'); }
+    else { delete P.cv; toast('Customer version removed. The page shows the approved answer.'); }
+    hcChange(); renderHc(); const f = $('tabHc').querySelector('[data-cv]') || $('tabHc').querySelector('[data-cvedit]') || $('tabHc').querySelector('[data-cvnew]'); if (f) f.focus(); return;
+  }
+  if (t.closest('[data-logo]')) { $('hcLogoFile').click(); return; }
+  if (t.closest('[data-logorm]')) { H.logo = null; hcChange(); renderHc(); const c = $('tabHc').querySelector('[data-logo]'); if (c) c.focus(); toast('Logo removed. The site shows your name.'); return; }
+  const lz = t.closest('[data-lsize]'); if (lz) { H.logoSize = lz.dataset.lsize; hcChange(); keepFocus(renderHc); return; }
+  if (t.closest('[data-lswitch]')) { H.langSwitch = !H.langSwitch; hcChange(); keepFocus(renderHc); return; }
+  const cp = t.closest('#tabHc [data-copy]'); if (cp) { try { navigator.clipboard.writeText(cp.dataset.copy); } catch (err) {} toast('Copied'); }
+});
+$('vSub').addEventListener('change', (e) => {
+  const t = e.target, H = ST.hc;
+  if (t.id === 'hcLogoFile') { if (t.files[0]) readLogo(t.files[0]); return; }
+  if (t.id === 'hcLogoLink') { H.logoLink = t.value.trim().replace(/^https?:\/\//i, '').replace(/\/$/, ''); t.value = H.logoLink; hcChange(); drawPane(); return; }
+  if (t.name === 'addr') { H.addr = t.value; hcChange(); keepFocus(renderHc); if (t.value === 'own' && $('hcDomain')) $('hcDomain').focus(); return; }
+  if (t.hasAttribute('data-colpick')) { H.color = t.value.toUpperCase(); hcChange(); keepFocus(renderHc); return; }
+  if (t.dataset.route) { H[t.dataset.route] = t.value.trim(); hcChange(); keepFocus(renderHc); toast('Saved'); }
+});
+$('vSub').addEventListener('input', (e) => {
+  if (e.target.id === 'hcDomain') { ST.hc.domain = e.target.value.trim(); hcChange(); drawPane(); }
+  if (e.target.id === 'hcLogoLink') { ST.hc.logoLink = e.target.value.trim().replace(/^https?:\/\//i, ''); save(); drawPane(); }
+  if (e.target.hasAttribute('data-colpick')) { ST.hc.color = e.target.value.toUpperCase(); save(); drawPane(); return; }
+  const hf = e.target.dataset.hf;
+  if (hf) { const v = e.target.value.trim(); if (hf.startsWith('t:')) { const [, t, k] = hf.split(':'); (ST.hc.topics[t] = ST.hc.topics[t] || {})[k] = v; } else if (hf.includes('.')) { const ks = hf.split('.'); let o = ST.hc; ks.slice(0, -1).forEach(k => { o = o[k] = o[k] || {}; }); o[ks[ks.length - 1]] = ks[ks.length - 1] === 'u' ? v.replace(/^https?:\/\//i, '') : v; } else ST.hc[hf] = v; hcChange(); drawPane(); const pb = document.querySelector('#hcActs [data-publish]'); if (pb) { pb.disabled = false; pb.removeAttribute('title'); } return; }
+  const pf = e.target.dataset.pf, isCv = e.target.hasAttribute('data-cv');
+  if ((pf || isCv) && hcEdit) {
+    const P = ST.hc.pages[hcEdit] = ST.hc.pages[hcEdit] || {};
+    if (pf) P[pf] = e.target.value.trim(); else P.cv.text = e.target.value;
+    hcChange(); drawPane();
+    const pb = document.querySelector('#hcActs [data-publish]'); if (pb) { pb.disabled = false; pb.removeAttribute('title'); }
+  }
+});
+// logo upload: choose a file or drop it on the box
+function readLogo(f) {
+  if (!/^image\/(png|svg\+xml|jpeg|webp)$/.test(f.type)) { toastError('Use a PNG, SVG, JPG or WebP file.'); return; }
+  if (f.size > 1024 * 1024) { toastError('That file is ' + kb(f.size) + '. Use one under 1 MB.'); return; }
+  const r = new FileReader();
+  r.onload = () => { ST.hc.logo = { src: r.result, name: f.name, size: f.size }; hcChange(); renderHc(); const c = $('tabHc').querySelector('[data-logo]'); if (c) c.focus(); toast('Logo added'); };
+  r.readAsDataURL(f);
+}
+['dragenter', 'dragover'].forEach(ev => $('vSub').addEventListener(ev, (e) => { const z = e.target.closest('[data-lgdrop]'); if (z) { e.preventDefault(); z.classList.add('is-over'); } }));
+$('vSub').addEventListener('dragleave', (e) => { const z = e.target.closest('[data-lgdrop]'); if (z && !z.contains(e.relatedTarget)) z.classList.remove('is-over'); });
+$('vSub').addEventListener('drop', (e) => { const z = e.target.closest('[data-lgdrop]'); if (!z) return; e.preventDefault(); z.classList.remove('is-over'); const f = e.dataTransfer.files[0]; if (f) readLogo(f); });
+
+window.addEventListener('resize', fitPane);
+// publishing takes a moment; the button shows it
+function vePublish() {
+  const H = ST.hc;
+  if (H.addr === 'own' && !(H.domain || '').trim()) { vePop = false; veSel = null; veStyle = true; renderHc(); toastError('Type your address first, such as help.oslopet.com.'); if ($('hcDomain')) $('hcDomain').focus(); return; }
+  const was = H.status; vePop = false; veBusy = true; drawActs();
+  setTimeout(() => { veBusy = false; H.status = 'live'; H.dirty = false; save(); drawActs(); toast(was === 'live' ? 'Changes published' : 'Help Center is live at ' + hcAddr()); const b = document.querySelector('[data-vepop]'); if (b) b.focus(); }, 900);
+}
+function veOpenDrawer() { veDrawer = true; vePop = false; renderHc(); const h = $('veDrT'); if (h) h.focus(); }
+$('hcActs').addEventListener('click', (e) => {
+  const t = e.target;
+  if (t.closest('[data-vepop]')) { e.stopPropagation(); vePop = !vePop; drawActs(); const f = vePop && document.querySelector('.ve__pop button:not([disabled]), .ve__pop a'); if (f) f.focus(); else if (!vePop) document.querySelector('[data-vepop]').focus(); return; }
+  if (t.closest('[data-vedrawer]')) { e.stopPropagation(); veOpenDrawer(); return; }
+  const cp = t.closest('[data-copy]'); if (cp) { e.preventDefault(); e.stopPropagation(); try { navigator.clipboard.writeText(cp.dataset.copy); } catch (err) {} toast('Link copied'); return; }
+  if (t.closest('[data-vego]')) { e.stopPropagation(); vePublish(); return; }
+  if (t.closest('[data-master]')) vePop = false;
+});
+document.addEventListener('click', (e) => { if (vePop && !e.target.closest('.ve__pubw')) { vePop = false; drawActs(); } });
+// first click on a section only selects it. Once selected, its links and text work
+$('tabHc').addEventListener('click', (e) => {
+  const b = e.target.closest('#vePage [data-blk]');
+  if (b && b.dataset.blk !== veSel) { e.preventDefault(); e.stopPropagation(); veSelect(b.dataset.blk); }
+}, true);
+$('tabHc').addEventListener('click', (e) => {
+  const t = e.target, H = ST.hc; let h;
+  const stop = () => e.stopPropagation();
+  if (t.id === 'veStage') { if (veSel || veStyle) { veSel = null; veStyle = false; renderHc(); } return; }
+  if ((h = t.closest('[data-vesel]'))) { stop(); const was = veSel; veSelect(h.dataset.vesel); if (!h.dataset.vesel) { const r = document.querySelector('.ve__orb[data-vesel="' + was + '"]'); if (r) r.focus(); } else if (h.classList.contains('ve__orb')) { const r = document.querySelector('.ve__orb[data-vesel="' + h.dataset.vesel + '"]'); if (r) r.focus(); } return; }
+  if ((h = t.closest('[data-vestyle]'))) { stop(); veStyle = !veStyle; veSel = null; renderHc(); const f = veStyle ? document.querySelector('#veSty [data-col]') : document.querySelector('.ve__stb'); if (f) f.focus(); return; }
+  if ((h = t.closest('[data-vepage]'))) { stop(); vePage = h.dataset.vepage; veSel = vePage === 'article' ? 'article' : null; veStyle = false; renderHc(); $('veStage').scrollTop = 0; vePlace(); document.querySelector('[data-vepage="' + vePage + '"]').focus(); return; }
+  if ((h = t.closest('[data-vedev]'))) { stop(); veDev = h.dataset.vedev; renderHc(); document.querySelector('[data-vedev="' + veDev + '"]').focus(); setTimeout(vePlace, 300); return; }
+  if (t.closest('[data-veundo]')) { stop(); veUndo(); const b = document.querySelector('[data-veundo]'); if (b && !b.disabled) b.focus(); return; }
+  if (t.closest('[data-veredo]')) { stop(); veRedo(); const b = document.querySelector('[data-veredo]'); if (b && !b.disabled) b.focus(); return; }
+  if ((h = t.closest('[data-veotab]'))) { stop(); veTab = h.dataset.veotab; renderHc(); document.querySelector('[data-veotab="' + veTab + '"]').focus(); return; }
+  if ((h = t.closest('[data-veart]'))) { stop(); veDrawer = false; veOpenArt(h.dataset.veart); return; }
+  if (t.closest('[data-vedrawer]')) { stop(); veOpenDrawer(); return; }
+  if (t.closest('[data-vedrawerx]')) { stop(); veDrawer = false; renderHc(); const b = document.querySelector('[data-vedrawer]'); if (b) b.focus(); return; }
+  if ((h = t.closest('[data-vehide]'))) { stop(); const k = h.dataset.vehide, out = !!h.closest('.ve__out'); veDo(() => { if (!hcHid(k)) H.hidden.push(k); if (veSel === k) veSel = null; }, VE_SEC[k][0] + ' hidden'); const f = document.querySelector(out ? '.ve__eye[data-veshow="' + k + '"]' : '#vePage [data-veshow="' + k + '"]'); if (f) f.focus(); return; }
+  if ((h = t.closest('[data-veshow]'))) { stop(); const k = h.dataset.veshow, out = !!h.closest('.ve__out'); veDo(() => { H.hidden = H.hidden.filter(x => x !== k); }, VE_SEC[k][0] + ' is visible again'); const f = document.querySelector(out ? '.ve__eye[data-vehide="' + k + '"]' : '.ve__orb[data-vesel="' + k + '"]'); if (f) f.focus(); return; }
+  if ((h = t.closest('[data-vemv]'))) {
+    stop(); const d = +h.dataset.vemv, o = hcOrder(), i = o.indexOf(veSel), j = i + d; if (j < 0 || j >= o.length) return;
+    const k = veSel; veDo(() => { o.splice(i, 1); o.splice(j, 0, k); H.order = o; }, 'Moved ' + VE_SEC[k][0] + (d < 0 ? ' up' : ' down')); veReveal();
+    const f = document.querySelector('#vePage [data-vemv="' + d + '"]:not([disabled])') || document.querySelector('#vePage [data-vemv]:not([disabled])'); if (f) f.focus(); return;
+  }
+  if ((h = t.closest('[data-veset]'))) { stop(); const k = h.dataset.veset; veLast = 0; H[k] = k === 'trendN' ? +h.dataset.v : h.dataset.v; hcChange(); keepFocus(renderHc); return; }
+  if ((h = t.closest('[data-vetog]'))) { stop(); const k = h.dataset.vetog; veLast = 0; H[k] = !(H[k] !== false); hcChange(); keepFocus(renderHc); return; }
+  if ((h = t.closest('[data-vechip]'))) { stop(); veRun(h.textContent); return; }
+  if ((h = t.closest('#vePage [data-pvq]'))) { stop(); veOpenArt(h.dataset.pvq); return; }
+  if (t.closest('#vePage [data-pvhome]')) { stop(); vePage = 'home'; veSel = null; renderHc(); $('veStage').scrollTop = 0; return; }
+  const cp = t.closest('#vePage [data-copy]'); if (cp) { stop(); return; }
+});
+// the AI bar
+$('tabHc').addEventListener('submit', (e) => { if (e.target.id !== 'veAi') return; e.preventDefault(); const v = $('veAiIn').value.trim(); if (v) veRun(v); });
+$('tabHc').addEventListener('mousedown', (e) => { const c = e.target.closest('[data-vechip]'); if (c) { e.preventDefault(); veRun(c.textContent); } });
+$('tabHc').addEventListener('input', (e) => {
+  if (e.target.id === 'veAiIn') { const v = e.target.value.trim(); e.target.form.querySelector('.ve__aigo').disabled = !v; $('veChips').hidden = !!v; return; }
+  const il = e.target.closest && e.target.closest('[data-inl]'); if (il && il.textContent.length > +il.dataset.max) { il.textContent = il.textContent.slice(0, +il.dataset.max); }
+});
+$('tabHc').addEventListener('focusin', (e) => { if (e.target.id === 'veAiIn' && !e.target.value.trim()) { $('veAiMsg').textContent = 'Try'; $('veChips').hidden = false; } });
+const INL0 = { hero: HERO0, sub: SUB0, popT: 'Popular:', topicsT: 'Browse by topic', trendT: 'Trending this week', vidT: 'Watch in 1 minute', helpT: 'Still need help?' };
+$('tabHc').addEventListener('focusout', (e) => {
+  if (e.target.id === 'veAiIn') { if (!(e.relatedTarget && e.relatedTarget.closest('#veChips'))) $('veChips').hidden = true; return; }
+  const il = e.target.closest && e.target.closest('[data-inl]'); if (!il) return;
+  const k = il.dataset.inl, v = il.textContent.replace(/\s+/g, ' ').trim(), nv = v === INL0[k] ? '' : v, H = ST.hc;
+  if (!v && k === 'hero') { drawPane(); toastError('The heading can’t be empty.'); return; }
+  if ((H[k] || '') === nv) return;
+  veLast = 0; H[k] = nv; hcChange(); drawPane(); veToast(k === 'hero' ? 'Heading updated' : k === 'sub' ? 'Line under the heading updated' : 'Title updated');
+  const inp = document.querySelector('#veInsp [data-hf="' + k + '"]'); if (inp) inp.value = nv;
+});
+$('tabHc').addEventListener('keydown', (e) => {
+  const il = e.target.closest && e.target.closest('[data-inl]'); if (!il) return;
+  if (e.key === 'Enter') { e.preventDefault(); il.blur(); }
+  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); il.textContent = ST.hc[il.dataset.inl] || INL0[il.dataset.inl]; il.blur(); }
+});
+// drag a section in the outline to reorder it
+$('tabHc').addEventListener('dragstart', (e) => { const li = e.target.closest && e.target.closest('[data-vedrag]'); if (!li) return; veDrag = li.dataset.vedrag; e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', veDrag); } catch (err) {} li.classList.add('is-drag'); });
+const veDropAt = (e) => { const li = e.target.closest && e.target.closest('[data-vedrag]'); if (!li || !veDrag) return null; const r = li.getBoundingClientRect(); return [li, e.clientY > r.top + r.height / 2]; };
+$('tabHc').addEventListener('dragover', (e) => {
+  const at = veDropAt(e); if (!at) return; e.preventDefault();
+  document.querySelectorAll('.ve__or.is-before,.ve__or.is-after').forEach(n => n.classList.remove('is-before', 'is-after'));
+  if (at[0].dataset.vedrag !== veDrag) at[0].classList.add(at[1] ? 'is-after' : 'is-before');
+});
+$('tabHc').addEventListener('drop', (e) => {
+  const at = veDropAt(e); if (!at) return; e.preventDefault();
+  const k = veDrag, to = at[0].dataset.vedrag; veDrag = null; if (k === to) { renderHc(); return; }
+  veDo(() => { const o = hcOrder().filter(x => x !== k); o.splice(o.indexOf(to) + (at[1] ? 1 : 0), 0, k); ST.hc.order = o; }, 'Moved ' + VE_SEC[k][0]);
+});
+$('tabHc').addEventListener('dragend', () => { veDrag = null; document.querySelectorAll('.ve__or.is-drag,.ve__or.is-before,.ve__or.is-after').forEach(n => n.classList.remove('is-drag', 'is-before', 'is-after')); });
+document.addEventListener('keydown', (e) => {
+  if ($('tabHc').hidden || document.querySelector('dialog[open]')) return;
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { const a = document.activeElement; if (a && (a.matches('input,textarea,select') || a.isContentEditable)) return; e.preventDefault(); if (e.shiftKey) veRedo(); else veUndo(); return; }
+  if (e.key !== 'Escape') return;
+  if (veDrawer) { veDrawer = false; renderHc(); const b = document.querySelector('[data-vedrawer]'); if (b) b.focus(); }
+  else if (vePop) { vePop = false; drawActs(); document.querySelector('[data-vepop]').focus(); }
+  else if (veStyle) { veStyle = false; renderHc(); document.querySelector('.ve__stb').focus(); }
+  else if (veSel && !e.target.closest('.hinfo')) { const k = veSel; veSel = null; renderHc(); const r = document.querySelector('.ve__orb[data-vesel="' + k + '"]') || document.querySelector('.ve__stb'); if (r) r.focus(); }
+});
+
+// visitor preview: the same page, read only, full screen
+function hcPreview(opener) {
+  let d = $('pvDlg');
+  if (!d) { d = document.createElement('dialog'); d.id = 'pvDlg'; d.className = 'dlg pv'; d.setAttribute('aria-label', 'Help Center as a visitor sees it'); document.body.appendChild(d); }
+  let art = veArt(), q = null; const H = ST.hc;
+  const draw = () => {
+    const note = H.status === 'live' ? (H.dirty ? 'Your latest changes aren’t live yet.' : 'This is live.') : 'Not published yet.';
+    d.innerHTML = '<div class="pv__bar pv__bar--v"><button class="pv__back" type="button" data-pvx>← Back to editor</button><span class="spacer"></span><span class="pv__note">' + VI(EYE) + '<span class="pv__n1">Seeing it as a visitor would. </span>' + note + '</span></div>' + pvSite(pvList(), q === null ? art : null, q === null ? {} : { ask: q });
+  };
+  const home = () => { art = null; q = null; draw(); d.scrollTop = 0; };
+  d.onclick = (e) => {
+    if (e.target.closest('[data-pvx]')) { d.close(); return; }
+    const p = e.target.closest('[data-pvq]'); if (p) { art = approved().find(x => x.r.id === p.dataset.pvq); q = null; draw(); d.scrollTop = 0; const c = d.querySelector('.pv__crumb'); if (c) c.focus(); return; }
+    if (e.target.closest('[data-pvhome]')) home();
+  };
+  d.onkeydown = (e) => { if (e.key === 'Enter' && e.target.matches('.pv__logo[data-pvhome]')) home(); };
+  d.onsubmit = (e) => {
+    e.preventDefault(); const f = e.target;
+    if (f.matches('[data-pvask]')) { q = f.q.value.trim() || 'Is dental cleaning covered?'; pvAsk.sent = false; art = null; draw(); d.scrollTop = 0; const h = d.querySelector('.pv__ask h2'); if (h) { h.tabIndex = -1; h.focus(); } }
+    else if (f.matches('[data-pvmail]')) { pvAsk.sent = true; draw(); toast('Sent to ' + H.support); }
+  };
+  d.onclose = () => { if (opener && opener.isConnected) opener.focus(); };
+  draw(); d.showModal(); d.scrollTop = 0; d.querySelector('[data-pvx]').focus();
+}
+// ---------- views: the hub lists the channels; each channel opens its own page
+const VIEWS = {
+  answers: ['All approved answers', 'Every answer a person approved. Each channel uses these.'],
+  ask: ['Ask lojo', 'Your team asks, and lojo answers from the approved answers.'],
+  api: ['API &amp; MCP', 'Let AI assistants and your own systems read the approved answers. They read only what a person approved, like the chat.'],
+  hc: ['Help Center', 'A public site where customers find answers. lojo builds it from the answers you make public.'],
+};
+const CH_IC = {
+  ask: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>',
+  hc: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/></svg>',
+  api: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3L5 14h6l-1 7 8-11h-6z"/></svg>',
+};
+function renderHub() {
+  hcSync();
+  const all = approved(), pub = hcPublic().length, H = ST.hc, api = ST.api, n = all.length;
+  $('store').innerHTML = '<div><b>' + n + ' approved answer' + (n === 1 ? '' : 's') + '</b><span>Every channel below uses these. ' + (H.status === 'new' ? 'None are public yet.' : pub + ' of them ' + (pub === 1 ? 'is' : 'are') + ' public on the Help Center.') + '</span></div><a class="btn btn--secondary btn--sm" href="#answers">See all answers</a>';
+  const hcSt = {
+    new: ['muted', 'Not set up', 'Choose what customers see, pick an address, publish'],
+    draft: ['amber', 'Draft', pub + ' public answers · not online yet'],
+    live: ['ok', 'Live', pub + ' public answers · ' + hcAddr() + (H.dirty ? ' · changes to publish' : '') + (hcCheck().length ? ' · ' + hcCheck().length + ' to check' : '')],
+    off: ['muted', 'Off', 'Offline · settings kept'],
+  }[H.status];
+  const rows = [
+    ['ask', 'Ask lojo', 'Your team asks, lojo answers', 'ok', 'On', 'Uses all ' + n + ' answers'],
+    ['hc', 'Help Center', 'A public site for your customers', hcSt[0], hcSt[1], hcSt[2]],
+    ['api', 'API &amp; MCP', 'For AI assistants and your own systems', api.mode === 'off' ? 'muted' : 'ok', MODES[api.mode][0], api.apps.length + ' connected app' + (api.apps.length === 1 ? '' : 's') + ' · ' + api.keys.length + ' key' + (api.keys.length === 1 ? '' : 's')],
+  ];
+  $('chl').innerHTML = rows.map(([id, name, d, tone, st, m]) => '<li><a class="chrow" href="#' + id + '"><span class="chrow__ic">' + CH_IC[id] + '</span><span class="chrow__t"><b>' + name + '</b><span>' + d + '</span></span><span class="chrow__m"><span class="badge badge--' + tone + '">' + st + '</span><span>' + esc(m) + '</span></span><span class="chrow__go" aria-hidden="true">›</span></a></li>').join('');
+}
+function view(v) {
+  $('vHub').hidden = !!v; $('vSub').hidden = !v;
+  $('tabAnswers').hidden = v !== 'answers'; $('tabAsk').hidden = v !== 'ask'; $('tabApi').hidden = v !== 'api'; $('tabHc').hidden = v !== 'hc';
+  $('csv').hidden = $('json').hidden = v !== 'answers'; $('hcActs').hidden = v !== 'hc';
+  if (v) {
+    const info = v === 'hc';
+    $('subT').innerHTML = VIEWS[v][0] + (info ? '<span class="hinfo"><button type="button" class="hinfo__b" data-hinfo aria-expanded="false" aria-controls="hinfoP" aria-label="About the Help Center"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button><span class="hinfo__p" id="hinfoP" role="note"><b>About the Help Center</b>' + VIEWS[v][1] + '</span></span>' : '');
+    $('subP').innerHTML = info ? '' : VIEWS[v][1]; $('subP').hidden = info;
+  }
+  if (!v) renderHub(); if (v === 'answers') render(); if (v === 'api') renderApi(); if (v === 'hc') renderHc();
+}
+function hinfoClose() { const w = document.querySelector('.hinfo.is-open'); if (w) { w.classList.remove('is-open'); w.querySelector('[data-hinfo]').setAttribute('aria-expanded', 'false'); } }
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-hinfo]');
+  if (b) { const w = b.parentElement, open = !w.classList.contains('is-open'); hinfoClose(); w.classList.toggle('is-open', open); b.setAttribute('aria-expanded', String(open)); return; }
+  if (!e.target.closest('.hinfo')) hinfoClose();
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.querySelector('.hinfo.is-open')) { hinfoClose(); document.querySelector('[data-hinfo]').focus(); } });
+function route() {
+  const [v, sub] = location.hash.slice(1).split('/');
+  if (v === 'hc') { veDrawer = sub === 'check'; veTab = sub === 'answers' || sub === 'content' ? 'answers' : veTab; veStyle = ['look', 'modules', 'address'].includes(sub); veSel = ({ videos: 'videos', handoff: 'help' })[sub] || null; vePage = 'home'; }
+  view(VIEWS[v] ? v : ''); window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', route);
+$('backHub').addEventListener('click', (e) => { e.preventDefault(); history.pushState(null, '', location.pathname + location.search); route(); });
+route();
 """)
 
 
@@ -3506,7 +5079,7 @@ function statsFor(name, c) {
   const docFail = (ST.docx || []).filter(d => d.status === 'failed').length;
   const ch = ST.chat || {}, rewritten = DRAFTS.filter(r => decision(r).redrafted).length;
   return {
-    'Sync agent': [[c.docs + (ST.docx || []).length, 'Documents synced'], [Object.keys(ST.apps || {}).length, 'Apps connected'], [docFail, 'Failed syncs', docFail]],
+    'Sync agent': [[c.docs + (ST.docx || []).length, 'Documents synced'], [sourceSummary().sources, 'Sources connected'], [docFail, 'Failed syncs', docFail]],
     'Indexer': [[c.pages, 'Pages read'], [c.passages, 'Passages indexed'], [0, 'Failed runs']],
     'Question finder': [[c.questions, 'Questions found'], [4, 'New since yesterday'], [0, 'Failed runs']],
     'Gap finder': [[c.gaps, 'Open gaps'], [1, 'Contradictions'], [0, 'Failed runs']],
@@ -3624,7 +5197,7 @@ READOUT = dict(
   body.is-fs .klist{top:76px;max-height:calc(100vh - 96px)}
   body.is-fs .fsbtn{background:var(--ink);border-color:var(--ink);color:#fff}
 
-  body.kview .ktabs,body.kview #exp{display:none!important}
+  body.kview .ktabs{display:none!important}
 
   /* simpler Knowledge: the library is the page */
   .ksec,.kover,#fSpace,#fType{display:none!important}
@@ -3882,7 +5455,6 @@ READOUT = dict(
       </div>
       <span class="spacer"></span>
       <button class="btn btn--secondary btn--sm fsbtn" id="fsBtn" type="button" aria-pressed="false" title="Full screen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>Full screen</span></button>
-      <button class="btn btn--primary" id="exp" type="button"><svg class="i" viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M4 18v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1"/></svg>Export</button>
     </div>
 
     <a class="rocard" href="readout.html" data-admin-only>
@@ -3945,7 +5517,7 @@ ST.archived = ST.archived || {};
 function entries() {
   const out = [];
   DRAFTS.forEach((r, i) => {
-    const d = decision(r), q = QUESTIONS.find(x => x.id === r.qid), s = d.status;
+    const d = decision(r), q = allQuestions().find(x => x.id === r.qid), s = d.status;
     const state = s === 'approved' ? 'Published' : (s === 'final' || r.conflict) ? 'Needs review' : 'Draft';
     const doc = r.src[0][0];
     out.push({ id: r.id, kind: 'answer', state, title: q.q, body: answerOf(r), src: r.src, space: SPACE(doc), type: TYPE(doc), conn: CONN(doc),
@@ -4053,11 +5625,6 @@ $('kdet').addEventListener('click', (ev) => {
 });
 ['kq', 'fSpace', 'fType', 'fTopic'].forEach(id => $(id).addEventListener('input', render));
 $('ktabs').addEventListener('click', (ev) => { const b = ev.target.closest('[data-tab]'); if (!b) return; ktab = b.dataset.tab; sel = null; render(); });
-$('exp').addEventListener('click', () => {
-  const rows = entries().map(e => [e.state, e.title, e.body.replace(/\n/g, ' '), e.src.map(([d, l]) => docById(d).name + ' (' + l + ')').join('; '), e.space, e.at]);
-  const csv = ['state,title,content,sources,space,updated'].concat(rows.map(r => r.map(x => '"' + String(x).replace(/"/g, '""') + '"').join(','))).join('\n');
-  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'oslo-knowledge-sources.csv'; a.click(); toast('Exported ' + rows.length + ' entries');
-});
 render();
 """)
 
@@ -4903,7 +6470,7 @@ EMAILS_PAGE = dict(
   .inbox{padding:28px 18px;background:#F4F1EE}
   .mail2{max-width:560px;margin:0 auto;background:#fff;border-radius:16px;border:1px solid var(--line);overflow:hidden;color:#241A14}
   .mail2__top{display:flex;align-items:center;gap:10px;padding:20px 28px 0}
-  .mail2__top img{width:30px;height:30px;border-radius:22%}
+  .mail2__top img{width:36px;height:30px;object-fit:contain}
   .mail2__top b{font-family:var(--display);font-size:1.05rem}
   .mail2__body{padding:18px 28px 26px}
   .mail2 h2{font-family:var(--display);font-weight:700;font-size:1.35rem;line-height:1.25;margin:0 0 12px}
@@ -4988,7 +6555,7 @@ function render() {
   const j = MAILONLY && JOIN[cur];
   $('epane').innerHTML = '<dl class="meta2"><dt>From</dt><dd>lojo &lt;hello@lojo.ai&gt;</dd><dt>To</dt><dd>' + esc(j ? j[2] + ' <' + j[1] + '>' : to) + '</dd><dt>Subject</dt><dd class="subj">' + esc(subj) + '</dd>' + (MAILONLY ? '' : '<dt>Preview</dt><dd>' + esc(pre) + '</dd>') + '</dl>' +
     '<div class="why"><span><b>Sent when:</b> ' + esc(trig) + '</span></div>' +
-    '<div class="inbox"><div class="mail2"><div class="mail2__top"><img src="assets/lojo-icon.png" alt=""><b>lojo.ai</b></div><div class="mail2__body">' + html + '</div><div class="mail2__foot">' + (foot ? foot + '<br>' : '') + '© 2026 lojo.ai. All rights reserved.</div></div></div>';
+    '<div class="inbox"><div class="mail2"><div class="mail2__top"><img src="assets/lojo-logo.svg" alt=""><b>lojo.ai</b></div><div class="mail2__body">' + html + '</div><div class="mail2__foot">' + (foot ? foot + '<br>' : '') + '© 2026 lojo.ai. All rights reserved.</div></div></div>';
 }
 window.addEventListener('hashchange', () => { cur = location.hash.slice(1); render(); });
 // on a persona's journey the invitation's button carries on to setting a password
@@ -5037,7 +6604,7 @@ RO_PAGE = dict(
   js=r"""
 if (window.LOJO_ROLE && window.LOJO_ROLE !== 'admin') noAccess(window.LOJO_ROLE, 'readout.html');
 function render() {
-  const c = counts(), human = c.final + allQuestions().filter(q => (!q.docs || !q.docs.length) && matters(q) !== false).length, ch = ST.chat || { asked: 0, answered: 0, declined: 0 };
+  const c = counts(), human = tasks().human, ch = ST.chat || { asked: 0, answered: 0, declined: 0 };
   $('roFind').innerHTML = [[c.questions, 'questions your documents answer', 1], [c.gaps, 'gaps: referred to, never explained'], [c.approved + ' / ' + c.drafts, 'answers approved'], [ch.answered + ' / ' + ch.asked, 'Ask lojo questions answered']]
     .map(([n, l, hi]) => '<div><b' + (hi ? ' class="hi"' : '') + '>' + n + '</b><span>' + l + '</span></div>').join('');
   $('roList').innerHTML = '<li>Your reviewers approved ' + c.approved + ' drafts.</li><li>Ask lojo was asked ' + ch.asked + ' questions: it answered ' + ch.answered + ' from approved answers and declined ' + ch.declined + ', each recorded as a question.</li>' +
@@ -5322,7 +6889,7 @@ function lifeHtml(s) {
 function cite(st) {
   const src = '<span class="cite" title="Source">' + IC[st.src[0]] + esc(st.src[1]) + '</span>';
   if (!st.ans) return src;
-  return '<a class="cite cite--rule" href="build.html?tab=approved&amp;sel=' + st.ans + '" title="The rule lives in this approved answer. It isn’t copied here.">' + IC.answer + 'Rule · ' + esc(st.src[0] === 'answer' ? st.src[1] : QUESTIONS.find(q => q.id === DRAFTS.find(x => x.id === st.ans).qid).q.replace(/\?$/, '')) + '</a>' + (st.src[0] === 'answer' ? '' : src);
+  return '<a class="cite cite--rule" href="build.html?tab=approved&amp;sel=' + st.ans + '" title="The rule lives in this approved answer. It isn’t copied here.">' + IC.answer + 'Rule · ' + esc(st.src[0] === 'answer' ? st.src[1] : allQuestions().find(q => q.id === DRAFTS.find(x => x.id === st.ans).qid).q.replace(/\?$/, '')) + '</a>' + (st.src[0] === 'answer' ? '' : src);
 }
 function stepsHtml(s) {
   const hl = P.get('step') !== null && P.get('id') === s.id ? +P.get('step') : -1;
@@ -5393,7 +6960,7 @@ function render() {
   const isLive = ['approved', 'due'].includes(s.status);
   const rail = (ext ? '' : '<div class="card rbox"><h3>Sections <span>' + (10 - miss.length) + ' of 10</span></h3><ol class="toc">' + SOP_SECTIONS.map(([k, l]) => '<li' + (miss.includes(k) ? ' class="is-miss"' : '') + '><a href="#s-' + k + '"><i>' + (miss.includes(k) ? '!' : '✓') + '</i>' + l + '</a></li>').join('') + '</ol></div>') +
     (ans.length ? '<div class="card rbox"><h3>Linked answers <span>' + ans.length + '</span></h3><ul class="rlist">' + ans.map(r => { const d = DRAFTS.find(x => x.id === r); const st = decision(d).status;
-      return '<li><a href="build.html?sel=' + r + '">' + esc(QUESTIONS.find(q => q.id === d.qid).q) + '</a><small>' + (st === 'approved' ? 'Approved answer' : 'In review in Build') + '</small></li>'; }).join('') + '</ul><p class="sub" style="margin-top:10px">Rules stay in these answers and aren’t copied into the SOP.</p></div>' : '') +
+      return '<li><a href="build.html?sel=' + r + '">' + esc(allQuestions().find(q => q.id === d.qid).q) + '</a><small>' + (st === 'approved' ? 'Approved answer' : 'In review in Build') + '</small></li>'; }).join('') + '</ul><p class="sub" style="margin-top:10px">Rules stay in these answers and aren’t copied into the SOP.</p></div>' : '') +
     (s.hist.length > 1 || s.diff ? '<div class="card rbox"><h3>Versions <span>' + s.hist.length + '</span></h3><ul class="rlist vers">' + s.hist.slice().reverse().slice(0, 3).map((x, i) => '<li><b>v' + x[0] + '</b><span>' + esc(x[3]) + '<small>' + esc(x[1]) + (i === 0 && isLive ? ' · current' : '') + '</small></span></li>').join('') + '</ul>' +
       (s.diff ? '<button class="btn btn--secondary btn--sm" type="button" data-a="diff" style="margin-top:12px">Compare v' + s.hist[s.hist.length - 2][0] + ' → v' + s.hist[s.hist.length - 1][0] + '</button>' : '') + '</div>' : '') +
     '<div class="card rbox"><h3>Available in</h3><div class="live' + (isLive ? ' is-on' : '') + '">' + ['Ask lojo', 'Brain API', 'MCP'].map(x => '<div><i></i>' + x + '<span>' + (isLive ? 'Live' : 'After approval') + '</span></div>').join('') + '</div></div>';
